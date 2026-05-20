@@ -10,7 +10,7 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 
 // Types
-import { Role, KPI } from './types/dashboard';
+import { Role } from './types/dashboard';
 
 // Constants
 import { COMPANY_CONTEXT, KPIS, TABS } from './constants/data';
@@ -90,7 +90,7 @@ export default function App() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3 mb-6">
               {KPIS.map((kpi, i) => (
                 <motion.div
                   key={kpi.label}

@@ -23,7 +23,7 @@
 
 @layer components {
   .acies-button {
-    @apply px-4 py-2 bg-acies-yellow text-acies-gray font-medium transition-all hover:brightness-110 active:scale-95;
+    @apply px-4 py-2 bg-acies-yellow text-acies-gray font-bold text-[10px] uppercase tracking-widest transition-all hover:brightness-110 active:scale-95;
   }
   
   .sidebar-panel {
@@ -33,14 +33,38 @@
   .glass-card {
     @apply bg-white border border-black/5 shadow-sm rounded-none p-6;
   }
+
+  /* Scrollbar styling for sidebar */
+  .overflow-y-auto::-webkit-scrollbar {
+    width: 4px;
+  }
+  .overflow-y-auto::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .overflow-y-auto::-webkit-scrollbar-thumb {
+    @apply bg-black/10 rounded-full;
+  }
+  .dark .overflow-y-auto::-webkit-scrollbar-thumb {
+    @apply bg-white/10;
+  }
 }
 
-/* Dark mode overrides if needed */
+/* ── Dark mode ─────────────────────────────────────────────────────────────── */
 .dark body {
   @apply bg-acies-gray text-white;
 }
 
 .dark .glass-card {
-  @apply bg-white/5 border-white/10;
+  @apply bg-white/[0.04] border-white/10;
 }
 
+/* Recharts axis text color in dark mode */
+.dark .recharts-text {
+  fill: rgba(255, 255, 255, 0.5);
+}
+.dark .recharts-cartesian-axis-tick-value {
+  fill: rgba(255, 255, 255, 0.4);
+}
+.dark .recharts-label {
+  fill: rgba(255, 255, 255, 0.4);
+}
