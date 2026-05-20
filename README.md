@@ -4,7 +4,7 @@ This repository contains the front-end dashboard for **Acies AgenticBus**, a uni
 
 The dashboard visualizes complex supply chain and sales data to assist in product health monitoring, launch readiness, and SKU rationalization. It acts as an interface for a hypothetical "Agentic Bus" — a system of AI agents monitoring different aspects of the business.
 
-Sample Deployed on vercel - [ILP PPL Dashboard](ilp-ppl-dash-board-6jz3aot44-jaiadithya-s-projects.vercel.app)
+Sample Deployed on vercel - [ILP PPL Dashboard](https://ilp-ppl-dash-board-gy81c9x48-jaiadithya-s-projects.vercel.app/)
 
 ## Overview
 
