@@ -132,6 +132,15 @@ const getSkuDetails = (sku: typeof PORTFOLIO_DATA[0]) => {
   }
 };
 
+const getSegmentClass = (segment: string) => {
+  switch (segment) {
+    case 'Keep': return 'text-green-600 dark:text-green-400';
+    case 'Grow': return 'text-amber-700 dark:text-acies-yellow';
+    case 'Consolidate': return 'text-blue-600 dark:text-blue-400';
+    default: return 'text-red-600 dark:text-red-400';
+  }
+};
+
 export const ProfitabilityGridTree: React.FC<ProfitabilityGridTreeProps> = ({ role, onAuditClick }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({
@@ -344,7 +353,7 @@ export const ProfitabilityGridTree: React.FC<ProfitabilityGridTreeProps> = ({ ro
             {onAuditClick && (
               <button
                 onClick={() => onAuditClick('Profitability Tree Drilldown')}
-                className="text-[8px] font-bold uppercase text-acies-yellow hover:underline flex items-center gap-1 opacity-70 hover:opacity-100 transition-opacity bg-black/10 dark:bg-white/5 px-2 py-0.5 cursor-pointer"
+                className="text-[8px] font-bold uppercase text-amber-800 dark:text-acies-yellow hover:underline flex items-center gap-1 opacity-70 hover:opacity-100 transition-opacity bg-black/10 dark:bg-white/5 px-2 py-0.5 cursor-pointer"
                 title="Audit Sales Data & Formulas"
               >
                 <HelpCircle size={8} />
@@ -412,7 +421,7 @@ export const ProfitabilityGridTree: React.FC<ProfitabilityGridTreeProps> = ({ ro
                         onMouseLeave={() => setHoveredNode(null)}
                         className={`grid grid-cols-12 items-center text-[11px] py-2 px-1.5 cursor-pointer transition-all border-b border-black/5 dark:border-white/5 ${
                           isCatSelected 
-                            ? 'bg-acies-yellow/15 dark:bg-white/10 border-l-4 border-l-acies-yellow text-white font-medium shadow-sm shadow-acies-yellow/5' 
+                            ? 'bg-acies-yellow/15 dark:bg-white/10 border-l-4 border-l-acies-yellow text-acies-gray dark:text-white font-medium shadow-sm shadow-acies-yellow/5' 
                             : 'hover:bg-black/5 dark:hover:bg-white/5 ' + (catLeakage ? 'border-l-2 border-l-amber-500' : 'border-l-2 border-l-green-500')
                         }`}
                       >
@@ -466,7 +475,7 @@ export const ProfitabilityGridTree: React.FC<ProfitabilityGridTreeProps> = ({ ro
                               onMouseLeave={() => setHoveredNode(null)}
                               className={`grid grid-cols-12 items-center text-[10px] py-1.5 pl-6 pr-1.5 cursor-pointer transition-all border-b border-black/5 dark:border-white/5 ${
                                 isBrandSelected 
-                                  ? 'bg-acies-yellow/15 dark:bg-white/10 border-l-4 border-l-acies-yellow text-white font-semibold' 
+                                  ? 'bg-acies-yellow/15 dark:bg-white/10 border-l-4 border-l-acies-yellow text-acies-gray dark:text-white font-semibold' 
                                   : 'hover:bg-black/5 dark:hover:bg-white/5 bg-black/2 dark:bg-white/2 ' + (brandLeakage ? 'text-amber-500/90 font-medium' : 'opacity-80')
                               }`}
                             >
@@ -520,9 +529,9 @@ export const ProfitabilityGridTree: React.FC<ProfitabilityGridTreeProps> = ({ ro
                                   onMouseLeave={() => setHoveredNode(null)}
                                   className={`grid grid-cols-12 items-center text-[9px] py-1 pl-12 pr-1.5 border-l border-white/5 cursor-pointer transition-colors ${
                                     isSkuSelected
-                                      ? 'bg-acies-yellow/15 dark:bg-white/10 border-l-4 border-l-acies-yellow text-white font-medium'
+                                      ? 'bg-acies-yellow/15 dark:bg-white/10 border-l-4 border-l-acies-yellow text-acies-gray dark:text-white font-medium'
                                       : isSkuLeaking 
-                                        ? 'bg-red-500/5 text-red-300 hover:bg-red-500/10' 
+                                        ? 'bg-red-50/50 dark:bg-red-500/5 text-red-700 dark:text-red-300 hover:bg-red-100/50 dark:hover:bg-red-500/10' 
                                         : 'opacity-60 hover:opacity-100 hover:bg-black/5 dark:hover:bg-white/5'
                                   }`}
                                 >
@@ -584,7 +593,7 @@ export const ProfitabilityGridTree: React.FC<ProfitabilityGridTreeProps> = ({ ro
                   <div className="flex justify-between items-start border-b border-black/10 dark:border-white/10 pb-3">
                     <div>
                       <div className="flex items-center gap-1.5">
-                        <span className="px-1.5 py-0.5 text-[8px] font-bold uppercase rounded bg-acies-yellow/20 text-acies-yellow">
+                        <span className="px-1.5 py-0.5 text-[8px] font-bold uppercase rounded bg-acies-yellow/20 text-amber-800 dark:text-acies-yellow">
                           {activeNode.type}
                         </span>
                         {selectedNode?.name === activeNode.name && (
@@ -609,14 +618,14 @@ export const ProfitabilityGridTree: React.FC<ProfitabilityGridTreeProps> = ({ ro
                   </div>
 
                   {/* Sales & Basic Metrics */}
-                  <div className="grid grid-cols-2 gap-3 text-[10px] font-mono bg-white/5 p-3 border border-white/5">
+                  <div className="grid grid-cols-2 gap-3 text-[10px] font-mono bg-white dark:bg-white/5 p-3 border border-black/5 dark:border-white/5 rounded-sm">
                     <div>
-                      <span className="opacity-45 uppercase text-[8px] block">Net Sales</span>
-                      <span className="font-bold text-white text-xs">${activeNode.sales.toFixed(2)}M</span>
+                      <span className="opacity-60 dark:opacity-45 uppercase text-[8px] block text-acies-gray dark:text-white">Net Sales</span>
+                      <span className="font-bold text-acies-gray dark:text-white text-xs">${activeNode.sales.toFixed(2)}M</span>
                     </div>
                     <div>
-                      <span className="opacity-45 uppercase text-[8px] block">Margin</span>
-                      <span className="font-bold text-acies-yellow text-xs">{activeNode.margin.toFixed(2)}%</span>
+                      <span className="opacity-60 dark:opacity-45 uppercase text-[8px] block text-acies-gray dark:text-white">Margin</span>
+                      <span className="font-bold text-amber-800 dark:text-acies-yellow text-xs">{activeNode.margin.toFixed(2)}%</span>
                     </div>
                   </div>
 
@@ -655,7 +664,7 @@ export const ProfitabilityGridTree: React.FC<ProfitabilityGridTreeProps> = ({ ro
                           </div>
                           <div className="flex justify-between items-center text-[8px] opacity-45 uppercase font-mono mt-1.5">
                             <span>30.0%</span>
-                            <span className="text-acies-yellow font-bold">40.0% Target</span>
+                            <span className="text-amber-800 dark:text-acies-yellow font-bold">40.0% Target</span>
                             <span>45.0%</span>
                           </div>
                         </div>
@@ -665,35 +674,32 @@ export const ProfitabilityGridTree: React.FC<ProfitabilityGridTreeProps> = ({ ro
 
                   {/* Sub-Metrics details (for SKU) */}
                   {activeNode.type === 'SKU' && activeNode.skuDetails && (
-                    <div className="grid grid-cols-2 gap-2 text-[9px] font-mono bg-black/10 dark:bg-white/5 p-2.5 border border-white/5 rounded-sm">
+                    <div className="grid grid-cols-2 gap-2 text-[9px] font-mono bg-white dark:bg-white/5 p-2.5 border border-black/5 dark:border-white/5 rounded-sm">
                       <div>
-                        <span className="opacity-45 block uppercase text-[7px]">Lifecycle Stage</span>
-                        <span className="font-bold text-white">{activeNode.skuDetails.stage}</span>
+                        <span className="opacity-60 dark:opacity-45 block uppercase text-[7px] text-acies-gray dark:text-white">Lifecycle Stage</span>
+                        <span className="font-bold text-acies-gray dark:text-white">{activeNode.skuDetails.stage}</span>
                       </div>
                       <div>
-                        <span className="opacity-45 block uppercase text-[7px]">Segment Type</span>
-                        <span 
-                          className="font-bold" 
-                          style={{ color: activeNode.skuDetails.segment === 'Keep' ? '#4ade80' : activeNode.skuDetails.segment === 'Grow' ? '#ffd966' : activeNode.skuDetails.segment === 'Consolidate' ? '#60a5fa' : '#f87171' }}
-                        >
+                        <span className="opacity-60 dark:opacity-45 block uppercase text-[7px] text-acies-gray dark:text-white">Segment Type</span>
+                        <span className={`font-bold ${getSegmentClass(activeNode.skuDetails.segment)}`}>
                           {activeNode.skuDetails.segment}
                         </span>
                       </div>
                       <div>
-                        <span className="opacity-45 block uppercase text-[7px]">Promo Dep.</span>
-                        <span className="font-bold text-white">{activeNode.skuDetails.promoDep?.toFixed(1)}%</span>
+                        <span className="opacity-60 dark:opacity-45 block uppercase text-[7px] text-acies-gray dark:text-white">Promo Dep.</span>
+                        <span className="font-bold text-acies-gray dark:text-white">{activeNode.skuDetails.promoDep?.toFixed(1)}%</span>
                       </div>
                       <div>
-                        <span className="opacity-45 block uppercase text-[7px]">Promo Erosion</span>
-                        <span className="font-bold text-white">{activeNode.skuDetails.promoErosion?.toFixed(1)}</span>
+                        <span className="opacity-60 dark:opacity-45 block uppercase text-[7px] text-acies-gray dark:text-white">Promo Erosion</span>
+                        <span className="font-bold text-acies-gray dark:text-white">{activeNode.skuDetails.promoErosion?.toFixed(1)}</span>
                       </div>
                       <div>
-                        <span className="opacity-45 block uppercase text-[7px]">Lead Time</span>
-                        <span className="font-bold text-white">{activeNode.skuDetails.leadTime} Days</span>
+                        <span className="opacity-60 dark:opacity-45 block uppercase text-[7px] text-acies-gray dark:text-white">Lead Time</span>
+                        <span className="font-bold text-acies-gray dark:text-white">{activeNode.skuDetails.leadTime} Days</span>
                       </div>
                       <div>
-                        <span className="opacity-45 block uppercase text-[7px]">Stockouts</span>
-                        <span className="font-bold text-white">{activeNode.skuDetails.stockouts} Events</span>
+                        <span className="opacity-60 dark:opacity-45 block uppercase text-[7px] text-acies-gray dark:text-white">Stockouts</span>
+                        <span className="font-bold text-acies-gray dark:text-white">{activeNode.skuDetails.stockouts} Events</span>
                       </div>
                     </div>
                   )}
@@ -701,12 +707,12 @@ export const ProfitabilityGridTree: React.FC<ProfitabilityGridTreeProps> = ({ ro
                   {/* Business Rationale: So What & Action */}
                   <div className="space-y-3 pt-2 border-t border-black/10 dark:border-white/10">
                     <div>
-                      <span className="text-[8px] font-bold uppercase tracking-wider text-red-400 block">So What? (Implication)</span>
+                      <span className="text-[8px] font-bold uppercase tracking-wider text-red-600 dark:text-red-400 block">So What? (Implication)</span>
                       <p className="text-[10px] opacity-80 leading-relaxed font-body mt-1">{activeNode.soWhat}</p>
                     </div>
                     <div>
-                      <span className="text-[8px] font-bold uppercase tracking-wider text-green-400 block">Action Plan (Playbook)</span>
-                      <p className="text-[10px] text-acies-yellow opacity-90 leading-relaxed font-body font-medium mt-1">{activeNode.action}</p>
+                      <span className="text-[8px] font-bold uppercase tracking-wider text-green-600 dark:text-green-400 block">Action Plan (Playbook)</span>
+                      <p className="text-[10px] text-amber-800 dark:text-acies-yellow opacity-90 leading-relaxed font-body font-medium mt-1">{activeNode.action}</p>
                     </div>
                   </div>
                 </div>
@@ -724,7 +730,7 @@ export const ProfitabilityGridTree: React.FC<ProfitabilityGridTreeProps> = ({ ro
                           onAuditClick('Avg Gross Margin');
                         }
                       }}
-                      className="text-[8px] font-bold uppercase text-white bg-acies-yellow/20 hover:bg-acies-yellow/30 border border-acies-yellow/30 px-3 py-1 transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
+                      className="text-[8px] font-bold uppercase text-acies-gray dark:text-white bg-acies-yellow/20 hover:bg-acies-yellow/30 border border-acies-yellow/30 px-3 py-1 transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
                       title="Inspect audit trace for this selection"
                     >
                       <Sliders size={10} className="text-acies-yellow" />
@@ -735,18 +741,18 @@ export const ProfitabilityGridTree: React.FC<ProfitabilityGridTreeProps> = ({ ro
               </div>
             ) : (
               <div className="flex-1 flex flex-col items-center justify-center text-center p-6 space-y-4 my-auto">
-                <div className="p-3 bg-black/10 dark:bg-white/5 rounded-full text-acies-yellow">
+                <div className="p-3 bg-black/10 dark:bg-white/5 rounded-full text-amber-600 dark:text-acies-yellow">
                   <Info size={24} />
                 </div>
                 <div>
-                  <h4 className="text-xs uppercase font-bold tracking-widest text-white">Assortment Inspector</h4>
-                  <p className="text-[10px] opacity-40 uppercase tracking-wider mt-0.5">Interactive Deep Drill</p>
+                  <h4 className="text-xs uppercase font-bold tracking-widest text-acies-gray dark:text-white">Assortment Inspector</h4>
+                  <p className="text-[10px] opacity-40 uppercase tracking-wider mt-0.5 text-acies-gray dark:text-white">Interactive Deep Drill</p>
                 </div>
                 <p className="text-[10px] opacity-65 leading-relaxed max-w-[220px]">
                   Click any Category, Brand, or SKU row in the tree grid to lock details, view margin target comparisons, and reveal custom strategic recommendations.
                 </p>
-                <div className="bg-black/10 dark:bg-white/2 border border-black/10 dark:border-white/10 p-3 text-[9px] leading-relaxed text-left text-acies-yellow rounded-sm">
-                  <span className="font-bold text-white uppercase tracking-wider block mb-1">Corporate Target</span>
+                <div className="bg-black/5 dark:bg-white/2 border border-black/10 dark:border-white/10 p-3 text-[9px] leading-relaxed text-left text-amber-800 dark:text-acies-yellow rounded-sm">
+                  <span className="font-bold text-acies-gray dark:text-white uppercase tracking-wider block mb-1">Corporate Target</span>
                   Baseline enterprise gross margin target is <strong>40.0%</strong>. Items with margins below <strong>37.0%</strong> dilute average performance and flag margin-leaking risk.
                 </div>
               </div>

@@ -287,14 +287,14 @@ export const MarginSimulator: React.FC<MarginSimulatorProps> = ({ onAuditClick }
                         <span className="text-[7px] opacity-40 ml-1">({r.skuCount} SKUs)</span>
                       </div>
                     </div>
-                    <div className="flex-1 px-2 text-[8px] opacity-60 truncate text-left group-hover:text-acies-yellow transition-colors">
+                    <div className="flex-1 px-2 text-[8px] opacity-60 truncate text-left group-hover:text-amber-700 dark:group-hover:text-acies-yellow transition-colors">
                       {strategy.recommendation}
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
                       <span className={`font-mono font-bold ${textClass}`}>
                         {r.marginPct.toFixed(2)}%
                       </span>
-                      <ChevronRight size={10} className="opacity-40 text-acies-yellow group-hover:translate-x-0.5 transition-transform" />
+                      <ChevronRight size={10} className="opacity-40 text-amber-600 dark:text-acies-yellow group-hover:translate-x-0.5 transition-transform" />
                     </div>
                   </div>
                 );
@@ -315,7 +315,7 @@ export const MarginSimulator: React.FC<MarginSimulatorProps> = ({ onAuditClick }
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setMode('overview')}
-                  className="text-[8px] font-bold uppercase text-acies-yellow hover:underline flex items-center gap-1 opacity-70 hover:opacity-100 transition-opacity bg-black/10 dark:bg-white/5 px-1.5 py-0.5 rounded-sm"
+                  className="text-[8px] font-bold uppercase text-amber-800 dark:text-acies-yellow hover:underline flex items-center gap-1 opacity-70 hover:opacity-100 transition-opacity bg-black/10 dark:bg-white/5 px-1.5 py-0.5 rounded-sm"
                 >
                   <ArrowLeft size={8} />
                   Opportunities
@@ -323,10 +323,10 @@ export const MarginSimulator: React.FC<MarginSimulatorProps> = ({ onAuditClick }
                 <select
                   value={selectedCountry}
                   onChange={(e) => setSelectedCountry(e.target.value)}
-                  className="bg-black/15 dark:bg-white/5 text-acies-gray dark:text-white text-[10px] font-bold px-1.5 py-0.5 border border-black/10 dark:border-white/10 rounded-sm focus:outline-none focus:border-acies-yellow/50"
+                  className="bg-black/5 dark:bg-white/5 text-acies-gray dark:text-white text-[10px] font-bold px-1.5 py-0.5 border border-black/10 dark:border-white/10 rounded-sm focus:outline-none focus:border-acies-yellow/50"
                 >
                   {REGIONAL_DATA.map(r => (
-                    <option key={r.country} value={r.country} className="bg-acies-gray text-white">
+                    <option key={r.country} value={r.country} className="bg-white dark:bg-acies-gray text-acies-gray dark:text-white">
                       {r.country} ({r.marginPct.toFixed(2)}%)
                     </option>
                   ))}
@@ -336,14 +336,14 @@ export const MarginSimulator: React.FC<MarginSimulatorProps> = ({ onAuditClick }
                 {onAuditClick && (
                   <button
                     onClick={() => onAuditClick('Regional Margin Simulator')}
-                    className="text-[8px] font-bold uppercase text-acies-yellow hover:underline flex items-center gap-1 opacity-70 hover:opacity-100 transition-opacity bg-black/10 dark:bg-white/5 px-1.5 py-0.5"
+                    className="text-[8px] font-bold uppercase text-amber-800 dark:text-acies-yellow hover:underline flex items-center gap-1 opacity-70 hover:opacity-100 transition-opacity bg-black/10 dark:bg-white/5 px-1.5 py-0.5"
                     title="Audit Margins & Decisions"
                   >
                     <Sliders size={8} />
                     Audit
                   </button>
                 )}
-                <Globe size={14} className="text-acies-yellow shrink-0" />
+                <Globe size={14} className="text-amber-600 dark:text-acies-yellow shrink-0" />
               </div>
             </div>
 
@@ -353,7 +353,7 @@ export const MarginSimulator: React.FC<MarginSimulatorProps> = ({ onAuditClick }
 
             <p className="text-[9px] opacity-65 leading-normal mb-3 text-acies-gray dark:text-white/85">
               {selectedCountry === 'Austria' ? (
-                <span>Austria is the benchmark leader at <span className="font-bold text-green-500">38.64%</span> margin. Simulate premium SKU lines to target up to <span className="font-bold text-acies-yellow">40.00%</span>.</span>
+                <span>Austria is the benchmark leader at <span className="font-bold text-green-500">38.64%</span> margin. Simulate premium SKU lines to target up to <span className="font-bold text-amber-700 dark:text-acies-yellow">40.00%</span>.</span>
               ) : (
                 <span>{activeStrategy.finding} Adjust Pricing terms or harmonize assortment to target benchmark of <span className="font-bold text-green-500">38.64%</span>.</span>
               )}
@@ -363,7 +363,7 @@ export const MarginSimulator: React.FC<MarginSimulatorProps> = ({ onAuditClick }
             <div className="space-y-1.5 py-1">
               <div className="flex justify-between items-center text-[10px]">
                 <span className="opacity-50 font-bold">{selectedCountry} Target Margin</span>
-                <span className="font-mono font-bold text-acies-yellow text-xs">
+                <span className="font-mono font-bold text-amber-700 dark:text-acies-yellow text-xs">
                   {simulatedMargins[selectedCountry].toFixed(2)}%
                 </span>
               </div>
@@ -401,9 +401,9 @@ export const MarginSimulator: React.FC<MarginSimulatorProps> = ({ onAuditClick }
             >
               <div className="flex items-center gap-1 mb-0.5">
                 <p className="text-[8px] opacity-40 uppercase font-bold">Regional Savings</p>
-                <Info size={9} className="text-acies-yellow opacity-60" />
+                <Info size={9} className="text-amber-600 dark:text-acies-yellow opacity-60" />
               </div>
-              <p className="text-base font-display text-acies-yellow leading-none">
+              <p className="text-base font-display text-amber-700 dark:text-acies-yellow leading-none">
                 +${(simulationResults.selectedGpDiffDollars / 1000).toFixed(1)}k
               </p>
               <p className="text-[7px] opacity-35 leading-tight mt-0.5">GP Added ({selectedCountry})</p>
@@ -417,7 +417,7 @@ export const MarginSimulator: React.FC<MarginSimulatorProps> = ({ onAuditClick }
             >
               <div className="flex items-center gap-1 mb-0.5">
                 <p className="text-[8px] opacity-40 uppercase font-bold">Enterprise Impact</p>
-                <Info size={9} className="text-acies-yellow opacity-60" />
+                <Info size={9} className="text-amber-600 dark:text-acies-yellow opacity-60" />
               </div>
               <p className="text-base font-display text-acies-gray dark:text-white font-mono leading-none">
                 {simulationResults.simulatedEnterpriseMargin.toFixed(4)}%

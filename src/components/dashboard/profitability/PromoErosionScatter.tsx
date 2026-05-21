@@ -28,7 +28,7 @@ export const PromoErosionScatter: React.FC<PromoErosionScatterProps> = ({ onAudi
         {onAuditClick && (
           <button
             onClick={() => onAuditClick('Promo Erosion vs. Dependency')}
-            className="text-[8px] font-bold uppercase text-acies-yellow hover:underline flex items-center gap-1 opacity-70 hover:opacity-100 transition-opacity bg-black/10 dark:bg-white/5 px-2 py-0.5 shrink-0"
+            className="text-[8px] font-bold uppercase text-amber-800 dark:text-acies-yellow hover:underline flex items-center gap-1 opacity-70 hover:opacity-100 transition-opacity bg-black/10 dark:bg-white/5 px-2 py-0.5 shrink-0"
             title="Audit Margin Formulas & Promo Impact"
           >
             <Sliders size={8} />
