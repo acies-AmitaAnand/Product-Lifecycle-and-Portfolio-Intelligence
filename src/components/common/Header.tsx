@@ -16,37 +16,37 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({ currentRole, setRole, isDarkMode, toggleDarkMode }) => (
-  <header className="h-14 border-b border-black/10 flex items-center justify-between px-6 bg-white dark:bg-acies-gray sticky top-0 z-40">
+  <header className="h-14 border-b border-black/10 dark:border-white/10 flex items-center justify-between px-6 bg-white dark:bg-acies-gray sticky top-0 z-40">
     <div className="flex items-center gap-3">
       <div className="bg-acies-yellow p-1 flex items-center justify-center">
         <Activity size={16} className="text-acies-gray" />
       </div>
       <div>
-        <h1 className="text-lg font-display leading-none">Acies AgenticBus</h1>
-        <p className="text-[8px] uppercase tracking-widest opacity-50 font-medium">Portfolio Intelligence</p>
+        <h1 className="text-lg font-display leading-none text-acies-gray dark:text-white">Acies AgenticBus</h1>
+        <p className="text-[8px] uppercase tracking-widest opacity-50 font-medium text-acies-gray dark:text-white">Portfolio Intelligence</p>
       </div>
     </div>
 
     <div className="flex items-center gap-4">
-      <div className="hidden md:flex flex-col items-end mr-2 border-r border-black/5 pr-4">
+      <div className="hidden md:flex flex-col items-end mr-2 border-r border-black/5 dark:border-white/5 pr-4 text-acies-gray dark:text-white">
         <span className="text-[8px] font-bold uppercase opacity-40">{COMPANY_CONTEXT.entity}</span>
         <span className="text-[10px] font-medium">{COMPANY_CONTEXT.brands} | {COMPANY_CONTEXT.revenue}</span>
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 text-acies-gray dark:text-white">
         <User size={12} className="opacity-40" />
         <select 
           value={currentRole}
           onChange={(e) => setRole(e.target.value as Role)}
-          className="bg-transparent border-none text-[10px] font-medium focus:ring-0 cursor-pointer outline-none"
+          className="bg-transparent border-none text-[10px] font-medium focus:ring-0 cursor-pointer outline-none text-acies-gray dark:text-white"
         >
-          <option>VP Product Management</option>
-          <option>Product Manager</option>
-          <option>Pricing and Margin Partner</option>
+          <option className="bg-white text-acies-gray dark:bg-acies-gray dark:text-white">VP Product Management</option>
+          <option className="bg-white text-acies-gray dark:bg-acies-gray dark:text-white">Product Manager</option>
+          <option className="bg-white text-acies-gray dark:bg-acies-gray dark:text-white">Pricing and Margin Partner</option>
         </select>
       </div>
       
-      <button onClick={toggleDarkMode} className="p-1.5 hover:bg-black/5 rounded-full transition-colors">
+      <button onClick={toggleDarkMode} className="p-1.5 hover:bg-black/5 dark:hover:bg-white/5 rounded-full transition-colors text-acies-gray dark:text-white/80">
         {isDarkMode ? <Sun size={16} /> : <Moon size={16} />}
       </button>
 

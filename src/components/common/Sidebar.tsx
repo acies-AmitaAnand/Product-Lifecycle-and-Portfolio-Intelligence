@@ -30,14 +30,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, close }) => (
       animate={{ x: isOpen ? 0 : '100%' }}
       initial={{ x: '100%' }}
       transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-      className="fixed top-0 right-0 h-full w-full md:w-[500px] bg-white dark:bg-acies-gray border-l border-black/10 z-[60] p-10 overflow-y-auto"
+      className="fixed top-0 right-0 h-full w-full md:w-[500px] bg-white dark:bg-acies-gray border-l border-black/10 dark:border-white/10 z-[60] p-10 overflow-y-auto"
     >
       <div className="flex justify-between items-center mb-16">
         <div>
           <h2 className="text-3xl font-display">How This Evolves</h2>
           <div className="h-1 w-12 bg-acies-yellow mt-2" />
         </div>
-        <button onClick={close} className="p-3 hover:bg-black/5 rounded-full transition-colors">
+        <button onClick={close} className="p-3 hover:bg-black/5 dark:hover:bg-white/5 rounded-full transition-colors text-acies-gray dark:text-white">
           <ChevronRight size={24} />
         </button>
       </div>
@@ -48,14 +48,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, close }) => (
             <span className="text-2xl font-display opacity-20">01</span>
             <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-acies-gray dark:text-white">The As-Is State (Now)</h3>
           </div>
-          <div className="pl-9 border-l border-black/5">
+          <div className="pl-9 border-l border-black/5 dark:border-white/5">
             <p className="text-sm opacity-70 leading-relaxed mb-4">
               Top 10% of SKUs drive 27.81% of revenue, while 66.7% contribute &lt;1% each but consume 100% of supplier overhead. 
               Portfolio visibility is fragmented across 4 systems.
             </p>
-            <div className="bg-red-50 p-4 border-l-2 border-red-200">
-               <p className="text-[10px] font-bold text-red-800 uppercase mb-1">Pain Point</p>
-               <p className="text-xs text-red-900 font-medium italic">"31% of SKUs contribute only 4% of revenue but consume 22% of supplier relationships."</p>
+            <div className="bg-red-50 dark:bg-red-950/20 p-4 border-l-2 border-red-200 dark:border-red-800/50">
+               <p className="text-[10px] font-bold text-red-800 dark:text-red-400 uppercase mb-1">Pain Point</p>
+               <p className="text-xs text-red-900 dark:text-red-200 font-medium italic">"31% of SKUs contribute only 4% of revenue but consume 22% of supplier relationships."</p>
             </div>
           </div>
         </section>
@@ -71,8 +71,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, close }) => (
               ($246M &rarr; $142M) with minimal revenue risk.
             </p>
             <div className="bg-acies-yellow/10 p-4 border-l-2 border-acies-yellow">
-               <p className="text-[10px] font-bold text-acies-gray uppercase mb-1">Efficiency Gain</p>
-               <p className="text-xs text-acies-gray font-medium">Data consolidation effort reduced from 20 hours to &lt;30 minutes.</p>
+               <p className="text-[10px] font-bold text-acies-gray dark:text-white uppercase mb-1">Efficiency Gain</p>
+               <p className="text-xs text-acies-gray dark:text-white/90 font-medium">Data consolidation effort reduced from 20 hours to &lt;30 minutes.</p>
             </div>
           </div>
         </section>

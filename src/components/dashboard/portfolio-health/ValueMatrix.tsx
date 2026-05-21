@@ -8,7 +8,7 @@ import {
   ResponsiveContainer, ScatterChart, CartesianGrid, XAxis, YAxis, ZAxis,
   Tooltip, Scatter, Cell, ReferenceLine,
 } from 'recharts';
-import { PORTFOLIO_DATA, SEGMENT_COLORS } from '../../constants/data';
+import { PORTFOLIO_DATA, SEGMENT_COLORS } from '../../../constants/data';
 
 const SEGMENT_COUNTS = { Keep: 35, Grow: 16, Consolidate: 16, Rationalize: 35 };
 
@@ -153,7 +153,7 @@ export const ValueMatrix: React.FC = () => {
       </div>
 
       {/* Segment summary bar */}
-      <div className="grid grid-cols-4 gap-px mt-2 border-t border-black/5 pt-3">
+      <div className="grid grid-cols-4 gap-px mt-2 border-t border-black/5 dark:border-white/5 pt-3">
         {Object.entries(SEGMENT_COUNTS).map(([seg, count]) => (
           <div key={seg} className="text-center">
             <div className="w-2 h-2 rounded-full mx-auto mb-1" style={{ backgroundColor: SEGMENT_COLORS[seg] }} />

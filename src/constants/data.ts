@@ -111,37 +111,37 @@ export const SEGMENT_COLORS: Record<string, string> = {
 // complexity = Operational Complexity Score 0-100 (norm leadtime+supplier+promo+stockout+volatility)
 export const PORTFOLIO_DATA: PortfolioItem[] = [
   // KEEP — High Value / Low Complexity (35 SKUs in dataset; showing 9 representatives)
-  { name: 'BrandF Water',        category: 'Beverages',     margin: 40.0, growth: 12.4, netSales: 17.03, value: 88, complexity: 14, segment: 'Keep',        stage: 'Growth',   stockouts: 210, promoDep: 18.2, leadTime: 5.1 },
-  { name: 'BrandB Chips',        category: 'Snacks',        margin: 39.8, growth:  5.4, netSales: 13.03, value: 74, complexity: 22, segment: 'Keep',        stage: 'Maturity', stockouts: 245, promoDep: 19.5, leadTime: 5.3 },
-  { name: 'BrandB Soap',         category: 'Personal Care', margin: 40.0, growth:  4.2, netSales: 12.50, value: 80, complexity: 12, segment: 'Keep',        stage: 'Maturity', stockouts: 200, promoDep: 17.8, leadTime: 5.0 },
-  { name: 'BrandD Cheese',       category: 'Dairy',         margin: 39.5, growth:  6.1, netSales: 11.20, value: 76, complexity: 18, segment: 'Keep',        stage: 'Maturity', stockouts: 220, promoDep: 16.4, leadTime: 5.2 },
-  { name: 'BrandD Toothpaste',   category: 'Personal Care', margin: 39.2, growth:  7.3, netSales: 10.80, value: 73, complexity: 16, segment: 'Keep',        stage: 'Growth',   stockouts: 198, promoDep: 15.9, leadTime: 4.9 },
-  { name: 'BrandA Cheese',       category: 'Dairy',         margin: 38.9, growth:  3.8, netSales:  9.60, value: 70, complexity: 20, segment: 'Keep',        stage: 'Maturity', stockouts: 215, promoDep: 16.1, leadTime: 5.1 },
-  { name: 'BrandB Detergent',    category: 'Home Care',     margin: 39.1, growth:  4.5, netSales:  9.20, value: 68, complexity: 24, segment: 'Keep',        stage: 'Maturity', stockouts: 230, promoDep: 17.0, leadTime: 5.4 },
-  { name: 'BrandF Detergent',    category: 'Home Care',     margin: 38.8, growth:  2.9, netSales:  8.50, value: 65, complexity: 19, segment: 'Keep',        stage: 'Maturity', stockouts: 208, promoDep: 15.5, leadTime: 5.0 },
-  { name: 'BrandC Energy Drink', category: 'Beverages',     margin: 39.4, growth:  9.2, netSales:  8.10, value: 69, complexity: 17, segment: 'Keep',        stage: 'Growth',   stockouts: 190, promoDep: 14.8, leadTime: 4.8 },
+  { name: 'BrandF Water',        category: 'Beverages',     margin: 40.0, growth: 12.4, netSales: 17.03, value: 88, complexity: 14, segment: 'Keep',        stage: 'Growth',   stockouts: 210, promoDep: 18.2, leadTime: 5.1, promoErosion: 4.2 },
+  { name: 'BrandB Chips',        category: 'Snacks',        margin: 39.8, growth:  5.4, netSales: 13.03, value: 74, complexity: 22, segment: 'Keep',        stage: 'Maturity', stockouts: 245, promoDep: 19.5, leadTime: 5.3, promoErosion: 5.0 },
+  { name: 'BrandB Soap',         category: 'Personal Care', margin: 40.0, growth:  4.2, netSales: 12.50, value: 80, complexity: 12, segment: 'Keep',        stage: 'Maturity', stockouts: 200, promoDep: 17.8, leadTime: 5.0, promoErosion: 3.8 },
+  { name: 'BrandD Cheese',       category: 'Dairy',         margin: 39.5, growth:  6.1, netSales: 11.20, value: 76, complexity: 18, segment: 'Keep',        stage: 'Maturity', stockouts: 220, promoDep: 16.4, leadTime: 5.2, promoErosion: 4.5 },
+  { name: 'BrandD Toothpaste',   category: 'Personal Care', margin: 39.2, growth:  7.3, netSales: 10.80, value: 73, complexity: 16, segment: 'Keep',        stage: 'Growth',   stockouts: 198, promoDep: 15.9, leadTime: 4.9, promoErosion: 4.1 },
+  { name: 'BrandA Cheese',       category: 'Dairy',         margin: 38.9, growth:  3.8, netSales:  9.60, value: 70, complexity: 20, segment: 'Keep',        stage: 'Maturity', stockouts: 215, promoDep: 16.1, leadTime: 5.1, promoErosion: 4.9 },
+  { name: 'BrandB Detergent',    category: 'Home Care',     margin: 39.1, growth:  4.5, netSales:  9.20, value: 68, complexity: 24, segment: 'Keep',        stage: 'Maturity', stockouts: 230, promoDep: 17.0, leadTime: 5.4, promoErosion: 5.2 },
+  { name: 'BrandF Detergent',    category: 'Home Care',     margin: 38.8, growth:  2.9, netSales:  8.50, value: 65, complexity: 19, segment: 'Keep',        stage: 'Maturity', stockouts: 208, promoDep: 15.5, leadTime: 5.0, promoErosion: 4.6 },
+  { name: 'BrandC Energy Drink', category: 'Beverages',     margin: 39.4, growth:  9.2, netSales:  8.10, value: 69, complexity: 17, segment: 'Keep',        stage: 'Growth',   stockouts: 190, promoDep: 14.8, leadTime: 4.8, promoErosion: 3.9 },
 
   // GROW — High Value / High Complexity (16 SKUs; showing 4 representatives)
-  { name: 'BrandC Chips',        category: 'Snacks',        margin: 36.2, growth: 18.2, netSales: 16.00, value: 78, complexity: 68, segment: 'Grow',        stage: 'Growth',   stockouts: 320, promoDep: 25.1, leadTime: 6.1 },
-  { name: 'BrandC Toothpaste',   category: 'Personal Care', margin: 35.8, growth: 14.6, netSales: 12.97, value: 72, complexity: 74, segment: 'Grow',        stage: 'Growth',   stockouts: 340, promoDep: 27.6, leadTime: 6.2 },
-  { name: 'BrandA Soda',         category: 'Beverages',     margin: 36.1, growth: 22.1, netSales: 11.80, value: 68, complexity: 72, segment: 'Grow',        stage: 'Maturity', stockouts: 397, promoDep: 24.3, leadTime: 6.5 },
-  { name: 'BrandD Chocolate',    category: 'Snacks',        margin: 36.2, growth: 15.3, netSales:  9.90, value: 64, complexity: 78, segment: 'Grow',        stage: 'Growth',   stockouts: 416, promoDep: 22.8, leadTime: 6.3 },
+  { name: 'BrandC Chips',        category: 'Snacks',        margin: 36.2, growth: 18.2, netSales: 16.00, value: 78, complexity: 68, segment: 'Grow',        stage: 'Growth',   stockouts: 320, promoDep: 25.1, leadTime: 6.1, promoErosion: 11.2 },
+  { name: 'BrandC Toothpaste',   category: 'Personal Care', margin: 35.8, growth: 14.6, netSales: 12.97, value: 72, complexity: 74, segment: 'Grow',        stage: 'Growth',   stockouts: 340, promoDep: 27.59, leadTime: 6.2, promoErosion: 15.49 },
+  { name: 'BrandA Soda',         category: 'Beverages',     margin: 36.1, growth: 22.1, netSales: 11.80, value: 68, complexity: 72, segment: 'Grow',        stage: 'Maturity', stockouts: 397, promoDep: 24.3, leadTime: 6.5, promoErosion: 12.0 },
+  { name: 'BrandD Chocolate',    category: 'Snacks',        margin: 36.2, growth: 15.3, netSales:  9.90, value: 64, complexity: 78, segment: 'Grow',        stage: 'Growth',   stockouts: 416, promoDep: 22.8, leadTime: 6.3, promoErosion: 10.5 },
 
   // CONSOLIDATE — Low Value / Low Complexity (16 SKUs; showing 4 representatives)
-  { name: 'BrandE Cheese',       category: 'Dairy',         margin: 38.6, growth:  3.1, netSales:  0.85, value: 32, complexity: 38, segment: 'Consolidate', stage: 'Maturity', stockouts: 405, promoDep: 27.7, leadTime: 5.8 },
-  { name: 'BrandD Nuts',         category: 'Snacks',        margin: 35.9, growth:  2.8, netSales:  2.10, value: 28, complexity: 42, segment: 'Consolidate', stage: 'Maturity', stockouts: 280, promoDep: 20.5, leadTime: 5.6 },
-  { name: 'BrandF Energy Drink', category: 'Beverages',     margin: 37.2, growth:  1.5, netSales:  2.50, value: 30, complexity: 35, segment: 'Consolidate', stage: 'Maturity', stockouts: 255, promoDep: 19.2, leadTime: 5.5 },
-  { name: 'BrandB Chocolate',    category: 'Snacks',        margin: 36.8, growth:  2.2, netSales:  3.20, value: 34, complexity: 40, segment: 'Consolidate', stage: 'Maturity', stockouts: 310, promoDep: 27.6, leadTime: 5.7 },
+  { name: 'BrandE Cheese',       category: 'Dairy',         margin: 38.6, growth:  3.1, netSales:  0.85, value: 32, complexity: 38, segment: 'Consolidate', stage: 'Maturity', stockouts: 405, promoDep: 27.68, leadTime: 5.8, promoErosion: 8.4 },
+  { name: 'BrandD Nuts',         category: 'Snacks',        margin: 35.9, growth:  2.8, netSales:  2.10, value: 28, complexity: 42, segment: 'Consolidate', stage: 'Maturity', stockouts: 280, promoDep: 20.5, leadTime: 5.6, promoErosion: 7.2 },
+  { name: 'BrandF Energy Drink', category: 'Beverages',     margin: 37.2, growth:  1.5, netSales:  2.50, value: 30, complexity: 35, segment: 'Consolidate', stage: 'Maturity', stockouts: 255, promoDep: 19.2, leadTime: 5.5, promoErosion: 6.8 },
+  { name: 'BrandB Chocolate',    category: 'Snacks',        margin: 36.8, growth:  2.2, netSales:  3.20, value: 34, complexity: 40, segment: 'Consolidate', stage: 'Maturity', stockouts: 310, promoDep: 27.59, leadTime: 5.7, promoErosion: 9.1 },
 
   // RATIONALIZE — Low Value / High Complexity (35 SKUs; showing 8 representatives)
-  { name: 'BrandF Soda',         category: 'Beverages',     margin: 36.3, growth: -8.2, netSales:  2.02, value: 18, complexity: 90, segment: 'Rationalize', stage: 'Decline',  stockouts: 393, promoDep: 26.1, leadTime: 6.4 },
-  { name: 'BrandA Chocolate',    category: 'Snacks',        margin: 35.8, growth: -5.2, netSales:  1.80, value: 15, complexity: 88, segment: 'Rationalize', stage: 'Decline',  stockouts: 392, promoDep: 24.7, leadTime: 6.5 },
-  { name: 'BrandD Water',        category: 'Beverages',     margin: 35.9, growth: -3.8, netSales:  3.10, value: 22, complexity: 85, segment: 'Rationalize', stage: 'Decline',  stockouts: 378, promoDep: 28.0, leadTime: 6.4 },
-  { name: 'BrandE Water',        category: 'Beverages',     margin: 35.9, growth: -2.1, netSales:  2.23, value: 20, complexity: 82, segment: 'Rationalize', stage: 'Decline',  stockouts: 360, promoDep: 25.4, leadTime: 6.3 },
-  { name: 'BrandA Softener',     category: 'Home Care',     margin: 35.8, growth:  1.2, netSales:  1.40, value: 16, complexity: 92, segment: 'Rationalize', stage: 'Maturity', stockouts: 293, promoDep: 23.1, leadTime: 6.5 },
-  { name: 'BrandE Juice',        category: 'Beverages',     margin: 36.4, growth: -4.5, netSales:  1.65, value: 19, complexity: 84, segment: 'Rationalize', stage: 'Decline',  stockouts: 345, promoDep: 27.6, leadTime: 6.2 },
-  { name: 'BrandB Yogurt',       category: 'Dairy',         margin: 37.1, growth: -1.5, netSales:  1.20, value: 14, complexity: 80, segment: 'Rationalize', stage: 'Decline',  stockouts: 350, promoDep: 22.8, leadTime: 6.0 },
-  { name: 'BrandC Water',        category: 'Beverages',     margin: 36.0, growth: -2.9, netSales:  1.75, value: 17, complexity: 86, segment: 'Rationalize', stage: 'Decline',  stockouts: 330, promoDep: 24.5, leadTime: 6.3 },
+  { name: 'BrandF Soda',         category: 'Beverages',     margin: 36.3, growth: -8.2, netSales:  2.02, value: 18, complexity: 90, segment: 'Rationalize', stage: 'Decline',  stockouts: 393, promoDep: 26.1, leadTime: 6.4, promoErosion: 13.1 },
+  { name: 'BrandA Chocolate',    category: 'Snacks',        margin: 35.8, growth: -5.2, netSales:  1.80, value: 15, complexity: 88, segment: 'Rationalize', stage: 'Decline',  stockouts: 392, promoDep: 24.7, leadTime: 6.5, promoErosion: 13.8 },
+  { name: 'BrandD Water',        category: 'Beverages',     margin: 35.9, growth: -3.8, netSales:  3.10, value: 22, complexity: 85, segment: 'Rationalize', stage: 'Decline',  stockouts: 378, promoDep: 27.97, leadTime: 6.4, promoErosion: 14.1 },
+  { name: 'BrandE Water',        category: 'Beverages',     margin: 35.9, growth: -2.1, netSales:  2.23, value: 20, complexity: 82, segment: 'Rationalize', stage: 'Decline',  stockouts: 360, promoDep: 25.4, leadTime: 6.3, promoErosion: 12.9 },
+  { name: 'BrandA Softener',     category: 'Home Care',     margin: 35.8, growth:  1.2, netSales:  1.40, value: 16, complexity: 92, segment: 'Rationalize', stage: 'Maturity', stockouts: 293, promoDep: 23.1, leadTime: 6.5, promoErosion: 13.5 },
+  { name: 'BrandE Juice',        category: 'Beverages',     margin: 36.4, growth: -4.5, netSales:  1.65, value: 19, complexity: 84, segment: 'Rationalize', stage: 'Decline',  stockouts: 345, promoDep: 27.62, leadTime: 6.2, promoErosion: 14.2 },
+  { name: 'BrandB Yogurt',       category: 'Dairy',         margin: 37.1, growth: -1.5, netSales:  1.20, value: 14, complexity: 80, segment: 'Rationalize', stage: 'Decline',  stockouts: 350, promoDep: 22.8, leadTime: 6.0, promoErosion: 11.4 },
+  { name: 'BrandC Water',        category: 'Beverages',     margin: 36.0, growth: -2.9, netSales:  1.75, value: 17, complexity: 86, segment: 'Rationalize', stage: 'Decline',  stockouts: 330, promoDep: 24.5, leadTime: 6.3, promoErosion: 12.5 },
 ];
 
 // ─── Channel Performance (Q17/Q18) ───────────────────────────────────────────

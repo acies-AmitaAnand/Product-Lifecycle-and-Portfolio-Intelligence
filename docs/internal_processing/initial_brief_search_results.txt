@@ -1,0 +1,20 @@
+Found 19 matches in Initial Brief:
+L101 [tab]: profitability,
+L157 [tab]: 3.1 In Scope - Portfolio health and performance by lifecycle stage - Launch readiness assessment across market, supply, and channel dimensions - Product and SKU profitability analysis - SKU rationalization recommendation and simulation - Market, competitor, and Voice-of-Customer (VoC) signal monitoring - Portfolio and product KPIs 
+L159 [tab]: 4. Suggested Interactive Tabs (Starting Point) 
+L160 [tab]: These five tabs are the recommended starting point for your lab's interactive modules. You 
+L195 [tab]: tabs.
+L198 [tab]: Tab # Suggested name What it should show 
+L201 [supply chain]: Market, supply chain, channel, and pricing readiness for upcoming product launches 
+L202 [complexity]: 3 Profitability Tree Revenue, margin, and cost-to-serve breakdown by product with leakage and complexity drivers 
+L207 [module]: The lab should surface these KPIs meaningfully across its modules. Each KPI should appear in 
+L214 [tab]: tab
+L225 [complexity]:  - Product / SKU margin - Time-to-market - Launch success rate (% hitting targets at 6 months) - SKU productivity (revenue per active SKU) - Portfolio complexity index - Cannibalization rate 
+L237 [tab]: tab
+L244 [operational]: Product Manager Domain practitioner Operational workflows, root causes, queue management 
+L265 [tab]: Profitability Agent Explains margin drivers and cost-to-serve by product or category 
+L266 [complexity]: Sunset Agent Recommends rationalization candidates based on complexity, margin, and strategic fit 
+L301 [complexity]:  1. Can you see product and SKU performance by lifecycle stage in one view? 2. Do you know which SKUs add portfolio complexity without proportional value? 3. Are launch decisions supported by real-time market and readiness signals? 4. Can you predict product cannibalization before a new launch? 5. Is product profitability visible at SKU level, including cost-to-serve? 6. Are VoC and competitor signals systematically connected to portfolio decisions? 7. How quickly can you identify which products to rationalize when cost pressure rises? 
+L315 [tab]:  3. Which of the suggested tabs delivers the most business value, and why? 4. What data does this lab need to demonstrate the problem and the solution convincingly? 5. What does the "Now vs AI-Assisted vs Agentic" evolution look like specifically in this 
+L321 [module]: - Focusing on the technology (agents, AI) before clearly articulating the business problem - Making the AgenticBus the hero instead of the functional modules - Using vague or unmeasurable KPIs (e.g., "improved efficiency") instead of specific 
+L323 [tab]:  - Designing for a generic "operations user" instead of the specific VP and practitioner roles - Forgetting that a VP will spend 10–15 minutes with this lab — every tab must earn its 

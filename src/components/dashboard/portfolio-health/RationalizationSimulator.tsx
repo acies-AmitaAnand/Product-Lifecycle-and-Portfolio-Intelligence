@@ -3,9 +3,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { RATIONALIZATION_SCENARIOS } from '../../constants/data';
+import { RATIONALIZATION_SCENARIOS } from '../../../constants/data';
 
 const METRIC_CONFIG = [
   { key: 'revenueImpact',    label: 'Revenue Impact',      suffix: '%', isNegative: true,  color: '#f87171', description: 'Top-line revenue loss from SKU removals' },
@@ -16,7 +16,44 @@ const METRIC_CONFIG = [
 ];
 
 export const RationalizationSimulator: React.FC = () => {
-  const [activeScenario, setActiveScenario] = useState(0);
+  const [activeScenario, setActiveScenario] = useState(() => {
+    try {
+      const hash = window.location.hash || '#';
+      const params = new URLSearchParams(hash.substring(1));
+      const hashVal = params.get('scenario');
+      if (hashVal !== null) {
+        const parsed = parseInt(hashVal, 10);
+        if (!isNaN(parsed) && parsed >= 0 && parsed < RATIONALIZATION_SCENARIOS.length) {
+          return parsed;
+        }
+      }
+      
+      const saved = localStorage.getItem('acies_active_scenario');
+      if (saved !== null) {
+        const parsed = parseInt(saved, 10);
+        if (!isNaN(parsed) && parsed >= 0 && parsed < RATIONALIZATION_SCENARIOS.length) {
+          return parsed;
+        }
+      }
+    } catch (e) {
+      console.warn("Could not load scenario state:", e);
+    }
+    return 0;
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('acies_active_scenario', activeScenario.toString());
+      
+      const hash = window.location.hash || '#';
+      const params = new URLSearchParams(hash.substring(1));
+      params.set('scenario', activeScenario.toString());
+      window.history.replaceState(null, '', '#' + params.toString());
+    } catch (e) {
+      console.warn("Could not save scenario state:", e);
+    }
+  }, [activeScenario]);
+
   const scenario = RATIONALIZATION_SCENARIOS[activeScenario];
 
   return (
@@ -35,15 +72,15 @@ export const RationalizationSimulator: React.FC = () => {
       </div>
 
       {/* Scenario Selector */}
-      <div className="flex gap-1 bg-black/5 p-1">
+      <div className="flex gap-1 bg-black/5 dark:bg-white/5 p-1">
         {RATIONALIZATION_SCENARIOS.map((s, i) => (
           <button
             key={i}
             onClick={() => setActiveScenario(i)}
             className={`flex-1 py-1.5 px-2 text-[9px] font-bold uppercase tracking-wider transition-all ${
               activeScenario === i
-                ? 'bg-acies-gray text-acies-yellow'
-                : 'text-acies-gray opacity-50 hover:opacity-80'
+                ? 'bg-acies-gray dark:bg-white/10 text-acies-yellow'
+                : 'text-acies-gray dark:text-white/60 opacity-50 hover:opacity-100 hover:text-acies-gray dark:hover:text-white'
             }`}
           >
             {s.label}
@@ -70,7 +107,7 @@ export const RationalizationSimulator: React.FC = () => {
             return (
               <div
                 key={m.key}
-                className="border border-black/5 p-3 flex flex-col gap-1 hover:border-acies-yellow/40 transition-colors"
+                className="border border-black/5 dark:border-white/5 p-3 flex flex-col gap-1 hover:border-acies-yellow/40 transition-colors"
                 title={m.description}
               >
                 <p className="text-[8px] font-bold uppercase opacity-40 leading-tight">{m.label}</p>
@@ -101,7 +138,7 @@ export const RationalizationSimulator: React.FC = () => {
       <div className="grid grid-cols-2 gap-4">
         <div>
           <p className="text-[8px] font-bold uppercase opacity-40 mb-2">Revenue at Risk</p>
-          <div className="h-2 bg-black/5 rounded-full overflow-hidden">
+          <div className="h-2 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
             <motion.div
               key={`rev-${activeScenario}`}
               initial={{ width: 0 }}
@@ -118,7 +155,7 @@ export const RationalizationSimulator: React.FC = () => {
         </div>
         <div>
           <p className="text-[8px] font-bold uppercase opacity-40 mb-2">Safety Stock Freed</p>
-          <div className="h-2 bg-black/5 rounded-full overflow-hidden">
+          <div className="h-2 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
             <motion.div
               key={`ss-${activeScenario}`}
               initial={{ width: 0 }}
@@ -136,7 +173,7 @@ export const RationalizationSimulator: React.FC = () => {
       </div>
 
       {/* Critical structural insight */}
-      <div className="bg-acies-gray text-white p-3 flex items-start gap-3">
+      <div className="bg-acies-offwhite dark:bg-white/5 border border-black/5 dark:border-white/5 text-acies-gray dark:text-white p-3 flex items-start gap-3">
         <div className="w-px h-full bg-acies-yellow self-stretch shrink-0" />
         <div>
           <p className="text-[9px] font-bold text-acies-yellow uppercase mb-1">Structural Constraint: Zero Supplier Reduction</p>

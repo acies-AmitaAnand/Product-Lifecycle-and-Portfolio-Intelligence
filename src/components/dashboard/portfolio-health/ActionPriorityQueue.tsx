@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { SEGMENT_COLORS } from '../../constants/data';
+import { SEGMENT_COLORS } from '../../../constants/data';
 
 // Top operational burden SKUs from Q27 (op_burden_ratio = complexity/value)
 const BURDEN_SKUS = [

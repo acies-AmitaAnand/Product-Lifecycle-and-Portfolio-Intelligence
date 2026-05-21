@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Cell } from 'recharts';
-import { CHANNEL_DATA } from '../../constants/data';
+import { CHANNEL_DATA } from '../../../constants/data';
 
 const CHANNEL_COLORS = ['#ffd966', '#4ade80', '#f87171', '#60a5fa'];
 
@@ -62,7 +62,7 @@ export const ChannelPerformance: React.FC = () => {
           const isHighRisk = ch.stockoutCount === maxStockout;
           const isLowestMargin = ch.marginPct === Math.min(...CHANNEL_DATA.map(c => c.marginPct));
           return (
-            <div key={i} className="border border-black/5 p-2">
+            <div key={i} className="border border-black/5 dark:border-white/5 p-2">
               <div className="flex items-center justify-between mb-1.5">
                 <div className="flex items-center gap-2">
                   <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: CHANNEL_COLORS[i] }} />
@@ -80,7 +80,7 @@ export const ChannelPerformance: React.FC = () => {
                 </div>
               </div>
               {/* Stockout bar */}
-              <div className="h-1 bg-black/5 rounded-full overflow-hidden">
+              <div className="h-1 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
                 <div
                   className="h-full rounded-full transition-all"
                   style={{
@@ -95,9 +95,9 @@ export const ChannelPerformance: React.FC = () => {
         })}
       </div>
 
-      <div className="p-2 bg-black/5 border-l-2 border-acies-yellow">
+      <div className="p-2 bg-black/5 dark:bg-white/5 border-l-2 border-acies-yellow">
         <p className="text-[9px] italic opacity-70 leading-snug">
-          Hypermarket carries <span className="font-bold text-acies-gray">2× the stockout risk</span> of E-commerce (15,907 vs 7,907). Convenience has lowest margin (38.20%) and highest demand volatility (CV 0.069).
+          Hypermarket carries <span className="font-bold text-acies-gray dark:text-white">2× the stockout risk</span> of E-commerce (15,907 vs 7,907). Convenience has lowest margin (38.20%) and highest demand volatility (CV 0.069).
         </p>
       </div>
     </div>

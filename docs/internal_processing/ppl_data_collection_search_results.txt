@@ -1,0 +1,40 @@
+Found 39 matches in PPL Data Collection:
+L56 [tab]:  We want to concentrate at one particular tab of the project first and we want to come up with 
+L109 [tab]: tab
+L123 [tab]: tabs.
+L151 [tab]: tabs,
+L232 [tab]: (tab
+L253 [operational]:  3. Which SKUs contribute less than 1% of total revenue but still consume operational 
+L257 [tab]:  5. Which SKUs are margin-dilutive despite high sales volume? 6. Which SKUs have the lowest gross margin percentage across categories? 7. Which categories contain the highest concentration of low-performing SKUs? 8. Which SKUs are most dependent on promotions for sales uplift? 9. Which SKUs experience margin erosion during promotional periods? 10. Which SKUs show unstable demand patterns based on volatility_class? 11. Which SKUs have the highest stockout frequency? 12. Which SKUs require disproportionately high safety stock compared to their revenue 
+L259 [complexity]:  13. Which suppliers are associated with the highest operational complexity? 14. How many suppliers exist per category and per SKU cluster? 15. Which supplier relationships contribute very little business value? 16. Which countries or regions contribute high SKU complexity but low profitability? 17. Which channels (Modern Trade, Traditional Trade, Wholesale, E-commerce) generate 
+L267 [tab]:  18. Which channels show the highest demand volatility and stockout risk? 19. Which SKUs have the longest lead times and highest forecasting instability? 20. Which SKUs show strong seasonality patterns that affect forecast reliability? 21. Can we segment SKUs into: 
+L280 [operational]: operational
+L282 [complexity]: complexity?
+L283 [complexity]:  22. Build a Commercial Value Score using: ○ Revenue ○ Gross Margin ○ Revenue Growth ○ Demand Stability 23. Build an Operational Complexity Score using: ○ Lead Time ○ Supplier Dependency ○ Promo Dependency ○ Stockout Frequency ○ Volatility Class 24. Which SKUs fall into: ○ High Value / Low Complexity ○ High Value / High Complexity ○ Low Value / High Complexity ○ Low Value / Low Complexity 25. Estimate a Portfolio Complexity Index for the enterprise using: ○ SKU proliferation ○ Supplier fragmentation ○ Volatility ○ Low velocity SKUs ○ Lead time instability ○ Promo dependency 26. Estimate a Cannibalization Risk Score by checking whether promotions or spikes in one 
+L303 [operational]:  27. Which SKUs have the highest operational burden relative to revenue contribution? 28. Which SKUs should be prioritized for rationalization with minimal revenue impact? 29. Simulate the impact of eliminating the bottom 10%, 20%, and 30% of low-performing 
+L305 [complexity]:  30. For each rationalization simulation, calculate projected changes in: ○ Gross Margin ○ Supplier Count ○ Forecast Accuracy ○ Safety Stock ○ Stockout Frequency ○ Operational Complexity ○ Inventory Carrying Cost 31. Identify the top 10 portfolio risks currently affecting profitability and operational efficiency. 
+L314 [operational]: operational
+L316 [complexity]: complexity
+L323 [complexity]:  35. Clearly identify assumptions used for: ○ Cannibalization estimation ○ Complexity scoring ○ Rationalization impact simulation ○ Forecast risk modeling 
+L422 [operational]:  ● Operational Friction: Dairy holds the highest concentration of low-performing items 
+L474 [operational]: Q3. Low-Revenue Resource Consumers (<1% Revenue) 68 SKUs generate less than 1% revenue share but still heavily drain operational resources 
+L511 [operational]: Q4. Low Revenue + High Operational Friction Profile 21 SKUs fall into the bottom 25% of revenue while causing peak operational friction. ● Sample Highlights: * BrandA Softener: Lead time 6.51 days, 293 stockouts ○ BrandE Chips: Lead time 6.47 days, 295 stockouts, high promotion dependency ○ Other notable items: BrandC Softener, BrandF Chips, BrandA Milk, BrandC 
+L714 [tab]: Q10. SKUs with Unstable Demand (Volatility Class) ● Stable: 80 SKUs | Variable: 22 SKUs | Unstable: 0 SKUs 
+L720 [tab]: "Unstable".
+L806 [complexity]: Q13. Suppliers with Highest Operational Complexity The top 10 suppliers are uniformly structured, handling 102 SKUs each : ● Suppliers: S001, S002, S003, S004, S005, S006, S007, S008, S009, S010 ● Financial Scope: Net sales range between ~7.84M–7.96M with gross margins around 
+L835 [complexity]: Geographic & Channel Deep Dives Q16. Regional SKU Complexity vs. Profitability 
+L892 [complexity]: complexity.
+L896 [tab]: E-commerce 38.56% (Highest) 0.061 (Most Stable) 7,907 
+L902 [supply chain]: Operational Friction Matrices Q19. Supply Chain Latency & Forecast Instability ● Longest Lead Times (Days): BrandA Nuts (6.54), BrandA Juice (6.54), BrandB Cleaner 
+L946 [tab]:  ● Highest Forecasting Instability (CV): BrandD Chocolate (0.242), BrandA Chocolate 
+L1046 [complexity]: Strategic Portfolio Segmentation Q21. Value vs. Complexity Matrix Segmentation Thresholds applied at medians of normalized 0-1 metrics. 
+L1049 [complexity]: Keep 35 High Value / Low Complexity. Core profit drivers. 
+L1052 [complexity]: Grow 16 High Value / High Complexity. High revenue but heavy operational friction. 
+L1054 [complexity]: Rationalize 35 Low Value / High Complexity. Primary SKU deletion candidates. 
+L1056 [complexity]: Consolidate 16 Low Value / Low Complexity. Stable, low impact; manage minimally. 
+L1076 [complexity]:  $$\text{Operational Complexity Score} = \text{Normalized}\big(\text{Lead Time} + \text{Supplier 
+L1102 [tab]:  Volatility Weights: Stable = 0.3, Variable = 0.6, Unstable = 1.0 
+L1103 [complexity]: Q25. Enterprise Portfolio Complexity Index (PCI) ● Total Enterprise PCI = 0.5509 ● Underlying Drivers: Supplier Fragmentation Index ( 1.2000 ), SKU Proliferation Index 
+L1124 [tab]: Instability
+L1177 [complexity]: Q27. Highest Operational Burden Relative to Revenue Sorted by op_burden_ratio (Complexity Score / Commercial Value Score). All items fall within 
+L1448 [tab]: Stable,

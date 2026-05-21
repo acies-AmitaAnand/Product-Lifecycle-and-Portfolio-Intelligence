@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { AlertTriangle } from 'lucide-react';
-import { PCI_DRIVERS, REGIONAL_DATA } from '../../constants/data';
+import { PCI_DRIVERS, REGIONAL_DATA } from '../../../constants/data';
 
 
 export const ComplexityIndex: React.FC = () => {
@@ -45,10 +45,10 @@ export const ComplexityIndex: React.FC = () => {
                     <p className="text-[9px] font-mono opacity-60">{driver.benchmark.toFixed(4)}</p>
                   </div>
                 </div>
-                <div className="h-1 w-full bg-black/5 rounded-full overflow-hidden relative">
+                <div className="h-1 w-full bg-black/5 dark:bg-white/5 rounded-full overflow-hidden relative">
                   {/* Benchmark marker */}
                   <div
-                    className="absolute top-0 bottom-0 w-px bg-black/30 z-10"
+                    className="absolute top-0 bottom-0 w-px bg-black/30 dark:bg-white/30 z-10"
                     style={{ left: `${benchPct}%` }}
                   />
                   <div
@@ -80,8 +80,8 @@ export const ComplexityIndex: React.FC = () => {
           {REGIONAL_DATA.map((reg, i) => {
             const complexityColor =
               reg.complexityLabel === 'High'   ? 'text-red-500 bg-red-500/10' :
-              reg.complexityLabel === 'Medium' ? 'text-amber-600 bg-amber-500/10' :
-              'text-acies-gray bg-acies-yellow';
+              reg.complexityLabel === 'Medium' ? 'text-amber-600 dark:text-amber-400 bg-amber-500/10' :
+              'text-acies-gray dark:text-acies-gray bg-acies-yellow';
             return (
               <div key={i} className="flex items-center justify-between text-[9px] py-1.5 border-b border-black/5 dark:border-white/5 last:border-0 gap-2">
                 <span className="font-bold opacity-70 uppercase w-24 shrink-0">{reg.country}</span>

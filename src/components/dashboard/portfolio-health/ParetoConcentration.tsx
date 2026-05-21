@@ -7,7 +7,7 @@ import React from 'react';
 import {
   ResponsiveContainer, BarChart, Bar, XAxis, Cell, Tooltip,
 } from 'recharts';
-import { TOP_SKUS_REVENUE } from '../../constants/data';
+import { TOP_SKUS_REVENUE } from '../../../constants/data';
 
 const PARETO_DATA = [
   { name: 'Top 10%', revenue: 27.81, skus: 10 },
@@ -72,7 +72,7 @@ export const ParetoConcentration: React.FC = () => {
           <div className="grid grid-cols-2 gap-2">
             <div>
               <p className="text-[8px] opacity-40 uppercase font-bold">Concentration Risk</p>
-              <p className="text-lg font-display text-red-600">High</p>
+              <p className="text-lg font-display text-red-600 dark:text-red-400">High</p>
             </div>
             <div>
               <p className="text-[8px] opacity-40 uppercase font-bold">Revenue Tail Risk</p>
@@ -111,7 +111,7 @@ export const ParetoConcentration: React.FC = () => {
       </div>
 
       {/* Demand Stability */}
-      <div className="border-t border-black/5 pt-4">
+      <div className="border-t border-black/5 dark:border-white/5 pt-4">
         <p className="text-[9px] font-bold uppercase opacity-40 mb-3">Demand Stability (CV Classification)</p>
         <div className="grid grid-cols-3 gap-2">
           {DEMAND_STABILITY.map((d) => (

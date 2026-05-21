@@ -1,0 +1,84 @@
+
+FMCG Multi-Country Sales Dataset — Column Reference
+Source: fmcg_sales_dataset_1.csv (loaded in the Colab notebook you shared) Purpose: This document helps a reviewer assess which metrics are dashboard-feasible, which need calculation, and which require assumptions.
+Legend
+[DIRECT] = raw column, use as-is
+[DERIVED] = computable from raw columns with straightforward logic
+[ESTIMATED] = requires a proxy or assumption to produce
+[✓ DASH] = can be shown directly on a dashboard
+[~ DASH] = needs a calculation step before visualising
+[✗ DASH] = not a visual metric on its own; used as input to calculations
+
+GROUP 1 — Identity & Keys
+sku_id | int | [DIRECT] | [✓ DASH] Primary numeric identifier for each SKU. The grain for all SKU-level analysis. Every KPI rolls up or drills down through this. Used as a join key across groupby operations.
+sku_name | string | [DIRECT] | [✓ DASH] Human-readable label (e.g., "BrandA Chips"). Display name for all charts, dropdowns, and leaderboard tables. If naming is consistently structured (Brand + Product), brand and product type can be split into separate derived dimensions.
+supplier_id | string | [DIRECT] | [✓ DASH] Supplier code (S001–S060). Enables supplier concentration analysis, SKUs-per-supplier ratio, supplier fragmentation scoring. In this dataset, all 60 suppliers cover all SKUs — meaning no single supplier is a dedicated specialist, which itself is a finding.
+
+GROUP 2 — Time Dimensions
+date | date | [DIRECT] | [✓ DASH] Transaction-level date. Backbone of all time-series analysis. Derive year, month, week number, and quarter from this. Required for seasonality detection, volatility (CV), YoY comparisons, and trend lines.
+year | int | [DERIVED from date] | [✓ DASH] Extract with date.dt.year. Enables annual revenue comparisons and YoY growth calculation (2022 vs 2023 was used in the notebook). New SKUs introduced in one year will show zero growth — a data quality flag to watch.
+month | int | [DERIVED from date] | [✓ DASH] Extract with date.dt.month. Core input for monthly sales aggregation, seasonality index, and Coefficient of Variation (CV) of demand. The Chocolate category showed the strongest monthly variance in the dataset.
+week / quarter | int | [DERIVED from date] | [✓ DASH] Additional time slices for finer granularity. Useful for promotional period analysis (flag weeks where promo_flag spikes) and short-cycle demand patterns.
+
+GROUP 3 — Product Dimensions
+category | string | [DIRECT] | [✓ DASH] Five categories present: Beverages, Dairy, Home Care, Personal Care, Snacks. Enables category-level revenue share, margin concentration, low-performer density, and cross-category cannibalization risk. Dairy has the highest share of low-performing SKUs (27.8%) in the analysed dataset.
+sku_name (parseable) | string | [DERIVED] | [✓ DASH] If brand and product type are consistently separated in the SKU name (e.g., "BrandC Chips"), these can be split into brand_name and product_type as derived dimensions. Enables brand-level aggregation without additional master data.
+
+GROUP 4 — Geography & Channel
+country | string | [DIRECT] | [✓ DASH] Seven countries present: Italy, Spain, Germany, France, Austria, Poland, Netherlands. Enables regional revenue, margin by country, SKU complexity per market, and regional assortment gap analysis. Italy (102 SKUs) and Spain (100 SKUs) have the largest portfolios; Netherlands (45 SKUs) has the lowest margin.
+channel | string | [DIRECT] | [✓ DASH] Four channels present: E-commerce, Supermarket, Hypermarket, Convenience. Enables margin efficiency by channel, stockout risk by channel, and demand volatility comparison. E-commerce is the most margin-efficient (38.56%); Hypermarket accounts for the most stockouts (15,907 instances).
+
+GROUP 5 — Commercial / Financial
+net_sales | float | [DIRECT] | [✓ DASH] Revenue per transaction row (units_sold × selling price, pre-aggregated or derivable). The primary commercial value metric. Used for revenue concentration analysis (Pareto), SKU ranking, category share, country contribution, and channel efficiency. Top 30% of SKUs drive 62.88% of total revenue.
+units_sold | int | [DIRECT] | [✓ DASH] Transaction-level unit volume. Input for demand volatility (CV), safety stock proxy, and identifying high-volume / low-margin SKUs. Also the raw series for seasonality detection via monthly variance.
+purchase_cost | float | [DIRECT] | [~ DASH] Per-unit cost of goods. Used as a proxy for COGS — the notebook assumes mean purchase cost is stable across the period (a key assumption). Not directly visualisable alone but is the input to gross margin calculation.
+gross_margin | float | [DERIVED] | [✓ DASH] Calculated as: net_sales − (units_sold × purchase_cost). Core profitability metric. Used for margin ranking, margin-by-category, margin-dilutive SKU identification, and the Commercial Value Score. Average portfolio margin was 38.53%.
+gross_margin_pct | float | [DERIVED] | [✓ DASH] Calculated as: gross_margin / net_sales. The percentage view of margin. Used for lowest-margin SKU identification, channel margin efficiency, and country-level margin benchmarking. Range in the dataset was approximately 35.8%–38.6%.
+revenue_growth | float | [DERIVED] | [✓ DASH] Calculated as: (rev_2023 − rev_2022) / rev_2022. Requires date column and at least two years of data. SKUs with no prior year data are filled with 0 — treat these as unknown, not flat. One of four inputs to the Commercial Value Score.
+
+GROUP 6 — Supply Chain & Inventory
+lead_time_days | float | [DIRECT] | [✓ DASH] Average supplier-to-shelf lead time per SKU per row. Directly visualisable as a ranking (top 10 longest lead times). Also the primary input to the safety stock proxy formula. BrandA Nuts and BrandA Juice had the longest lead times (~6.54 days) in the dataset.
+stock_out_flag | int (0/1 per row, summed) | [DIRECT] | [✓ DASH] Binary flag per transaction indicating a stockout event. Summed across rows per SKU to give stockout frequency — a direct dashboard metric. BrandC Biscuits and BrandF Soap had 440 stockouts each. Also used as a complexity input in the Operational Complexity Score.
+safety_stock_proxy | float | [ESTIMATED] | [~ DASH] Calculated as: lead_time_days × standard deviation of demand (units_sold). There is no actual stock-on-hand column. This is a modelled approximation — it will diverge from reality if service-level targets, reorder points, or actual inventory records differ. The 42.2% safety stock reduction figure in the executive summary flows entirely from this proxy. Treat with caution.
+ss_to_revenue_ratio | float | [DERIVED from estimated] | [~ DASH] Safety stock proxy divided by net_sales. Identifies SKUs consuming disproportionate inventory capital relative to what they earn. BrandE Cheese had the highest ratio in the dataset. Useful for inventory inefficiency charts.
+demand_std | float | [DERIVED] | [✗ DASH] Standard deviation of monthly units_sold per SKU. Not a standalone visual but an input to safety_stock_proxy and CV calculation. Computed via groupby on sku_id and month.
+
+GROUP 7 — Promotions
+promo_flag | float (0 or 0.2 per row, averaged) | [DIRECT] | [✓ DASH] Proportion of transactions per SKU that occurred under a promotion. In the dataset this appears as a mean value (not a strict binary), suggesting multiple promo intensity levels may be encoded. Used to rank promo-dependent SKUs and as a complexity driver. BrandD Water had the highest promo dependency (~27.97% of revenue under promo).
+promo_dependency | float | [DERIVED] | [✓ DASH] Aggregated from promo_flag: percentage of total SKU revenue generated during promotional periods. Cleaner view than raw promo_flag. Top 10 most dependent SKUs clustered between 27.6%–28.0%.
+margin_erosion | float | [DERIVED] | [~ DASH] Difference in effective margin between promo and non-promo periods per SKU. Computed by comparing net_sales and implied margin when promo_flag = 1 vs 0. BrandC Toothpaste had the highest erosion (15.49 units of margin loss). Signals which SKUs are being discounted beyond their margin buffer.
+
+GROUP 8 — Demand Volatility & Forecasting
+cv_score (Coefficient of Variation) | float | [DERIVED] | [~ DASH] Calculated as: std(monthly_units_sold) / mean(monthly_units_sold) per SKU. The primary forecast instability metric. The Chocolate brand variants dominate the top 10 (CV > 0.23). Visualisable as a ranked bar chart or scatter vs revenue.
+volatility_class | string | [DERIVED] | [✓ DASH] Discretised CV: Stable (CV < 0.2), Variable (CV 0.2–0.5), Unstable (CV > 0.5). In this dataset, no SKU exceeded 0.5 so only Stable (80 SKUs) and Variable (22 SKUs) appeared. The thresholds are hardcoded assumptions — changing them moves SKUs between classes. Good as a filter or colour-coding dimension on a dashboard.
+seasonality_index | float | [DERIVED] | [~ DASH] Calculated as: std of average monthly units_sold per SKU across months. Higher = stronger seasonal pattern. BrandD Chocolate (0.239) and BrandE Chocolate (0.238) lead. Enables seasonal risk flagging for safety stock and forecast planning.
+
+GROUP 9 — Composite Scores (all model-derived)
+commercial_value_score | float 0–1 | [DERIVED] | [✓ DASH] Equal-weighted normalized sum of: revenue + gross_margin + revenue_growth + demand_stability (1 − CV). All four components normalized 0–1 before summing. Key assumption: equal weights. This is the X-axis of the strategic segmentation quadrant.
+operational_complexity_score | float 0–1 | [DERIVED] | [✓ DASH] Equal-weighted normalized sum of: lead_time_days + supplier_dependency + promo_dependency + stock_out_flag + volatility_class (mapped numerically). Key assumption: equal weights, and Stable/Variable/Unstable mapped as 0.3/0.6/1.0. This is the Y-axis of the quadrant.
+portfolio_segment | string | [DERIVED] | [✓ DASH] Four labels based on median splits of value and complexity scores: Keep (High Value / Low Complexity, 35 SKUs), Grow (High Value / High Complexity, 16 SKUs), Consolidate (Low Value / Low Complexity, 16 SKUs), Rationalize (Low Value / High Complexity, 35 SKUs). Direct dashboard filter and colour dimension.
+op_burden_ratio | float | [DERIVED] | [~ DASH] Calculated as: operational_complexity_score / commercial_value_score. Identifies SKUs where the cost to manage exceeds commercial return. BrandF Soda (3.58) is the highest burden SKU. All top 10 by this ratio fall in the Rationalize segment.
+portfolio_complexity_index (PCI) | float | [ESTIMATED] | [~ DASH] Enterprise-level scalar: average of six normalised sub-indices (SKU proliferation, supplier fragmentation, average CV, low-velocity %, lead time instability, promo dependency %). Current value: 0.5509. The sub-index baselines (100 SKUs, 50 suppliers) are hardcoded assumptions, not industry benchmarks. Best shown as a single KPI card with component breakdown.
+cannibalization_risk_score | float | [ESTIMATED] | [~ DASH] Per-SKU score derived from the maximum negative correlation between one SKU's promo_flag and another SKU's units_sold within the same category. High negative correlation is treated as sales displacement. Beverages flagged as highest risk. Critical caveat: correlation ≠ causation; seasonal timing can produce false positives with no time-lag adjustment.
+
+GROUP 10 — Derived Aggregations (not raw columns but computable)
+revenue_share_pct | [DERIVED] | [✓ DASH] SKU net_sales / total portfolio net_sales. Foundation of Pareto/concentration charts. Top 10% of SKUs = 27.81%, top 20% = 48.51%, top 30% = 62.88%.
+low_velocity_flag | [DERIVED] | [✓ DASH] Binary: 1 if SKU net_sales < 1% of total revenue. 68 SKUs qualify. Useful as a dashboard filter and for calculating the low-velocity drag on operational resources.
+margin_per_supplier | [DERIVED] | [~ DASH] Gross margin attributed to a supplier divided by SKU count. Identifies low-value supplier relationships. Useful for supplier rationalisation view.
+suppliers_per_category | [DERIVED] | [✓ DASH] Count of unique supplier_id values per category. In this dataset: all five categories = 60. Reveals whether supplier specialisation exists (here it does not).
+safety_stock_reduction_pct | [ESTIMATED] | [~ DASH] Modelled impact of removing a cohort of SKUs on total safety_stock_proxy. Bottom 10% removal = 8.8% reduction; bottom 20% = 22.3%; bottom 30% = 29.6%. Used for rationalization simulation dashboard panels. Entirely proxy-dependent — no real inventory data.
+inventory_carrying_cost_proxy | [ESTIMATED] | [~ DASH] Modelled as 20% of safety_stock_proxy value. A standard industry assumption but not validated against actual cost data. Useful as a directional estimate only.
+
+Summary: What is and is not possible
+Directly dashboard-ready (no calculation needed): sku_id, sku_name, supplier_id, date, category, country, channel, net_sales, units_sold, lead_time_days, stock_out_flag, promo_flag, portfolio_segment, volatility_class
+Needs one calculation step: gross_margin, gross_margin_pct, revenue_growth, promo_dependency, margin_erosion, cv_score, seasonality_index, commercial_value_score, operational_complexity_score, op_burden_ratio, revenue_share_pct, low_velocity_flag, suppliers_per_category
+Requires assumptions / proxies — flag clearly on dashboard: safety_stock_proxy, ss_to_revenue_ratio, portfolio_complexity_index, cannibalization_risk_score, safety_stock_reduction_pct, inventory_carrying_cost_proxy
+Key assumptions the reviewer must validate before signing off:
+Purchase cost is stable across periods (mean used as COGS proxy)
+Safety stock = lead_time × demand_std (no real inventory data exists)
+All composite scores use equal weighting
+Volatility thresholds (CV < 0.2 = Stable, 0.2–0.5 = Variable) are hardcoded, not benchmarked
+Cannibalization is proxied by negative correlation within a category, no time-lag adjustment
+Revenue from removed SKUs in rationalization simulations is assumed fully lost (no transfer effect)
+PCI baselines (100 SKUs, 50 suppliers) are internal assumptions, not industry standards
+Carrying cost = 20% of safety stock proxy (standard rule of thumb, not actuals)

@@ -30,6 +30,7 @@ export interface PortfolioItem {
   stockouts?: number;
   promoDep?: number;    // promo dependency %
   leadTime?: number;    // lead time in days
+  promoErosion?: number; // promo margin erosion score
 }
 
 export interface Agent {

@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { Layers } from 'lucide-react';
-import { Role } from '../../types/dashboard';
+import { Role } from '../../../types/dashboard';
 import { ValueMatrix } from './ValueMatrix';
 import { ComplexityIndex } from './ComplexityIndex';
 import { ParetoConcentration } from './ParetoConcentration';

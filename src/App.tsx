@@ -19,15 +19,97 @@ import { COMPANY_CONTEXT, KPIS, TABS } from './constants/data';
 import { Header } from './components/common/Header';
 import { Sidebar } from './components/common/Sidebar';
 import { KPICard } from './components/dashboard/KPICard';
-import { PortfolioHealthMap } from './components/dashboard/PortfolioHealthMap';
+import { PortfolioHealthMap } from './components/dashboard/portfolio-health/PortfolioHealthMap';
+import { ProfitabilityTree } from './components/dashboard/profitability/ProfitabilityTree';
+import { AuditDrawer } from './components/dashboard/AuditDrawer';
+
+// Helper functions for safe localStorage & hash operations
+const safeGetItem = (key: string): string | null => {
+  try {
+    return localStorage.getItem(key);
+  } catch (e) {
+    console.warn(`localStorage not accessible for key ${key}:`, e);
+    return null;
+  }
+};
+
+const safeSetItem = (key: string, value: string) => {
+  try {
+    localStorage.setItem(key, value);
+  } catch (e) {
+    console.warn(`localStorage not accessible for saving key ${key}:`, e);
+  }
+};
+
+const getHashParam = (key: string): string | null => {
+  try {
+    const hash = window.location.hash || '#';
+    const params = new URLSearchParams(hash.substring(1));
+    return params.get(key);
+  } catch (e) {
+    return null;
+  }
+};
+
+const updateHash = (key: string, value: string) => {
+  try {
+    const hash = window.location.hash || '#';
+    const params = new URLSearchParams(hash.substring(1));
+    params.set(key, value);
+    window.history.replaceState(null, '', '#' + params.toString());
+  } catch (e) {
+    console.warn("Could not update URL hash:", e);
+  }
+};
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState(0);
-  const [role, setRole] = useState<Role>('VP Product Management');
+  const [activeTab, setActiveTab] = useState<number>(() => {
+    const tabParam = getHashParam('tab');
+    if (tabParam !== null) {
+      const parsed = parseInt(tabParam, 10);
+      if (!isNaN(parsed) && parsed >= 0 && parsed < TABS.length) return parsed;
+    }
+    const saved = safeGetItem('acies_active_tab');
+    if (saved !== null) {
+      const parsed = parseInt(saved, 10);
+      if (!isNaN(parsed) && parsed >= 0 && parsed < TABS.length) return parsed;
+    }
+    return 0;
+  });
+
+  const [role, setRole] = useState<Role>(() => {
+    const roleParam = getHashParam('role');
+    if (roleParam !== null) return roleParam as Role;
+    
+    const saved = safeGetItem('acies_role');
+    return (saved as Role) || 'VP Product Management';
+  });
+
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
+    const themeParam = getHashParam('theme');
+    if (themeParam !== null) return themeParam === 'dark';
+    
+    const saved = safeGetItem('acies_dark_mode');
+    return saved === 'true';
+  });
+
+  const [activeAuditMetric, setActiveAuditMetric] = useState<string | null>(null);
 
   useEffect(() => {
+    safeSetItem('acies_active_tab', activeTab.toString());
+    updateHash('tab', activeTab.toString());
+  }, [activeTab]);
+
+  useEffect(() => {
+    safeSetItem('acies_role', role);
+    updateHash('role', role);
+  }, [role]);
+
+  useEffect(() => {
+    safeSetItem('acies_dark_mode', isDarkMode.toString());
+    updateHash('theme', isDarkMode ? 'dark' : 'light');
     if (isDarkMode) {
       document.documentElement.classList.add('dark');
     } else {
@@ -58,14 +140,14 @@ export default function App() {
           
           <main className="flex-1 min-w-0">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-              <div className="flex items-center gap-1 bg-white dark:bg-white/5 p-1 border border-black/5 self-start">
+              <div className="flex items-center gap-1 bg-white dark:bg-white/5 p-1 border border-black/5 dark:border-white/5 self-start">
                 {tabs.map((tab) => (
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
                     className={`px-4 py-2 text-[9px] font-bold uppercase tracking-widest flex items-center gap-2 transition-all border-b-2 ${
                       activeTab === tab.id 
-                        ? 'border-acies-yellow text-acies-gray bg-acies-offwhite dark:text-white' 
+                        ? 'border-acies-yellow text-acies-gray bg-acies-offwhite dark:bg-white/10 dark:text-white' 
                         : 'border-transparent opacity-40 hover:opacity-100'
                     }`}
                   >
@@ -98,7 +180,11 @@ export default function App() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.05 }}
                 >
-                  <KPICard kpi={kpi} role={role} />
+                  <KPICard 
+                    kpi={kpi} 
+                    role={role} 
+                    onAuditClick={() => setActiveAuditMetric(kpi.label)}
+                  />
                 </motion.div>
               ))}
             </div>
@@ -112,12 +198,13 @@ export default function App() {
                 transition={{ duration: 0.2 }}
               >
                 {activeTab === 0 && <PortfolioHealthMap role={role} />}
-                {activeTab !== 0 && (
+                {activeTab === 2 && <ProfitabilityTree role={role} onAuditClick={setActiveAuditMetric} />}
+                {activeTab !== 0 && activeTab !== 2 && (
                   <div className="flex flex-col items-center justify-center min-h-[550px] glass-card">
                     <div className="w-16 h-16 rounded-full bg-acies-yellow/10 flex items-center justify-center mb-6">
                       <Zap size={32} className="text-acies-yellow" />
                     </div>
-                    <h3 className="font-display text-2xl mb-1">{tabs[activeTab].name}</h3>
+                    <h3 className="font-display text-2xl mb-1">{tabs[activeTab]?.name || 'Unknown Module'}</h3>
                     <p className="text-xs uppercase tracking-[0.2em] opacity-40 mb-8 underline underline-offset-8 decoration-acies-yellow decoration-2">Development Phase: Core Logic Integration</p>
                     <div className="max-w-md text-center opacity-60 text-sm leading-relaxed">
                       This module is being architected to integrate real-time competitor signals, SKU-level elasticity models, and automated rationalization simulations.
@@ -131,8 +218,9 @@ export default function App() {
       </div>
 
       <Sidebar isOpen={isSidebarOpen} close={() => setIsSidebarOpen(false)} />
+      <AuditDrawer activeMetric={activeAuditMetric} close={() => setActiveAuditMetric(null)} />
 
-      <footer className="mt-10 border-t border-black/5 py-6 px-6">
+      <footer className="mt-10 border-t border-black/5 dark:border-white/5 py-6 px-6">
         <div className="max-w-[1600px] mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex gap-8">
             <button className="text-[9px] font-bold uppercase tracking-[0.1em] opacity-40 hover:opacity-100 hover:text-acies-yellow transition-all flex items-center gap-2 group">

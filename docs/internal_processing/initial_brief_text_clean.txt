@@ -1,0 +1,325 @@
+--- Page 1 ---
+Lab 8 Problem Brief: Acies AgenticBus — Product 
+Lifecycle
+ 
+and
+ 
+Portfolio
+ 
+Intelligence
+ 
+Program: Acies Virtual Labs Build Program | Wave 1 
+Version:
+ 
+1.0
+ 
+|
+ 
+April
+ 
+2026
+ 
+1. Your Lab Assignment 
+Your team is responsible for designing and building the Product Lifecycle and Portfolio 
+Intelligence
+ 
+—
+ 
+one
+ 
+of
+ 
+eight
+ 
+Acies
+ 
+AgenticBus
+ 
+Virtual
+ 
+Labs.
+ Field Detail 
+Lab name Acies AgenticBus: Product Lifecycle and Portfolio Intelligence 
+Domain Product Management / Portfolio Strategy 
+Primary VP persona VP Product Management / VP Portfolio Strategy 
+Secondary personas Product Manager, Portfolio Analyst, Pricing and Margin Partner Read this brief alongside the Master Program Guidance Document and the Build 
+Specification
+ 
+Template
+.
+ 
+The
+ 
+guidance
+ 
+document
+ 
+explains
+ 
+the
+ 
+SPS
+ 
+process
+ 
+and
+ 
+common
+ 
+shell
+ 
+rules.
+ 
+This
+ 
+brief
+ 
+gives
+ 
+you
+ 
+your
+ 
+specific
+ 
+problem
+ 
+statement,
+ 
+scope,
+ 
+and
+ 
+starting
+ 
+direction.
+ 
+2. The Business Problem 
+2.1 Opening Problem Statement Product and portfolio leaders struggle with slow launch decisions, poor visibility into 
+product
+ 
+profitability,
+ 
+missed
+ 
+rationalization
+ 
+opportunities,
+ 
+and
+ 
+disconnected
+ 
+market
+ 
+and
+ 
+customer
+ 
+signals.
+ 
+--- Page 2 ---
+This is your starting point , not your conclusion. Your SPS work should test, refine, and validate 
+this
+ 
+statement
+ 
+through
+ 
+stakeholder
+ 
+interviews
+ 
+and
+ 
+research
+ 
+before
+ 
+you
+ 
+design
+ 
+your
+ 
+solution.
+ 
+2.2 Why This Problem Matters The functional leaders in this domain face a common pattern: - Data about what is happening is scattered across multiple systems - Decisions are made later than they need to be, often based on stale or incomplete 
+information
+ - Teams spend time on manual processes and workarounds instead of value-adding work - When things go wrong, they are reactive rather than proactive The virtual lab should make this pattern visible and show what it looks like when AI and agentic 
+orchestration
+ 
+change
+ 
+it.
+ 
+3. Scope 
+3.1 In Scope - Portfolio health and performance by lifecycle stage - Launch readiness assessment across market, supply, and channel dimensions - Product and SKU profitability analysis - SKU rationalization recommendation and simulation - Market, competitor, and Voice-of-Customer (VoC) signal monitoring - Portfolio and product KPIs 
+3.2 Out of Scope - Full PLM (Product Lifecycle Management) engineering system - CAD, R&D, and technical product development workflows - Marketing campaign execution for launches (Lab 1) 
+4. Suggested Interactive Tabs (Starting Point) 
+These five tabs are the recommended starting point for your lab's interactive modules. You 
+may
+ 
+refine
+ 
+the
+ 
+names
+ 
+and
+ 
+content
+ 
+through
+ 
+your
+ 
+SPS
+ 
+work
+ 
+—
+ 
+but
+ 
+keep
+ 
+to
+ 
+exactly
+ 
+5
+ 
+domain
+ 
+tabs.
+ 
+--- Page 3 ---
+Tab # Suggested name What it should show 
+1 Portfolio Health Map Product and SKU performance by lifecycle stage, margin, growth, and strategic fit 
+2 Launch Readiness Dashboard 
+Market, supply chain, channel, and pricing readiness for upcoming product launches 
+3 Profitability Tree Revenue, margin, and cost-to-serve breakdown by product with leakage and complexity drivers 
+4 SKU Rationalisation Simulator 
+AI-recommended retain, grow, bundle, reposition, or sunset decisions with projected impact 
+5 Market and VoC Signal Board Customer sentiment, competitor moves, demand trends, and channel signals affecting the portfolio 
+5. Key Performance Indicators 
+The lab should surface these KPIs meaningfully across its modules. Each KPI should appear in 
+at
+ 
+least
+ 
+one
+ 
+tab
+ 
+with
+ 
+a
+ 
+realistic
+ 
+simulated
+ 
+value.
+ - Product / SKU margin - Time-to-market - Launch success rate (% hitting targets at 6 months) - SKU productivity (revenue per active SKU) - Portfolio complexity index - Cannibalization rate 
+--- Page 4 ---
+6. Role Lenses 
+Your lab should support these functional roles. When a user selects a role, the guided tour path, 
+tooltip
+ 
+emphasis,
+ 
+and
+ 
+default
+ 
+tab
+ 
+should
+ 
+adapt.
+ Role Who they are What they care most about in this lab 
+VP Product Management Senior functional leader Strategic KPIs, exception escalations, key decisions 
+Product Manager Domain practitioner Operational workflows, root causes, queue management 
+Pricing and Margin Partner Analyst / ops support Data quality, process detail, reporting and analysis 
+7. "How This Evolves" Side Panel — Suggested Agents 
+Your lab's "How This Evolves" side panel should include an agent roster. Here is a suggested 
+starting
+ 
+set
+ 
+—
+ 
+refine
+ 
+through
+ 
+your
+ 
+research.
+ Agent name Suggested role 
+Portfolio Agent Monitors product performance by lifecycle stage and flags underperformers 
+Market Signal Agent Tracks customer sentiment, competitor actions, and demand shifts 
+Launch Agent Assesses launch readiness and identifies risk factors before go-live 
+Profitability Agent Explains margin drivers and cost-to-serve by product or category 
+Sunset Agent Recommends rationalization candidates based on complexity, margin, and strategic fit 
+--- Page 5 ---
+8. Self-Assessment Scorecard — Suggested Questions 
+These are your suggested scorecard questions. Refine them based on stakeholder interviews 
+and
+ 
+research
+ 
+—
+ 
+the
+ 
+questions
+ 
+should
+ 
+reflect
+ 
+real
+ 
+pain
+ 
+points
+ 
+VPs
+ 
+in
+ 
+this
+ 
+domain
+ 
+actually
+ 
+feel.
+ 1. Can you see product and SKU performance by lifecycle stage in one view? 2. Do you know which SKUs add portfolio complexity without proportional value? 3. Are launch decisions supported by real-time market and readiness signals? 4. Can you predict product cannibalization before a new launch? 5. Is product profitability visible at SKU level, including cost-to-serve? 6. Are VoC and competitor signals systematically connected to portfolio decisions? 7. How quickly can you identify which products to rationalize when cost pressure rises? 
+9. Research Starting Points 
+Use these to begin your secondary research. Go beyond these — they are starting points, not a 
+complete
+ 
+list.
+ - Research product portfolio management frameworks — McKinsey, BCG, HBR - Look into how leading FMCG and tech companies approach SKU rationalization - Explore launch readiness frameworks and why new products fail - Find benchmarks for time-to-market and launch success rates by industry - Research how AI is being applied to product portfolio decisions and pricing 
+10. Key Questions Your SPS Should Answer 
+By the end of your Step 1 SPS presentation, you should have clear, evidence-backed answers 
+to:
+ 1. What is the specific root cause of the problem in this domain? (Use your diagnostic issue 
+tree)
+ 2. Who feels the pain most acutely — the VP or the practitioner? How is it different for 
+each?
+ 3. Which of the suggested tabs delivers the most business value, and why? 4. What data does this lab need to demonstrate the problem and the solution convincingly? 5. What does the "Now vs AI-Assisted vs Agentic" evolution look like specifically in this 
+domain?
+ 6. What would a 10x improvement in this function look like, and what enables it? 
+--- Page 6 ---
+ 
+11. Common Pitfalls for This Lab 
+- Focusing on the technology (agents, AI) before clearly articulating the business problem - Making the AgenticBus the hero instead of the functional modules - Using vague or unmeasurable KPIs (e.g., "improved efficiency") instead of specific 
+metrics
+ - Designing for a generic "operations user" instead of the specific VP and practitioner roles - Forgetting that a VP will spend 10–15 minutes with this lab — every tab must earn its 
+place
+ End of Lab 8 Problem Brief 
