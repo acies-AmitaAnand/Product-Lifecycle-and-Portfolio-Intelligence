@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  TrendingUp, TrendingDown, Check, X, AlertTriangle, RefreshCw, Zap, Clock, Home, Info 
+  TrendingUp, TrendingDown, Check, X, AlertTriangle, RefreshCw, Zap, Clock, Home 
 } from 'lucide-react';
 import { 
   ResponsiveContainer, AreaChart, Area, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, BarChart, Bar, Cell 
@@ -354,16 +354,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
         {/* Forecast vs Actual by Region */}
         <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3.5 h-[320px] flex flex-col">
           <h3 className="text-[11px] font-bold uppercase tracking-widest pb-2 border-b border-black/5 dark:border-white/5 mb-2 flex items-center justify-between gap-1.5">
-            <div className="flex items-center gap-1.5">
-              <span>Regional Forecast</span>
-              <button 
-                onClick={() => setActiveTab(1)}
-                className="text-zinc-400 hover:text-acies-yellow transition-colors cursor-pointer border-none bg-transparent p-0 outline-none flex items-center"
-                title="View Regional Forecast Map"
-              >
-                <Info size={11} />
-              </button>
-            </div>
+            <span>Regional Forecast</span>
             <span className="text-[7.5px] font-extrabold opacity-40 uppercase">Actual vs Target</span>
           </h3>
           <div className="space-y-1.5 overflow-y-auto flex-1 pr-1 min-h-0">
@@ -371,35 +362,28 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
               const widthPct = Math.min(100, Math.round((f.actual / f.target) * 100));
               const deltaColor = f.up ? 'text-green-500' : 'text-red-500';
               return (
-                <div
+                <button
                   key={f.region}
-                  className="w-full text-left space-y-1.5 block bg-black/[0.015] dark:bg-white/[0.015] py-1.5 px-2.5 rounded border border-black/5 dark:border-white/5 transition-all"
+                  onClick={() => setSelectedRegion(f)}
+                  className="w-full text-left space-y-1.5 block hover:bg-black/5 dark:hover:bg-white/5 py-1.5 px-2.5 rounded transition-all group cursor-pointer border-none bg-transparent outline-none"
                 >
                   <div className="flex justify-between items-center text-[10.5px]">
-                    <span className="font-bold text-zinc-700 dark:text-zinc-350">{f.region}</span>
-                    <div className="flex items-center gap-2">
-                      <span className={`font-extrabold ${deltaColor}`}>{f.delta}</span>
-                      <button 
-                        onClick={() => setSelectedRegion(f)}
-                        className="flex items-center gap-1 px-2 py-0.5 text-[8.5px] font-semibold border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 text-zinc-650 dark:text-zinc-300 rounded-full hover:bg-acies-yellow hover:text-acies-gray dark:hover:bg-acies-yellow dark:hover:text-acies-gray transition-all cursor-pointer outline-none"
-                      >
-                        <Info size={9} />
-                        <span>Details</span>
-                      </button>
-                    </div>
+                    <span className="font-bold text-zinc-700 dark:text-zinc-350 group-hover:text-acies-yellow dark:group-hover:text-acies-yellow transition-colors">{f.region}</span>
+                    <span className={`font-extrabold ${deltaColor} group-hover:underline`}>{f.delta}</span>
                   </div>
                   <div className="w-full h-2 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
-                    <div className="h-full bg-acies-yellow" style={{ width: `${widthPct}%` }} />
+                    <div className="h-full bg-acies-yellow transition-all group-hover:bg-yellow-400" style={{ width: `${widthPct}%` }} />
                   </div>
                   <div className="flex justify-between text-[9px] text-zinc-550 dark:text-zinc-450 font-semibold uppercase tracking-wider">
                     <span>Actual: ₹{f.actual}Cr</span>
                     <span>Target: ₹{f.target}Cr</span>
                   </div>
-                </div>
+                </button>
               );
             })}
           </div>
         </div>
+
       </div>
 
       {/* Sku Details Modal */}
