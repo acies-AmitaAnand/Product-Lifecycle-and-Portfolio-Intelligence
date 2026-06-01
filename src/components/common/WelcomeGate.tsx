@@ -86,7 +86,7 @@ export const WelcomeGate: React.FC<WelcomeGateProps> = ({ onSelectRole }) => {
             className="max-w-2xl mx-auto space-y-3"
           >
             <h2 className="text-4xl md:text-5xl font-display font-extrabold text-white tracking-wide leading-tight mt-4">
-              Select You Profile
+              Select Your Profile
             </h2>
             <p className="text-sm md:text-base text-zinc-100 font-semibold max-w-xl mx-auto leading-relaxed opacity-90">
               Configure the active portfolio intelligence, KPI metrics, and guided workflows tailored specifically to your organizational role.
