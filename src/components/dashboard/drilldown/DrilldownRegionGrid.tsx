@@ -7,7 +7,7 @@ import React from 'react';
 import { Globe } from 'lucide-react';
 
 interface DrilldownRegionGridProps {
-  selectedRegion: string;
+  selectedRegion: string | null;
   onRegionSelect: (region: string) => void;
   selectedMetric: 'rev' | 'margin' | 'otif';
   multiplier: number;

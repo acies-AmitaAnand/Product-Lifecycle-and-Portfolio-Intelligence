@@ -34,18 +34,18 @@ export const TopDownDrilldown: React.FC<TopDownDrilldownProps> = ({ isDarkMode }
   const [selectedMetric, setSelectedMetric] = useState<'rev' | 'margin' | 'otif'>('rev');
   
   // Region state
-  const [selectedRegion, setSelectedRegion] = useState<string>('APAC');
+  const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
 
   // SKU state & Modal state
-  const activeRegionSkus = REGION_SKUS[selectedRegion] || [];
-  const [selectedSkuName, setSelectedSkuName] = useState<string>(activeRegionSkus[0]);
+  const activeRegionSkus = selectedRegion ? (REGION_SKUS[selectedRegion] || []) : [];
+  const [selectedSkuName, setSelectedSkuName] = useState<string>('');
   const [isSkuModalOpen, setIsSkuModalOpen] = useState<boolean>(false);
 
   // Synchronize SKU selection if region changes
   const handleRegionChange = (region: string) => {
     setSelectedRegion(region);
     const skusForRegion = REGION_SKUS[region] || [];
-    setSelectedSkuName(skusForRegion[0]);
+    setSelectedSkuName(skusForRegion[0] || '');
   };
 
   const handleSkuSelect = (skuName: string) => {
@@ -91,12 +91,14 @@ export const TopDownDrilldown: React.FC<TopDownDrilldownProps> = ({ isDarkMode }
         />
 
         {/* Horizontal Selectable SKU chips */}
-        <DrilldownSkuGrid 
-          activeRegionSkus={activeRegionSkus}
-          selectedSkuName={selectedSkuName}
-          onSkuSelect={handleSkuSelect}
-          selectedRegionName={regionalConfig.name}
-        />
+        {selectedRegion && (
+          <DrilldownSkuGrid 
+            activeRegionSkus={activeRegionSkus}
+            selectedSkuName={selectedSkuName}
+            onSkuSelect={handleSkuSelect}
+            selectedRegionName={regionalConfig.name}
+          />
+        )}
 
       </div>
 
@@ -105,7 +107,7 @@ export const TopDownDrilldown: React.FC<TopDownDrilldownProps> = ({ isDarkMode }
         isOpen={isSkuModalOpen}
         onClose={() => setIsSkuModalOpen(false)}
         skuName={selectedSkuName}
-        selectedRegion={selectedRegion}
+        selectedRegion={selectedRegion || ''}
         timeHorizon={timeHorizon}
         multiplier={multiplier}
         isDarkMode={isDarkMode}
