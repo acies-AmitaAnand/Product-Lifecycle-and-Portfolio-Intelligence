@@ -634,8 +634,8 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
 
       {/* Main Command Center Grid */}
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
-        {/* LEFT COLUMN: APPROVALS & LIVE EVENT STREAM */}
-        <div className="xl:col-span-4 space-y-6 flex flex-col">
+        {/* LEFT COLUMN: PENDING APPROVALS */}
+        <div className="xl:col-span-4 space-y-6">
           {/* Pending Approvals */}
           <div className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm space-y-4">
             <div className="flex justify-between items-center pb-2 border-b border-black/5 dark:border-white/5">
@@ -712,60 +712,6 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
               ) : (
                 <p className="text-center text-[10px] text-zinc-500 font-bold py-4">All caught up</p>
               )}
-            </div>
-          </div>
-
-          {/* Live Event Stream */}
-          <div className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm flex-1 flex flex-col gap-4">
-            <div className="flex justify-between items-center pb-2 border-b border-black/5 dark:border-white/5">
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Live Event Stream</span>
-                <span className="flex h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-              </div>
-              <select 
-                value={eventFilter}
-                onChange={(e) => setEventFilter(e.target.value)}
-                className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-sm p-1 text-[9px] font-bold text-zinc-600 dark:text-zinc-400 outline-none"
-              >
-                <option value="all">All Events</option>
-                <option value="Supply">Supply</option>
-                <option value="Demand">Demand</option>
-                <option value="Margin">Margin</option>
-                <option value="Launch">Launch</option>
-                <option value="Finance">Finance</option>
-              </select>
-            </div>
-
-            {/* Scrollable event lists */}
-            <div className="flex-1 overflow-y-auto space-y-2 pr-1 max-h-[640px] min-h-[550px]">
-              {filteredEvents.map((ev, i) => (
-                <div 
-                  key={ev.id} 
-                  className={`flex items-start justify-between gap-3 p-2 rounded-sm border border-black/5 dark:border-white/5 transition-all text-xs ${
-                    i === 0 ? 'bg-black/[0.02] dark:bg-white/5 animate-pulse' : 'bg-transparent'
-                  }`}
-                >
-                  <div className="flex gap-2 min-w-0">
-                    <span 
-                      className="w-1.5 h-1.5 rounded-full shrink-0 mt-1.5" 
-                      style={{ backgroundColor: ev.sevC }} 
-                    />
-                    <div className="min-w-0">
-                      <p className="text-zinc-800 dark:text-zinc-200 leading-snug font-medium break-words">{ev.msg}</p>
-                      <div className="flex items-center gap-1.5 mt-1">
-                        <span 
-                          className="text-[8px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-sm"
-                          style={{ backgroundColor: `${ev.sevC}15`, color: ev.sevC }}
-                        >
-                          {ev.type}
-                        </span>
-                        <span className="text-[8px] opacity-40 font-bold uppercase">{ev.sev}</span>
-                      </div>
-                    </div>
-                  </div>
-                  <span className="text-[9px] font-semibold text-zinc-400 dark:text-zinc-550 font-mono whitespace-nowrap">{ev.time}</span>
-                </div>
-              ))}
             </div>
           </div>
         </div>
@@ -863,6 +809,62 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
             </div>
           </div>
 
+        </div>
+      </div>
+
+      {/* FULL WIDTH: LIVE EVENT STREAM */}
+      <div className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm mt-6 flex flex-col gap-4 w-full">
+        <div className="flex justify-between items-center pb-2 border-b border-black/5 dark:border-white/5">
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Live Event Stream</span>
+            <span className="flex h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          </div>
+          <select 
+            value={eventFilter}
+            onChange={(e) => setEventFilter(e.target.value)}
+            className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-sm p-1 text-[9px] font-bold text-zinc-600 dark:text-zinc-400 outline-none"
+          >
+            <option value="all">All Events</option>
+            <option value="Supply">Supply</option>
+            <option value="Demand">Demand</option>
+            <option value="Margin">Margin</option>
+            <option value="Launch">Launch</option>
+            <option value="Finance">Finance</option>
+          </select>
+        </div>
+
+        {/* Scrollable event lists in a horizontal multi-column grid */}
+        <div className="overflow-y-auto space-y-2 max-h-[300px] pr-1">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+            {filteredEvents.map((ev, i) => (
+              <div 
+                key={ev.id} 
+                className={`flex items-start justify-between gap-3 p-3.5 rounded-sm border border-black/5 dark:border-white/5 transition-all text-xs h-full ${
+                  i === 0 ? 'bg-black/[0.02] dark:bg-white/5 animate-pulse border-emerald-500/35 shadow-sm' : 'bg-transparent'
+                }`}
+              >
+                <div className="flex gap-2 min-w-0">
+                  <span 
+                    className="w-1.5 h-1.5 rounded-full shrink-0 mt-1.5" 
+                    style={{ backgroundColor: ev.sevC }} 
+                  />
+                  <div className="min-w-0">
+                    <p className="text-zinc-800 dark:text-zinc-200 leading-snug font-semibold break-words">{ev.msg}</p>
+                    <div className="flex items-center gap-1.5 mt-2">
+                      <span 
+                        className="text-[8px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-sm"
+                        style={{ backgroundColor: `${ev.sevC}15`, color: ev.sevC }}
+                      >
+                        {ev.type}
+                      </span>
+                      <span className="text-[8px] opacity-40 font-bold uppercase">{ev.sev}</span>
+                    </div>
+                  </div>
+                </div>
+                <span className="text-[9px] font-semibold text-zinc-400 dark:text-zinc-550 font-mono whitespace-nowrap">{ev.time}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
