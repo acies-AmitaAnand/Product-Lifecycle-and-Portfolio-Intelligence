@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  TrendingUp, TrendingDown, Check, X, AlertTriangle, RefreshCw, Zap, Clock, Home, List, PieChart 
+  TrendingUp, TrendingDown, Check, X, AlertTriangle, RefreshCw, Zap, Clock, Home, List, PieChart, BarChart2 
 } from 'lucide-react';
 import { 
-  ResponsiveContainer, AreaChart, Area, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, BarChart, Bar, Cell, PieChart as RePieChart, Pie 
+  ResponsiveContainer, AreaChart, Area, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, BarChart, Bar, Cell, PieChart as RePieChart, Pie, Legend 
 } from 'recharts';
 import { Role } from '../../../types/dashboard';
 import { 
@@ -34,6 +34,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
   const [emailData, setEmailData] = useState({ to: '', name: '', subject: '', body: '' });
   const [skuViewMode, setSkuViewMode] = useState<'list' | 'chart'>('list');
   const [hoveredSku, setHoveredSku] = useState<any>(null);
+  const [regionViewMode, setRegionViewMode] = useState<'list' | 'chart'>('chart');
 
 
   // Dynamic accent color based on theme
@@ -431,41 +432,124 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
             </div>
           )}
         </div>
-
         {/* Forecast vs Actual by Region */}
         <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3.5 h-[320px] flex flex-col">
           <h3 className="text-[11px] font-bold uppercase tracking-widest pb-2 border-b border-black/5 dark:border-white/5 mb-2 flex items-center justify-between gap-1.5">
             <span>Regional Forecast</span>
-            <span className="text-[7.5px] font-extrabold opacity-40 uppercase">Actual vs Target</span>
-          </h3>
-          <div className="space-y-1.5 overflow-y-auto flex-1 pr-1 min-h-0">
-            {VP_FORECAST.map(f => {
-              const widthPct = Math.min(100, Math.round((f.actual / f.target) * 100));
-              const deltaColor = f.up ? 'text-green-500' : 'text-red-500';
-              return (
+            <div className="flex items-center gap-2">
+              <span className="text-[7.5px] font-extrabold opacity-40 uppercase">Actual vs Target</span>
+              <div className="flex items-center border border-black/10 dark:border-white/10 rounded-sm overflow-hidden bg-black/5 dark:bg-white/5 p-0.5 ml-1 normal-case">
                 <button
-                  key={f.region}
-                  onClick={() => setSelectedRegion(f)}
-                  className="w-full text-left space-y-1.5 block hover:bg-black/5 dark:hover:bg-white/5 py-1.5 px-2.5 rounded transition-all group cursor-pointer border-none bg-transparent outline-none"
+                  onClick={() => setRegionViewMode('list')}
+                  className={`p-1 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm ${
+                    regionViewMode === 'list' 
+                      ? 'bg-blue-500 text-white shadow-sm' 
+                      : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 bg-transparent'
+                  }`}
+                  title="List View"
                 >
-                  <div className="flex justify-between items-center text-[10.5px]">
-                    <span className="font-bold text-zinc-700 dark:text-zinc-350 group-hover:text-acies-yellow dark:group-hover:text-acies-yellow transition-colors">{f.region}</span>
-                    <span className={`font-extrabold ${deltaColor} group-hover:underline`}>{f.delta}</span>
-                  </div>
-                  <div className="w-full h-2 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
-                    <div className="h-full bg-acies-yellow transition-all group-hover:bg-yellow-400" style={{ width: `${widthPct}%` }} />
-                  </div>
-                  <div className="flex justify-between text-[9px] text-zinc-550 dark:text-zinc-450 font-semibold uppercase tracking-wider">
-                    <span>Actual: ₹{f.actual}Cr</span>
-                    <span>Target: ₹{f.target}Cr</span>
-                  </div>
+                  <List size={15} />
                 </button>
-              );
-            })}
-          </div>
+                <button
+                  onClick={() => setRegionViewMode('chart')}
+                  className={`p-1 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm ${
+                    regionViewMode === 'chart' 
+                      ? 'bg-blue-500 text-white shadow-sm' 
+                      : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 bg-transparent'
+                  }`}
+                  title="Grouped Bar Chart"
+                >
+                  <BarChart2 size={15} />
+                </button>
+              </div>
+            </div>
+          </h3>
+          
+          {regionViewMode === 'list' ? (
+            <div className="space-y-1.5 overflow-y-auto flex-1 pr-1 min-h-0">
+              {VP_FORECAST.map(f => {
+                const widthPct = Math.min(100, Math.round((f.actual / f.target) * 100));
+                const deltaColor = f.up ? 'text-green-500' : 'text-red-500';
+                return (
+                  <button
+                    key={f.region}
+                    onClick={() => setSelectedRegion(f)}
+                    className="w-full text-left space-y-1.5 block hover:bg-black/5 dark:hover:bg-white/5 py-1.5 px-2.5 rounded transition-all group cursor-pointer border-none bg-transparent outline-none"
+                  >
+                    <div className="flex justify-between items-center text-[10.5px]">
+                      <span className="font-bold text-zinc-700 dark:text-zinc-350 group-hover:text-acies-yellow dark:group-hover:text-acies-yellow transition-colors">{f.region}</span>
+                      <span className={`font-extrabold ${deltaColor} group-hover:underline`}>{f.delta}</span>
+                    </div>
+                    <div className="w-full h-2 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
+                      <div className="h-full bg-acies-yellow transition-all group-hover:bg-yellow-400" style={{ width: `${widthPct}%` }} />
+                    </div>
+                    <div className="flex justify-between text-[9px] text-zinc-550 dark:text-zinc-450 font-semibold uppercase tracking-wider">
+                      <span>Actual: ₹{f.actual}Cr</span>
+                      <span>Target: ₹{f.target}Cr</span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="flex-1 min-h-0 flex flex-col justify-between pb-1">
+              <ResponsiveContainer width="100%" height="82%">
+                <BarChart data={VP_FORECAST} margin={{ top: 15, right: 5, left: -10, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridStroke} />
+                  <XAxis 
+                    dataKey="region" 
+                    tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)', fontSize: 9, fontWeight: 'bold' }} 
+                    axisLine={false} 
+                    tickLine={false} 
+                  />
+                  <YAxis 
+                    domain={[0, 350]}
+                    ticks={[0, 50, 100, 150, 200, 250, 300, 350]}
+                    tickFormatter={(val) => `₹${val}`}
+                    tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)', fontSize: 8, fontWeight: 'bold' }} 
+                    axisLine={false} 
+                    tickLine={false} 
+                  />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, color: tooltipText }}
+                    itemStyle={{ fontSize: 10 }}
+                    formatter={(value: any) => [`₹${value}Cr`]}
+                  />
+                  <Legend 
+                    verticalAlign="top" 
+                    align="left"
+                    iconType="square"
+                    height={25}
+                    iconSize={10}
+                    wrapperStyle={{ fontSize: 10, fontWeight: 'bold', paddingBottom: 10 }}
+                  />
+                  <Bar 
+                    dataKey="actual" 
+                    name="Actual" 
+                    fill={isDarkMode ? '#818cf8' : '#4f46e5'} 
+                    barSize={18} 
+                    radius={[3, 3, 0, 0]} 
+                    onClick={(data) => setSelectedRegion(data)}
+                    cursor="pointer"
+                  />
+                  <Bar 
+                    dataKey="target" 
+                    name="Target" 
+                    fill={isDarkMode ? '#d4d3cc' : '#b2b0a3'} 
+                    barSize={18} 
+                    radius={[3, 3, 0, 0]} 
+                    onClick={(data) => setSelectedRegion(data)}
+                    cursor="pointer"
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+              <div className="text-[8.5px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest text-center">
+                Click bars to open regional mitigation controls
+              </div>
+            </div>
+          )}
         </div>
-
-      </div>
+        </div>
 
       {/* Sku Details Modal */}
       <SkuDetailsModal 
