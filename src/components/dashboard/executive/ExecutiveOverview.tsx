@@ -495,7 +495,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
             <div className="flex-1 min-h-0 flex flex-col justify-between pt-1 pb-0.5">
               <div className="flex-1 min-h-0">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={VP_FORECAST} margin={{ top: 10, right: 15, left: -15, bottom: 5 }}>
+                  <BarChart data={VP_FORECAST} margin={{ top: 10, right: 15, left: 0, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridStroke} />
                     <XAxis 
                       dataKey="region" 
@@ -510,7 +510,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
                       tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)', fontSize: 8, fontWeight: 'bold' }} 
                       axisLine={false} 
                       tickLine={false}
-                      width={40}
+                      width={35}
                     />
                     <Tooltip 
                       contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, color: tooltipText }}
@@ -523,7 +523,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
                       iconType="square"
                       height={25}
                       iconSize={10}
-                      wrapperStyle={{ fontSize: 10, fontWeight: 'bold', paddingBottom: 10 }}
+                      wrapperStyle={{ fontSize: 10, fontWeight: 'bold', paddingBottom: 10, paddingLeft: 10 }}
                     />
                     <Bar 
                       dataKey="actual" 
