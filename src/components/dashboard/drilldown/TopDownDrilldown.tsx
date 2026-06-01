@@ -87,6 +87,7 @@ export const TopDownDrilldown: React.FC<TopDownDrilldownProps> = ({ isDarkMode }
           onRegionSelect={handleRegionChange}
           selectedMetric={selectedMetric}
           multiplier={multiplier}
+          timeHorizon={timeHorizon}
         />
 
         {/* Horizontal Selectable SKU chips */}

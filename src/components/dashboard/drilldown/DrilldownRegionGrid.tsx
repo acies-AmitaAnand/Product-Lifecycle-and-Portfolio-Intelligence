@@ -11,6 +11,7 @@ interface DrilldownRegionGridProps {
   onRegionSelect: (region: string) => void;
   selectedMetric: 'rev' | 'margin' | 'otif';
   multiplier: number;
+  timeHorizon: 'Q1' | 'Q2' | 'H1' | 'FY';
 }
 
 const REGIONS_CONFIG: Record<string, { name: string; manager: string; email: string; role: string; plant: string }> = {
@@ -25,34 +26,67 @@ export const DrilldownRegionGrid: React.FC<DrilldownRegionGridProps> = ({
   onRegionSelect,
   selectedMetric,
   multiplier,
+  timeHorizon,
 }) => {
   const getRegionMetrics = (regionKey: string) => {
     const mult = multiplier;
+
+    // Realistic targets and actuals mapping by time horizon
+    const horizonData: Record<string, Record<string, { margin: { actual: number; target: number }; otif: { actual: number; target: number } }>> = {
+      Q1: {
+        APAC: { margin: { actual: 37.8, target: 38.0 }, otif: { actual: 95.2, target: 95.0 } },
+        Americas: { margin: { actual: 31.4, target: 34.5 }, otif: { actual: 86.5, target: 91.0 } },
+        EMEA: { margin: { actual: 36.1, target: 35.8 }, otif: { actual: 92.1, target: 93.0 } },
+        LATAM: { margin: { actual: 32.8, target: 33.5 }, otif: { actual: 89.2, target: 90.0 } },
+      },
+      Q2: {
+        APAC: { margin: { actual: 38.5, target: 38.0 }, otif: { actual: 96.5, target: 95.0 } },
+        Americas: { margin: { actual: 32.5, target: 35.0 }, otif: { actual: 88.2, target: 92.0 } },
+        EMEA: { margin: { actual: 36.8, target: 36.0 }, otif: { actual: 93.4, target: 93.0 } },
+        LATAM: { margin: { actual: 33.2, target: 34.0 }, otif: { actual: 90.1, target: 91.0 } },
+      },
+      H1: {
+        APAC: { margin: { actual: 38.15, target: 38.0 }, otif: { actual: 95.85, target: 95.0 } },
+        Americas: { margin: { actual: 31.95, target: 34.75 }, otif: { actual: 87.35, target: 91.5 } },
+        EMEA: { margin: { actual: 36.45, target: 35.9 }, otif: { actual: 92.75, target: 93.0 } },
+        LATAM: { margin: { actual: 33.0, target: 33.75 }, otif: { actual: 89.65, target: 90.5 } },
+      },
+      FY: {
+        APAC: { margin: { actual: 38.7, target: 38.2 }, otif: { actual: 96.1, target: 95.5 } },
+        Americas: { margin: { actual: 33.1, target: 35.2 }, otif: { actual: 89.0, target: 92.5 } },
+        EMEA: { margin: { actual: 37.0, target: 36.5 }, otif: { actual: 93.8, target: 93.5 } },
+        LATAM: { margin: { actual: 33.6, target: 34.2 }, otif: { actual: 90.5, target: 91.0 } },
+      }
+    };
+
+    const currentHorizonData = horizonData[timeHorizon] || horizonData.Q2;
+    const regionSpecific = currentHorizonData[regionKey] || currentHorizonData.APAC;
+
     switch (regionKey) {
       case 'APAC':
         return {
           rev: { actual: 312 * mult, target: 290 * mult, unit: '₹ Cr' },
-          margin: { actual: 38.5, target: 38.0, unit: '%' },
-          otif: { actual: 96.5, target: 95.0, unit: '%' }
+          margin: { ...regionSpecific.margin, unit: '%' },
+          otif: { ...regionSpecific.otif, unit: '%' }
         };
       case 'Americas':
         return {
           rev: { actual: 228 * mult, target: 240 * mult, unit: '₹ Cr' },
-          margin: { actual: 32.5, target: 35.0, unit: '%' },
-          otif: { actual: 88.2, target: 92.0, unit: '%' }
+          margin: { ...regionSpecific.margin, unit: '%' },
+          otif: { ...regionSpecific.otif, unit: '%' }
         };
       case 'EMEA':
         return {
           rev: { actual: 311 * mult, target: 305 * mult, unit: '₹ Cr' },
-          margin: { actual: 36.8, target: 36.0, unit: '%' },
-          otif: { actual: 93.4, target: 93.0, unit: '%' }
+          margin: { ...regionSpecific.margin, unit: '%' },
+          otif: { ...regionSpecific.otif, unit: '%' }
         };
       case 'LATAM':
       default:
         return {
           rev: { actual: 145 * mult, target: 155 * mult, unit: '₹ Cr' },
-          margin: { actual: 33.2, target: 34.0, unit: '%' },
-          otif: { actual: 90.1, target: 91.0, unit: '%' }
+          margin: { ...regionSpecific.margin, unit: '%' },
+          otif: { ...regionSpecific.otif, unit: '%' }
         };
     }
   };
