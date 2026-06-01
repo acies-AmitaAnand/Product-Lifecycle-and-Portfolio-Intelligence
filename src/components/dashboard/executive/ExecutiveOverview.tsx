@@ -385,7 +385,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
                   <Tooltip 
                     contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, color: tooltipText }}
                     itemStyle={{ fontSize: 10 }}
-                    formatter={(value: any) => [`₹${value}Cr`, 'Revenue']}
+                    formatter={(value: any, name: any) => [`₹${value}Cr`, name]}
                   />
                   <Pie
                     data={topSkus}
