@@ -307,7 +307,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         
         {/* Top SKU Performance List */}
-        <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3.5 h-[320px] flex flex-col">
+        <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3.5 h-[360px] flex flex-col">
           <h3 className="text-[11px] font-bold uppercase tracking-widest pb-2 border-b border-black/5 dark:border-white/5 mb-2 flex items-center justify-between gap-1.5">
             <span>Top SKU Performance</span>
             <div className="flex items-center gap-2">
@@ -391,9 +391,9 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
                   <Pie
                     data={topSkus}
                     cx="50%"
-                    cy="45%"
+                    cy="50%"
                     innerRadius={0}
-                    outerRadius={85}
+                    outerRadius={100}
                     paddingAngle={1}
                     dataKey="rev"
                     nameKey="name"
@@ -433,7 +433,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
           )}
         </div>
         {/* Forecast vs Actual by Region */}
-        <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3.5 h-[320px] flex flex-col">
+        <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3.5 h-[360px] flex flex-col">
           <h3 className="text-[11px] font-bold uppercase tracking-widest pb-2 border-b border-black/5 dark:border-white/5 mb-2 flex items-center justify-between gap-1.5">
             <span>Regional Forecast</span>
             <div className="flex items-center gap-2">
@@ -529,7 +529,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
                       dataKey="actual" 
                       name="Actual" 
                       fill={isDarkMode ? '#818cf8' : '#4f46e5'} 
-                      barSize={18} 
+                      barSize={22} 
                       radius={[3, 3, 0, 0]} 
                       onClick={(data) => setSelectedRegion(data)}
                       cursor="pointer"
@@ -538,7 +538,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
                       dataKey="target" 
                       name="Target" 
                       fill={isDarkMode ? '#d4d3cc' : '#b2b0a3'} 
-                      barSize={18} 
+                      barSize={22} 
                       radius={[3, 3, 0, 0]} 
                       onClick={(data) => setSelectedRegion(data)}
                       cursor="pointer"
