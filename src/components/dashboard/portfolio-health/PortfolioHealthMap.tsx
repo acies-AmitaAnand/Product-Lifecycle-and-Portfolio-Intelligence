@@ -14,6 +14,7 @@ import { SKUS } from '../../../constants/data';
 import { BottleneckDetailsModal } from './BottleneckDetailsModal';
 import { EmailComposerModal } from './EmailComposerModal';
 import { ScheduleMeetingModal } from './ScheduleMeetingModal';
+import { EventsCalendarModal } from './EventsCalendarModal';
 
 interface PortfolioHealthMapProps {
   role: Role;
@@ -92,6 +93,7 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
   const [composerOpen, setComposerOpen] = useState(false);
   const [composerEmail, setComposerEmail] = useState({ to: '', subject: '', body: '', name: '', action: '' });
   const [viewFormat, setViewFormat] = useState<'grid' | 'table'>('grid');
+  const [calendarOpen, setCalendarOpen] = useState(false);
 
   // KPIs
   const [kpis, setKpis] = useState({
@@ -859,6 +861,15 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
                 <List size={11} />
               </button>
             </div>
+
+            {/* Calendar Button */}
+            <button
+              onClick={() => setCalendarOpen(true)}
+              className="p-1 transition-all cursor-pointer border border-black/10 dark:border-white/10 rounded-sm flex items-center justify-center bg-black/5 dark:bg-white/5 text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 hover:bg-black/10 dark:hover:bg-white/10 h-[21px] w-[21px]"
+              title="Open Calendar"
+            >
+              <Calendar size={11} />
+            </button>
           </div>
         </div>
 
@@ -1025,6 +1036,13 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
         onRequestAction={(email, name, subject, body) => {
           openEmailComposer(email, name, subject, body, activeApprovalMeeting || undefined);
         }}
+      />
+
+      {/* Smart Events Calendar Modal */}
+      <EventsCalendarModal 
+        isOpen={calendarOpen}
+        onClose={() => setCalendarOpen(false)}
+        isDarkMode={isDarkMode}
       />
     </div>
   );
