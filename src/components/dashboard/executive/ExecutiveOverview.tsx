@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  TrendingUp, TrendingDown, Check, X, AlertTriangle, RefreshCw, Zap, Clock, Home 
+  TrendingUp, TrendingDown, Check, X, AlertTriangle, RefreshCw, Zap, Clock, Home, List, PieChart 
 } from 'lucide-react';
 import { 
-  ResponsiveContainer, AreaChart, Area, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, BarChart, Bar, Cell 
+  ResponsiveContainer, AreaChart, Area, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, BarChart, Bar, Cell, PieChart as RePieChart, Pie 
 } from 'recharts';
 import { Role } from '../../../types/dashboard';
 import { 
@@ -32,6 +32,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
   const [selectedRegion, setSelectedRegion] = useState<any>(null);
   const [isEmailOpen, setIsEmailOpen] = useState<boolean>(false);
   const [emailData, setEmailData] = useState({ to: '', name: '', subject: '', body: '' });
+  const [skuViewMode, setSkuViewMode] = useState<'list' | 'chart'>('list');
 
 
   // Dynamic accent color based on theme
@@ -307,7 +308,33 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
         <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3.5 h-[320px] flex flex-col">
           <h3 className="text-[11px] font-bold uppercase tracking-widest pb-2 border-b border-black/5 dark:border-white/5 mb-2 flex items-center justify-between gap-1.5">
             <span>Top SKU Performance</span>
-            <span className="text-[7.5px] font-extrabold opacity-40 uppercase">By Revenue</span>
+            <div className="flex items-center gap-2">
+              <span className="text-[7.5px] font-extrabold opacity-40 uppercase">By Revenue</span>
+              <div className="flex items-center border border-black/10 dark:border-white/10 rounded-sm overflow-hidden bg-black/5 dark:bg-white/5 p-0.5 ml-1 normal-case">
+                <button
+                  onClick={() => setSkuViewMode('list')}
+                  className={`p-1 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm ${
+                    skuViewMode === 'list' 
+                      ? 'bg-blue-500 text-white shadow-sm' 
+                      : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 bg-transparent'
+                  }`}
+                  title="List View"
+                >
+                  <List size={12} />
+                </button>
+                <button
+                  onClick={() => setSkuViewMode('chart')}
+                  className={`p-1 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm ${
+                    skuViewMode === 'chart' 
+                      ? 'bg-blue-500 text-white shadow-sm' 
+                      : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 bg-transparent'
+                  }`}
+                  title="Pie Chart View"
+                >
+                  <PieChart size={12} />
+                </button>
+              </div>
+            </div>
           </h3>
 
           {/* Category Filter Pills */}
@@ -327,28 +354,70 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
             ))}
           </div>
 
-          <div className="space-y-1.5 overflow-y-auto flex-1 pr-1 min-h-0">
-            {topSkus.map(s => {
-              const widthPct = Math.round((s.rev / maxSkuRev) * 100);
-              return (
-                <button
-                  key={s.name}
-                  onClick={() => setSelectedSku(s)}
-                  className="w-full text-left space-y-1 block hover:bg-black/5 dark:hover:bg-white/5 py-1.5 px-2.5 rounded transition-all group cursor-pointer border-none bg-transparent outline-none"
-                >
-                  <div className="flex justify-between items-center text-[10.5px]">
-                    <span className="font-bold text-zinc-700 dark:text-zinc-350 group-hover:text-acies-yellow dark:group-hover:text-acies-yellow truncate max-w-[220px] transition-colors">
-                      {s.name}
-                    </span>
-                    <span className="font-extrabold text-acies-yellow group-hover:underline">₹{s.rev}Cr</span>
-                  </div>
-                  <div className="w-full h-1.5 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
-                    <div className="h-full bg-acies-yellow transition-all group-hover:bg-yellow-400" style={{ width: `${widthPct}%` }} />
-                  </div>
-                </button>
-              );
-            })}
-          </div>
+          {skuViewMode === 'list' ? (
+            <div className="space-y-1.5 overflow-y-auto flex-1 pr-1 min-h-0">
+              {topSkus.map(s => {
+                const widthPct = Math.round((s.rev / maxSkuRev) * 100);
+                return (
+                  <button
+                    key={s.name}
+                    onClick={() => setSelectedSku(s)}
+                    className="w-full text-left space-y-1 block hover:bg-black/5 dark:hover:bg-white/5 py-1.5 px-2.5 rounded transition-all group cursor-pointer border-none bg-transparent outline-none"
+                  >
+                    <div className="flex justify-between items-center text-[10.5px]">
+                      <span className="font-bold text-zinc-700 dark:text-zinc-350 group-hover:text-acies-yellow dark:group-hover:text-acies-yellow truncate max-w-[220px] transition-colors">
+                        {s.name}
+                      </span>
+                      <span className="font-extrabold text-acies-yellow group-hover:underline">₹{s.rev}Cr</span>
+                    </div>
+                    <div className="w-full h-1.5 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
+                      <div className="h-full bg-acies-yellow transition-all group-hover:bg-yellow-400" style={{ width: `${widthPct}%` }} />
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="flex-1 min-h-0 flex items-center justify-center relative">
+              <ResponsiveContainer width="100%" height="100%">
+                <RePieChart>
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, color: tooltipText }}
+                    itemStyle={{ fontSize: 10 }}
+                    formatter={(value: any) => [`₹${value}Cr`, 'Revenue']}
+                  />
+                  <Pie
+                    data={topSkus}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={50}
+                    outerRadius={75}
+                    paddingAngle={3}
+                    dataKey="rev"
+                    nameKey="name"
+                    onClick={(data) => setSelectedSku(data)}
+                    cursor="pointer"
+                  >
+                    {topSkus.map((entry, index) => {
+                      const getSkuColor = (cat: string, idx: number) => {
+                        if (cat === 'Beverages') return '#534AB7';
+                        if (cat === 'Snacks') return '#0F6E56';
+                        if (cat === 'Personal Care') return '#185FA5';
+                        if (cat === 'Household') return '#854F0B';
+                        const fallbackColors = ['#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#ec4899'];
+                        return fallbackColors[idx % fallbackColors.length];
+                      };
+                      return <Cell key={`cell-${index}`} fill={getSkuColor(entry.cat, index)} />;
+                    })}
+                  </Pie>
+                </RePieChart>
+              </ResponsiveContainer>
+              <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                <span className="text-[7.5px] font-bold uppercase tracking-wider opacity-45">Top 5</span>
+                <span className="text-[10px] font-extrabold text-zinc-650 dark:text-zinc-350">SKUs Share</span>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Forecast vs Actual by Region */}
