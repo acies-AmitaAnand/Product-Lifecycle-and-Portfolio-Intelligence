@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { 
-  Activity, Rocket, Layers, Scissors, MessageSquare, Zap, LayoutDashboard, Award, BarChart3, AlertOctagon, Home
+  Activity, Rocket, Layers, Scissors, MessageSquare, Zap, LayoutDashboard, Award, BarChart3, AlertOctagon, Home, Cpu
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -28,6 +28,7 @@ import { AuditDrawer } from './components/dashboard/AuditDrawer';
 import { SKURationalization } from './components/dashboard/sku-rationalization/SKURationalization';
 import { WelcomeGate } from './components/common/WelcomeGate';
 import { TopDownDrilldown } from './components/dashboard/drilldown/TopDownDrilldown';
+import { AgentOrchestrator } from './components/dashboard/orchestrator/AgentOrchestrator';
 
 // Helper functions for safe localStorage & hash operations
 const safeGetItem = (key: string): string | null => {
@@ -77,6 +78,7 @@ const getTabDisplayName = (id: number, name: string): string => {
     case 4: return 'SKU Rationalize';
     case 5: return 'Signals Board';
     case 6: return 'Top-Down Drill';
+    case 7: return 'Agent Orchestrator';
     default: return name;
   }
 };
@@ -158,6 +160,7 @@ export default function App() {
      if (tab.id === 4) icon = Scissors;
      if (tab.id === 5) icon = AlertOctagon;
      if (tab.id === 6) icon = LayoutDashboard;
+     if (tab.id === 7) icon = Cpu;
      return { ...tab, icon };
   });
 
@@ -488,7 +491,8 @@ simulateDelay={simulateDelay}
                 {activeTab === 4 && <SKURationalization role={role} isDarkMode={isDarkMode} />}
                 {activeTab === 5 && <SignalsBoard role={role} setActiveTab={setActiveTab} isDarkMode={isDarkMode} />}
                 {activeTab === 6 && <TopDownDrilldown isDarkMode={isDarkMode} role={role} />}
-                {activeTab < 0 || activeTab > 6 ? (
+                {activeTab === 7 && <AgentOrchestrator isDarkMode={isDarkMode} role={role} />}
+                {activeTab < 0 || activeTab > 7 ? (
                   <div className="flex flex-col items-center justify-center min-h-[550px] glass-card">
                     <div className="w-16 h-16 rounded-full bg-acies-yellow/10 flex items-center justify-center mb-6">
                       <Zap size={32} className="text-acies-yellow" />
