@@ -811,54 +811,8 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
           </div>
         </div>
 
-        {/* RIGHT COLUMN: SMART ALERTS, DECISIONS */}
+        {/* RIGHT COLUMN: DECISIONS */}
         <div className="xl:col-span-4 space-y-6">
-          {/* Smart Alerts */}
-          <div className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm space-y-4">
-            <div className="flex justify-between items-center pb-2 border-b border-black/5 dark:border-white/5">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Smart Alerts</span>
-              <span className="text-[8px] font-bold uppercase tracking-wider text-red-500 bg-red-500/10 px-2 py-0.5 rounded-full">{activeAlerts.length} Active</span>
-            </div>
-            
-            <div className="space-y-3.5 max-h-[300px] overflow-y-auto pr-1">
-              {activeAlerts.length > 0 ? (
-                activeAlerts.map(a => (
-                  <div key={a.id} className="p-3 border border-black/5 dark:border-white/10 rounded-sm space-y-2 bg-zinc-50/50 dark:bg-white/5">
-                    <div className="flex items-start gap-2">
-                      <span className="w-2.5 h-2.5 rounded-full shrink-0 mt-1" style={{ backgroundColor: a.sevC, boxShadow: `0 0 6px ${a.sevC}66` }} />
-                      <div className="flex-1 min-w-0">
-                        <h4 className="text-[11px] font-bold leading-tight text-zinc-800 dark:text-zinc-200 break-words">{a.title}</h4>
-                        <p className="text-[9.5px] text-zinc-500 dark:text-zinc-400 mt-0.5 leading-snug">{a.desc}</p>
-                      </div>
-                    </div>
-                    <div className="flex gap-1.5 justify-end pt-1">
-                      <button 
-                        onClick={() => handleDismissAlert(a.id, a.title)} 
-                        className="px-2.5 py-1 border border-red-500/35 text-red-500 bg-red-500/5 hover:bg-red-500 hover:text-white rounded-sm text-[8.5px] font-bold uppercase tracking-wider transition-all cursor-pointer"
-                      >
-                        Escalate
-                      </button>
-                      <button 
-                        onClick={() => handleDismissAlert(a.id, a.title)} 
-                        className="px-2.5 py-1 border border-emerald-500/35 text-emerald-500 bg-emerald-500/5 hover:bg-emerald-500 hover:text-white rounded-sm text-[8.5px] font-bold uppercase tracking-wider transition-all cursor-pointer"
-                      >
-                        Resolve
-                      </button>
-                      <button 
-                        onClick={() => handleDismissAlert(a.id, a.title)} 
-                        className="px-2.5 py-1 border border-black/10 dark:border-white/10 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-sm text-[8.5px] font-bold uppercase tracking-wider transition-all cursor-pointer bg-transparent"
-                      >
-                        Dismiss
-                      </button>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <p className="text-center text-[10px] text-zinc-500 font-bold py-4">✓ All alerts resolved</p>
-              )}
-            </div>
-          </div>
-
           {/* Decisions Pending */}
           <div className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm space-y-4">
             <div className="flex justify-between items-center pb-2 border-b border-black/5 dark:border-white/5">
