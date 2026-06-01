@@ -95,3 +95,18 @@
 .dark .recharts-label {
   fill: rgba(255, 255, 255, 0.4);
 }
+
+/* Remove default browser focus outline boxes on chart elements */
+.recharts-wrapper,
+.recharts-wrapper *:focus,
+.recharts-wrapper *:active,
+.recharts-surface:focus,
+.recharts-surface *:focus,
+svg:focus,
+rect:focus,
+path:focus,
+g:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  -webkit-tap-highlight-color: transparent;
+}
