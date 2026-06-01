@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { 
-  Activity, Rocket, Layers, Scissors, MessageSquare, Zap, LayoutDashboard, Award, BarChart3, AlertOctagon, Home, Cpu
+  Activity, Rocket, Layers, Scissors, MessageSquare, Zap, LayoutDashboard, Award, BarChart3, AlertOctagon, Home, Cpu, ChevronRight
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -83,6 +83,110 @@ const getTabDisplayName = (id: number, name: string): string => {
   }
 };
 
+const getActiveAgentForTab = (tabId: number) => {
+  switch (tabId) {
+    case 1: return { name: 'Portfolio Agent', status: 'Monitoring 102 SKUs', color: 'text-purple-500 bg-purple-500/10 border-purple-500/20 dark:bg-purple-500/5 dark:border-purple-500/20 border' };
+    case 2: return { name: 'Supply Chain Agent', status: 'Sourcing & Lead Times Online', color: 'text-orange-500 bg-orange-500/10 border-orange-500/20 dark:bg-orange-500/5 dark:border-orange-500/20 border' };
+    case 3: return { name: 'FP&A Agent', status: 'Margin & Cash flows Synced', color: 'text-purple-500 bg-purple-500/10 border-purple-500/20 dark:bg-purple-500/5 dark:border-purple-500/20 border' };
+    case 4: return { name: 'Merchandiser Agent', status: 'Categories & Inventory Synced', color: 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20 dark:bg-emerald-500/5 dark:border-emerald-500/20 border' };
+    case 5: return { name: 'Controller Agent', status: 'Continuous Close & Ledger Audit', color: 'text-blue-500 bg-blue-500/10 border-blue-500/20 dark:bg-blue-500/5 dark:border-blue-500/20 border' };
+    case 6: return { name: 'Scenario Agent', status: 'Drilldown simulation active', color: 'text-amber-500 bg-amber-500/10 border-amber-500/20 dark:bg-amber-500/5 dark:border-amber-500/20 border' };
+    case 7: return { name: 'Orchestrator Agent', status: 'Routing active workflows', color: 'text-red-500 bg-red-500/10 border-red-500/20 dark:bg-red-500/5 dark:border-red-500/20 border' };
+    default: return null;
+  }
+};
+
+const getAgentThoughtsForTab = (tabId: number) => {
+  switch (tabId) {
+    case 1:
+      return {
+        agent: 'Portfolio Agent',
+        role: 'Portfolio Complexity & Mix Monitor',
+        colorClass: 'text-purple-550 dark:text-purple-400 border-purple-500/30 bg-purple-500/5',
+        dotColor: 'bg-purple-500',
+        borderColor: 'border-purple-500/25',
+        bgColor: 'bg-purple-500/5',
+        thoughts: [
+          'Scanning portfolio: 102 SKUs loaded.',
+          'Identified Dairy category as the highest friction point (27.78% margin dilution).',
+          'Supplier fragmentation index at 1.20 (above 1.0 benchmark). Recommended SKU consolidation.'
+        ]
+      };
+    case 2:
+      return {
+        agent: 'Supply Chain Agent',
+        role: 'Logistics, Lead Times & Sourcing Planner',
+        colorClass: 'text-orange-550 dark:text-orange-400 border-orange-500/30 bg-orange-500/5',
+        dotColor: 'bg-orange-500',
+        borderColor: 'border-orange-500/25',
+        bgColor: 'bg-orange-500/5',
+        thoughts: [
+          'Monitoring launch readiness gates for 5 upcoming SKU releases.',
+          'Detected sourcing delay on BrandD Organic Yogurt (sourcing lead time +14 days).',
+          'Simulated raw milk supplier shock: recommended pre-positioning 2.5 weeks safety stock.'
+        ]
+      };
+    case 3:
+      return {
+        agent: 'FP&A Agent',
+        role: 'Financial Analyst & Cash Flow Forecaster',
+        colorClass: 'text-purple-550 dark:text-purple-400 border-purple-500/30 bg-purple-500/5',
+        dotColor: 'bg-purple-500',
+        borderColor: 'border-purple-500/25',
+        bgColor: 'bg-purple-500/5',
+        thoughts: [
+          'Simulated 3-statement models under inflation shock scenario.',
+          'Alert: Margin dilution detected across 12 high-volume SKUs (diluting target gross margin from 40.0% to 38.53%).',
+          'Cash runway forecasted at 14.2 months. Suggesting structural pricing correction.'
+        ]
+      };
+    case 4:
+      return {
+        agent: 'Merchandiser Agent',
+        role: 'Category Assortment & Inventory Optimizer',
+        colorClass: 'text-emerald-550 dark:text-emerald-400 border-emerald-500/30 bg-emerald-500/5',
+        dotColor: 'bg-emerald-500',
+        borderColor: 'border-emerald-500/25',
+        bgColor: 'bg-emerald-500/5',
+        thoughts: [
+          'Analyzing promo dependencies: BrandD Water at 27.97% promo dependency.',
+          'Flagged 35 "Rationalize" segment SKUs. Full removal cuts safety stock capital from $246M to $142M (saving 42.2%).',
+          'Drafted transition path to phase out Dairy yogurt variants with >30% margin leakage.'
+        ]
+      };
+    case 5:
+      return {
+        agent: 'Controller Agent',
+        role: 'Real-time Ledger & Governance Auditor',
+        colorClass: 'text-blue-550 dark:text-blue-400 border-blue-500/30 bg-blue-500/5',
+        dotColor: 'bg-blue-500',
+        borderColor: 'border-blue-500/25',
+        bgColor: 'bg-blue-500/5',
+        thoughts: [
+          'Auditing real-time ledger records for MTD close.',
+          'Flagged stockout exposure: Fabric Softener has 7 critical stockouts, causing $42k revenue leakage.',
+          'Verified compliance of multi-currency transfer pricing across Italy and Spain.'
+        ]
+      };
+    case 6:
+      return {
+        agent: 'Scenario Agent',
+        role: 'Macro Simulation & Multi-Variable Optimizer',
+        colorClass: 'text-amber-550 dark:text-amber-400 border-amber-500/30 bg-amber-500/5',
+        dotColor: 'bg-amber-500',
+        borderColor: 'border-amber-500/25',
+        bgColor: 'bg-amber-500/5',
+        thoughts: [
+          'Drilldown engine running. Multi-variable target grids compiled.',
+          'Regional analysis synced for Italy, Spain, France, and Germany.',
+          'Ready to simulate target adjustments for Revenue, Margin, and OTIF across horizons.'
+        ]
+      };
+    default:
+      return null;
+  }
+};
+
 export default function App() {
   const [activeTab, setActiveTab] = useState<number>(() => {
     const tabParam = getHashParam('tab');
@@ -130,6 +234,21 @@ export default function App() {
       return true;
     }
   });
+
+  // Agent Floating Panel States
+  const [isAgentWidgetExpanded, setIsAgentWidgetExpanded] = useState<boolean>(false);
+  const [isAgentWidgetVisible, setIsAgentWidgetVisible] = useState<boolean>(true);
+  const [agentMessageInput, setAgentMessageInput] = useState<string>('');
+  const [isAgentTyping, setIsAgentTyping] = useState<boolean>(false);
+  const [agentChatHistory, setAgentChatHistory] = useState<Record<number, Array<{ sender: 'user' | 'agent', text: string }>>>({
+    1: [{ sender: 'agent', text: 'Hello! I am the Portfolio Agent. I am monitoring the health of all 102 SKUs on this tab. Let me know if you would like me to compile complexity metrics or highlight low-performing segments!' }],
+    2: [{ sender: 'agent', text: 'Hi, I am the Supply Chain Agent. Sourcing and lead time modeling is active. Sourcing delay on BrandD Yogurt detected. How can I assist you with launch timelines?' }],
+    3: [{ sender: 'agent', text: 'Greetings, I am the FP&A Agent. Margin and cash flows are synced. I am monitoring structural profitability drivers. Let me know if you would like to run statement simulations!' }],
+    4: [{ sender: 'agent', text: 'Hello, I am the Merchandiser Agent. Assortment planning and category sync is online. 35 "Rationalize" segment SKUs identified. How can I help optimize catalog complexity?' }],
+    5: [{ sender: 'agent', text: 'Hi! I am the Controller Agent. Continuous Close auditing is active. Fabric Softener flagged with 7 stockout events. Let me know what compliance parameters to check.' }],
+    6: [{ sender: 'agent', text: 'Greetings! I am the Scenario Agent. Macro simulation and target planning is ready. I can help configure target values across multiple time horizons.' }]
+  });
+
 
   useEffect(() => {
     safeSetItem('acies_active_tab', activeTab.toString());
@@ -244,7 +363,24 @@ export default function App() {
                   <h2 className="text-xl font-display leading-tight text-acies-gray dark:text-white">{tabs[activeTab]?.name || 'Unknown Module'}</h2>
                   <p className="text-[9px] font-bold opacity-45 uppercase tracking-widest mt-1">Domain Module {activeTab} of 6</p>
                 </div>
-                <div className="flex items-center gap-3 self-end sm:self-auto">
+                <div className="flex items-center gap-4 self-end sm:self-auto">
+                   {getActiveAgentForTab(activeTab) && (() => {
+                     const agent = getActiveAgentForTab(activeTab)!;
+                     return (
+                       <button
+                         onClick={() => setActiveTab(7)}
+                         className={`flex items-center gap-2 px-3 py-1.5 border rounded text-[9px] font-bold uppercase tracking-wider transition-all hover:scale-[1.01] hover:border-acies-yellow/45 cursor-pointer outline-none ${agent.color}`}
+                       >
+                         <span className="relative flex h-2 w-2">
+                           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                           <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                         </span>
+                         <span>{agent.name}: {agent.status}</span>
+                         <ChevronRight size={10} className="opacity-50" />
+                       </button>
+                     );
+                   })()}
+
                    <div className="text-right hidden sm:block">
                      <p className="text-[9px] font-bold opacity-40 uppercase tracking-widest">Active Intelligence</p>
                      <p className="text-[11px] font-medium text-acies-gray dark:text-white">5 Agents Operating</p>
@@ -532,6 +668,180 @@ simulateDelay={simulateDelay}
           </div>
         </div>
       </footer>
+
+      {/* Floating Agent Assistant Widget */}
+      {activeTab >= 1 && activeTab <= 6 && isAgentWidgetVisible && (() => {
+        const thoughtsData = getAgentThoughtsForTab(activeTab);
+        if (!thoughtsData) return null;
+        const chatHistory = agentChatHistory[activeTab] || [];
+
+        const handleSendMessage = (e: React.FormEvent) => {
+          e.preventDefault();
+          if (!agentMessageInput.trim()) return;
+
+          const userMsg = agentMessageInput;
+          // Add user message
+          setAgentChatHistory(prev => ({
+            ...prev,
+            [activeTab]: [...(prev[activeTab] || []), { sender: 'user', text: userMsg }]
+          }));
+          setAgentMessageInput('');
+          setIsAgentTyping(true);
+
+          // Simulate agent typing dynamic reply
+          setTimeout(() => {
+            setIsAgentTyping(false);
+            let replyText = '';
+            
+            const lowerMsg = userMsg.toLowerCase();
+            if (lowerMsg.includes('help') || lowerMsg.includes('what can you do') || lowerMsg.includes('capabilities')) {
+              replyText = `I specialize in ${thoughtsData.role}. On this tab, my key observations are: ${thoughtsData.thoughts.join(' ')}`;
+            } else if (lowerMsg.includes('simulate') || lowerMsg.includes('change') || lowerMsg.includes('run') || lowerMsg.includes('scenario') || lowerMsg.includes('driver')) {
+              replyText = `Understood. Multi-variable simulation and scenario adjustment is managed centrally. Please navigate to the Agent Orchestrator (Tab 7) to trigger macro scenarios like Inflation Shock or Freight Delays.`;
+            } else {
+              replyText = `Interesting query about this workspace! As the ${thoughtsData.agent}, my background processes are continuously tracking compliance ledger schemas and variables. To run targeted models or see explainable logs, please switch to the Agent Orchestrator (Tab 7).`;
+            }
+
+            setAgentChatHistory(prev => ({
+              ...prev,
+              [activeTab]: [...(prev[activeTab] || []), { sender: 'agent', text: replyText }]
+            }));
+          }, 1200);
+        };
+
+        return (
+          <div className="fixed bottom-6 right-6 z-50 animate-fadeIn font-body text-zinc-800 dark:text-white">
+            {isAgentWidgetExpanded ? (
+              <div className="w-[340px] md:w-[380px] bg-white dark:bg-[#1a1a24] border border-black/10 dark:border-white/10 rounded-2xl shadow-2xl flex flex-col overflow-hidden max-h-[500px]">
+                {/* Header */}
+                <div className="flex items-center justify-between px-4 py-3 bg-zinc-50 dark:bg-zinc-800/50 border-b border-black/5 dark:border-white/5">
+                  <div className="flex items-center gap-2">
+                    <div className={`w-2.5 h-2.5 rounded-full ${thoughtsData.dotColor} animate-pulse`} />
+                    <div>
+                      <h4 className="text-[10px] font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">
+                        {thoughtsData.agent}
+                      </h4>
+                      <p className="text-[7.5px] opacity-40 uppercase tracking-widest font-semibold">{thoughtsData.role}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <button 
+                      type="button"
+                      onClick={() => setIsAgentWidgetExpanded(false)}
+                      className="p-1 hover:bg-black/5 dark:hover:bg-white/5 rounded transition-colors text-zinc-500 cursor-pointer border-none bg-transparent"
+                      title="Collapse"
+                    >
+                      <ChevronRight size={14} className="rotate-90" />
+                    </button>
+                    <button 
+                      type="button"
+                      onClick={() => setIsAgentWidgetVisible(false)}
+                      className="p-1 hover:bg-black/5 dark:hover:bg-white/5 rounded transition-colors text-zinc-500 cursor-pointer border-none bg-transparent"
+                      title="Hide Completely"
+                    >
+                      <span className="text-[10px] font-bold px-1">&times;</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Message Log */}
+                <div className="flex-1 overflow-y-auto p-4 space-y-3 max-h-[220px] bg-zinc-50/50 dark:bg-zinc-950/20">
+                  {chatHistory.map((msg, index) => (
+                    <div key={index} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+                      <div className={`max-w-[85%] rounded-lg p-2.5 text-[9.5px] leading-relaxed shadow-sm ${
+                        msg.sender === 'user' 
+                          ? 'bg-acies-yellow text-white dark:text-acies-gray font-medium' 
+                          : 'bg-white dark:bg-zinc-800 border border-black/5 dark:border-white/5 text-zinc-700 dark:text-zinc-200'
+                      }`}>
+                        {msg.text}
+                      </div>
+                    </div>
+                  ))}
+                  {isAgentTyping && (
+                    <div className="flex justify-start">
+                      <div className="bg-white dark:bg-zinc-800 border border-black/5 dark:border-white/5 rounded-lg p-2.5 text-[8.5px] text-zinc-400 italic flex items-center gap-1.5 shadow-sm">
+                        <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-bounce" />
+                        <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-bounce delay-100" />
+                        <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-bounce delay-200" />
+                        <span>Agent is thinking...</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Live Observations / Thoughts Feed */}
+                <div className="px-4 py-2.5 bg-acies-yellow/[0.02] dark:bg-white/[0.01] border-t border-b border-black/5 dark:border-white/5">
+                  <div className="flex items-center gap-1.5 mb-1.5">
+                    <Zap size={10} className="text-acies-yellow" />
+                    <span className="text-[7.5px] uppercase font-bold text-zinc-400 tracking-wider">Active Workspace Observations:</span>
+                  </div>
+                  <ul className="space-y-1 text-[8.5px] leading-relaxed text-zinc-500 dark:text-zinc-400 list-disc list-inside">
+                    {thoughtsData.thoughts.map((thought, idx) => (
+                      <li key={idx} className="truncate" title={thought}>{thought}</li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* Chat Input & Orchestrator Action Link */}
+                <div className="p-3 bg-white dark:bg-zinc-900 space-y-2 border-t border-black/5 dark:border-white/5">
+                  <form onSubmit={handleSendMessage} className="flex gap-2">
+                    <input 
+                      type="text" 
+                      value={agentMessageInput}
+                      onChange={(e) => setAgentMessageInput(e.target.value)}
+                      placeholder={`Ask ${thoughtsData.agent}...`}
+                      className="flex-1 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded px-2.5 py-1.5 text-[9.5px] outline-none focus:border-acies-yellow dark:text-white"
+                    />
+                    <button 
+                      type="submit" 
+                      className="bg-acies-yellow text-white dark:text-acies-gray font-bold text-[8.5px] uppercase tracking-wider px-3 py-1.5 rounded transition-all hover:brightness-105 active:scale-95 cursor-pointer border-none outline-none"
+                    >
+                      Send
+                    </button>
+                  </form>
+                  <button 
+                    type="button"
+                    onClick={() => setActiveTab(7)}
+                    className="w-full text-center text-[8.5px] font-bold text-acies-yellow uppercase tracking-widest py-1 hover:underline flex items-center justify-center gap-1 cursor-pointer bg-transparent border-none outline-none"
+                  >
+                    <span>Manage Agent in Orchestrator</span>
+                    <ChevronRight size={10} />
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button 
+                type="button"
+                onClick={() => setIsAgentWidgetExpanded(true)}
+                className={`w-12 h-12 rounded-full shadow-2xl flex items-center justify-center relative transition-transform hover:scale-105 cursor-pointer border-none outline-none ${
+                  thoughtsData.agent === 'Portfolio Agent' || thoughtsData.agent === 'FP&A Agent' ? 'bg-purple-600' :
+                  thoughtsData.agent === 'Supply Chain Agent' ? 'bg-orange-600' :
+                  thoughtsData.agent === 'Merchandiser Agent' ? 'bg-emerald-600' :
+                  thoughtsData.agent === 'Controller Agent' ? 'bg-blue-600' : 'bg-amber-600'
+                }`}
+                title={`Open ${thoughtsData.agent} Assistant`}
+              >
+                <div className="absolute top-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border border-white animate-pulse" />
+                <Cpu size={20} className="text-white" />
+              </button>
+            )}
+          </div>
+        );
+      })()}
+
+      {/* Floating Restore Button if hidden */}
+      {!isAgentWidgetVisible && activeTab >= 1 && activeTab <= 6 && (
+        <button
+          type="button"
+          onClick={() => {
+            setIsAgentWidgetVisible(true);
+            setIsAgentWidgetExpanded(true);
+          }}
+          className="fixed bottom-6 right-6 z-50 px-3 py-1.5 bg-acies-gray text-white dark:bg-white dark:text-acies-gray border border-black/10 dark:border-white/10 rounded-full shadow-lg text-[8.5px] font-bold uppercase tracking-wider cursor-pointer"
+        >
+          Restore Agent Presence
+        </button>
+      )}
     </div>
   );
 }
