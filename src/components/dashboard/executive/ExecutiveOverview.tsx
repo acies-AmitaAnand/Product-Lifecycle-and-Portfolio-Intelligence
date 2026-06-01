@@ -379,7 +379,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
               })}
             </div>
           ) : (
-            <div className="flex-1 min-h-0 flex items-center justify-center relative">
+            <div className="flex-1 min-h-0 flex items-center justify-center relative pb-4">
               <ResponsiveContainer width="100%" height="100%">
                 <RePieChart>
                   <Tooltip 
@@ -390,10 +390,10 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
                   <Pie
                     data={topSkus}
                     cx="50%"
-                    cy="50%"
-                    innerRadius={50}
-                    outerRadius={75}
-                    paddingAngle={3}
+                    cy="48%"
+                    innerRadius={0}
+                    outerRadius={70}
+                    paddingAngle={1}
                     dataKey="rev"
                     nameKey="name"
                     onClick={(data) => setSelectedSku(data)}
@@ -415,21 +415,17 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
                   </Pie>
                 </RePieChart>
               </ResponsiveContainer>
-              <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center px-8">
+              
+              {/* Dynamic SKU details label at the bottom of the card */}
+              <div className="absolute bottom-1 w-full text-center pointer-events-none px-4">
                 {hoveredSku ? (
-                  <>
-                    <span className="text-[9px] font-extrabold text-[#6d28d9] dark:text-[#a78bfa] leading-none mb-1">
-                      ₹{hoveredSku.rev}Cr
-                    </span>
-                    <span className="text-[8px] font-bold text-zinc-700 dark:text-zinc-350 truncate max-w-[100px] leading-tight">
-                      {hoveredSku.name}
-                    </span>
-                  </>
+                  <span className="text-[9.5px] font-bold text-zinc-700 dark:text-zinc-350 bg-black/5 dark:bg-white/5 py-0.5 px-2 rounded-sm border border-black/5 dark:border-white/5 inline-block">
+                    Hovered: <span className="font-extrabold text-[#6d28d9] dark:text-[#a78bfa]">{hoveredSku.name}</span> (₹{hoveredSku.rev}Cr)
+                  </span>
                 ) : (
-                  <>
-                    <span className="text-[7.5px] font-bold uppercase tracking-wider opacity-45">Top 5</span>
-                    <span className="text-[10px] font-extrabold text-zinc-650 dark:text-zinc-350">SKUs Share</span>
-                  </>
+                  <span className="text-[8.5px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
+                    Hover slices to view details
+                  </span>
                 )}
               </div>
             </div>
