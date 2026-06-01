@@ -634,46 +634,8 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
 
       {/* Main Command Center Grid */}
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
-        {/* LEFT COLUMN: BOTTLENECKS & APPROVALS */}
+        {/* LEFT COLUMN: APPROVALS & BOTTLENECKS */}
         <div className="xl:col-span-4 space-y-6">
-          {/* Bottlenecks */}
-          <div className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm space-y-4">
-            <div className="flex justify-between items-center pb-2 border-b border-black/5 dark:border-white/5">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Supply Bottlenecks</span>
-              <span className="text-[8px] font-bold uppercase tracking-wider text-red-500 bg-red-500/10 px-2 py-0.5 rounded-full">2 Critical</span>
-            </div>
-            <div className="space-y-3">
-              {bottlenecks.map(b => (
-                <div key={b.label} className="border-b border-black/[0.03] dark:border-white/[0.03] pb-2 last:border-b-0 animate-fadeIn">
-                  <div 
-                    className="w-full flex items-center justify-between gap-2.5 text-[11px] hover:bg-black/[0.01] dark:hover:bg-white/5 p-2 rounded-sm transition-all text-left"
-                  >
-                    <div className="flex items-center gap-2 flex-1 min-w-0">
-                      <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: b.color }} />
-                      <span className="font-semibold text-zinc-700 dark:text-zinc-300 truncate" title={b.label}>{b.label}</span>
-                    </div>
-                    <div className="flex items-center gap-2.5 flex-1 max-w-[120px]">
-                      <div className="flex-1 h-1 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
-                        <div className="h-full rounded-full" style={{ width: `${b.val}%`, backgroundColor: b.color }} />
-                      </div>
-                      <span className="text-[10px] font-bold font-mono text-right min-w-[28px]" style={{ color: b.color }}>{b.val}%</span>
-                    </div>
-                    <button
-                      onClick={() => setActiveBottleneck(b.label)}
-                      className={`px-2 py-1 border rounded-md text-[9px] font-bold uppercase tracking-wider transition-all duration-150 cursor-pointer ${
-                        isDarkMode 
-                          ? 'border-blue-500/35 text-blue-400 bg-blue-500/5 hover:bg-blue-500 hover:text-white' 
-                          : 'border-blue-200 text-blue-600 bg-blue-50/50 hover:bg-blue-600 hover:text-white'
-                      }`}
-                    >
-                      Investigate
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
           {/* Pending Approvals */}
           <div className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm space-y-4">
             <div className="flex justify-between items-center pb-2 border-b border-black/5 dark:border-white/5">
@@ -750,6 +712,44 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
               ) : (
                 <p className="text-center text-[10px] text-zinc-500 font-bold py-4">All caught up</p>
               )}
+            </div>
+          </div>
+
+          {/* Supply Bottlenecks */}
+          <div className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm space-y-4">
+            <div className="flex justify-between items-center pb-2 border-b border-black/5 dark:border-white/5">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Supply Bottlenecks</span>
+              <span className="text-[8px] font-bold uppercase tracking-wider text-red-500 bg-red-500/10 px-2 py-0.5 rounded-full">2 Critical</span>
+            </div>
+            <div className="space-y-3">
+              {bottlenecks.map(b => (
+                <div key={b.label} className="border-b border-black/[0.03] dark:border-white/[0.03] pb-2 last:border-b-0 animate-fadeIn">
+                  <div 
+                    className="w-full flex items-center justify-between gap-2.5 text-[11px] hover:bg-black/[0.01] dark:hover:bg-white/5 p-2 rounded-sm transition-all text-left"
+                  >
+                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                      <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: b.color }} />
+                      <span className="font-semibold text-zinc-700 dark:text-zinc-300 truncate" title={b.label}>{b.label}</span>
+                    </div>
+                    <div className="flex items-center gap-2.5 flex-1 max-w-[120px]">
+                      <div className="flex-1 h-1 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
+                        <div className="h-full rounded-full" style={{ width: `${b.val}%`, backgroundColor: b.color }} />
+                      </div>
+                      <span className="text-[10px] font-bold font-mono text-right min-w-[28px]" style={{ color: b.color }}>{b.val}%</span>
+                    </div>
+                    <button
+                      onClick={() => setActiveBottleneck(b.label)}
+                      className={`px-2 py-1 border rounded-md text-[9px] font-bold uppercase tracking-wider transition-all duration-150 cursor-pointer ${
+                        isDarkMode 
+                          ? 'border-blue-500/35 text-blue-400 bg-blue-500/5 hover:bg-blue-500 hover:text-white' 
+                          : 'border-blue-200 text-blue-600 bg-blue-50/50 hover:bg-blue-600 hover:text-white'
+                      }`}
+                    >
+                      Investigate
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
