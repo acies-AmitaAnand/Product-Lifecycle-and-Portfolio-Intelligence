@@ -717,24 +717,24 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
                     <div className="flex gap-2 justify-start pt-1">
                       <button 
                         onClick={() => handleScheduleMeeting(a.id, a.title)} 
-                        className={`px-3.5 py-2 border rounded-lg text-[10.5px] font-bold tracking-wide transition-all cursor-pointer flex items-center gap-1.5 ${
+                        className={`px-3.5 py-2 border rounded-lg text-[10.5px] font-bold tracking-wide transition-all duration-150 cursor-pointer flex items-center gap-1.5 ${
                           isDarkMode 
-                            ? 'border-[#444444] text-white bg-transparent hover:bg-white/5' 
-                            : 'border-zinc-200 text-zinc-700 bg-white hover:bg-zinc-50'
+                            ? 'border-blue-500/35 text-blue-400 bg-blue-500/5 hover:bg-blue-500 hover:text-white' 
+                            : 'border-blue-200 text-blue-600 bg-blue-50/50 hover:bg-blue-600 hover:text-white'
                         }`}
                       >
-                        <Calendar size={13} className={isDarkMode ? 'text-white' : 'text-zinc-400'} />
+                        <Calendar size={13} className={isDarkMode ? 'text-blue-400' : 'text-blue-500'} />
                         Schedule a meeting
                       </button>
                       <button 
                         onClick={() => handleRemindLater(a.id, a.title)} 
-                        className={`px-3.5 py-2 border rounded-lg text-[10.5px] font-bold tracking-wide transition-all cursor-pointer flex items-center gap-1.5 ${
+                        className={`px-3.5 py-2 border rounded-lg text-[10.5px] font-bold tracking-wide transition-all duration-150 cursor-pointer flex items-center gap-1.5 ${
                           isDarkMode 
-                            ? 'border-[#444444] text-white bg-transparent hover:bg-white/5' 
-                            : 'border-zinc-200 text-zinc-700 bg-white hover:bg-zinc-50'
+                            ? 'border-amber-500/35 text-amber-400 bg-amber-500/5 hover:bg-amber-500 hover:text-white' 
+                            : 'border-amber-200 text-amber-600 bg-amber-50/50 hover:bg-amber-600 hover:text-white'
                         }`}
                       >
-                        <Bell size={13} className={isDarkMode ? 'text-white' : 'text-zinc-400'} />
+                        <Bell size={13} className={isDarkMode ? 'text-amber-400' : 'text-amber-500'} />
                         Remind me later
                       </button>
                     </div>
