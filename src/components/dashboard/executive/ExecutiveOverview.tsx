@@ -276,7 +276,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
         <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-5 h-[450px] flex flex-col">
           <div className="mb-4">
             <h3 className="text-xs font-bold uppercase tracking-widest">Category Performance</h3>
-            <p className="text-[9px] text-zinc-500 uppercase tracking-widest mt-0.5">Revenue ₹ Cr by Category — Current Month</p>
+            <p className="text-[9px] text-zinc-550 dark:text-zinc-450 uppercase tracking-widest mt-0.5">Revenue ₹ Cr by Category — Current Month</p>
           </div>
           <div className="flex-1 min-h-0">
             <ResponsiveContainer width="100%" height="100%">
@@ -297,6 +297,8 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
             </ResponsiveContainer>
           </div>
         </div>
+
+      </div>
 
       {/* Bottom Row grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -325,22 +327,22 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
             ))}
           </div>
 
-          <div className="flex-1 overflow-y-auto pr-1 space-y-1">
+          <div className="space-y-3 overflow-y-auto flex-1 pr-1 min-h-0">
             {topSkus.map(s => {
               const widthPct = Math.round((s.rev / maxSkuRev) * 100);
               return (
                 <button
                   key={s.name}
                   onClick={() => setSelectedSku(s)}
-                  className="w-full text-left space-y-1 block hover:bg-black/5 dark:hover:bg-white/5 p-2 rounded transition-all group cursor-pointer border-none bg-transparent outline-none"
+                  className="w-full text-left space-y-1.5 block hover:bg-black/5 dark:hover:bg-white/5 py-2.5 px-3 rounded transition-all group cursor-pointer border-none bg-transparent outline-none"
                 >
-                  <div className="flex justify-between items-center text-[11px]">
-                    <span className="font-bold text-zinc-700 dark:text-zinc-350 group-hover:text-acies-yellow dark:group-hover:text-acies-yellow truncate max-w-[170px] transition-colors">
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="font-bold text-zinc-700 dark:text-zinc-350 group-hover:text-acies-yellow dark:group-hover:text-acies-yellow truncate max-w-[220px] transition-colors">
                       {s.name}
                     </span>
                     <span className="font-extrabold text-acies-yellow group-hover:underline">₹{s.rev}Cr</span>
                   </div>
-                  <div className="w-full h-1.5 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
+                  <div className="w-full h-2.5 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
                     <div className="h-full bg-acies-yellow transition-all group-hover:bg-yellow-400" style={{ width: `${widthPct}%` }} />
                   </div>
                 </button>
@@ -355,7 +357,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
             <span>Regional Forecast</span>
             <span className="text-[8px] font-extrabold opacity-40 uppercase">Actual vs Target</span>
           </h3>
-          <div className="flex-1 overflow-y-auto pr-1 space-y-3">
+          <div className="space-y-3 overflow-y-auto flex-1 pr-1 min-h-0">
             {VP_FORECAST.map(f => {
               const widthPct = Math.min(100, Math.round((f.actual / f.target) * 100));
               const deltaColor = f.up ? 'text-green-500' : 'text-red-500';
@@ -363,16 +365,16 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
                 <button
                   key={f.region}
                   onClick={() => setSelectedRegion(f)}
-                  className="w-full text-left space-y-1.5 block hover:bg-black/5 dark:hover:bg-white/5 p-2 rounded transition-all group cursor-pointer border-none bg-transparent outline-none"
+                  className="w-full text-left space-y-2 block hover:bg-black/5 dark:hover:bg-white/5 py-3 px-3.5 rounded transition-all group cursor-pointer border-none bg-transparent outline-none"
                 >
-                  <div className="flex justify-between items-center text-[11px]">
+                  <div className="flex justify-between items-center text-xs">
                     <span className="font-bold text-zinc-700 dark:text-zinc-350 group-hover:text-acies-yellow dark:group-hover:text-acies-yellow transition-colors">{f.region}</span>
                     <span className={`font-extrabold ${deltaColor} group-hover:underline`}>{f.delta}</span>
                   </div>
-                  <div className="w-full h-2 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
+                  <div className="w-full h-3 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
                     <div className="h-full bg-acies-yellow transition-all group-hover:bg-yellow-400" style={{ width: `${widthPct}%` }} />
                   </div>
-                  <div className="flex justify-between text-[9px] text-zinc-550 dark:text-zinc-450 font-semibold uppercase tracking-wider">
+                  <div className="flex justify-between text-[11px] text-zinc-550 dark:text-zinc-450 font-semibold uppercase tracking-wider">
                     <span>Actual: ₹{f.actual}Cr</span>
                     <span>Target: ₹{f.target}Cr</span>
                   </div>
@@ -381,8 +383,6 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
             })}
           </div>
         </div>
-
-      </div>
 
       </div>
 
