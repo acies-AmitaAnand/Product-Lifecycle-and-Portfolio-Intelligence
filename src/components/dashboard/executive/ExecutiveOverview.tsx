@@ -214,7 +214,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
             No active alerts — all clear
           </div>
         ) : (
-          <div className="max-h-36 overflow-y-auto divide-y divide-black/5 dark:divide-white/5 pr-1.5">
+          <div className="divide-y divide-black/5 dark:divide-white/5 pr-1.5">
             {alerts.map(a => {
               const borderCol = a.sev === 'critical' ? 'border-red-500/30' : a.sev === 'warning' ? 'border-amber-500/30' : 'border-blue-500/30';
               const indicatorCol = a.sev === 'critical' ? 'bg-red-500' : a.sev === 'warning' ? 'bg-amber-500' : 'bg-blue-500';
