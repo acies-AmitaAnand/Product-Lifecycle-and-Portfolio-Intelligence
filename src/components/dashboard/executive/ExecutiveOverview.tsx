@@ -269,7 +269,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
                   labelStyle={{ fontSize: 10, fontWeight: 'bold' }}
                 />
                 <Line type="monotone" dataKey="Actual" stroke={accentColor} strokeWidth={2} activeDot={{ r: 5 }} dot={{ r: 2.5 }} />
-                <Line type="monotone" dataKey="Target" stroke={isDarkMode ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)'} strokeDasharray="4 4" dot={false} strokeWidth={1.2} />
+                <Line type="monotone" dataKey="Target" stroke={isDarkMode ? '#facc15' : '#d97706'} strokeDasharray="4 4" dot={false} strokeWidth={1.8} />
               </LineChart>
             </ResponsiveContainer>
           </div>
