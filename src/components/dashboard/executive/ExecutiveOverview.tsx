@@ -376,17 +376,17 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
                   className="w-full text-left space-y-1.5 block bg-black/[0.015] dark:bg-white/[0.015] py-1.5 px-2.5 rounded border border-black/5 dark:border-white/5 transition-all"
                 >
                   <div className="flex justify-between items-center text-[10.5px]">
-                    <div className="flex items-center gap-1.5">
-                      <span className="font-bold text-zinc-700 dark:text-zinc-350">{f.region}</span>
+                    <span className="font-bold text-zinc-700 dark:text-zinc-350">{f.region}</span>
+                    <div className="flex items-center gap-2">
+                      <span className={`font-extrabold ${deltaColor}`}>{f.delta}</span>
                       <button 
                         onClick={() => setSelectedRegion(f)}
-                        className="text-zinc-400 hover:text-acies-yellow transition-colors cursor-pointer border-none bg-transparent p-0 outline-none flex items-center"
-                        title="View Regional Forecast Details"
+                        className="flex items-center gap-1 px-2 py-0.5 text-[8.5px] font-semibold border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 text-zinc-650 dark:text-zinc-300 rounded-full hover:bg-acies-yellow hover:text-acies-gray dark:hover:bg-acies-yellow dark:hover:text-acies-gray transition-all cursor-pointer outline-none"
                       >
-                        <Info size={11} />
+                        <Info size={9} />
+                        <span>Details</span>
                       </button>
                     </div>
-                    <span className={`font-extrabold ${deltaColor}`}>{f.delta}</span>
                   </div>
                   <div className="w-full h-2 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
                     <div className="h-full bg-acies-yellow" style={{ width: `${widthPct}%` }} />
