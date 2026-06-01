@@ -298,10 +298,8 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
           </div>
         </div>
 
-      </div>
-
-      {/* Bottom Row grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Bottom Row grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         
         {/* Top SKU Performance List */}
         <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-5">
@@ -351,53 +349,6 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
           </div>
         </div>
 
-        {/* Pending Approvals */}
-        <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-5">
-          <h3 className="text-xs font-bold uppercase tracking-widest pb-3 border-b border-black/5 dark:border-white/5 mb-3 flex justify-between items-center">
-            Pending Approvals
-            <span className="text-[9px] font-extrabold bg-amber-500/10 text-amber-500 px-2 py-0.5 rounded-sm">
-              {approvals.length} Urgent
-            </span>
-          </h3>
-          
-          {approvals.length === 0 ? (
-            <div className="py-8 text-center text-zinc-400 dark:text-zinc-500 text-xs font-bold uppercase tracking-widest">
-              All caught up!
-            </div>
-          ) : (
-            <div className="space-y-3 max-h-56 overflow-y-auto pr-1">
-              {approvals.map(a => {
-                const badgeColor = a.type === 'Launch' ? 'bg-blue-500/20 text-blue-400' : a.type === 'Promo' ? 'bg-purple-500/20 text-purple-400' : 'bg-red-500/20 text-red-400';
-                return (
-                  <div key={a.id} className="p-3 bg-black/[0.02] dark:bg-white/[0.02] border border-black/5 dark:border-white/5 rounded-sm flex flex-col gap-2">
-                    <div className="flex justify-between items-center">
-                      <span className={`text-[8px] font-extrabold uppercase tracking-widest px-2 py-0.5 rounded-sm ${badgeColor}`}>
-                        {a.type}
-                      </span>
-                      <span className="text-[9px] text-zinc-500 font-bold">{a.age} ago</span>
-                    </div>
-                    <p className="text-[11px] font-medium text-acies-gray dark:text-white leading-tight truncate">{a.title}</p>
-                    <div className="flex gap-2 justify-end mt-1">
-                      <button 
-                        onClick={() => handleReject(a.id)}
-                        className="p-1 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white rounded-sm transition-all cursor-pointer border-none"
-                      >
-                        <X size={11} />
-                      </button>
-                      <button 
-                        onClick={() => handleApprove(a.id)}
-                        className="p-1 bg-green-500/10 text-green-500 hover:bg-green-500 hover:text-white rounded-sm transition-all cursor-pointer border-none"
-                      >
-                        <Check size={11} />
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-
         {/* Forecast vs Actual by Region */}
         <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-5">
           <h3 className="text-xs font-bold uppercase tracking-widest pb-3 border-b border-black/5 dark:border-white/5 mb-3 flex items-center justify-between gap-1.5">
@@ -430,6 +381,8 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
             })}
           </div>
         </div>
+
+      </div>
 
       </div>
 
