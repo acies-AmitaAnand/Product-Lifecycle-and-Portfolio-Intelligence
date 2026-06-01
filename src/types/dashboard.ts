@@ -83,3 +83,116 @@ export interface TopSKU {
   netSalesM: number;
   grossMarginM: number;
 }
+
+export interface PromoErosionItem {
+  name: string;
+  category: string;
+  erosionScore: number;
+  promoDependency: number;
+}
+
+export interface SKUBurdenItem {
+  name: string;
+  category: string;
+  opBurdenRatio: number;
+  netSales: number;
+  leadTime: number;
+  stockouts: number;
+  promoDep: number;
+}
+
+// ─── Launch Readiness Types ──────────────────────────────────────────────────
+export type LaunchStage = 'Concept' | 'Development' | 'Pre-Launch' | 'Launch' | 'Post-Launch';
+export type ReadinessStatus = 'On Track' | 'At Risk' | 'Critical' | 'Complete';
+
+export interface LaunchReadinessMetric {
+  dimension: 'Market' | 'Supply Chain' | 'Channel' | 'Pricing' | 'Operations';
+  readinessScore: number;    // 0-100
+  status: ReadinessStatus;
+  keyFindings: string[];
+  actionItems: string[];
+}
+
+export interface LaunchGate {
+  stageName: LaunchStage;
+  gateDate: string;          // ISO date string
+  isCompleted: boolean;
+  keyMilestones: string[];
+  gateOwner: string;
+}
+
+export interface LaunchProduct {
+  id: string;
+  name: string;
+  category: string;
+  brand: string;
+  currentStage: LaunchStage;
+  gateProgress: number;      // 0-100, completion %
+  targetLaunchDate: string;  // ISO date
+  estimatedFirstYearRevenue: number;  // $M
+  estimatedMargin: number;   // %
+  targetMarkets: string[];   // List of countries
+  readiness: LaunchReadinessMetric[];
+  overallReadiness: number;  // 0-100
+  riskLevel: 'Low' | 'Medium' | 'High';
+  launchType?: 'New' | 'Relaunch';
+  completedGates: LaunchGate[];
+  upcomingGates: LaunchGate[];
+}
+
+export interface LaunchTimelineItem {
+  date: string;
+  product: string;
+  stage: LaunchStage;
+  region: string;
+  status: 'Planned' | 'Delayed' | 'Completed';
+}
+
+export interface VPAlert {
+  id: string;
+  sev: 'critical' | 'warning' | 'info';
+  title: string;
+  detail: string;
+  ack: boolean;
+}
+
+export interface VPApproval {
+  id: string;
+  title: string;
+  type: 'Launch' | 'Promo' | 'Rationalize';
+  urgency: 'high' | 'medium' | 'low';
+  age: string;
+  done: boolean;
+}
+
+export interface VPForecast {
+  region: string;
+  actual: number;
+  target: number;
+  delta: string;
+  up: boolean;
+}
+
+export interface SKU {
+  name: string;
+  cat: string;
+  rev: number;
+  val: number;
+  cx: number;
+  stockouts: number;
+  promo: number;
+  margin: number;
+  growth: number;
+  lead: number;
+}
+
+export interface SignalItem {
+  id: string;
+  category: 'Supply' | 'Margin' | 'Demand' | 'Launch' | 'Cannibalization';
+  title: string;
+  severity: 'critical' | 'warning' | 'info';
+  summary: string;
+  received: string;
+  acknowledged: boolean;
+}
+

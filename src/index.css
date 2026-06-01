@@ -3,18 +3,31 @@
 @import "@fontsource/dm-serif-display";
 @import "@fontsource/roboto";
 
+/* ── Nordic Warm Cream & Violet Color Palette ── */
+:root {
+  --accent: #6d28d9;           /* Light mode: Royal Violet */
+  --bg-dark: #252525;          /* Light mode: Deep charcoal for text */
+  --bg-cream: #fdfbf7;         /* Light mode: Warm Nordic cream */
+}
+
+.dark {
+  --accent: #a78bfa;           /* Dark mode: Soft Lavender */
+  --bg-dark: #121214;          /* Dark mode: Deep charcoal black */
+  --bg-cream: #1c1c1e;         /* Dark mode: Slightly lighter charcoal */
+}
+
 @theme {
   --font-display: "DM Serif Display", serif;
   --font-body: "Roboto", sans-serif;
   
-  --color-acies-yellow: #ffd966;
-  --color-acies-gray: #252525;
-  --color-acies-offwhite: #fafafa;
+  --color-acies-yellow: var(--accent);
+  --color-acies-gray: var(--bg-dark);
+  --color-acies-offwhite: var(--bg-cream);
 }
 
 @layer base {
   body {
-    @apply font-body bg-white text-acies-gray;
+    @apply font-body bg-acies-offwhite dark:bg-acies-gray text-acies-gray transition-colors;
   }
   
   h1, h2, h3, h4, h5, h6 {
@@ -24,15 +37,15 @@
 
 @layer components {
   .acies-button {
-    @apply px-4 py-2 bg-acies-yellow text-acies-gray font-bold text-[10px] uppercase tracking-widest transition-all hover:brightness-110 active:scale-95;
+    @apply px-4 py-2 bg-acies-yellow dark:bg-acies-yellow text-white dark:text-acies-gray font-bold text-[10px] uppercase tracking-widest transition-all hover:brightness-110 active:scale-95;
   }
   
   .sidebar-panel {
-    @apply fixed top-0 right-0 h-full w-80 bg-white border-l border-black/10 shadow-2xl z-50 transform transition-transform duration-300;
+    @apply fixed top-0 right-0 h-full w-80 bg-acies-offwhite dark:bg-acies-gray border-l border-black/10 dark:border-white/10 shadow-2xl z-50 transform transition-all duration-300;
   }
   
   .glass-card {
-    @apply bg-white border border-black/5 shadow-sm rounded-none p-6;
+    @apply bg-white dark:bg-acies-gray border border-black/5 dark:border-white/10 shadow-sm rounded-none p-6 transition-colors;
   }
 
   /* Scrollbar styling for sidebar */
@@ -47,6 +60,15 @@
   }
   .dark .overflow-y-auto::-webkit-scrollbar-thumb {
     @apply bg-white/10;
+  }
+
+  /* Utility to hide scrollbars */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
   }
 }
 

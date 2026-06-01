@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { 
-  Activity, Rocket, Layers, Scissors, MessageSquare, Zap
+  Activity, Rocket, Layers, Scissors, MessageSquare, Zap, LayoutDashboard, Award, BarChart3, AlertOctagon, Home
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -13,15 +13,20 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Role } from './types/dashboard';
 
 // Constants
-import { COMPANY_CONTEXT, KPIS, TABS } from './constants/data';
+import { KPIS, TABS, SKUS } from './constants/data';
 
 // Components
 import { Header } from './components/common/Header';
 import { Sidebar } from './components/common/Sidebar';
 import { KPICard } from './components/dashboard/KPICard';
 import { PortfolioHealthMap } from './components/dashboard/portfolio-health/PortfolioHealthMap';
+import { LaunchReadinessDashboard } from './components/dashboard/launch-readiness/LaunchReadinessDashboard';
+import { ExecutiveOverview } from './components/dashboard/executive/ExecutiveOverview';
 import { ProfitabilityTree } from './components/dashboard/profitability/ProfitabilityTree';
+import { SignalsBoard, VP_SIGNALS_DATA } from './components/dashboard/signals-board/SignalsBoard';
 import { AuditDrawer } from './components/dashboard/AuditDrawer';
+import { SKURationalization } from './components/dashboard/sku-rationalization/SKURationalization';
+import { WelcomeGate } from './components/common/WelcomeGate';
 
 // Helper functions for safe localStorage & hash operations
 const safeGetItem = (key: string): string | null => {
@@ -62,6 +67,18 @@ const updateHash = (key: string, value: string) => {
   }
 };
 
+const getTabDisplayName = (id: number, name: string): string => {
+  switch (id) {
+    case 0: return 'Home';
+    case 1: return 'Portfolio Health';
+    case 2: return 'Launch Readiness';
+    case 3: return 'Profitability';
+    case 4: return 'SKU Rationalize';
+    case 5: return 'Signals Board';
+    default: return name;
+  }
+};
+
 export default function App() {
   const [activeTab, setActiveTab] = useState<number>(() => {
     const tabParam = getHashParam('tab');
@@ -96,6 +113,19 @@ export default function App() {
   });
 
   const [activeAuditMetric, setActiveAuditMetric] = useState<string | null>(null);
+  const [launchTourActive, setLaunchTourActive] = useState(false);
+  const [simulateDelay, setSimulateDelay] = useState(false);
+  const [showWelcomeGate, setShowWelcomeGate] = useState<boolean>(() => {
+    const roleParam = getHashParam('role');
+    if (roleParam !== null) return false;
+    
+    try {
+      const sessionActive = sessionStorage.getItem('acies_session_active');
+      return sessionActive === null;
+    } catch (e) {
+      return true;
+    }
+  });
 
   useEffect(() => {
     safeSetItem('acies_active_tab', activeTab.toString());
@@ -119,12 +149,28 @@ export default function App() {
 
   const tabs = TABS.map(tab => {
      let icon = Activity;
-     if (tab.id === 1) icon = Rocket;
-     if (tab.id === 2) icon = Layers;
-     if (tab.id === 3) icon = Scissors;
-     if (tab.id === 4) icon = MessageSquare;
+     if (tab.id === 0) icon = Home;
+     if (tab.id === 1) icon = Layers;
+     if (tab.id === 2) icon = Rocket;
+     if (tab.id === 3) icon = BarChart3;
+     if (tab.id === 4) icon = Scissors;
+     if (tab.id === 5) icon = AlertOctagon;
      return { ...tab, icon };
   });
+
+  if (showWelcomeGate) {
+    return (
+      <WelcomeGate 
+        onSelectRole={(selectedRole) => {
+          setRole(selectedRole);
+          try {
+            sessionStorage.setItem('acies_session_active', 'true');
+          } catch (e) {}
+          setShowWelcomeGate(false);
+        }} 
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen font-body bg-acies-offwhite dark:bg-acies-gray transition-colors pb-20">
@@ -133,61 +179,283 @@ export default function App() {
         setRole={setRole} 
         isDarkMode={isDarkMode}
         toggleDarkMode={() => setIsDarkMode(!isDarkMode)}
+        onStartTour={() => {
+          if (activeTab === 2) {
+            setLaunchTourActive(true);
+          }
+        }}
+        onClickHome={() => setActiveTab(0)}
       />
 
       <div className="max-w-[1600px] mx-auto px-6 py-6 font-body">
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col lg:flex-row gap-6">
           
-          <main className="flex-1 min-w-0">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-              <div className="flex items-center gap-1 bg-white dark:bg-white/5 p-1 border border-black/5 dark:border-white/5 self-start">
-                {tabs.map((tab) => (
+          {/* Left Sidebar Tabs Navigation */}
+          <aside className="w-full lg:w-28 shrink-0 lg:sticky lg:top-16 self-start">
+            <div className="flex flex-row lg:flex-col gap-3 lg:gap-3 p-3 lg:py-4 lg:px-1.5 bg-white dark:bg-white/5 border border-acies-yellow/15 dark:border-white/10 rounded-2xl items-center justify-start overflow-x-auto lg:overflow-x-visible no-scrollbar shadow-sm shadow-acies-yellow/5 transition-colors duration-200">
+              {tabs.map((tab) => {
+                const isActive = activeTab === tab.id;
+                const displayName = getTabDisplayName(tab.id, tab.name);
+                return (
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`px-4 py-2 text-[9px] font-bold uppercase tracking-widest flex items-center gap-2 transition-all border-b-2 ${
-                      activeTab === tab.id 
-                        ? 'border-acies-yellow text-acies-gray bg-acies-offwhite dark:bg-white/10 dark:text-white' 
-                        : 'border-transparent opacity-40 hover:opacity-100'
-                    }`}
+                    className="flex flex-col items-center group cursor-pointer border-none bg-transparent outline-none transition-all duration-200 shrink-0 w-20"
                   >
-                    <tab.icon size={12} />
-                    <span className="hidden sm:inline">{tab.name}</span>
+                    <div
+                      className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 ${
+                        isActive
+                          ? 'bg-acies-yellow text-white dark:text-acies-gray shadow-md shadow-acies-yellow/20'
+                          : 'bg-acies-yellow/5 dark:bg-white/5 text-acies-gray/60 dark:text-white/50 group-hover:bg-acies-yellow/10 group-hover:dark:bg-white/10 group-hover:text-acies-gray dark:group-hover:text-white'
+                      }`}
+                    >
+                      <tab.icon
+                        size={20}
+                        strokeWidth={isActive ? 2 : 1.5}
+                        className="transition-transform duration-200 group-hover:scale-105"
+                      />
+                    </div>
+                    <span
+                      className={`mt-1.5 text-[9px] font-semibold text-center leading-tight tracking-wide break-words w-full px-1 transition-colors duration-200 ${
+                        isActive 
+                          ? 'text-acies-yellow font-bold' 
+                          : 'text-acies-gray/50 dark:text-white/40 group-hover:text-acies-gray/80 dark:group-hover:text-white/70'
+                      }`}
+                    >
+                      {displayName}
+                    </span>
                   </button>
-                ))}
-              </div>
-
-              <div className="flex items-center gap-3">
-                 <div className="text-right hidden sm:block">
-                   <p className="text-[9px] font-bold opacity-40 uppercase tracking-widest">Active Intelligence</p>
-                   <p className="text-[11px] font-medium">5 Agents Operating</p>
-                 </div>
-                 <button 
-                  onClick={() => setIsSidebarOpen(true)}
-                  className="flex items-center gap-2 px-4 py-2 bg-acies-gray text-white text-[9px] font-bold uppercase tracking-widest hover:bg-acies-yellow hover:text-acies-gray transition-all"
-                >
-                  <Zap size={12} className="text-acies-yellow fill-acies-yellow" />
-                  How This Evolves
-                </button>
-              </div>
+                );
+              })}
             </div>
+          </aside>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3 mb-6">
-              {KPIS.map((kpi, i) => (
-                <motion.div
-                  key={kpi.label}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.05 }}
-                >
-                  <KPICard 
-                    kpi={kpi} 
-                    role={role} 
-                    onAuditClick={() => setActiveAuditMetric(kpi.label)}
-                  />
-                </motion.div>
-              ))}
-            </div>
+          {/* Main Content Area */}
+          <main className="flex-1 min-w-0">
+            {activeTab !== 0 && (
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                <div>
+                  <h2 className="text-xl font-display leading-tight text-acies-gray dark:text-white">{tabs[activeTab]?.name || 'Unknown Module'}</h2>
+                  <p className="text-[9px] font-bold opacity-45 uppercase tracking-widest mt-1">Domain Module {activeTab} of 5</p>
+                </div>
+                <div className="flex items-center gap-3 self-end sm:self-auto">
+                   <div className="text-right hidden sm:block">
+                     <p className="text-[9px] font-bold opacity-40 uppercase tracking-widest">Active Intelligence</p>
+                     <p className="text-[11px] font-medium text-acies-gray dark:text-white">5 Agents Operating</p>
+                   </div>
+                   <button 
+                    onClick={() => setIsSidebarOpen(true)}
+                    className="flex items-center gap-2 px-4 py-2 bg-acies-gray text-white text-[9px] font-bold uppercase tracking-widest hover:bg-acies-yellow hover:text-acies-gray transition-all cursor-pointer"
+                  >
+                    <Zap size={12} className="text-acies-yellow fill-acies-yellow" />
+                    How This Evolves
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {activeTab !== 0 && (() => {
+              const tabKpis = (() => {
+                if (activeTab === 1) {
+                  if (role === 'VP Product Management') return [];
+                  return KPIS.filter(kpi => 
+                    ['Net Sales (Portfolio)', 'Avg Gross Margin', 'Revenue Concentration', 'Long-Tail SKU Burden'].includes(kpi.label)
+                  );
+                }
+                if (activeTab === 2 && role === 'VP Product Management') {
+                  return [
+                    {
+                      label: 'Overall Readiness %',
+                      value: simulateDelay ? '79%' : '82%',
+                      trend: 'up',
+                      trendValue: 'Across 25 Launches',
+                      info: 'Average launch readiness index across all active product concepts and packaging timelines.',
+                      highlight: ['VP Product Management']
+                    },
+                    {
+                      label: 'Revenue Tail Risk',
+                      value: simulateDelay ? '32.40%' : '27.08%',
+                      trend: 'up',
+                      trendValue: simulateDelay ? '+5.32% risk' : 'Full Rat. scenario',
+                      info: 'Maximum revenue at risk if all 35 "Rationalize" segment SKUs are removed simultaneously.',
+                      isRisk: true,
+                      highlight: ['Pricing and Margin Partner']
+                    },
+                    {
+                      label: 'Peak Stockout Freq.',
+                      value: simulateDelay ? '582 events' : '440 events',
+                      trend: 'up',
+                      trendValue: simulateDelay ? '+142 events' : 'BrandC Biscuits',
+                      info: 'Highest stockout frequency in portfolio: BrandC Biscuits (440) and BrandF Soap (440). Supply chain fragility signal.',
+                      isRisk: true,
+                      highlight: ['Product Manager']
+                    },
+                    {
+                      label: 'Rationalize Candidates',
+                      value: simulateDelay ? '38 SKUs' : '35 SKUs',
+                      trend: 'up',
+                      trendValue: simulateDelay ? '+3 flags' : '−27.08% tail risk',
+                      info: 'Low Value / High Complexity. Full removal cuts safety stock by 42.2% but introduces 27.08% revenue tail risk.',
+                      isRisk: true,
+                      highlight: ['Product Manager']
+                    }
+                  ];
+                }
+                if (activeTab === 3 && role === 'VP Product Management') {
+                  return [
+                    {
+                      label: 'Net Profit',
+                      value: '₹95.2 Cr',
+                      trend: 'up',
+                      trendValue: '+4.2% YoY',
+                      info: 'Total net profit after subtracting all operational expenses, leakage, cost-to-serve, and tax liabilities.',
+                      highlight: ['VP Product Management']
+                    },
+                    {
+                      label: 'Gross Margin %',
+                      value: '36.2%',
+                      trend: 'up',
+                      trendValue: '+1.1pp MTD',
+                      info: 'Average gross margin percentage across all product lines and SKU categories.',
+                      highlight: ['VP Product Management']
+                    },
+                    {
+                      label: 'Revenue Growth %',
+                      value: '+8.4%',
+                      trend: 'up',
+                      trendValue: 'Target: +10.0%',
+                      info: 'Year-over-year revenue growth percentage compared to last year same period.',
+                      highlight: ['VP Product Management']
+                    },
+                    {
+                      label: 'Launch ROI',
+                      value: '1.85x',
+                      trend: 'up',
+                      trendValue: 'Above Q3 target',
+                      info: 'Return on investment for newly launched product variants and category expansions (Q3 target of 1.50x).',
+                      highlight: ['VP Product Management']
+                    }
+                  ];
+                }
+                if (activeTab === 5 && role === 'VP Product Management') {
+                  return [
+                    {
+                      label: 'Total Active Signals',
+                      value: String(VP_SIGNALS_DATA.length),
+                      trend: 'neutral',
+                      trendValue: 'Active alerts',
+                      info: 'Total volume of active, unresolved alerts and notifications requiring executive attention.',
+                      highlight: ['VP Product Management']
+                    },
+                    {
+                      label: 'Competitor Alerts',
+                      value: String(VP_SIGNALS_DATA.filter(s => s.type === 'Competitor').length),
+                      trend: 'up',
+                      trendValue: 'Active campaigns',
+                      info: 'Total volume of active competitor campaign alerts, launches, and discount warnings.',
+                      highlight: ['VP Product Management']
+                    },
+                    {
+                      label: 'Market Demand Change',
+                      value: '+18.4%',
+                      trend: 'up',
+                      trendValue: 'APAC Beverages',
+                      info: 'Aggregate demand growth and consumer velocity index across high-priority APAC markets.',
+                      highlight: ['VP Product Management']
+                    },
+                    {
+                      label: 'Customer Sentiment Score',
+                      value: '72',
+                      trend: 'up',
+                      trendValue: '72 NPS Index',
+                      info: 'Aggregate Net Promoter Score (NPS) across high-volume beverage and snacks categories.',
+                      highlight: ['VP Product Management']
+                    }
+                  ];
+                }
+                if (activeTab === 4 && role === 'VP Product Management') {
+                  const sunsetCount = SKUS.filter(s => {
+                    const val = s.val;
+                    const cx = s.cx;
+                    const growth = s.growth;
+                    const margin = s.margin;
+                    if (val >= 0.7 && cx <= 0.4) return false;
+                    if (val >= 0.6 && growth >= 0.15) return false;
+                    if (val < 0.5 && cx < 0.5 && margin >= 30) return false;
+                    if (val < 0.4 && cx >= 0.6) return true;
+                    return false;
+                  }).length;
+                  return [
+                    {
+                      label: 'Portfolio SKUs',
+                      value: '127',
+                      trend: 'up',
+                      trendValue: '−3 rationalized this Q',
+                      info: 'Total active SKUs across the global portfolio. Cleaned up low-value items.',
+                      highlight: ['VP Product Management']
+                    },
+                    {
+                      label: 'Sunset Candidates',
+                      value: String(sunsetCount),
+                      trend: 'down',
+                      trendValue: 'Immediate action required',
+                      info: 'Low value and high complexity tail SKUs recommended for removal by AI.',
+                      highlight: ['VP Product Management'],
+                      isRisk: true
+                    },
+                    {
+                      label: 'Revenue at Risk',
+                      value: '₹148 Cr',
+                      trend: 'down',
+                      trendValue: 'If tail SKUs removed',
+                      info: 'Estimated maximum revenue exposure if all sunset candidates are removed concurrently.',
+                      highlight: ['VP Product Management'],
+                      isRisk: true
+                    },
+                    {
+                      label: 'Avg Complexity',
+                      value: '0.48',
+                      trend: 'down',
+                      trendValue: 'Target <0.40',
+                      info: 'Average operational and manufacturing complexity index across the active catalog.',
+                      highlight: ['VP Product Management'],
+                      isRisk: true
+                    }
+                  ];
+                }
+                return KPIS;
+              })();
+
+              const gridClass = (() => {
+                if (activeTab === 1) return 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4';
+                if (activeTab === 2 && role === 'VP Product Management') return 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4';
+                if (activeTab === 3 && role === 'VP Product Management') return 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4';
+                if (activeTab === 4 && role === 'VP Product Management') return 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4';
+                if (activeTab === 5 && role === 'VP Product Management') return 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4';
+                return 'grid-cols-2 md:grid-cols-4 lg:grid-cols-8';
+              })();
+
+              if (tabKpis.length === 0) return null;
+
+              return (
+                <div className={`grid gap-3 mb-6 ${gridClass}`}>
+                  {tabKpis.map((kpi, i) => (
+                    <motion.div
+                      key={kpi.label}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i * 0.05 }}
+                    >
+                      <KPICard 
+                        kpi={kpi} 
+                        role={role} 
+                        onAuditClick={() => setActiveAuditMetric(kpi.label)}
+                      />
+                    </motion.div>
+                  ))}
+                </div>
+              );
+            })()}
 
             <AnimatePresence mode="wait">
               <motion.div
@@ -197,9 +465,23 @@ export default function App() {
                 exit={{ opacity: 0, x: -20 }}
                 transition={{ duration: 0.2 }}
               >
-                {activeTab === 0 && <PortfolioHealthMap role={role} />}
-                {activeTab === 2 && <ProfitabilityTree role={role} onAuditClick={setActiveAuditMetric} />}
-                {activeTab !== 0 && activeTab !== 2 && (
+                {activeTab === 0 && <ExecutiveOverview role={role} setActiveTab={setActiveTab} isDarkMode={isDarkMode} />}
+                {activeTab === 1 && <PortfolioHealthMap role={role} isDarkMode={isDarkMode} />}
+                {activeTab === 2 && (
+                  <LaunchReadinessDashboard 
+                    role={role} 
+                    onAuditClick={setActiveAuditMetric} 
+                    tourActive={launchTourActive}
+                    onTourClose={() => setLaunchTourActive(false)}
+                    isDarkMode={isDarkMode}
+simulateDelay={simulateDelay}
+                    setSimulateDelay={setSimulateDelay}
+                  />
+                )}
+                {activeTab === 3 && <ProfitabilityTree role={role} onAuditClick={setActiveAuditMetric} isDarkMode={isDarkMode} />}
+                {activeTab === 4 && <SKURationalization role={role} isDarkMode={isDarkMode} />}
+                {activeTab === 5 && <SignalsBoard role={role} setActiveTab={setActiveTab} isDarkMode={isDarkMode} />}
+                {activeTab < 0 || activeTab > 5 ? (
                   <div className="flex flex-col items-center justify-center min-h-[550px] glass-card">
                     <div className="w-16 h-16 rounded-full bg-acies-yellow/10 flex items-center justify-center mb-6">
                       <Zap size={32} className="text-acies-yellow" />
@@ -210,7 +492,7 @@ export default function App() {
                       This module is being architected to integrate real-time competitor signals, SKU-level elasticity models, and automated rationalization simulations.
                     </div>
                   </div>
-                )}
+                ) : null}
               </motion.div>
             </AnimatePresence>
           </main>
