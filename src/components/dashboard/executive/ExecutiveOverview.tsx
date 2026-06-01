@@ -33,6 +33,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
   const [isEmailOpen, setIsEmailOpen] = useState<boolean>(false);
   const [emailData, setEmailData] = useState({ to: '', name: '', subject: '', body: '' });
   const [skuViewMode, setSkuViewMode] = useState<'list' | 'chart'>('list');
+  const [hoveredSku, setHoveredSku] = useState<any>(null);
 
 
   // Dynamic accent color based on theme
@@ -396,6 +397,8 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
                     dataKey="rev"
                     nameKey="name"
                     onClick={(data) => setSelectedSku(data)}
+                    onMouseEnter={(_, idx) => setHoveredSku(topSkus[idx])}
+                    onMouseLeave={() => setHoveredSku(null)}
                     cursor="pointer"
                   >
                     {topSkus.map((entry, index) => {
@@ -412,9 +415,22 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
                   </Pie>
                 </RePieChart>
               </ResponsiveContainer>
-              <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                <span className="text-[7.5px] font-bold uppercase tracking-wider opacity-45">Top 5</span>
-                <span className="text-[10px] font-extrabold text-zinc-650 dark:text-zinc-350">SKUs Share</span>
+              <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center px-8">
+                {hoveredSku ? (
+                  <>
+                    <span className="text-[9px] font-extrabold text-[#6d28d9] dark:text-[#a78bfa] leading-none mb-1">
+                      ₹{hoveredSku.rev}Cr
+                    </span>
+                    <span className="text-[8px] font-bold text-zinc-700 dark:text-zinc-350 truncate max-w-[100px] leading-tight">
+                      {hoveredSku.name}
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-[7.5px] font-bold uppercase tracking-wider opacity-45">Top 5</span>
+                    <span className="text-[10px] font-extrabold text-zinc-650 dark:text-zinc-350">SKUs Share</span>
+                  </>
+                )}
               </div>
             </div>
           )}
