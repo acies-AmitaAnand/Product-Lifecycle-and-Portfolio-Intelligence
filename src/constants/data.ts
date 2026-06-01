@@ -237,6 +237,7 @@ export const TABS = [
   { id: 3, name: 'Profitability Tree' },
   { id: 4, name: 'SKU Rationalization' },
   { id: 5, name: 'Signals Board' },
+  { id: 6, name: 'Top-Down Drilldown' },
 ];
 
 export const SKUS = [

@@ -27,6 +27,7 @@ import { SignalsBoard, VP_SIGNALS_DATA } from './components/dashboard/signals-bo
 import { AuditDrawer } from './components/dashboard/AuditDrawer';
 import { SKURationalization } from './components/dashboard/sku-rationalization/SKURationalization';
 import { WelcomeGate } from './components/common/WelcomeGate';
+import { TopDownDrilldown } from './components/dashboard/drilldown/TopDownDrilldown';
 
 // Helper functions for safe localStorage & hash operations
 const safeGetItem = (key: string): string | null => {
@@ -75,6 +76,7 @@ const getTabDisplayName = (id: number, name: string): string => {
     case 3: return 'Profitability';
     case 4: return 'SKU Rationalize';
     case 5: return 'Signals Board';
+    case 6: return 'Top-Down Drill';
     default: return name;
   }
 };
@@ -155,6 +157,7 @@ export default function App() {
      if (tab.id === 3) icon = BarChart3;
      if (tab.id === 4) icon = Scissors;
      if (tab.id === 5) icon = AlertOctagon;
+     if (tab.id === 6) icon = LayoutDashboard;
      return { ...tab, icon };
   });
 
@@ -236,7 +239,7 @@ export default function App() {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                 <div>
                   <h2 className="text-xl font-display leading-tight text-acies-gray dark:text-white">{tabs[activeTab]?.name || 'Unknown Module'}</h2>
-                  <p className="text-[9px] font-bold opacity-45 uppercase tracking-widest mt-1">Domain Module {activeTab} of 5</p>
+                  <p className="text-[9px] font-bold opacity-45 uppercase tracking-widest mt-1">Domain Module {activeTab} of 6</p>
                 </div>
                 <div className="flex items-center gap-3 self-end sm:self-auto">
                    <div className="text-right hidden sm:block">
@@ -423,6 +426,9 @@ export default function App() {
                     }
                   ];
                 }
+                if (activeTab === 6) {
+                  return [];
+                }
                 return KPIS;
               })();
 
@@ -481,7 +487,8 @@ simulateDelay={simulateDelay}
                 {activeTab === 3 && <ProfitabilityTree role={role} onAuditClick={setActiveAuditMetric} isDarkMode={isDarkMode} />}
                 {activeTab === 4 && <SKURationalization role={role} isDarkMode={isDarkMode} />}
                 {activeTab === 5 && <SignalsBoard role={role} setActiveTab={setActiveTab} isDarkMode={isDarkMode} />}
-                {activeTab < 0 || activeTab > 5 ? (
+                {activeTab === 6 && <TopDownDrilldown isDarkMode={isDarkMode} role={role} />}
+                {activeTab < 0 || activeTab > 6 ? (
                   <div className="flex flex-col items-center justify-center min-h-[550px] glass-card">
                     <div className="w-16 h-16 rounded-full bg-acies-yellow/10 flex items-center justify-center mb-6">
                       <Zap size={32} className="text-acies-yellow" />

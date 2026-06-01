@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { AlertCircle, MapPin, Mail, X } from 'lucide-react';
+import { AlertCircle, MapPin, Mail, X, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface Suggestion {
   action: string;
@@ -30,13 +30,17 @@ interface BottleneckDetailsModalProps {
   bottleneck: Bottleneck | null;
   onClose: () => void;
   onRequestAction: (email: string, name: string, subject: string, body: string) => void;
+  onPrev?: () => void;
+  onNext?: () => void;
 }
 
 export const BottleneckDetailsModal: React.FC<BottleneckDetailsModalProps> = ({
   isOpen,
   bottleneck,
   onClose,
-  onRequestAction
+  onRequestAction,
+  onPrev,
+  onNext
 }) => {
   if (!isOpen || !bottleneck) return null;
 
@@ -50,12 +54,33 @@ export const BottleneckDetailsModal: React.FC<BottleneckDetailsModalProps> = ({
               Bottleneck Investigation: {bottleneck.label}
             </span>
           </div>
-          <button 
-            onClick={onClose}
-            className="p-1 hover:bg-black/5 dark:hover:bg-white/5 rounded text-zinc-400 hover:text-zinc-650 cursor-pointer border-none bg-transparent"
-          >
-            <X size={14} />
-          </button>
+          <div className="flex items-center gap-1">
+            {onPrev && (
+              <button 
+                onClick={onPrev}
+                className="p-1 hover:bg-black/5 dark:hover:bg-white/5 rounded text-zinc-400 hover:text-zinc-650 cursor-pointer border-none bg-transparent"
+                title="Previous Bottleneck"
+              >
+                <ChevronLeft size={14} />
+              </button>
+            )}
+            {onNext && (
+              <button 
+                onClick={onNext}
+                className="p-1 hover:bg-black/5 dark:hover:bg-white/5 rounded text-zinc-400 hover:text-zinc-650 cursor-pointer border-none bg-transparent"
+                title="Next Bottleneck"
+              >
+                <ChevronRight size={14} />
+              </button>
+            )}
+            <span className="text-zinc-300 dark:text-zinc-700 mx-1">|</span>
+            <button 
+              onClick={onClose}
+              className="p-1 hover:bg-black/5 dark:hover:bg-white/5 rounded text-zinc-400 hover:text-zinc-650 cursor-pointer border-none bg-transparent"
+            >
+              <X size={14} />
+            </button>
+          </div>
         </div>
         
         <div className="flex justify-between items-start gap-2 bg-zinc-50 dark:bg-white/5 p-3 rounded border border-black/5 dark:border-white/10">

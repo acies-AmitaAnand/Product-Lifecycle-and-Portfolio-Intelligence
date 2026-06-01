@@ -999,6 +999,22 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
         onRequestAction={(email, name, subject, body) => {
           openEmailComposer(email, name, subject, body);
         }}
+        onPrev={() => {
+          const currentIndex = bottlenecks.findIndex(x => x.label === activeBottleneck);
+          if (currentIndex > 0) {
+            setActiveBottleneck(bottlenecks[currentIndex - 1].label);
+          } else {
+            setActiveBottleneck(bottlenecks[bottlenecks.length - 1].label);
+          }
+        }}
+        onNext={() => {
+          const currentIndex = bottlenecks.findIndex(x => x.label === activeBottleneck);
+          if (currentIndex < bottlenecks.length - 1) {
+            setActiveBottleneck(bottlenecks[currentIndex + 1].label);
+          } else {
+            setActiveBottleneck(bottlenecks[0].label);
+          }
+        }}
       />
 
       {/* Schedule Sync Meeting Modal */}
