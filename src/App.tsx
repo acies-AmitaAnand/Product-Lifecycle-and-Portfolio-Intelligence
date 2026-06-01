@@ -195,7 +195,7 @@ export default function App() {
           
           {/* Left Sidebar Tabs Navigation */}
           <aside className="w-full lg:w-28 shrink-0 lg:sticky lg:top-16 self-start">
-            <div className="flex flex-row lg:flex-col gap-3 lg:gap-3 p-3 lg:py-4 lg:px-1.5 bg-white dark:bg-white/5 border border-acies-yellow/15 dark:border-white/10 rounded-2xl items-center justify-start overflow-x-auto lg:overflow-x-visible no-scrollbar shadow-sm shadow-acies-yellow/5 transition-colors duration-200">
+            <div className="flex flex-row lg:flex-col gap-3 lg:gap-3 p-3 lg:py-4 lg:px-1.5 bg-white dark:bg-white/5 border border-acies-yellow/15 dark:border-white/10 rounded-2xl items-center justify-start overflow-x-auto lg:overflow-y-auto lg:max-h-[calc(100vh-120px)] scroll-smooth no-scrollbar shadow-sm shadow-acies-yellow/5 transition-colors duration-200">
               {tabs.map((tab) => {
                 const isActive = activeTab === tab.id;
                 const displayName = getTabDisplayName(tab.id, tab.name);
