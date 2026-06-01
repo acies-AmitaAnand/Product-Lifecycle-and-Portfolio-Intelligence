@@ -321,7 +321,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
                   }`}
                   title="List View"
                 >
-                  <List size={12} />
+                  <List size={15} />
                 </button>
                 <button
                   onClick={() => setSkuViewMode('chart')}
@@ -332,7 +332,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
                   }`}
                   title="Pie Chart View"
                 >
-                  <PieChart size={12} />
+                  <PieChart size={15} />
                 </button>
               </div>
             </div>
@@ -390,9 +390,9 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
                   <Pie
                     data={topSkus}
                     cx="50%"
-                    cy="48%"
+                    cy="45%"
                     innerRadius={0}
-                    outerRadius={70}
+                    outerRadius={85}
                     paddingAngle={1}
                     dataKey="rev"
                     nameKey="name"
