@@ -152,10 +152,10 @@ export const DrilldownRegionGrid: React.FC<DrilldownRegionGridProps> = ({
         <Globe size={14} className="text-acies-yellow" />
         <div>
           <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">
-            Regional Performance & Trend Targets
+            Regional Performance Targets
           </h3>
           <p className="text-[8px] text-zinc-400 uppercase tracking-widest mt-0.5">
-            Compare Revenue, Margin, and OTIF vs previous time span (Selected KPI is highlighted)
+            Active metric performance and period-over-period trend analysis
           </p>
         </div>
       </div>
@@ -167,6 +167,12 @@ export const DrilldownRegionGrid: React.FC<DrilldownRegionGridProps> = ({
           const activeM = metrics[selectedMetric];
           const isSelected = selectedRegion === key;
           
+          const activeTrend = selectedMetric === 'rev' 
+            ? trends.revTrend 
+            : selectedMetric === 'margin' 
+              ? trends.marginTrend 
+              : trends.otifTrend;
+
           // Progress percentage
           const progress = selectedMetric === 'margin' || selectedMetric === 'otif'
             ? activeM.actual 
@@ -176,7 +182,7 @@ export const DrilldownRegionGrid: React.FC<DrilldownRegionGridProps> = ({
             <button
               key={key}
               onClick={() => onRegionSelect(key)}
-              className={`text-left bg-zinc-50 dark:bg-white/5 border p-3.5 rounded shadow-sm transition-all hover:translate-y-[-1px] cursor-pointer flex flex-col justify-between min-h-[145px] relative overflow-hidden group outline-none ${
+              className={`text-left bg-zinc-50 dark:bg-white/5 border p-3.5 rounded shadow-sm transition-all hover:translate-y-[-1px] cursor-pointer flex flex-col justify-between h-28 relative overflow-hidden group outline-none ${
                 isSelected 
                   ? 'border-acies-yellow dark:border-acies-yellow ring-1 ring-acies-yellow/30 bg-acies-yellow/[0.01]' 
                   : 'border-black/5 dark:border-white/10 hover:border-black/10 dark:hover:border-white/15'
@@ -186,79 +192,39 @@ export const DrilldownRegionGrid: React.FC<DrilldownRegionGridProps> = ({
                 <div className="absolute top-0 left-0 w-full h-0.5 bg-acies-yellow" />
               )}
               
-              <div className="w-full flex flex-col justify-between h-full space-y-2.5">
-                {/* Header Name & Owner */}
-                <div className="flex justify-between items-start border-b border-black/5 dark:border-white/5 pb-1.5 w-full">
-                  <div className="flex flex-col">
-                    <span className="text-[9.5px] font-display font-extrabold text-zinc-850 dark:text-white leading-tight group-hover:text-acies-yellow transition-colors">
-                      {config.name} ({key})
-                    </span>
-                    <span className="text-[7.5px] font-bold text-zinc-400 uppercase tracking-wider">
-                      {config.manager} · {config.plant}
-                    </span>
-                  </div>
+              <div className="w-full">
+                <div className="flex justify-between items-start gap-1">
+                  <span className="text-[10px] font-display font-extrabold text-zinc-850 dark:text-white leading-tight group-hover:text-acies-yellow transition-colors">
+                    {config.name} ({key})
+                  </span>
+                  <span className={`text-[8px] font-mono font-bold leading-none ${activeTrend >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                    {activeTrend >= 0 ? '▲' : '▼'}{Math.abs(activeTrend).toFixed(1)}% vs prior
+                  </span>
                 </div>
+                
+                <p className="text-[7.5px] uppercase font-bold tracking-wider text-zinc-400 leading-none mt-1">
+                  {config.manager} · {config.role}
+                </p>
 
-                {/* Multi-Metric Comparison Grid */}
-                <div className="grid grid-cols-3 gap-1.5 py-1">
-                  {/* Revenue Category */}
-                  <div className={`p-1.5 rounded flex flex-col justify-between min-h-[44px] transition-all ${
-                    selectedMetric === 'rev' 
-                      ? 'bg-acies-yellow/10 border border-acies-yellow/20 dark:bg-acies-yellow/5' 
-                      : 'bg-black/[0.02] dark:bg-white/[0.02] border border-transparent'
-                  }`}>
-                    <span className="text-[6.5px] font-extrabold uppercase text-zinc-400">Revenue</span>
-                    <span className="text-[10px] font-display font-black text-zinc-805 dark:text-white leading-none mt-1">
-                      {metrics.rev.actual.toFixed(0)}<span className="text-[7px] font-normal ml-0.5">{metrics.rev.unit}</span>
-                    </span>
-                    <span className={`text-[6.5px] font-mono font-bold flex items-center gap-0.5 mt-1 ${trends.revTrend >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                      {trends.revTrend >= 0 ? '▲' : '▼'}{Math.abs(trends.revTrend)}%
-                    </span>
-                  </div>
-
-                  {/* Margin Category */}
-                  <div className={`p-1.5 rounded flex flex-col justify-between min-h-[44px] transition-all ${
-                    selectedMetric === 'margin' 
-                      ? 'bg-acies-yellow/10 border border-acies-yellow/20 dark:bg-acies-yellow/5' 
-                      : 'bg-black/[0.02] dark:bg-white/[0.02] border border-transparent'
-                  }`}>
-                    <span className="text-[6.5px] font-extrabold uppercase text-zinc-400">Margin</span>
-                    <span className="text-[10px] font-display font-black text-zinc-805 dark:text-white leading-none mt-1">
-                      {metrics.margin.actual.toFixed(1)}<span className="text-[7px] font-normal ml-0.5">{metrics.margin.unit}</span>
-                    </span>
-                    <span className={`text-[6.5px] font-mono font-bold flex items-center gap-0.5 mt-1 ${trends.marginTrend >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                      {trends.marginTrend >= 0 ? '▲' : '▼'}{Math.abs(trends.marginTrend).toFixed(1)}%
-                    </span>
-                  </div>
-
-                  {/* OTIF Category */}
-                  <div className={`p-1.5 rounded flex flex-col justify-between min-h-[44px] transition-all ${
-                    selectedMetric === 'otif' 
-                      ? 'bg-acies-yellow/10 border border-acies-yellow/20 dark:bg-acies-yellow/5' 
-                      : 'bg-black/[0.02] dark:bg-white/[0.02] border border-transparent'
-                  }`}>
-                    <span className="text-[6.5px] font-extrabold uppercase text-zinc-400">OTIF</span>
-                    <span className="text-[10px] font-display font-black text-zinc-805 dark:text-white leading-none mt-1">
-                      {metrics.otif.actual.toFixed(1)}<span className="text-[7px] font-normal ml-0.5">{metrics.otif.unit}</span>
-                    </span>
-                    <span className={`text-[6.5px] font-mono font-bold flex items-center gap-0.5 mt-1 ${trends.otifTrend >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                      {trends.otifTrend >= 0 ? '▲' : '▼'}{Math.abs(trends.otifTrend).toFixed(1)}%
-                    </span>
-                  </div>
+                <div className="flex items-baseline gap-1 mt-2.5">
+                  <span className="text-base font-display font-extrabold text-zinc-805 dark:text-white leading-none">
+                    {activeM.actual.toFixed(selectedMetric === 'rev' ? 0 : 1)}
+                  </span>
+                  <span className="text-[8px] font-bold text-zinc-500">{activeM.unit}</span>
+                  <span className="text-[7px] text-zinc-400 uppercase tracking-wider ml-1">vs target {activeM.target.toFixed(selectedMetric === 'rev' ? 0 : 1)}</span>
                 </div>
+              </div>
 
-                {/* Progress bar of selected metric */}
-                <div className="w-full space-y-1.5 pt-1.5 border-t border-black/5 dark:border-white/5">
-                  <div className="flex justify-between text-[7px] text-zinc-450 uppercase tracking-widest font-semibold leading-none">
-                    <span>Fulfillment vs Target ({selectedMetric === 'rev' ? 'Rev' : selectedMetric === 'margin' ? 'Margin' : 'OTIF'})</span>
-                    <span>{selectedMetric === 'rev' ? progress : Math.round(progress / activeM.target * 100)}%</span>
-                  </div>
-                  <div className="w-full h-1 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
-                    <div 
-                      className={`h-full rounded-full transition-all duration-300 ${isSelected ? 'bg-acies-yellow' : 'bg-zinc-450 dark:bg-zinc-550'}`} 
-                      style={{ width: `${selectedMetric === 'rev' ? progress : (progress / activeM.target * 100)}%` }} 
-                    />
-                  </div>
+              <div className="w-full space-y-1 mt-2">
+                <div className="w-full h-1 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
+                  <div 
+                    className={`h-full rounded-full transition-all duration-300 ${isSelected ? 'bg-acies-yellow' : 'bg-zinc-400 dark:bg-zinc-550'}`} 
+                    style={{ width: `${selectedMetric === 'rev' ? progress : (progress / activeM.target * 100)}%` }} 
+                  />
+                </div>
+                <div className="flex justify-between text-[7px] text-zinc-400 uppercase tracking-widest font-semibold leading-none">
+                  <span>Target Fulfillment</span>
+                  <span>{selectedMetric === 'rev' ? progress : Math.round(progress / activeM.target * 100)}%</span>
                 </div>
               </div>
             </button>
