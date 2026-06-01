@@ -252,14 +252,14 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
     { id: 'p3', type: 'CAPEX', title: 'New cold-chain facility — ₹18 Cr', age: '6d', urgency: 'high', done: false },
   ]);
 
-  const handleApproveItem = (id: string, title: string) => {
+  const handleScheduleMeeting = (id: string, title: string) => {
     setApprovals(prev => prev.filter(a => a.id !== id));
-    addToast('Approval Recorded', `Approved: "${title}"`, '#10b981');
+    addToast('Meeting Scheduled', `Calendar request logged for: "${title}"`, '#3b82f6');
   };
 
-  const handleRejectItem = (id: string, title: string) => {
+  const handleRemindLater = (id: string, title: string) => {
     setApprovals(prev => prev.filter(a => a.id !== id));
-    addToast('Request Rejected', `Rejected: "${title}"`, '#ef4444');
+    addToast('Reminder Set', `Snoozed. Will remind you in 2 hours for: "${title}"`, '#f59e0b');
   };
 
   // Region and Bottleneck data
@@ -469,21 +469,32 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
                       <span className="w-2 h-2 rounded-full shrink-0 mt-1" style={{ backgroundColor: a.urgency === 'high' ? '#ef4444' : '#f59e0b' }} />
                       <div className="flex-1 min-w-0">
                         <h4 className="text-[11px] font-bold leading-tight text-zinc-800 dark:text-zinc-200 break-words">{a.title}</h4>
-                        <p className="text-[9.5px] text-zinc-550 dark:text-zinc-400 mt-0.5 leading-none">{a.type} · Waiting {a.age}</p>
+                        <div className="flex items-center justify-between mt-1">
+                          <p className="text-[9.5px] text-zinc-550 dark:text-zinc-400 leading-none">{a.type} · Waiting {a.age}</p>
+                          <span 
+                            className={`text-[7.5px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${
+                              a.urgency === 'high' 
+                                ? 'bg-red-500/10 text-red-500 border-red-500/15' 
+                                : 'bg-amber-500/10 text-amber-500 border-amber-500/15'
+                            }`}
+                          >
+                            {a.urgency} Priority
+                          </span>
+                        </div>
                       </div>
                     </div>
                     <div className="flex gap-1.5 justify-end pt-1">
                       <button 
-                        onClick={() => handleApproveItem(a.id, a.title)} 
-                        className="px-2.5 py-1 border border-emerald-500/35 text-emerald-500 bg-emerald-500/5 hover:bg-emerald-500 hover:text-white rounded-sm text-[8.5px] font-bold uppercase tracking-wider transition-all cursor-pointer"
+                        onClick={() => handleScheduleMeeting(a.id, a.title)} 
+                        className="px-2.5 py-1 border border-blue-500/35 text-blue-500 bg-blue-500/5 hover:bg-blue-500 hover:text-white rounded-sm text-[8px] font-bold uppercase tracking-wider transition-all cursor-pointer"
                       >
-                        Approve ✓
+                        Schedule a meeting
                       </button>
                       <button 
-                        onClick={() => handleRejectItem(a.id, a.title)} 
-                        className="px-2.5 py-1 border border-red-500/35 text-red-500 bg-red-500/5 hover:bg-red-500 hover:text-white rounded-sm text-[8.5px] font-bold uppercase tracking-wider transition-all cursor-pointer"
+                        onClick={() => handleRemindLater(a.id, a.title)} 
+                        className="px-2.5 py-1 border border-amber-500/35 text-amber-500 bg-amber-500/5 hover:bg-amber-500 hover:text-white rounded-sm text-[8px] font-bold uppercase tracking-wider transition-all cursor-pointer"
                       >
-                        Reject ✕
+                        Remind me later
                       </button>
                     </div>
                   </div>
