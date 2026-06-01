@@ -30,7 +30,7 @@ const REGION_SKUS: Record<string, string[]> = {
 
 export const TopDownDrilldown: React.FC<TopDownDrilldownProps> = ({ isDarkMode }) => {
   // Horizon and metric states
-  const [timeHorizon, setTimeHorizon] = useState<'Q1' | 'Q2' | 'H1' | 'FY'>('Q2');
+  const [timeHorizon, setTimeHorizon] = useState<'1M' | '3M' | '6M' | '12M'>('3M');
   const [selectedMetric, setSelectedMetric] = useState<'rev' | 'margin' | 'otif'>('rev');
   
   // Region state
@@ -56,10 +56,10 @@ export const TopDownDrilldown: React.FC<TopDownDrilldownProps> = ({ isDarkMode }
   // Dynamic multipliers based on time horizon
   const getHorizonMultiplier = () => {
     switch (timeHorizon) {
-      case 'Q1': return 0.92;
-      case 'H1': return 2.0;
-      case 'FY': return 4.1;
-      case 'Q2':
+      case '1M': return 0.33;
+      case '6M': return 2.0;
+      case '12M': return 4.0;
+      case '3M':
       default: return 1.0;
     }
   };

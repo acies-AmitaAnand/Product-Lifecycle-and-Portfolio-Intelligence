@@ -18,7 +18,7 @@ interface DrilldownSkuModalProps {
   onClose: () => void;
   skuName: string;
   selectedRegion: string;
-  timeHorizon: 'Q1' | 'Q2' | 'H1' | 'FY';
+  timeHorizon: '1M' | '3M' | '6M' | '12M';
   multiplier: number;
   isDarkMode: boolean;
 }
@@ -54,7 +54,7 @@ export const DrilldownSkuModal: React.FC<DrilldownSkuModalProps> = ({
   const skuGrowth = rawSku.growth;
   const skuPromo = rawSku.promo;
   const skuLead = rawSku.lead;
-  const skuStockouts = Math.max(1, Math.round(rawSku.stockouts * (timeHorizon === 'FY' ? 4 : timeHorizon === 'H1' ? 2 : 1)));
+  const skuStockouts = Math.max(1, Math.round(rawSku.stockouts * (timeHorizon === '12M' ? 4 : timeHorizon === '6M' ? 2 : timeHorizon === '3M' ? 1 : 0.33)));
 
   // Waterfall financials
   const wRevenue = skuRev;
