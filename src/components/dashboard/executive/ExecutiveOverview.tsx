@@ -325,7 +325,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
             ))}
           </div>
 
-          <div className="space-y-1">
+          <div className="space-y-1 overflow-y-auto h-64 pr-1">
             {topSkus.map(s => {
               const widthPct = Math.round((s.rev / maxSkuRev) * 100);
               return (
@@ -355,7 +355,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
             <span>Regional Forecast</span>
             <span className="text-[8px] font-extrabold opacity-40 uppercase">Actual vs Target</span>
           </h3>
-          <div className="space-y-3">
+          <div className="space-y-3 overflow-y-auto h-64 pr-1">
             {VP_FORECAST.map(f => {
               const widthPct = Math.min(100, Math.round((f.actual / f.target) * 100));
               const deltaColor = f.up ? 'text-green-500' : 'text-red-500';
