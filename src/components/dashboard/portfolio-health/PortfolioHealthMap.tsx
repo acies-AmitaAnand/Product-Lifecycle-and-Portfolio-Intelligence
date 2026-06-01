@@ -645,9 +645,8 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
             <div className="space-y-3">
               {bottlenecks.map(b => (
                 <div key={b.label} className="border-b border-black/[0.03] dark:border-white/[0.03] pb-2 last:border-b-0 animate-fadeIn">
-                  <button 
-                    onClick={() => setActiveBottleneck(b.label)}
-                    className="w-full flex items-center justify-between gap-2.5 text-[11px] hover:bg-black/[0.02] dark:hover:bg-white/5 p-2 rounded-sm transition-all focus:outline-none text-left cursor-pointer border-none bg-transparent"
+                  <div 
+                    className="w-full flex items-center justify-between gap-2.5 text-[11px] hover:bg-black/[0.01] dark:hover:bg-white/5 p-2 rounded-sm transition-all text-left"
                   >
                     <div className="flex items-center gap-2 flex-1 min-w-0">
                       <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: b.color }} />
@@ -659,10 +658,17 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
                       </div>
                       <span className="text-[10px] font-bold font-mono text-right min-w-[28px]" style={{ color: b.color }}>{b.val}%</span>
                     </div>
-                    <span className="text-zinc-400 text-[10px] shrink-0 font-sans hover:translate-x-0.5 transition-transform">
-                      ➔
-                    </span>
-                  </button>
+                    <button
+                      onClick={() => setActiveBottleneck(b.label)}
+                      className={`px-2 py-1 border rounded-md text-[9px] font-bold uppercase tracking-wider transition-all duration-150 cursor-pointer ${
+                        isDarkMode 
+                          ? 'border-blue-500/35 text-blue-400 bg-blue-500/5 hover:bg-blue-500 hover:text-white' 
+                          : 'border-blue-200 text-blue-600 bg-blue-50/50 hover:bg-blue-600 hover:text-white'
+                      }`}
+                    >
+                      Investigate
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
