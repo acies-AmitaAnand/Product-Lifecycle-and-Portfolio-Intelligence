@@ -249,7 +249,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         
         {/* Revenue Trend actual vs target */}
-        <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-5 h-[360px] flex flex-col">
+        <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-5 h-[450px] flex flex-col">
           <div className="mb-4">
             <h3 className="text-xs font-bold uppercase tracking-widest">Revenue Trend</h3>
             <p className="text-[9px] text-zinc-500 uppercase tracking-widest mt-0.5">Monthly Actual vs Target (₹ Cr) — This Year</p>
@@ -273,7 +273,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
         </div>
 
         {/* Category Performance */}
-        <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-5 h-[360px] flex flex-col">
+        <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-5 h-[450px] flex flex-col">
           <div className="mb-4">
             <h3 className="text-xs font-bold uppercase tracking-widest">Category Performance</h3>
             <p className="text-[9px] text-zinc-500 uppercase tracking-widest mt-0.5">Revenue ₹ Cr by Category — Current Month</p>
@@ -302,7 +302,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         
         {/* Top SKU Performance List */}
-        <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-5 h-[360px] flex flex-col">
+        <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-5 h-[450px] flex flex-col">
           <h3 className="text-xs font-bold uppercase tracking-widest pb-3 border-b border-black/5 dark:border-white/5 mb-3 flex items-center justify-between gap-1.5">
             <span>Top SKU Performance</span>
             <span className="text-[8px] font-extrabold opacity-40 uppercase">By Revenue</span>
@@ -350,7 +350,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
         </div>
 
         {/* Forecast vs Actual by Region */}
-        <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-5 h-[360px] flex flex-col">
+        <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-5 h-[450px] flex flex-col">
           <h3 className="text-xs font-bold uppercase tracking-widest pb-3 border-b border-black/5 dark:border-white/5 mb-3 flex items-center justify-between gap-1.5">
             <span>Regional Forecast</span>
             <span className="text-[8px] font-extrabold opacity-40 uppercase">Actual vs Target</span>
