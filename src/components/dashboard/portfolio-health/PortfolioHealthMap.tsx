@@ -13,6 +13,7 @@ import { Role } from '../../../types/dashboard';
 import { SKUS } from '../../../constants/data';
 import { BottleneckDetailsModal } from './BottleneckDetailsModal';
 import { EmailComposerModal } from './EmailComposerModal';
+import { ScheduleMeetingModal } from './ScheduleMeetingModal';
 
 interface PortfolioHealthMapProps {
   role: Role;
@@ -87,6 +88,7 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
   const [selectedHealthTier, setSelectedHealthTier] = useState<string | null>(null);
   const [selectedMonth, setSelectedMonth] = useState<string | null>(null);
   const [activeBottleneck, setActiveBottleneck] = useState<string | null>(null);
+  const [activeApprovalMeeting, setActiveApprovalMeeting] = useState<string | null>(null);
   const [composerOpen, setComposerOpen] = useState(false);
   const [composerEmail, setComposerEmail] = useState({ to: '', subject: '', body: '', name: '', action: '' });
 
@@ -259,8 +261,7 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
   ]);
 
   const handleScheduleMeeting = (id: string, title: string) => {
-    setApprovals(prev => prev.filter(a => a.id !== id));
-    addToast('Meeting Scheduled', `Calendar request logged for: "${title}"`, '#3b82f6');
+    setActiveApprovalMeeting(id);
   };
 
   const handleRemindLater = (id: string, title: string) => {
@@ -268,8 +269,8 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
     addToast('Reminder Set', `Snoozed. Will remind you in 2 hours for: "${title}"`, '#f59e0b');
   };
 
-  const openEmailComposer = (to: string, name: string, subject: string, body: string) => {
-    setComposerEmail({ to, name, subject, body, action: '' });
+  const openEmailComposer = (to: string, name: string, subject: string, body: string, action: string = '') => {
+    setComposerEmail({ to, name, subject, body, action });
     setComposerOpen(true);
   };
 
@@ -929,11 +930,21 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
         initialEmail={composerEmail}
         onSend={(name, email, subject, body) => {
           setComposerOpen(false);
-          addToast(
-            'Mitigation Request Sent', 
-            `Request email has been sent successfully to ${name} (${email}) regarding this bottleneck.`, 
-            '#10b981'
-          );
+          if (composerEmail.action) {
+            addToast(
+              'Sync Meeting Invitation Sent', 
+              `Meeting invite email sent successfully to ${name} (${email}).`, 
+              '#10b981'
+            );
+            setApprovals(prev => prev.filter(a => a.id !== composerEmail.action));
+            setActiveApprovalMeeting(null);
+          } else {
+            addToast(
+              'Mitigation Request Sent', 
+              `Request email has been sent successfully to ${name} (${email}) regarding this bottleneck.`, 
+              '#10b981'
+            );
+          }
         }}
       />
 
@@ -944,6 +955,16 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
         onClose={() => setActiveBottleneck(null)}
         onRequestAction={(email, name, subject, body) => {
           openEmailComposer(email, name, subject, body);
+        }}
+      />
+
+      {/* Schedule Sync Meeting Modal */}
+      <ScheduleMeetingModal 
+        isOpen={!!activeApprovalMeeting}
+        approval={approvals.find(x => x.id === activeApprovalMeeting) || null}
+        onClose={() => setActiveApprovalMeeting(null)}
+        onRequestAction={(email, name, subject, body) => {
+          openEmailComposer(email, name, subject, body, activeApprovalMeeting || undefined);
         }}
       />
     </div>
