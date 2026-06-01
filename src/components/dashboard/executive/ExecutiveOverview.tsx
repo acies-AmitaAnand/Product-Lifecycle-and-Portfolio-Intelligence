@@ -9,6 +9,10 @@ import { Role } from '../../../types/dashboard';
 import { 
   VP_ALERTS, VP_APPROVALS, VP_FORECAST, VP_KPI_BASE, SKUS 
 } from '../../../constants/data';
+import { SkuDetailsModal } from './SkuDetailsModal';
+import { RegionalForecastModal } from './RegionalForecastModal';
+import { EmailComposerModal } from '../portfolio-health/EmailComposerModal';
+
 
 interface ExecutiveOverviewProps {
   role: Role;
@@ -21,6 +25,14 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
   const [approvals, setApprovals] = useState(() => VP_APPROVALS.map(a => ({ ...a })));
   const [kpis, setKpis] = useState(() => VP_KPI_BASE.map(k => ({ ...k, sparkPoints: k.spark.map((v, i) => ({ index: i, value: v })) })));
   const [lastRefreshed, setLastRefreshed] = useState<string>('Refreshed just now');
+
+  // Category filter and modal states for Top SKU Performance card
+  const [activeCategory, setActiveCategory] = useState<string>('All');
+  const [selectedSku, setSelectedSku] = useState<any>(null);
+  const [selectedRegion, setSelectedRegion] = useState<any>(null);
+  const [isEmailOpen, setIsEmailOpen] = useState<boolean>(false);
+  const [emailData, setEmailData] = useState({ to: '', name: '', subject: '', body: '' });
+
 
   // Dynamic accent color based on theme
   const accentColor = isDarkMode ? '#a78bfa' : '#6d28d9';
@@ -92,9 +104,13 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
     { name: 'Household', value: 145, color: '#854F0B' }
   ];
 
-  // Top SKUs by revenue
-  const topSkus = [...SKUS].sort((a, b) => b.rev - a.rev).slice(0, 5);
+  // Top SKUs by revenue filtered by category
+  const filteredSkus = activeCategory === 'All'
+    ? SKUS
+    : SKUS.filter(s => s.cat === activeCategory);
+  const topSkus = [...filteredSkus].sort((a, b) => b.rev - a.rev).slice(0, 5);
   const maxSkuRev = topSkus[0]?.rev || 1;
+
 
   return (
     <div className="space-y-6">
@@ -289,23 +305,47 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
         
         {/* Top SKU Performance List */}
         <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-5">
-          <h3 className="text-xs font-bold uppercase tracking-widest pb-3 border-b border-black/5 dark:border-white/5 mb-3 flex items-center gap-1.5">
-            Top SKU Performance
+          <h3 className="text-xs font-bold uppercase tracking-widest pb-3 border-b border-black/5 dark:border-white/5 mb-3 flex items-center justify-between gap-1.5">
+            <span>Top SKU Performance</span>
             <span className="text-[8px] font-extrabold opacity-40 uppercase">By Revenue</span>
           </h3>
-          <div className="space-y-3.5">
+
+          {/* Category Filter Pills */}
+          <div className="flex flex-wrap gap-1 mb-3.5 border-b border-black/5 dark:border-white/5 pb-2">
+            {['All', 'Beverages', 'Snacks', 'Personal Care', 'Household'].map(cat => (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                className={`px-2 py-0.5 text-[8.5px] font-bold uppercase tracking-wider rounded-sm transition-all border border-black/5 dark:border-white/10 cursor-pointer ${
+                  activeCategory === cat
+                    ? 'bg-acies-yellow text-acies-gray font-extrabold border-acies-yellow'
+                    : 'bg-black/5 dark:bg-white/5 text-zinc-550 dark:text-zinc-450 hover:bg-black/10 dark:hover:bg-white/10'
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+
+          <div className="space-y-1">
             {topSkus.map(s => {
               const widthPct = Math.round((s.rev / maxSkuRev) * 100);
               return (
-                <div key={s.name} className="space-y-1">
+                <button
+                  key={s.name}
+                  onClick={() => setSelectedSku(s)}
+                  className="w-full text-left space-y-1 block hover:bg-black/5 dark:hover:bg-white/5 p-2 rounded transition-all group cursor-pointer border-none bg-transparent outline-none"
+                >
                   <div className="flex justify-between items-center text-[11px]">
-                    <span className="font-bold text-acies-gray dark:text-white truncate max-w-[150px]">{s.name}</span>
-                    <span className="font-extrabold text-acies-yellow">₹{s.rev}Cr</span>
+                    <span className="font-bold text-zinc-700 dark:text-zinc-350 group-hover:text-acies-yellow dark:group-hover:text-acies-yellow truncate max-w-[170px] transition-colors">
+                      {s.name}
+                    </span>
+                    <span className="font-extrabold text-acies-yellow group-hover:underline">₹{s.rev}Cr</span>
                   </div>
                   <div className="w-full h-1.5 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
-                    <div className="h-full bg-acies-yellow transition-all" style={{ width: `${widthPct}%` }} />
+                    <div className="h-full bg-acies-yellow transition-all group-hover:bg-yellow-400" style={{ width: `${widthPct}%` }} />
                   </div>
-                </div>
+                </button>
               );
             })}
           </div>
@@ -360,34 +400,72 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
 
         {/* Forecast vs Actual by Region */}
         <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-5">
-          <h3 className="text-xs font-bold uppercase tracking-widest pb-3 border-b border-black/5 dark:border-white/5 mb-3 flex items-center gap-1.5">
-            Regional Forecast
+          <h3 className="text-xs font-bold uppercase tracking-widest pb-3 border-b border-black/5 dark:border-white/5 mb-3 flex items-center justify-between gap-1.5">
+            <span>Regional Forecast</span>
             <span className="text-[8px] font-extrabold opacity-40 uppercase">Actual vs Target</span>
           </h3>
-          <div className="space-y-4">
+          <div className="space-y-3">
             {VP_FORECAST.map(f => {
               const widthPct = Math.min(100, Math.round((f.actual / f.target) * 100));
               const deltaColor = f.up ? 'text-green-500' : 'text-red-500';
               return (
-                <div key={f.region} className="space-y-1.5">
+                <button
+                  key={f.region}
+                  onClick={() => setSelectedRegion(f)}
+                  className="w-full text-left space-y-1.5 block hover:bg-black/5 dark:hover:bg-white/5 p-2 rounded transition-all group cursor-pointer border-none bg-transparent outline-none"
+                >
                   <div className="flex justify-between items-center text-[11px]">
-                    <span className="font-bold text-acies-gray dark:text-white">{f.region}</span>
-                    <span className={`font-extrabold ${deltaColor}`}>{f.delta}</span>
+                    <span className="font-bold text-zinc-700 dark:text-zinc-350 group-hover:text-acies-yellow dark:group-hover:text-acies-yellow transition-colors">{f.region}</span>
+                    <span className={`font-extrabold ${deltaColor} group-hover:underline`}>{f.delta}</span>
                   </div>
                   <div className="w-full h-2 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
-                    <div className="h-full bg-acies-yellow transition-all" style={{ width: `${widthPct}%` }} />
+                    <div className="h-full bg-acies-yellow transition-all group-hover:bg-yellow-400" style={{ width: `${widthPct}%` }} />
                   </div>
-                  <div className="flex justify-between text-[9px] text-zinc-500 dark:text-zinc-400 font-semibold uppercase tracking-wider">
+                  <div className="flex justify-between text-[9px] text-zinc-550 dark:text-zinc-450 font-semibold uppercase tracking-wider">
                     <span>Actual: ₹{f.actual}Cr</span>
                     <span>Target: ₹{f.target}Cr</span>
                   </div>
-                </div>
+                </button>
               );
             })}
           </div>
         </div>
 
       </div>
+
+      {/* Sku Details Modal */}
+      <SkuDetailsModal 
+        isOpen={!!selectedSku} 
+        sku={selectedSku} 
+        onClose={() => setSelectedSku(null)}
+        onRequestAction={(email, name, subject, body) => {
+          setEmailData({ to: email, name, subject, body });
+          setIsEmailOpen(true);
+        }}
+      />
+
+      {/* Regional Forecast Modal */}
+      <RegionalForecastModal 
+        isOpen={!!selectedRegion}
+        region={selectedRegion}
+        onClose={() => setSelectedRegion(null)}
+        onRequestAction={(email, name, subject, body) => {
+          setEmailData({ to: email, name, subject, body });
+          setIsEmailOpen(true);
+        }}
+      />
+
+      {/* Email Composer Modal */}
+      <EmailComposerModal 
+        isOpen={isEmailOpen}
+        onClose={() => setIsEmailOpen(false)}
+        initialEmail={emailData}
+        onSend={(recipientName, recipientEmail, subject, body) => {
+          // Simulate email sent message
+          alert(`Mitigation request email successfully sent to ${recipientName} (${recipientEmail})!`);
+          setIsEmailOpen(false);
+        }}
+      />
 
     </div>
   );
