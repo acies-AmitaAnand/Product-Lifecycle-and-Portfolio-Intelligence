@@ -677,12 +677,19 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
             <div className="space-y-3.5 max-h-[500px] overflow-y-auto pr-1">
               {approvals.length > 0 ? (
                 approvals.map(a => (
-                  <div key={a.id} className="p-4 border border-[#2c2c2c] rounded-xl bg-[#202020] text-white flex flex-col gap-3.5 shadow-md">
+                  <div 
+                    key={a.id} 
+                    className={`p-4 border rounded-xl flex flex-col gap-3.5 shadow-sm transition-all duration-200 ${
+                      isDarkMode 
+                        ? 'bg-[#202020] border-[#2c2c2c] text-white' 
+                        : 'bg-white border-zinc-200 text-zinc-900'
+                    }`}
+                  >
                     {/* Title, Age, and Urgency Badge */}
                     <div className="flex justify-between items-start gap-4">
                       <div className="min-w-0">
-                        <h4 className="text-[12.5px] font-black tracking-wide text-white leading-tight break-words">{a.title}</h4>
-                        <p className="text-[10px] text-[#9d9d9d] font-bold mt-1 uppercase tracking-wider">{a.type} · Waiting {a.age}</p>
+                        <h4 className={`text-[12.5px] font-black tracking-wide leading-tight break-words ${isDarkMode ? 'text-white' : 'text-zinc-850'}`}>{a.title}</h4>
+                        <p className={`text-[10px] font-bold mt-1 uppercase tracking-wider ${isDarkMode ? 'text-[#9d9d9d]' : 'text-zinc-450'}`}>{a.type} · Waiting {a.age}</p>
                       </div>
                       <span 
                         className={`text-[10px] font-extrabold uppercase tracking-wide px-3.5 py-0.5 rounded-full shrink-0 ${
@@ -696,9 +703,9 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
                     </div>
 
                     {/* Progress Bar representing waiting time */}
-                    <div className="w-full h-1 bg-[#292929] rounded-full overflow-hidden my-1">
+                    <div className={`w-full h-1 rounded-full overflow-hidden my-1 ${isDarkMode ? 'bg-[#292929]' : 'bg-black/5'}`}>
                       <div 
-                        className="h-full rounded-full" 
+                        className="h-full rounded-full animate-progress" 
                         style={{ 
                           width: a.age.includes('6') ? '75%' : a.age.includes('4') ? '50%' : '25%',
                           backgroundColor: a.urgency === 'high' ? '#f05252' : '#f59e0b'
@@ -710,16 +717,24 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
                     <div className="flex gap-2 justify-start pt-1">
                       <button 
                         onClick={() => handleScheduleMeeting(a.id, a.title)} 
-                        className="px-3.5 py-2 border border-[#444444] text-white bg-transparent hover:bg-white/5 rounded-lg text-[10.5px] font-bold tracking-wide transition-all cursor-pointer flex items-center gap-1.5"
+                        className={`px-3.5 py-2 border rounded-lg text-[10.5px] font-bold tracking-wide transition-all cursor-pointer flex items-center gap-1.5 ${
+                          isDarkMode 
+                            ? 'border-[#444444] text-white bg-transparent hover:bg-white/5' 
+                            : 'border-zinc-200 text-zinc-700 bg-white hover:bg-zinc-50'
+                        }`}
                       >
-                        <Calendar size={13} className="text-white" />
+                        <Calendar size={13} className={isDarkMode ? 'text-white' : 'text-zinc-400'} />
                         Schedule a meeting
                       </button>
                       <button 
                         onClick={() => handleRemindLater(a.id, a.title)} 
-                        className="px-3.5 py-2 border border-[#444444] text-white bg-transparent hover:bg-white/5 rounded-lg text-[10.5px] font-bold tracking-wide transition-all cursor-pointer flex items-center gap-1.5"
+                        className={`px-3.5 py-2 border rounded-lg text-[10.5px] font-bold tracking-wide transition-all cursor-pointer flex items-center gap-1.5 ${
+                          isDarkMode 
+                            ? 'border-[#444444] text-white bg-transparent hover:bg-white/5' 
+                            : 'border-zinc-200 text-zinc-700 bg-white hover:bg-zinc-50'
+                        }`}
                       >
-                        <Bell size={13} className="text-white" />
+                        <Bell size={13} className={isDarkMode ? 'text-white' : 'text-zinc-400'} />
                         Remind me later
                       </button>
                     </div>
