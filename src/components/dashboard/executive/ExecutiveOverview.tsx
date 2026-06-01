@@ -313,25 +313,25 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
               <div className="flex items-center border border-black/10 dark:border-white/10 rounded-sm overflow-hidden bg-black/5 dark:bg-white/5 p-0.5 ml-1 normal-case">
                 <button
                   onClick={() => setSkuViewMode('list')}
-                  className={`p-0.5 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm ${
+                  className={`p-1 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm ${
                     skuViewMode === 'list' 
                       ? 'bg-blue-500 text-white shadow-sm' 
                       : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 bg-transparent'
                   }`}
                   title="List View"
                 >
-                  <List size={10} />
+                  <List size={12} />
                 </button>
                 <button
                   onClick={() => setSkuViewMode('chart')}
-                  className={`p-0.5 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm ${
+                  className={`p-1 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm ${
                     skuViewMode === 'chart' 
                       ? 'bg-blue-500 text-white shadow-sm' 
                       : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 bg-transparent'
                   }`}
                   title="Pie Chart View"
                 >
-                  <PieChart size={10} />
+                  <PieChart size={12} />
                 </button>
               </div>
             </div>
@@ -390,8 +390,8 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
                     data={topSkus}
                     cx="50%"
                     cy="50%"
-                    innerRadius={40}
-                    outerRadius={60}
+                    innerRadius={50}
+                    outerRadius={75}
                     paddingAngle={3}
                     dataKey="rev"
                     nameKey="name"
