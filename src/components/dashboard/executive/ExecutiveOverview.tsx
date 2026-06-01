@@ -537,7 +537,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
                     <Bar 
                       dataKey="target" 
                       name="Target" 
-                      fill={isDarkMode ? '#d4d3cc' : '#b2b0a3'} 
+                      fill={isDarkMode ? '#facc15' : '#ca8a04'} 
                       barSize={30} 
                       radius={[4, 4, 0, 0]} 
                       onClick={(data) => setSelectedRegion(data)}
