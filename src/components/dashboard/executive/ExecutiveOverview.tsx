@@ -113,14 +113,14 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
 
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       
       {/* KPI Cards Strip */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         {kpis.map((k, i) => {
           const isUp = k.trend >= 0;
           const isRisk = i === 3; // Alerts card
-          const trendIcon = isUp ? <TrendingUp size={11} /> : <TrendingDown size={11} />;
+          const trendIcon = isUp ? <TrendingUp size={10} /> : <TrendingDown size={10} />;
           const trendColor = isRisk 
             ? (isUp ? 'text-red-500 bg-red-500/10' : 'text-green-500 bg-green-500/10')
             : (isUp ? 'text-green-500 bg-green-500/10' : 'text-red-500 bg-red-500/10');
@@ -128,25 +128,25 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
           return (
             <div 
               key={k.label} 
-              className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-5 relative overflow-hidden transition-all hover:border-acies-yellow/50 cursor-pointer"
+              className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3.5 relative overflow-hidden transition-all hover:border-acies-yellow/50 cursor-pointer"
               onClick={() => {
                 if (i === 1) setActiveTab(1); // Portfolio Map
                 if (i === 3) setActiveTab(5); // Signals Board
               }}
             >
               <div className="absolute top-0 left-0 w-full h-1" style={{ backgroundColor: k.color }} />
-              <p className="text-[9px] font-bold uppercase tracking-widest opacity-40 mb-2">{k.label}</p>
-              <h3 className="text-2xl font-display font-bold text-acies-gray dark:text-white leading-none mb-2">
+              <p className="text-[8.5px] font-bold uppercase tracking-widest opacity-40 mb-1.5">{k.label}</p>
+              <h3 className="text-xl font-display font-bold text-acies-gray dark:text-white leading-none mb-1.5">
                 {k.fmt(k.value)}
               </h3>
-              <div className="flex items-center justify-between mt-4">
-                <span className={`text-[8.5px] font-extrabold uppercase tracking-widest px-2 py-0.5 rounded-sm flex items-center gap-1 ${trendColor}`}>
+              <div className="flex items-center justify-between mt-3">
+                <span className={`text-[8px] font-extrabold uppercase tracking-widest px-1.5 py-0.5 rounded-sm flex items-center gap-1 ${trendColor}`}>
                   {trendIcon}
                   {Math.abs(k.trend)}{i === 0 ? ' Cr' : i === 1 ? 'pp' : ''} MoM
                 </span>
                 
                 {/* Micro Sparkline Chart */}
-                <div className="w-20 h-7">
+                <div className="w-16 h-6">
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={k.sparkPoints}>
                       <defs>
@@ -159,7 +159,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
                         type="monotone" 
                         dataKey="value" 
                         stroke={k.color} 
-                        strokeWidth={1.5} 
+                        strokeWidth={1.2} 
                         fill={`url(#grad-${i})`} 
                         dot={false}
                       />
@@ -173,32 +173,32 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
       </div>
 
       {/* Inline Refresh Options */}
-      <div className="flex justify-end items-center gap-3 py-1">
-        <span className="text-[9px] font-bold uppercase tracking-widest opacity-40 text-zinc-500 dark:text-zinc-400">
+      <div className="flex justify-end items-center gap-3 py-0.5">
+        <span className="text-[8.5px] font-bold uppercase tracking-widest opacity-40 text-zinc-500 dark:text-zinc-400">
           {lastRefreshed}
         </span>
         <button 
           onClick={handleRefresh}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-acies-gray dark:text-white text-[9px] font-bold uppercase tracking-widest hover:bg-acies-yellow hover:text-acies-gray transition-all cursor-pointer rounded-sm"
+          className="flex items-center gap-1 px-2.5 py-1 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-acies-gray dark:text-white text-[8.5px] font-bold uppercase tracking-widest hover:bg-acies-yellow hover:text-acies-gray transition-all cursor-pointer rounded-sm"
         >
-          <RefreshCw size={10} className="animate-spin-slow" />
+          <RefreshCw size={9} className="animate-spin-slow" />
           Refresh Data
         </button>
       </div>
 
       {/* Smart Alerts Dashboard */}
-      <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-5">
-        <div className="flex justify-between items-center pb-4 border-b border-black/5 dark:border-white/5 mb-4">
-          <h3 className="text-xs font-bold uppercase tracking-widest flex items-center gap-2">
+      <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3.5">
+        <div className="flex justify-between items-center pb-2.5 border-b border-black/5 dark:border-white/5 mb-2.5">
+          <h3 className="text-[11px] font-bold uppercase tracking-widest flex items-center gap-1.5">
             Smart Alerts
-            <span className="text-[10px] font-extrabold bg-red-500 text-white rounded-full px-2 py-0.5">
+            <span className="text-[9px] font-extrabold bg-red-500 text-white rounded-full px-1.5 py-0.5">
               {alerts.length}
             </span>
           </h3>
           {alerts.length > 0 && (
             <button 
               onClick={handleAckAllAlerts}
-              className="text-[9px] font-bold uppercase tracking-widest border border-black/10 dark:border-white/10 px-3 py-1.5 hover:bg-black/5 dark:hover:bg-white/5 transition-all cursor-pointer"
+              className="text-[8px] font-bold uppercase tracking-widest border border-black/10 dark:border-white/10 px-2 py-1 hover:bg-black/5 dark:hover:bg-white/5 transition-all cursor-pointer"
             >
               Acknowledge All
             </button>
@@ -206,34 +206,34 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
         </div>
 
         {alerts.length === 0 ? (
-          <div className="py-8 text-center text-zinc-400 dark:text-zinc-500 text-xs font-bold uppercase tracking-widest flex flex-col items-center gap-3">
-            <Check size={28} className="text-green-500" />
+          <div className="py-6 text-center text-zinc-400 dark:text-zinc-500 text-[11px] font-bold uppercase tracking-widest flex flex-col items-center gap-2">
+            <Check size={22} className="text-green-500" />
             No active alerts — all clear
           </div>
         ) : (
-          <div className="max-h-56 overflow-y-auto divide-y divide-black/5 dark:divide-white/5 pr-2">
+          <div className="max-h-36 overflow-y-auto divide-y divide-black/5 dark:divide-white/5 pr-1.5">
             {alerts.map(a => {
               const borderCol = a.sev === 'critical' ? 'border-red-500/30' : a.sev === 'warning' ? 'border-amber-500/30' : 'border-blue-500/30';
               const indicatorCol = a.sev === 'critical' ? 'bg-red-500' : a.sev === 'warning' ? 'bg-amber-500' : 'bg-blue-500';
               return (
-                <div key={a.id} className={`py-3.5 flex justify-between items-center gap-4 transition-all hover:bg-black/[0.01] dark:hover:bg-white/[0.02] border-l-2 ${borderCol} pl-3`}>
-                  <div className="flex items-center gap-3 min-w-0">
-                    <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${indicatorCol}`} />
+                <div key={a.id} className={`py-2 flex justify-between items-center gap-3 transition-all hover:bg-black/[0.01] dark:hover:bg-white/[0.02] border-l-2 ${borderCol} pl-2`}>
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className={`w-1 h-1 rounded-full shrink-0 ${indicatorCol}`} />
                     <div className="min-w-0">
-                      <p className="text-xs font-bold text-acies-gray dark:text-white truncate">{a.title}</p>
-                      <p className="text-[10px] text-zinc-500 dark:text-zinc-400 truncate mt-0.5">{a.detail}</p>
+                      <p className="text-[11px] font-bold text-acies-gray dark:text-white truncate">{a.title}</p>
+                      <p className="text-[9px] text-zinc-500 dark:text-zinc-400 truncate mt-0.5">{a.detail}</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2 shrink-0">
+                  <div className="flex items-center gap-1.5 shrink-0">
                     <button 
                       onClick={() => setActiveTab(a.sev === 'critical' ? 4 : 5)} // jumps to relevant Tab
-                      className="text-[9px] font-bold uppercase tracking-widest text-acies-yellow hover:underline cursor-pointer border-none bg-transparent"
+                      className="text-[8px] font-bold uppercase tracking-widest text-acies-yellow hover:underline cursor-pointer border-none bg-transparent"
                     >
                       Investigate
                     </button>
                     <button 
                       onClick={() => handleAckAlert(a.id)}
-                      className="text-[9px] font-bold uppercase tracking-widest border border-black/10 dark:border-white/10 px-2 py-1 hover:bg-black/5 dark:hover:bg-white/5 transition-all cursor-pointer"
+                      className="text-[8px] font-bold uppercase tracking-widest border border-black/10 dark:border-white/10 px-1.5 py-0.5 hover:bg-black/5 dark:hover:bg-white/5 transition-all cursor-pointer"
                     >
                       Dismiss
                     </button>
@@ -249,46 +249,46 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         
         {/* Revenue Trend actual vs target */}
-        <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-5 h-[450px] flex flex-col">
-          <div className="mb-4">
-            <h3 className="text-xs font-bold uppercase tracking-widest">Revenue Trend</h3>
-            <p className="text-[9px] text-zinc-500 uppercase tracking-widest mt-0.5">Monthly Actual vs Target (₹ Cr) — This Year</p>
+        <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3.5 h-[320px] flex flex-col">
+          <div className="mb-2.5">
+            <h3 className="text-[11px] font-bold uppercase tracking-widest">Revenue Trend</h3>
+            <p className="text-[8.5px] text-zinc-500 uppercase tracking-widest mt-0.5">Monthly Actual vs Target (₹ Cr) — This Year</p>
           </div>
           <div className="flex-1 min-h-0">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={revenueTrendData} margin={{ top: 10, right: 10, left: -20, bottom: 5 }}>
+              <LineChart data={revenueTrendData} margin={{ top: 5, right: 5, left: -25, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridStroke} />
-                <XAxis dataKey="month" tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 9 }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 9 }} axisLine={false} tickLine={false} />
+                <XAxis dataKey="month" tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
                 <Tooltip 
                   contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, color: tooltipText }} 
-                  itemStyle={{ color: tooltipText, fontSize: 11 }}
-                  labelStyle={{ fontSize: 11, fontWeight: 'bold' }}
+                  itemStyle={{ color: tooltipText, fontSize: 10 }}
+                  labelStyle={{ fontSize: 10, fontWeight: 'bold' }}
                 />
-                <Line type="monotone" dataKey="Actual" stroke={accentColor} strokeWidth={2.5} activeDot={{ r: 6 }} dot={{ r: 3 }} />
-                <Line type="monotone" dataKey="Target" stroke={isDarkMode ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)'} strokeDasharray="4 4" dot={false} strokeWidth={1.5} />
+                <Line type="monotone" dataKey="Actual" stroke={accentColor} strokeWidth={2} activeDot={{ r: 5 }} dot={{ r: 2.5 }} />
+                <Line type="monotone" dataKey="Target" stroke={isDarkMode ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)'} strokeDasharray="4 4" dot={false} strokeWidth={1.2} />
               </LineChart>
             </ResponsiveContainer>
           </div>
         </div>
 
         {/* Category Performance */}
-        <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-5 h-[450px] flex flex-col">
-          <div className="mb-4">
-            <h3 className="text-xs font-bold uppercase tracking-widest">Category Performance</h3>
-            <p className="text-[9px] text-zinc-550 dark:text-zinc-450 uppercase tracking-widest mt-0.5">Revenue ₹ Cr by Category — Current Month</p>
+        <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3.5 h-[320px] flex flex-col">
+          <div className="mb-2.5">
+            <h3 className="text-[11px] font-bold uppercase tracking-widest">Category Performance</h3>
+            <p className="text-[8.5px] text-zinc-550 dark:text-zinc-450 uppercase tracking-widest mt-0.5">Revenue ₹ Cr by Category — Current Month</p>
           </div>
           <div className="flex-1 min-h-0">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={categoryPerfData} layout="vertical" margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
+              <BarChart data={categoryPerfData} layout="vertical" margin={{ top: 5, right: 5, left: 0, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke={gridStroke} />
-                <XAxis type="number" tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 9 }} axisLine={false} tickLine={false} />
-                <YAxis dataKey="name" type="category" tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 9 }} axisLine={false} tickLine={false} />
+                <XAxis type="number" tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
+                <YAxis dataKey="name" type="category" tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
                 <Tooltip 
                   contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, color: tooltipText }}
-                  itemStyle={{ fontSize: 11 }}
+                  itemStyle={{ fontSize: 10 }}
                 />
-                <Bar dataKey="value" barSize={14} radius={[0, 4, 4, 0]}>
+                <Bar dataKey="value" barSize={11} radius={[0, 3, 3, 0]}>
                   {categoryPerfData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
@@ -304,19 +304,19 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         
         {/* Top SKU Performance List */}
-        <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-5 h-[450px] flex flex-col">
-          <h3 className="text-xs font-bold uppercase tracking-widest pb-3 border-b border-black/5 dark:border-white/5 mb-3 flex items-center justify-between gap-1.5">
+        <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3.5 h-[320px] flex flex-col">
+          <h3 className="text-[11px] font-bold uppercase tracking-widest pb-2 border-b border-black/5 dark:border-white/5 mb-2 flex items-center justify-between gap-1.5">
             <span>Top SKU Performance</span>
-            <span className="text-[8px] font-extrabold opacity-40 uppercase">By Revenue</span>
+            <span className="text-[7.5px] font-extrabold opacity-40 uppercase">By Revenue</span>
           </h3>
 
           {/* Category Filter Pills */}
-          <div className="flex flex-wrap gap-1 mb-3.5 border-b border-black/5 dark:border-white/5 pb-2">
+          <div className="flex flex-wrap gap-1 mb-2.5 border-b border-black/5 dark:border-white/5 pb-1.5">
             {['All', 'Beverages', 'Snacks', 'Personal Care', 'Household'].map(cat => (
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
-                className={`px-2 py-0.5 text-[8.5px] font-bold uppercase tracking-wider rounded-sm transition-all border border-black/5 dark:border-white/10 cursor-pointer ${
+                className={`px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wider rounded-sm transition-all border border-black/5 dark:border-white/10 cursor-pointer ${
                   activeCategory === cat
                     ? 'bg-acies-yellow text-acies-gray font-extrabold border-acies-yellow'
                     : 'bg-black/5 dark:bg-white/5 text-zinc-550 dark:text-zinc-450 hover:bg-black/10 dark:hover:bg-white/10'
@@ -327,22 +327,22 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
             ))}
           </div>
 
-          <div className="space-y-3 overflow-y-auto flex-1 pr-1 min-h-0">
+          <div className="space-y-1.5 overflow-y-auto flex-1 pr-1 min-h-0">
             {topSkus.map(s => {
               const widthPct = Math.round((s.rev / maxSkuRev) * 100);
               return (
                 <button
                   key={s.name}
                   onClick={() => setSelectedSku(s)}
-                  className="w-full text-left space-y-1.5 block hover:bg-black/5 dark:hover:bg-white/5 py-2.5 px-3 rounded transition-all group cursor-pointer border-none bg-transparent outline-none"
+                  className="w-full text-left space-y-1 block hover:bg-black/5 dark:hover:bg-white/5 py-1.5 px-2.5 rounded transition-all group cursor-pointer border-none bg-transparent outline-none"
                 >
-                  <div className="flex justify-between items-center text-xs">
+                  <div className="flex justify-between items-center text-[10.5px]">
                     <span className="font-bold text-zinc-700 dark:text-zinc-350 group-hover:text-acies-yellow dark:group-hover:text-acies-yellow truncate max-w-[220px] transition-colors">
                       {s.name}
                     </span>
                     <span className="font-extrabold text-acies-yellow group-hover:underline">₹{s.rev}Cr</span>
                   </div>
-                  <div className="w-full h-2.5 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
+                  <div className="w-full h-1.5 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
                     <div className="h-full bg-acies-yellow transition-all group-hover:bg-yellow-400" style={{ width: `${widthPct}%` }} />
                   </div>
                 </button>
@@ -352,12 +352,12 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
         </div>
 
         {/* Forecast vs Actual by Region */}
-        <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-5 h-[450px] flex flex-col">
-          <h3 className="text-xs font-bold uppercase tracking-widest pb-3 border-b border-black/5 dark:border-white/5 mb-3 flex items-center justify-between gap-1.5">
+        <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3.5 h-[320px] flex flex-col">
+          <h3 className="text-[11px] font-bold uppercase tracking-widest pb-2 border-b border-black/5 dark:border-white/5 mb-2 flex items-center justify-between gap-1.5">
             <span>Regional Forecast</span>
-            <span className="text-[8px] font-extrabold opacity-40 uppercase">Actual vs Target</span>
+            <span className="text-[7.5px] font-extrabold opacity-40 uppercase">Actual vs Target</span>
           </h3>
-          <div className="space-y-3 overflow-y-auto flex-1 pr-1 min-h-0">
+          <div className="space-y-1.5 overflow-y-auto flex-1 pr-1 min-h-0">
             {VP_FORECAST.map(f => {
               const widthPct = Math.min(100, Math.round((f.actual / f.target) * 100));
               const deltaColor = f.up ? 'text-green-500' : 'text-red-500';
@@ -365,16 +365,16 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
                 <button
                   key={f.region}
                   onClick={() => setSelectedRegion(f)}
-                  className="w-full text-left space-y-2 block hover:bg-black/5 dark:hover:bg-white/5 py-3 px-3.5 rounded transition-all group cursor-pointer border-none bg-transparent outline-none"
+                  className="w-full text-left space-y-1.5 block hover:bg-black/5 dark:hover:bg-white/5 py-1.5 px-2.5 rounded transition-all group cursor-pointer border-none bg-transparent outline-none"
                 >
-                  <div className="flex justify-between items-center text-xs">
+                  <div className="flex justify-between items-center text-[10.5px]">
                     <span className="font-bold text-zinc-700 dark:text-zinc-350 group-hover:text-acies-yellow dark:group-hover:text-acies-yellow transition-colors">{f.region}</span>
                     <span className={`font-extrabold ${deltaColor} group-hover:underline`}>{f.delta}</span>
                   </div>
-                  <div className="w-full h-3 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
+                  <div className="w-full h-2 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
                     <div className="h-full bg-acies-yellow transition-all group-hover:bg-yellow-400" style={{ width: `${widthPct}%` }} />
                   </div>
-                  <div className="flex justify-between text-[11px] text-zinc-550 dark:text-zinc-450 font-semibold uppercase tracking-wider">
+                  <div className="flex justify-between text-[9px] text-zinc-550 dark:text-zinc-450 font-semibold uppercase tracking-wider">
                     <span>Actual: ₹{f.actual}Cr</span>
                     <span>Target: ₹{f.target}Cr</span>
                   </div>
@@ -383,7 +383,6 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
             })}
           </div>
         </div>
-
       </div>
 
       {/* Sku Details Modal */}
