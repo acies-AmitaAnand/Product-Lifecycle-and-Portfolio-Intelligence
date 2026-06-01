@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
   Layers, Filter, RefreshCw, BarChart2, PieChart, Info, HelpCircle, Save, Plus, Trash2, ArrowRight, Zap,
-  Clock, Shield, Bell, Check, X, AlertTriangle, AlertCircle, TrendingUp, Globe, Activity as ActivityIcon
+  Clock, Shield, Bell, Check, X, AlertTriangle, AlertCircle, TrendingUp, Globe, Activity as ActivityIcon,
+  Mail, MapPin
 } from 'lucide-react';
 import { 
   ResponsiveContainer, ScatterChart, Scatter, XAxis, YAxis, ZAxis, Tooltip, CartesianGrid, LabelList,
@@ -10,6 +11,8 @@ import {
 } from 'recharts';
 import { Role } from '../../../types/dashboard';
 import { SKUS } from '../../../constants/data';
+import { BottleneckDetailsModal } from './BottleneckDetailsModal';
+import { EmailComposerModal } from './EmailComposerModal';
 
 interface PortfolioHealthMapProps {
   role: Role;
@@ -83,6 +86,9 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedHealthTier, setSelectedHealthTier] = useState<string | null>(null);
   const [selectedMonth, setSelectedMonth] = useState<string | null>(null);
+  const [activeBottleneck, setActiveBottleneck] = useState<string | null>(null);
+  const [composerOpen, setComposerOpen] = useState(false);
+  const [composerEmail, setComposerEmail] = useState({ to: '', subject: '', body: '', name: '', action: '' });
 
   // KPIs
   const [kpis, setKpis] = useState({
@@ -262,6 +268,11 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
     addToast('Reminder Set', `Snoozed. Will remind you in 2 hours for: "${title}"`, '#f59e0b');
   };
 
+  const openEmailComposer = (to: string, name: string, subject: string, body: string) => {
+    setComposerEmail({ to, name, subject, body, action: '' });
+    setComposerOpen(true);
+  };
+
   // Region and Bottleneck data
   const regions = [
     { name: 'APAC', rev: '₹312 Cr', pct: 94, delta: '+7.6%', up: true },
@@ -270,12 +281,202 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
   ];
 
   const bottlenecks = [
-    { label: 'Fabric Softener', val: 95, color: '#ef4444', status: 'critical' },
-    { label: 'Floor Cleaner', val: 89, color: '#ef4444', status: 'critical' },
-    { label: 'Green Tea RTD', val: 81, color: '#f59e0b', status: 'warning' },
-    { label: 'Choco Wafers', val: 74, color: '#f59e0b', status: 'warning' },
-    { label: 'Foam Face Wash', val: 62, color: '#f59e0b', status: 'warning' },
-    { label: 'Herbal Shampoo', val: 18, color: '#10b981', status: 'ok' },
+    {
+      label: 'Fabric Softener',
+      val: 95,
+      color: '#ef4444',
+      status: 'critical',
+      location: 'Penang, Malaysia (SEA Hub)',
+      cause: 'Surfactant chemical raw material delay due to port congestion in Singapore. Current lead times have reached 35 days vs. a 14-day baseline, causing line stoppage risk.',
+      suggestions: [
+        {
+          action: 'Transition production to local vendor ChemCorp Malaysia on a premium contract.',
+          impact: 'Resolves 80% supply gap in 5 days; +4% unit cost.',
+          contactName: 'Marcus Ng',
+          contactTitle: 'Global Procurement Director',
+          email: 'marcus.ng@aciesglobal.com',
+          draftBody: 'Hi Marcus,\n\nRegarding the surfactant supply bottleneck for Fabric Softener at the Penang plant, please initiate the local vendor transition to ChemCorp Malaysia under the emergency premium contract to avoid factory downtime.\n\nThanks,\nVP Product Management'
+        },
+        {
+          action: 'Utilize lower-concentration surfactant formulation (Recipe version 2.4) for standard batches.',
+          impact: 'Extends existing stock by 14 days; negligible product feel change.',
+          contactName: 'Dr. Elena Rostova',
+          contactTitle: 'R&D Product Lead',
+          email: 'elena.rostova@aciesglobal.com',
+          draftBody: 'Hi Elena,\n\nTo manage the current port congestion bottleneck, can we approve the temporary use of Recipe 2.4 (lower surfactant concentration) for the standard Fabric Softener runs? This will extend our raw material stock by 14 days.\n\nThanks,\nVP Product Management'
+        },
+        {
+          action: 'Initiate emergency stock transfer of 15k finished units from Chennai Hub.',
+          impact: 'Fills immediate retail shelf gap for 10 days; +2.5% transit cost.',
+          contactName: 'Vijay Kumar',
+          contactTitle: 'APAC Logistics Head',
+          email: 'vijay.kumar@aciesglobal.com',
+          draftBody: 'Hi Vijay,\n\nWe have a critical stockout risk for Fabric Softener in SEA. Please coordinate an immediate transshipment of 15,000 finished units from Chennai Hub to Singapore DC. I approve the expedited air transit cost.\n\nThanks,\nVP Product Management'
+        }
+      ]
+    },
+    {
+      label: 'Floor Cleaner',
+      val: 89,
+      color: '#ef4444',
+      status: 'critical',
+      location: 'Baddi, HP (North India Plant)',
+      cause: 'Shortage of customized 1-litre PET bottles due to a mechanical mold breakdown at primary external blowing vendor.',
+      suggestions: [
+        {
+          action: 'Switch bottling temporarily to standard 1.2-litre generic containers with custom overlay stickers.',
+          impact: 'Bypasses custom bottle shortage; minor aesthetic package trade-off.',
+          contactName: 'Rohan Sharma',
+          contactTitle: 'Plant Manager - Baddi',
+          email: 'rohan.sharma@aciesglobal.com',
+          draftBody: 'Hi Rohan,\n\nDue to the mold breakdown, please execute the contingency plan to bottle Floor Cleaner in the generic 1.2-litre containers. We will apply custom sticker overlays to maintain branding.\n\nThanks,\nVP Product Management'
+        },
+        {
+          action: 'Deploy specialized CNC repair engineers to vendor site with expedited service bonus.',
+          impact: 'Restores custom mold within 36 hours; saves ₹18 Lakhs in retailer SLA penalties.',
+          contactName: 'Amit Mehta',
+          contactTitle: 'Supplier Quality Assurance Lead',
+          email: 'amit.mehta@aciesglobal.com',
+          draftBody: 'Hi Amit,\n\nPlease dispatch the specialized tooling repair team to our blowing vendor site immediately. I authorize the 2x service acceleration fee to get the mold repaired within 36 hours.\n\nThanks,\nVP Product Management'
+        },
+        {
+          action: 'Prioritize citrus SKU production using remaining custom bottle inventories, pausing lower-margin floral SKU.',
+          impact: 'Protects 92% of core category gross margin during outage.',
+          contactName: 'Pooja Iyer',
+          contactTitle: 'Citrus Category Manager',
+          email: 'pooja.iyer@aciesglobal.com',
+          draftBody: 'Hi Pooja,\n\nDue to bottle supply constraints, we are prioritizing the high-margin Citrus SKU. Please pause packaging of the Floral SKU and divert all remaining 1L bottles to the Citrus line.\n\nThanks,\nVP Product Management'
+        }
+      ]
+    },
+    {
+      label: 'Green Tea RTD',
+      val: 81,
+      color: '#f59e0b',
+      status: 'warning',
+      location: 'Pune, India (Blending & Bottling)',
+      cause: 'Temporary glass bottle manufacturing constraint due to mandatory furnace maintenance at primary glass supplier.',
+      suggestions: [
+        {
+          action: 'Accelerate scheduled aluminum can alternative launch from Q3 to current cycle.',
+          impact: 'Bypasses glass bottleneck; attracts eco-conscious consumers.',
+          contactName: 'Siddharth Roy',
+          contactTitle: 'NPD Project Lead',
+          email: 'siddharth.roy@aciesglobal.com',
+          draftBody: 'Hi Siddharth,\n\nWith glass bottle supply constrained, we need to bring forward the aluminum can format launch for Green Tea. Can we accelerate the trial production runs to this week?\n\nThanks,\nVP Product Management'
+        },
+        {
+          action: 'Transfer 8,000 cases of safety stock from Western Region to high-velocity Modern Trade accounts.',
+          impact: 'Maintains service level at major supermarket chains; slight risk in general trade.',
+          contactName: 'Nisha Patel',
+          contactTitle: 'Demand Planning Lead',
+          email: 'nisha.patel@aciesglobal.com',
+          draftBody: 'Hi Nisha,\n\nPlease reallocate 8,000 cases of Green Tea safety stock from Western Regional depot directly to Modern Trade national accounts to avoid stockouts at major retailers.\n\nThanks,\nVP Product Management'
+        },
+        {
+          action: 'Enforce priority shipping rules based on Customer Lifetime Value (CLV) index.',
+          impact: 'Maintains 100% service level for top 5 key accounts.',
+          contactName: 'Rajesh Verma',
+          contactTitle: 'VP Sales',
+          email: 'rajesh.verma@aciesglobal.com',
+          draftBody: 'Hi Rajesh,\n\nWe are facing supply limitations on Green Tea RTD. Please instruct the team to apply CLV-based priority routing, ensuring our top 5 national retail accounts receive full allocations.\n\nThanks,\nVP Product Management'
+        }
+      ]
+    },
+    {
+      label: 'Choco Wafers',
+      val: 74,
+      color: '#f59e0b',
+      status: 'warning',
+      location: 'Ghent, Belgium (EMEA Confectionery Unit)',
+      cause: 'Cocoa solids sourcing delays and cost spike due to West African harvest shortfalls.',
+      suggestions: [
+        {
+          action: 'Secure 3-month supply contract with South American cocoa brokers.',
+          impact: 'Stabilizes raw material cost; locks in +6% price premium.',
+          contactName: 'Jean-Pierre Dubois',
+          contactTitle: 'Commodities Hedging Director',
+          email: 'jp.dubois@aciesglobal.com',
+          draftBody: 'Hi Jean-Pierre,\n\nGiven the West African cocoa crisis, please execute a 3-month forward contract with our South American partners to secure wafers production volumes.\n\nThanks,\nVP Product Management'
+        },
+        {
+          action: 'Adjust coating recipe to increase whey powder fraction, reducing pure cocoa content by 3%.',
+          impact: 'Saves 2.2% cost-to-serve; maintains consumer taste profile.',
+          contactName: 'Sarah Jenkins',
+          contactTitle: 'Product Scientist',
+          email: 'sarah.jenkins@aciesglobal.com',
+          draftBody: 'Hi Sarah,\n\nWe need to buffer cocoa cost volatility. Please prepare the lab test and documentation to increase the whey powder ratio in the Choco Wafers coating by 3%.\n\nThanks,\nVP Product Management'
+        },
+        {
+          action: 'Optimize production runs to bi-weekly cycles to maximize energy and setup efficiency.',
+          impact: 'Cuts energy overheads by 8%; requires extra 400sqm temp cold storage.',
+          contactName: 'Dieter Maes',
+          contactTitle: 'Production Scheduler',
+          email: 'dieter.maes@aciesglobal.com',
+          draftBody: 'Hi Dieter,\n\nTo offset raw material cost increases, let\'s optimize wafer lines into longer, bi-weekly campaigns. Please adjust the scheduling model and secure cold storage backup.\n\nThanks,\nVP Product Management'
+        }
+      ]
+    },
+    {
+      label: 'Foam Face Wash',
+      val: 62,
+      color: '#f59e0b',
+      status: 'warning',
+      location: 'Chennai, Tamil Nadu (Cosmetics Hub)',
+      cause: 'Mechanical seal leakage failure on primary automatic foaming-pump packing line.',
+      suggestions: [
+        {
+          action: 'Air-freight replacement seal components from German OEM.',
+          impact: 'Reduces line downtime from 14 days to 4 days; ₹45k transit cost.',
+          contactName: 'K. Srinivasan',
+          contactTitle: 'Maintenance Director',
+          email: 'k.srinivasan@aciesglobal.com',
+          draftBody: 'Hi Srinivasan,\n\nPlease expedite the order for the replacement pump seals via air freight from Germany. I approve the express delivery fee to minimize line stoppage.\n\nThanks,\nVP Product Management'
+        },
+        {
+          action: 'Initialize secondary manual foaming-pump assembly line with double shifts.',
+          impact: 'Restores 60% of output capacity; increases regional labor cost by 12%.',
+          contactName: 'Priyanka Rao',
+          contactTitle: 'Chennai Plant Supervisor',
+          email: 'priyanka.rao@aciesglobal.com',
+          draftBody: 'Hi Priyanka,\n\nWhile we wait for pump parts, please stand up the manual assembly lines with double shifts starting tonight to buffer our stock levels.\n\nThanks,\nVP Product Management'
+        },
+        {
+          action: 'Enforce 70% distributor allocation limit on secondary pharmacy chains.',
+          impact: 'Protects key retail service agreements; prevents late delivery penalties.',
+          contactName: 'Gautam Sen',
+          contactTitle: 'National Distribution Manager',
+          email: 'gautam.sen@aciesglobal.com',
+          draftBody: 'Hi Gautam,\n\nDue to foaming-pump assembly constraints, please cap distribution of Foam Face Wash at 70% for Tier-2 pharmacy accounts, protecting Tier-1 contracts.\n\nThanks,\nVP Product Management'
+        }
+      ]
+    },
+    {
+      label: 'Herbal Shampoo',
+      val: 18,
+      color: '#10b981',
+      status: 'ok',
+      location: 'Vapi, Gujarat (Western Hub)',
+      cause: 'Minor cosmetic labeling alignment defect on batch #89 - resolved and cleared.',
+      suggestions: [
+        {
+          action: 'Install inline optical inspection sensors on primary labeling line.',
+          impact: 'Avoids manual audit delays; ₹4 Lakhs CAPEX.',
+          contactName: 'Vikram Solanki',
+          contactTitle: 'QC Manager',
+          email: 'vikram.solanki@aciesglobal.com',
+          draftBody: 'Hi Vikram,\n\nFollowing the batch #89 labeling issue, let\'s install the optical inspection cameras on the primary line. Please submit the CAPEX proposal for my sign-off.\n\nThanks,\nVP Product Management'
+        },
+        {
+          action: 'Scale plant output by 20% to capitalize on current regional demand growth.',
+          impact: 'Captures ₹22 Cr in unsatisfied market orders.',
+          contactName: 'Rajendra Patel',
+          contactTitle: 'Vapi Hub Director',
+          email: 'rajendra.patel@aciesglobal.com',
+          draftBody: 'Hi Rajendra,\n\nHerbal Shampoo is tracking very strongly. Please prepare the Vapi plant expansion model to scale throughput by 20% starting next month.\n\nThanks,\nVP Product Management'
+        }
+      ]
+    }
   ];
 
   // Chart data
@@ -442,13 +643,25 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
             </div>
             <div className="space-y-3">
               {bottlenecks.map(b => (
-                <div key={b.label} className="flex items-center gap-2.5 text-[11px]">
-                  <span className="w-56 truncate text-zinc-650 dark:text-zinc-350 font-medium" title={b.label}>{b.label}</span>
-                  <div className="flex-1 h-1 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
-                    <div className="h-full rounded-full" style={{ width: `${b.val}%`, backgroundColor: b.color }} />
-                  </div>
-                  <span className="text-[10px] font-bold font-mono w-8 text-right" style={{ color: b.color }}>{b.val}%</span>
-                  <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: b.color }} />
+                <div key={b.label} className="border-b border-black/[0.03] dark:border-white/[0.03] pb-2 last:border-b-0 animate-fadeIn">
+                  <button 
+                    onClick={() => setActiveBottleneck(b.label)}
+                    className="w-full flex items-center justify-between gap-2.5 text-[11px] hover:bg-black/[0.02] dark:hover:bg-white/5 p-2 rounded-sm transition-all focus:outline-none text-left cursor-pointer border-none bg-transparent"
+                  >
+                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                      <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: b.color }} />
+                      <span className="font-semibold text-zinc-700 dark:text-zinc-300 truncate" title={b.label}>{b.label}</span>
+                    </div>
+                    <div className="flex items-center gap-2.5 flex-1 max-w-[120px]">
+                      <div className="flex-1 h-1 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
+                        <div className="h-full rounded-full" style={{ width: `${b.val}%`, backgroundColor: b.color }} />
+                      </div>
+                      <span className="text-[10px] font-bold font-mono text-right min-w-[28px]" style={{ color: b.color }}>{b.val}%</span>
+                    </div>
+                    <span className="text-zinc-400 text-[10px] shrink-0 font-sans hover:translate-x-0.5 transition-transform">
+                      ➔
+                    </span>
+                  </button>
                 </div>
               ))}
             </div>
@@ -680,6 +893,31 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
           </div>
         ))}
       </div>
+
+      {/* Email Composer Modal */}
+      <EmailComposerModal 
+        isOpen={composerOpen}
+        onClose={() => setComposerOpen(false)}
+        initialEmail={composerEmail}
+        onSend={(name, email, subject, body) => {
+          setComposerOpen(false);
+          addToast(
+            'Mitigation Request Sent', 
+            `Request email has been sent successfully to ${name} (${email}) regarding this bottleneck.`, 
+            '#10b981'
+          );
+        }}
+      />
+
+      {/* Bottleneck Details Modal */}
+      <BottleneckDetailsModal 
+        isOpen={!!activeBottleneck}
+        bottleneck={bottlenecks.find(x => x.label === activeBottleneck) || null}
+        onClose={() => setActiveBottleneck(null)}
+        onRequestAction={(email, name, subject, body) => {
+          openEmailComposer(email, name, subject, body);
+        }}
+      />
     </div>
   );
 };
