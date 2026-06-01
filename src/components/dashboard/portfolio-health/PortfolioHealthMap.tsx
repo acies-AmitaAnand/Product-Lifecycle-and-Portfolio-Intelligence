@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { 
   Layers, Filter, RefreshCw, BarChart2, PieChart, Info, HelpCircle, Save, Plus, Trash2, ArrowRight, Zap,
   Clock, Shield, Bell, Check, X, AlertTriangle, AlertCircle, TrendingUp, Globe, Activity as ActivityIcon,
-  Mail, MapPin, Calendar
+  Mail, MapPin, Calendar, LayoutGrid, List
 } from 'lucide-react';
 import { 
   ResponsiveContainer, ScatterChart, Scatter, XAxis, YAxis, ZAxis, Tooltip, CartesianGrid, LabelList,
@@ -91,6 +91,7 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
   const [activeApprovalMeeting, setActiveApprovalMeeting] = useState<string | null>(null);
   const [composerOpen, setComposerOpen] = useState(false);
   const [composerEmail, setComposerEmail] = useState({ to: '', subject: '', body: '', name: '', action: '' });
+  const [viewFormat, setViewFormat] = useState<'grid' | 'table'>('grid');
 
   // KPIs
   const [kpis, setKpis] = useState({
@@ -819,52 +820,132 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
             <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Live Event Stream</span>
             <span className="flex h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
           </div>
-          <select 
-            value={eventFilter}
-            onChange={(e) => setEventFilter(e.target.value)}
-            className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-sm p-1 text-[9px] font-bold text-zinc-600 dark:text-zinc-400 outline-none"
-          >
-            <option value="all">All Events</option>
-            <option value="Supply">Supply</option>
-            <option value="Demand">Demand</option>
-            <option value="Margin">Margin</option>
-            <option value="Launch">Launch</option>
-            <option value="Finance">Finance</option>
-          </select>
+          <div className="flex items-center gap-3">
+            <select 
+              value={eventFilter}
+              onChange={(e) => setEventFilter(e.target.value)}
+              className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-sm p-1 text-[9px] font-bold text-zinc-600 dark:text-zinc-400 outline-none cursor-pointer"
+            >
+              <option value="all">All Events</option>
+              <option value="Supply">Supply</option>
+              <option value="Demand">Demand</option>
+              <option value="Margin">Margin</option>
+              <option value="Launch">Launch</option>
+              <option value="Finance">Finance</option>
+            </select>
+
+            {/* Layout Toggle Buttons */}
+            <div className="flex items-center border border-black/10 dark:border-white/10 rounded-sm overflow-hidden bg-black/5 dark:bg-white/5 p-0.5">
+              <button
+                onClick={() => setViewFormat('grid')}
+                className={`p-1 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm ${
+                  viewFormat === 'grid' 
+                    ? 'bg-blue-500 text-white shadow-sm' 
+                    : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 bg-transparent'
+                }`}
+                title="Grid View"
+              >
+                <LayoutGrid size={11} />
+              </button>
+              <button
+                onClick={() => setViewFormat('table')}
+                className={`p-1 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm ${
+                  viewFormat === 'table' 
+                    ? 'bg-blue-500 text-white shadow-sm' 
+                    : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 bg-transparent'
+                }`}
+                title="Table View"
+              >
+                <List size={11} />
+              </button>
+            </div>
+          </div>
         </div>
 
-        {/* Scrollable event lists in a horizontal multi-column grid */}
+        {/* Scrollable event lists in a horizontal multi-column grid or premium P&L table */}
         <div className="overflow-y-auto space-y-2 max-h-[300px] pr-1">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-            {filteredEvents.map((ev, i) => (
-              <div 
-                key={ev.id} 
-                className={`flex items-start justify-between gap-3 p-3.5 rounded-sm border border-black/5 dark:border-white/5 transition-all text-xs h-full ${
-                  i === 0 ? 'bg-black/[0.02] dark:bg-white/5 animate-pulse border-emerald-500/35 shadow-sm' : 'bg-transparent'
-                }`}
-              >
-                <div className="flex gap-2 min-w-0">
-                  <span 
-                    className="w-1.5 h-1.5 rounded-full shrink-0 mt-1.5" 
-                    style={{ backgroundColor: ev.sevC }} 
-                  />
-                  <div className="min-w-0">
-                    <p className="text-zinc-800 dark:text-zinc-200 leading-snug font-semibold break-words">{ev.msg}</p>
-                    <div className="flex items-center gap-1.5 mt-2">
-                      <span 
-                        className="text-[8px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-sm"
-                        style={{ backgroundColor: `${ev.sevC}15`, color: ev.sevC }}
-                      >
-                        {ev.type}
-                      </span>
-                      <span className="text-[8px] opacity-40 font-bold uppercase">{ev.sev}</span>
+          {viewFormat === 'grid' ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+              {filteredEvents.map((ev, i) => (
+                <div 
+                  key={ev.id} 
+                  className={`flex items-start justify-between gap-3 p-3.5 rounded-sm border border-black/5 dark:border-white/5 transition-all text-xs h-full ${
+                    i === 0 ? 'bg-black/[0.02] dark:bg-white/5 animate-pulse border-emerald-500/35 shadow-sm' : 'bg-transparent'
+                  }`}
+                >
+                  <div className="flex gap-2 min-w-0">
+                    <span 
+                      className="w-1.5 h-1.5 rounded-full shrink-0 mt-1.5" 
+                      style={{ backgroundColor: ev.sevC }} 
+                    />
+                    <div className="min-w-0">
+                      <p className="text-zinc-800 dark:text-zinc-200 leading-snug font-semibold break-words">{ev.msg}</p>
+                      <div className="flex items-center gap-1.5 mt-2">
+                        <span 
+                          className="text-[8px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-sm"
+                          style={{ backgroundColor: `${ev.sevC}15`, color: ev.sevC }}
+                        >
+                          {ev.type}
+                        </span>
+                        <span className="text-[8px] opacity-40 font-bold uppercase">{ev.sev}</span>
+                      </div>
                     </div>
                   </div>
+                  <span className="text-[9px] font-semibold text-zinc-400 dark:text-zinc-550 font-mono whitespace-nowrap">{ev.time}</span>
                 </div>
-                <span className="text-[9px] font-semibold text-zinc-400 dark:text-zinc-550 font-mono whitespace-nowrap">{ev.time}</span>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="w-full overflow-x-auto border border-black/5 dark:border-white/10 rounded-sm">
+              <table className="w-full border-collapse text-left text-xs">
+                <thead>
+                  <tr className="bg-black/5 dark:bg-white/5 border-b border-black/10 dark:border-white/10 text-[9px] uppercase tracking-wider font-bold text-zinc-400">
+                    <th className="py-2.5 px-4 w-[60px]">Status</th>
+                    <th className="py-2.5 px-4 min-w-[200px]">Description</th>
+                    <th className="py-2.5 px-4 w-[100px]">Category</th>
+                    <th className="py-2.5 px-4 w-[100px]">Priority</th>
+                    <th className="py-2.5 px-4 w-[100px] text-right">Timestamp</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-black/[0.03] dark:divide-white/[0.03]">
+                  {filteredEvents.map((ev, i) => (
+                    <tr 
+                      key={ev.id} 
+                      className={`hover:bg-black/[0.01] dark:hover:bg-white/[0.02] transition-colors ${
+                        i === 0 ? 'bg-black/[0.02] dark:bg-white/5 animate-pulse' : 'bg-transparent'
+                      }`}
+                    >
+                      <td className="py-2.5 px-4">
+                        <div className="flex items-center justify-center">
+                          <span 
+                            className="w-2 h-2 rounded-full" 
+                            style={{ backgroundColor: ev.sevC, boxShadow: `0 0 6px ${ev.sevC}66` }} 
+                          />
+                        </div>
+                      </td>
+                      <td className="py-2.5 px-4 font-semibold text-zinc-800 dark:text-zinc-200 leading-snug break-words">
+                        {ev.msg}
+                      </td>
+                      <td className="py-2.5 px-4 font-bold">
+                        <span 
+                          className="text-[8px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-sm"
+                          style={{ backgroundColor: `${ev.sevC}15`, color: ev.sevC }}
+                        >
+                          {ev.type}
+                        </span>
+                      </td>
+                      <td className="py-2.5 px-4 uppercase text-[9px] font-bold text-zinc-400">
+                        {ev.sev}
+                      </td>
+                      <td className="py-2.5 px-4 text-right font-mono text-[9.5px] text-zinc-500 dark:text-zinc-400 font-semibold whitespace-nowrap">
+                        {ev.time}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </div>
 
