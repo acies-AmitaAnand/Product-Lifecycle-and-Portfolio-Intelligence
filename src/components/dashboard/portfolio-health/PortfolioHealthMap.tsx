@@ -865,10 +865,11 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
             {/* Calendar Button */}
             <button
               onClick={() => setCalendarOpen(true)}
-              className="p-1 transition-all cursor-pointer border border-black/10 dark:border-white/10 rounded-sm flex items-center justify-center bg-black/5 dark:bg-white/5 text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 hover:bg-black/10 dark:hover:bg-white/10 h-[21px] w-[21px]"
+              className="px-2 py-0.5 transition-all cursor-pointer border border-black/10 dark:border-white/10 rounded-sm flex items-center justify-center gap-1.5 bg-black/5 dark:bg-white/5 text-zinc-600 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-100 hover:bg-black/10 dark:hover:bg-white/10 h-[21px] text-[9px] font-bold"
               title="Open Calendar"
             >
               <Calendar size={11} />
+              <span>Calendar</span>
             </button>
           </div>
         </div>
