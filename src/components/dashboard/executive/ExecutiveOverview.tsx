@@ -339,15 +339,15 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
           </h3>
 
           {/* Category Filter Pills */}
-          <div className="flex flex-wrap gap-1 mb-2.5 border-b border-black/5 dark:border-white/5 pb-1.5">
+          <div className="flex flex-wrap gap-1.5 mb-2.5 border-b border-black/5 dark:border-white/5 pb-2">
             {['All', 'Beverages', 'Snacks', 'Personal Care', 'Household'].map(cat => (
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
-                className={`px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wider rounded-sm transition-all border border-black/5 dark:border-white/10 cursor-pointer ${
+                className={`px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-sm transition-all border border-black/5 dark:border-white/10 cursor-pointer ${
                   activeCategory === cat
                     ? 'bg-acies-yellow text-acies-gray font-extrabold border-acies-yellow'
-                    : 'bg-black/5 dark:bg-white/5 text-zinc-550 dark:text-zinc-450 hover:bg-black/10 dark:hover:bg-white/10'
+                    : 'bg-black/5 dark:bg-white/5 text-zinc-600 dark:text-zinc-400 hover:bg-black/10 dark:hover:bg-white/10'
                 }`}
               >
                 {cat}
