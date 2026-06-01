@@ -354,7 +354,16 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
         {/* Forecast vs Actual by Region */}
         <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3.5 h-[320px] flex flex-col">
           <h3 className="text-[11px] font-bold uppercase tracking-widest pb-2 border-b border-black/5 dark:border-white/5 mb-2 flex items-center justify-between gap-1.5">
-            <span>Regional Forecast</span>
+            <div className="flex items-center gap-1.5">
+              <span>Regional Forecast</span>
+              <button 
+                onClick={() => setActiveTab(1)}
+                className="text-zinc-400 hover:text-acies-yellow transition-colors cursor-pointer border-none bg-transparent p-0 outline-none flex items-center"
+                title="View Regional Forecast Map"
+              >
+                <Info size={11} />
+              </button>
+            </div>
             <span className="text-[7.5px] font-extrabold opacity-40 uppercase">Actual vs Target</span>
           </h3>
           <div className="space-y-1.5 overflow-y-auto flex-1 pr-1 min-h-0">
