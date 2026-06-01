@@ -495,7 +495,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
             <div className="flex-1 min-h-0 flex flex-col justify-between pt-1 pb-0.5">
               <div className="flex-1 min-h-0">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={VP_FORECAST} margin={{ top: 10, right: 15, left: 0, bottom: 5 }}>
+                  <BarChart data={VP_FORECAST} barGap={4} margin={{ top: 35, right: 15, left: 0, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridStroke} />
                     <XAxis 
                       dataKey="region" 
@@ -523,14 +523,14 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
                       iconType="square"
                       height={25}
                       iconSize={10}
-                      wrapperStyle={{ fontSize: 10, fontWeight: 'bold', paddingBottom: 10, paddingLeft: 10 }}
+                      wrapperStyle={{ fontSize: 10, fontWeight: 'bold', top: 0, paddingLeft: 10 }}
                     />
                     <Bar 
                       dataKey="actual" 
                       name="Actual" 
                       fill={isDarkMode ? '#818cf8' : '#4f46e5'} 
-                      barSize={22} 
-                      radius={[3, 3, 0, 0]} 
+                      barSize={30} 
+                      radius={[4, 4, 0, 0]} 
                       onClick={(data) => setSelectedRegion(data)}
                       cursor="pointer"
                     />
@@ -538,8 +538,8 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
                       dataKey="target" 
                       name="Target" 
                       fill={isDarkMode ? '#d4d3cc' : '#b2b0a3'} 
-                      barSize={22} 
-                      radius={[3, 3, 0, 0]} 
+                      barSize={30} 
+                      radius={[4, 4, 0, 0]} 
                       onClick={(data) => setSelectedRegion(data)}
                       cursor="pointer"
                     />
