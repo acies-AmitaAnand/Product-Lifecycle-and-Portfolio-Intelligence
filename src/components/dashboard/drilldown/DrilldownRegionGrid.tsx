@@ -11,7 +11,7 @@ interface DrilldownRegionGridProps {
   onRegionSelect: (region: string) => void;
   selectedMetric: 'rev' | 'margin' | 'otif';
   multiplier: number;
-  timeHorizon: '1M' | '3M' | '6M' | '12M';
+  timeHorizon: '1M' | '3M' | '6M' | 'YTD' | '12M' | '3Y';
 }
 
 const REGIONS_CONFIG: Record<string, { name: string; manager: string; email: string; role: string; plant: string }> = {
@@ -51,11 +51,23 @@ export const DrilldownRegionGrid: React.FC<DrilldownRegionGridProps> = ({
         EMEA: { margin: { actual: 36.45, target: 35.9 }, otif: { actual: 92.75, target: 93.0 } },
         LATAM: { margin: { actual: 33.0, target: 33.75 }, otif: { actual: 89.65, target: 90.5 } },
       },
+      'YTD': {
+        APAC: { margin: { actual: 38.0, target: 38.0 }, otif: { actual: 95.5, target: 95.0 } },
+        Americas: { margin: { actual: 32.2, target: 34.8 }, otif: { actual: 87.8, target: 91.8 } },
+        EMEA: { margin: { actual: 36.3, target: 35.9 }, otif: { actual: 92.5, target: 93.0 } },
+        LATAM: { margin: { actual: 32.9, target: 33.8 }, otif: { actual: 89.8, target: 90.8 } },
+      },
       '12M': {
         APAC: { margin: { actual: 38.7, target: 38.2 }, otif: { actual: 96.1, target: 95.5 } },
         Americas: { margin: { actual: 33.1, target: 35.2 }, otif: { actual: 89.0, target: 92.5 } },
         EMEA: { margin: { actual: 37.0, target: 36.5 }, otif: { actual: 93.8, target: 93.5 } },
         LATAM: { margin: { actual: 33.6, target: 34.2 }, otif: { actual: 90.5, target: 91.0 } },
+      },
+      '3Y': {
+        APAC: { margin: { actual: 37.5, target: 37.0 }, otif: { actual: 94.8, target: 94.5 } },
+        Americas: { margin: { actual: 31.0, target: 33.5 }, otif: { actual: 85.5, target: 90.0 } },
+        EMEA: { margin: { actual: 35.5, target: 35.0 }, otif: { actual: 91.5, target: 92.0 } },
+        LATAM: { margin: { actual: 32.0, target: 33.0 }, otif: { actual: 88.0, target: 89.5 } },
       }
     };
 

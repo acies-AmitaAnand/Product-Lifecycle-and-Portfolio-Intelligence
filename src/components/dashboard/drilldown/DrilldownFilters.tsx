@@ -7,18 +7,20 @@ import React from 'react';
 import { Calendar } from 'lucide-react';
 
 interface DrilldownFiltersProps {
-  timeHorizon: '1M' | '3M' | '6M' | '12M';
-  setTimeHorizon: (q: '1M' | '3M' | '6M' | '12M') => void;
+  timeHorizon: '1M' | '3M' | '6M' | 'YTD' | '12M' | '3Y';
+  setTimeHorizon: (q: '1M' | '3M' | '6M' | 'YTD' | '12M' | '3Y') => void;
   selectedMetric: 'rev' | 'margin' | 'otif';
   setSelectedMetric: (m: 'rev' | 'margin' | 'otif') => void;
 }
 
-const getDateRangeLabel = (horizon: '1M' | '3M' | '6M' | '12M') => {
+const getDateRangeLabel = (horizon: '1M' | '3M' | '6M' | 'YTD' | '12M' | '3Y') => {
   switch (horizon) {
     case '1M': return 'May 01, 2026 - May 31, 2026 (30 Days)';
     case '3M': return 'Mar 01, 2026 - May 31, 2026 (92 Days)';
     case '6M': return 'Dec 01, 2025 - May 31, 2026 (182 Days)';
+    case 'YTD': return 'Jan 01, 2026 - May 31, 2026 (151 Days)';
     case '12M': return 'Jun 01, 2025 - May 31, 2026 (365 Days)';
+    case '3Y': return 'Jun 01, 2023 - May 31, 2026 (1096 Days)';
     default: return '';
   }
 };
@@ -35,12 +37,12 @@ export const DrilldownFilters: React.FC<DrilldownFiltersProps> = ({
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 shrink-0 w-full lg:w-auto">
         <div className="flex items-center gap-3">
           <span className="text-[9px] uppercase font-bold tracking-wider text-zinc-500 dark:text-zinc-400">Analysis Horizon:</span>
-          <div className="flex bg-black/5 dark:bg-white/5 p-0.5 rounded border border-black/5 dark:border-white/10 min-w-[180px]">
-            {(['1M', '3M', '6M', '12M'] as const).map(q => (
+          <div className="flex bg-black/5 dark:bg-white/5 p-0.5 rounded border border-black/5 dark:border-white/10 min-w-[220px]">
+            {(['1M', '3M', '6M', 'YTD', '12M', '3Y'] as const).map(q => (
               <button
                 key={q}
                 onClick={() => setTimeHorizon(q)}
-                className={`flex-1 py-1 text-[8.5px] font-bold uppercase tracking-wider rounded-sm transition-all border-none cursor-pointer text-center ${
+                className={`flex-1 py-1 px-1.5 text-[8.5px] font-bold uppercase tracking-wider rounded-sm transition-all border-none cursor-pointer text-center ${
                   timeHorizon === q
                     ? 'bg-acies-yellow text-white dark:text-acies-gray font-extrabold shadow-sm shadow-black/10'
                     : 'bg-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-white'
