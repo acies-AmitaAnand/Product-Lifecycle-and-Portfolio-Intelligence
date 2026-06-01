@@ -249,12 +249,12 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         
         {/* Revenue Trend actual vs target */}
-        <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-5">
+        <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-5 h-[360px] flex flex-col">
           <div className="mb-4">
             <h3 className="text-xs font-bold uppercase tracking-widest">Revenue Trend</h3>
             <p className="text-[9px] text-zinc-500 uppercase tracking-widest mt-0.5">Monthly Actual vs Target (₹ Cr) — This Year</p>
           </div>
-          <div className="h-64">
+          <div className="flex-1 min-h-0">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={revenueTrendData} margin={{ top: 10, right: 10, left: -20, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridStroke} />
@@ -273,12 +273,12 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
         </div>
 
         {/* Category Performance */}
-        <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-5">
+        <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-5 h-[360px] flex flex-col">
           <div className="mb-4">
             <h3 className="text-xs font-bold uppercase tracking-widest">Category Performance</h3>
             <p className="text-[9px] text-zinc-500 uppercase tracking-widest mt-0.5">Revenue ₹ Cr by Category — Current Month</p>
           </div>
-          <div className="h-64">
+          <div className="flex-1 min-h-0">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={categoryPerfData} layout="vertical" margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke={gridStroke} />
@@ -298,11 +298,11 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
           </div>
         </div>
 
-            {/* Bottom Row grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* Bottom Row grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         
         {/* Top SKU Performance List */}
-        <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-5">
+        <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-5 h-[360px] flex flex-col">
           <h3 className="text-xs font-bold uppercase tracking-widest pb-3 border-b border-black/5 dark:border-white/5 mb-3 flex items-center justify-between gap-1.5">
             <span>Top SKU Performance</span>
             <span className="text-[8px] font-extrabold opacity-40 uppercase">By Revenue</span>
@@ -325,7 +325,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
             ))}
           </div>
 
-          <div className="space-y-1 overflow-y-auto h-64 pr-1">
+          <div className="flex-1 overflow-y-auto pr-1 space-y-1">
             {topSkus.map(s => {
               const widthPct = Math.round((s.rev / maxSkuRev) * 100);
               return (
@@ -350,12 +350,12 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
         </div>
 
         {/* Forecast vs Actual by Region */}
-        <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-5">
+        <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-5 h-[360px] flex flex-col">
           <h3 className="text-xs font-bold uppercase tracking-widest pb-3 border-b border-black/5 dark:border-white/5 mb-3 flex items-center justify-between gap-1.5">
             <span>Regional Forecast</span>
             <span className="text-[8px] font-extrabold opacity-40 uppercase">Actual vs Target</span>
           </h3>
-          <div className="space-y-3 overflow-y-auto h-64 pr-1">
+          <div className="flex-1 overflow-y-auto pr-1 space-y-3">
             {VP_FORECAST.map(f => {
               const widthPct = Math.min(100, Math.round((f.actual / f.target) * 100));
               const deltaColor = f.up ? 'text-green-500' : 'text-red-500';
