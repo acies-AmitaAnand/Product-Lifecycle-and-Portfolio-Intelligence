@@ -299,6 +299,33 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
     { a: 'Green Tea RTD', b: 'Mango Fizz 500ml', risk: 0.44, cat: 'Beverages', revAtRisk: 22 },
   ];
 
+  // Automatically update correlation when SKU A or SKU B changes
+  useEffect(() => {
+    if (!skuA || !skuB) return;
+    const predefined = pairsData.find(
+      p => (p.a === skuA && p.b === skuB) || (p.a === skuB && p.b === skuA)
+    );
+    if (predefined) {
+      setCorrelation(-predefined.risk);
+    } else {
+      // Deterministically generate a realistic correlation coefficient (-0.15 to -0.60) based on name hashes
+      const combined = [skuA, skuB].sort().join('|');
+      let hash = 0;
+      for (let i = 0; i < combined.length; i++) {
+        hash = combined.charCodeAt(i) + ((hash << 5) - hash);
+      }
+      const normalized = Math.abs(hash % 100) / 100;
+      const baseCorrelation = -0.15 - (normalized * 0.45);
+      setCorrelation(parseFloat(baseCorrelation.toFixed(2)));
+    }
+  }, [skuA, skuB]);
+
+  // Synchronize category state automatically to match SKU A's category
+  useEffect(() => {
+    const catLabel = skuACategory === 'Home Care' ? 'Household' : skuACategory;
+    setCategory(catLabel);
+  }, [skuACategory]);
+
   const pairRisk = Math.max(0, -correlation);
   let riskVerdict = 'Low Risk';
   let verdictColor = 'text-green-500 bg-green-500/10 border-green-500/20';
@@ -1119,16 +1146,12 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
               </div>
               <div className="flex flex-col gap-1">
                 <label className="text-[8px] font-bold uppercase tracking-widest opacity-40">Category</label>
-                <select 
+                <input 
+                  type="text"
                   value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  className="bg-black/5 dark:bg-[#121214] border border-black/10 dark:border-white/10 rounded px-2.5 py-2 text-xs font-semibold text-acies-gray dark:text-white outline-none"
-                >
-                  <option>Beverages</option>
-                  <option>Snacks</option>
-                  <option>Personal Care</option>
-                  <option>Household</option>
-                </select>
+                  disabled
+                  className="bg-black/5 dark:bg-[#121214] border border-black/10 dark:border-white/10 rounded px-2.5 py-2.5 text-xs font-bold text-zinc-400 dark:text-zinc-500 outline-none cursor-not-allowed"
+                />
               </div>
             </div>
 
