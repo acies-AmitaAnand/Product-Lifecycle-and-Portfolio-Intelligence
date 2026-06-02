@@ -40,6 +40,62 @@ const KPI_TOOLTIPS: Record<string, { soWhat: string; action: string }> = {
   'Revenue Tail Risk': {
     soWhat: 'Pruning all 35 candidates simultaneously risks 27.08% of revenue under a zero customer transfer assumption.',
     action: 'Run a phased pilot substitution test in a single region before fully sun-setting items.'
+  },
+  // Tab 2 (Launch Readiness) KPIs
+  'Overall Readiness %': {
+    soWhat: 'Overall category launch readiness stands at 82% (or 79% under delays), dragged down by supplier bottlenecks in Household and Dairy labels.',
+    action: 'Escalate lead-time reviews with regional supplier partners and clear the Q4 launch pipeline backlog.'
+  },
+  // Tab 3 (Profitability Tree) KPIs
+  'Net Profit': {
+    soWhat: 'Net profitability reaches ₹95.2 Cr, driven by strong growth in core beverages, but impacted by rising raw milk COGS in Dairy.',
+    action: 'Re-negotiate milk procurement contracts and increase high-margin snack items distribution focus.'
+  },
+  'Gross Margin %': {
+    soWhat: 'Average segment gross margin is 36.2%, compressed by deep promotional discounts on cookies and chips.',
+    action: 'Cap promotional discount depths at 15% and enforce margin pricing corridors.'
+  },
+  'Revenue Growth %': {
+    soWhat: 'YoY growth is +8.4%, led by beverages (+18.4% demand change in APAC) while Household sales declined by 4%.',
+    action: 'Reallocate marketing budget from declining Household cleaners to high-growth beverages.'
+  },
+  'Launch ROI': {
+    soWhat: 'Expected launch return stands at 1.85x ROI, buoyed by the upcoming premium Mango Fizz 750ml rollout.',
+    action: 'Approve the ₹4.2 Cr launch budget and run early cross-promotions with snacks.'
+  },
+  // Tab 4 (SKU Rationalization) KPIs
+  'Portfolio SKUs': {
+    soWhat: 'Portfolio contains 127 total active SKUs, recently optimized by sun-setting 3 low-value tail products.',
+    action: 'Maintain category assortments and monitor baseline volume transfer to core hero SKUs.'
+  },
+  'Sunset Candidates': {
+    soWhat: 'AI has identified 6 critical sunset candidates (like Fabric Softener, Floor Cleaner, and Aloe Face Wash) that drive margin leakage.',
+    action: 'Execute phase-out for the bottom 3 performers immediately to reclaim supplier administrative capacity.'
+  },
+  'Revenue at Risk': {
+    soWhat: 'Total revenue exposure is ₹148 Cr if all 6 sunset candidates are pruned simultaneously without substitution transfer.',
+    action: 'Enforce product replacement recommendations (e.g. redirecting demand to hero Mango Fizz or Soap variants).'
+  },
+  'Avg Complexity': {
+    soWhat: 'Catalog complexity average is 0.48, exceeding the corporate ceiling of 0.40 due to vendor fragmentation.',
+    action: 'Consolidate logistics by routing tail-end variants to distributor-held fulfillment models.'
+  },
+  // Tab 5 (Signals Board) KPIs
+  'Total Active Signals': {
+    soWhat: 'A total of 6 critical operational signals are active, led by NPS drops in EMEA and cannibalization alerts in India.',
+    action: 'Review signals queue and triage urgent tickets to respective category managers.'
+  },
+  'Competitor Alerts': {
+    soWhat: 'Active competitor alerts indicate aggressive pricing cuts on snacks and soap lines in regional supermarkets.',
+    action: 'Monitor daily discount tracking and stabilize baseline retail price corridors.'
+  },
+  'Market Demand Change': {
+    soWhat: 'Market demand is up +18.4% overall, heavily driven by carbonated and natural beverages in APAC.',
+    action: 'Establish dedicated priority freight corridors to prevent stockouts in high-demand zones.'
+  },
+  'Customer Sentiment Score': {
+    soWhat: 'Customer Net Promoter Score is stable at 72, though EMEA snacks saw a 3-point dip due to recent logistics delays.',
+    action: 'Implement local customer feedback loops and optimize warehouse dispatch times in Europe.'
   }
 };
 
