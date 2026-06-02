@@ -1,64 +1,105 @@
-# Acies AgenticBus: Product Lifecycle & Portfolio Intelligence
+# Acies AgenticBus: FMCG Portfolio & Product Lifecycle Intelligence
 
-This repository contains the front-end dashboard for **Acies AgenticBus**, a unified portfolio intelligence tool designed for FMCG (Fast-Moving Consumer Goods) multi-country enterprises. 
+A high-fidelity, real-time executive control center and data analysis dashboard built for FMCG (Fast-Moving Consumer Goods) multi-country enterprises. 
 
-The dashboard visualizes complex supply chain and sales data to assist in product health monitoring, launch readiness, and SKU rationalization. It acts as an interface for a hypothetical "Agentic Bus" — a system of AI agents monitoring different aspects of the business.
+This platform bridges advanced data science findings (extracted from transactional analyses of 102 SKUs across 6 brands and 7 regional markets) with a premium front-end experience. It provides category managers and executives with the simulation models and auditing tools needed to optimize product complexity, mitigate supply risks, and recover margins.
 
-Sample Deployed on vercel - [Link to website](https://ilp-ppl-dash-board.vercel.app/)
+---
 
-## Overview
+## Deployed Demo
+*   **Production Deployment (Vercel)**: [Acies Portfolio Intelligence Dashboard](https://ilp-ppl-dash-board.vercel.app/)
 
-The application is built using **React (Vite)**, **TypeScript**, **Tailwind CSS**, and **Recharts**. It is designed to be highly interactive, responsive, and data-driven, providing distinct views depending on the user's role (VP Product Management, Product Manager, Pricing and Margin Partner).
+---
 
-### Key Features
-*   **Role-Based Views**: KPI highlights dynamically adjust based on the selected user persona.
-*   **Dark Mode**: Full support for light and dark themes.
-*   **Agentic Sidebar ("How This Evolves")**: Explains the transition from current manual processes to the future AI-driven Agentic Bus.
-*   **Data-Grounded Components**: All visualizations in Tab 0 are powered by real findings extracted from a source data analysis (see `docs/extracted_text.txt`).
+## 🎯 The Core Deliverable & Idea
+The dashboard functions as the interactive command center for the **Acies AgenticBus**—a system of cooperative AI agents that continuously monitor enterprise ledgers, compliance records, and sales data. 
 
-## Project Structure & Data Flow
+Rather than relying on static, delayed reporting, the AgenticBus translates raw transaction logs into live simulation models, allowing stakeholders to model macro and micro actions (pricing adjustments, SKU phase-outs, regional supply shocks) and inspect explainable reasoning paths immediately.
 
-The `docs/` folder contains the source of truth for the dashboard's data:
-*   `extracted_text.txt`: The definitive Q&A dataset derived from an FMCG data analysis notebook. This file bridges the data science work with the front end.
+---
 
-The data from `extracted_text.txt` is manually wired into `src/constants/data.ts`, which acts as the static data provider for all components.
+## 🗂️ Module Directory: Tab-by-Tab Capabilities & Actions
 
-### Current Status
+### 0. Executive Overview (Home)
+*   **The Idea**: A high-level control panel summarizing enterprise performance, operational alerts, and pending approvals.
+*   **Actionable Capabilities**:
+    *   Review key financial metrics (Total Revenue, Gross Margin, Active SKUs, Critical Alerts) at a glance.
+    *   Triage **Critical Alerts** (e.g., Fabric Softener stockouts or Choco Wafers promo dependencies) and **Urgent Approvals** (approving launch budgets, signing off on rationalizations) directly from the desk.
 
-**Tab 0: Portfolio Health Map** is currently the only fully developed tab. It includes:
-*   **KPI Strip**: 8 critical metrics with semantic trend indicators (red/green based on risk).
-*   **Value vs. Complexity Matrix**: A scatter plot segmenting SKUs into Keep, Grow, Consolidate, and Rationalize.
-*   **Complexity Index**: A breakdown of the Portfolio Complexity Index (PCI) drivers against benchmarks, plus a regional complexity matrix.
-*   **Revenue Concentration (Pareto)**: Highlights the reliance on top SKUs vs. the operational drag of the long tail.
-*   **Channel Performance**: Compares margin efficiency, volatility, and stockout risk across retail channels.
-*   **Stockout Heatmap**: Tracks the top 10 most fragile SKUs in the supply chain.
-*   **Rationalization Simulator**: Models the financial and operational impact of removing low-performing SKUs.
-*   **Action Priority Queue**: Ranks SKUs for immediate action based on their operational burden ratio.
+### 1. Portfolio Health Map
+*   **The Idea**: Macro-level visibility into catalog complexity and product concentration risk.
+*   **Actionable Capabilities**:
+    *   **Interactive KPI Cards**: Audit revenue concentration (Pareto rules) and long-tail SKU burdens. Clicking a card opens the audit trace drawer.
+    *   **Regional Margin Simulator**: Adjust country-level target margins using sliders to dynamically calculate profit lifts and simulated enterprise margins.
+    *   **Supplier & Proliferation PCI Charts**: Track the 6 sub-drivers of the Portfolio Complexity Index (PCI) against target benchmarks.
+    *   **Stockout Heatmap**: Trace replenishment risks for the top 10 supply-fragile SKUs.
 
-**Tabs 1–4** (Launch Readiness, Profitability Tree, SKU Rationalization, Signals Board) are currently placeholders awaiting development.
+### 2. Launch Readiness Tracker
+*   **The Idea**: Sourcing, regulatory, and marketing gate coordinator for product introductions.
+*   **Actionable Capabilities**:
+    *   **Launch Readiness Scoring**: Fill SKU brief parameters (lead times, supplier counts, projected revenue) to compute a pentagonal radar score across 5 readiness axes.
+    *   **Pipeline Funnel & Milestones**: Monitor gates (Ideation, Regulatory, Testing, Production, Market Ready) and check list statuses.
+    *   **Supply Shock Simulation**: Toggle the regional supply chain delay simulator (+14 days lead times in APAC) to instantly model revenue exposure, risk updates, and delayed gates.
 
-## Recent Polish (Phase 1)
+### 3. Profitability Tree
+*   **The Idea**: Interactive hierarchical visualization of margin health from category level down to individual product variants.
+*   **Actionable Capabilities**:
+    *   **Hierarchical Drilldown**: Double-click Category (e.g., Beverages) $\rightarrow$ Brand (e.g., Mango Fizz) $\rightarrow$ SKU Nodes to inspect revenue scales and margin dilution vectors.
+    *   **Margin Auditing**: Click any node to open the data lineage trace detailing cost-of-goods-sold (COGS) assumptions, formulas, and performance tables.
 
-A recent polish pass on Tab 0 included:
-*   **Semantic KPI Trends**: Added an `isRisk` flag to correctly color upward trends red for negative metrics (like complexity or stockouts).
-*   **Dark Mode Compatibility**: Fixed hardcoded light-mode colors across various components (ComplexityIndex, StockoutHeatmap, ChannelPerformance) to use opacity-based Tailwind utilities that work seamlessly in both modes.
-*   **Enhanced Tooltips**: Replaced native browser tooltips with custom, styled popovers on KPI cards for better readability.
-*   **UI/UX Refinements**: Added animated pulse bars for highlighted KPIs, fixed z-index issues, and improved overall contrast and scrollbar aesthetics.
+### 4. SKU Rationalization Command Desk (Tab-Local Workspace)
+*   **The Idea**: An optimized, self-contained workspace inside the `/sku-rationalization/` folder mapping AI pruning simulations, price-pack elasticity models, and cannibalization audits.
+*   **Actionable Capabilities**:
+    *   **Interactive KPI Action Modal**: Click any of the four top KPI cards to launch a dialog with direct actionable options:
+        *   *Portfolio SKUs*: Scroll to/highlight the Product Directory or isolate "Retain" (hero) products.
+        *   *Sunset Candidates*: Instantly load any of the 6 AI-flagged candidates (e.g., Fabric Softener, Floor Cleaner, Aloe Face Wash) into the simulator or inspect their profiles.
+        *   *Revenue at Risk*: Trigger phased pruning scenarios (Bottom 10% vs. Full Sunset) or model price elasticity changes.
+        *   *Avg Complexity*: Navigate to the complexity matrix or check promotional erosion bar charts.
+    *   **Projected Pareto Spline**: Simulating a SKU deletion plots a dashed red projection curve, visualizing displacement path and volume shifts.
+    *   **Category-Cross Filtered Directory**: Expand and search the entire 29 SKU directory, cross-routing straight to other dashboard modules.
 
-## Running Locally
+### 5. Signals Board
+*   **The Idea**: The risk ledger showing live compliance warnings and operational events.
+*   **Actionable Capabilities**:
+    *   Review active signals filtered by domain (Supply, Margin, Demand, Regulatory).
+    *   Acknowledge alerts (surges in APAC demand, competitor pricing cuts, packaging constraints) to coordinate category response teams.
 
-**Prerequisites:** Node.js
+### 6. Top-Down Scenario Drilldown
+*   **The Idea**: Macroeconomic shock simulator modeling targets across business divisions.
+*   **Actionable Capabilities**:
+    *   Configure global slider targets for Revenue, Margin, and On-Time-In-Full (OTIF) delivery.
+    *   Model enterprise adjustments across regional hubs (Italy, Spain, Germany, France) under economic stress tests.
 
-1.  Install dependencies:
+### 7. Agent Orchestrator
+*   **The Idea**: The execution dashboard showing live operational trails of the AI Agent Bus.
+*   **Actionable Capabilities**:
+    *   Review live activity logs, prompt routing chains, and explainability records.
+    *   Trigger background audit protocols across Category, Supply, and margin agents.
+
+---
+
+## 🛠️ Technology Stack
+*   **Framework**: React (Vite)
+*   **Language**: TypeScript (with strict schemas for transaction models)
+*   **Styling**: Custom CSS and glassmorphism styling parameters.
+*   **Visualizations**: Recharts (Composed, Radar, Scatter, Bar, and Line charts)
+*   **Icons**: Lucide React
+*   **Animations**: Framer Motion (Motion)
+
+---
+
+## 🚀 Running the Dashboard Locally
+
+1.  **Clone & Install Dependencies**:
     ```bash
     npm install
     ```
-2.  Run the development server:
+2.  **Start Development server**:
     ```bash
     npm run dev
     ```
-3.  Open your browser to the local URL provided by Vite (usually `http://localhost:3000/` or `http://localhost:5173/`).
-
-## Next Steps
-
-Refer to `docs/task.md` or `docs/init_report.md` (if available in your local setup) for the detailed development roadmap. The immediate next phase involves wiring up data for **Tab 3: SKU Rationalization** based on existing insights regarding promotional erosion and cannibalization risk.
+3.  **Build and Compile Verification**:
+    ```bash
+    npm run build
+    ```
+    *(Outputs production-ready static assets inside the `dist/` directory)*
