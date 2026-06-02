@@ -248,7 +248,7 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
   // Cannibalization Analyst States (Standard view panel)
   // ----------------------------------------------------
   const [skuA, setSkuA] = useState('Mango Fizz 500ml');
-  const [skuB, setSkuB] = useState('Mango Fizz 250ml');
+  const [skuB, setSkuB] = useState('Aloe Vera Drink');
   const [correlation, setCorrelation] = useState(-0.62);
   const [category, setCategory] = useState('Beverages');
   const [hasScored, setHasScored] = useState(true);
@@ -1020,21 +1020,27 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="flex flex-col gap-1">
                 <label className="text-[8px] font-bold uppercase tracking-widest opacity-40">SKU A Name</label>
-                <input 
-                  type="text" 
+                <select 
                   value={skuA}
                   onChange={(e) => setSkuA(e.target.value)}
                   className="bg-black/5 dark:bg-[#121214] border border-black/10 dark:border-white/10 rounded px-2.5 py-2 text-xs font-semibold text-acies-gray dark:text-white outline-none focus:border-acies-yellow"
-                />
+                >
+                  {SKUS.map(s => (
+                    <option key={`a-${s.name}`} value={s.name} className="dark:bg-[#1a1a24] text-xs font-semibold">{s.name}</option>
+                  ))}
+                </select>
               </div>
               <div className="flex flex-col gap-1">
                 <label className="text-[8px] font-bold uppercase tracking-widest opacity-40">SKU B Name</label>
-                <input 
-                  type="text" 
+                <select 
                   value={skuB}
                   onChange={(e) => setSkuB(e.target.value)}
                   className="bg-black/5 dark:bg-[#121214] border border-black/10 dark:border-white/10 rounded px-2.5 py-2 text-xs font-semibold text-acies-gray dark:text-white outline-none focus:border-acies-yellow"
-                />
+                >
+                  {SKUS.map(s => (
+                    <option key={`b-${s.name}`} value={s.name} className="dark:bg-[#1a1a24] text-xs font-semibold">{s.name}</option>
+                  ))}
+                </select>
               </div>
               <div className="flex flex-col gap-1">
                 <label className="text-[8px] font-bold uppercase tracking-widest opacity-40">Promo-Sales Cross Correlation</label>
