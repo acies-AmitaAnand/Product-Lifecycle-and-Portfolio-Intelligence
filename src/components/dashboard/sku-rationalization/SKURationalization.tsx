@@ -472,16 +472,17 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
       </div>
 
       {/* Main Header Descriptor block */}
-      <div className="glass-card bg-acies-gray text-white py-5 px-6 relative overflow-hidden">
-        <div className="absolute top-0 right-0 p-4 opacity-5 rotate-12 pointer-events-none">
-          <Scissors size={100} />
+      <div className="glass-card bg-gradient-to-r from-acies-gray via-acies-gray to-acies-gray/85 text-white py-5 px-6 relative overflow-hidden">
+        <div className="absolute top-0 right-0 p-4 opacity-5 rotate-12 pointer-events-none text-acies-yellow">
+          <Layers size={100} />
         </div>
         <div>
+          <p className="text-[9px] uppercase font-bold tracking-widest opacity-40 mb-2">Category Assortment & Portfolio Optimization · Tab 4 of 6</p>
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
             <h2 className="text-xl font-display font-medium text-white">
               {activeView === 'simulator' 
-                ? 'Portfolio Rationalization Command Simulator' 
-                : 'Cannibalization & Promotional Margin Analyst'}
+                ? 'SKU Rationalization Command Desk' 
+                : 'Cannibalization & Promotional Margin Audit'}
             </h2>
             <div className="flex items-center gap-2 self-start sm:self-auto">
               <span className="flex items-center gap-1.5 px-3 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-extrabold uppercase tracking-widest rounded-full">
@@ -493,8 +494,8 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
           </div>
           <p className="text-xs text-zinc-300 font-medium max-w-2xl leading-relaxed">
             {activeView === 'simulator'
-              ? 'Classify overall SKU value segments, run operational margin scenarios, simulate unit pricing structures, and overlay Pareto revenue distributions.'
-              : 'Audit high negative cross-correlations across product lines, calculate pricing margins, and analyze products with extreme promotional dependency.'}
+              ? 'Audit product assortments using AI segmentation, run multi-variable gross margin simulations, and analyze Pareto distributions to optimize tail-end catalog complexity.'
+              : 'Model cross-product cannibalization coefficients, evaluate price-pack margin elasticity corridors, and identify high promotion dependency risks.'}
           </p>
         </div>
       </div>
