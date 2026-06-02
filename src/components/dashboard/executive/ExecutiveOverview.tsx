@@ -309,7 +309,16 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
         {/* Top SKU Performance List */}
         <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3.5 h-[360px] flex flex-col">
           <h3 className="text-[11px] font-bold uppercase tracking-widest pb-2 border-b border-black/5 dark:border-white/5 mb-2 flex items-center justify-between gap-1.5">
-            <span>Top SKU Performance</span>
+            <div className="flex items-center gap-2">
+              <span>Top SKU Performance</span>
+              <button
+                onClick={() => setActiveTab(4)}
+                className="text-[8.5px] font-bold tracking-widest text-[#6d28d9] dark:text-[#a78bfa] hover:text-indigo-500 dark:hover:text-indigo-300 hover:underline cursor-pointer border-none bg-transparent flex items-center gap-1 transition-colors normal-case ml-2"
+                title="View All SKUs in SKU Rationalization Command Desk"
+              >
+                (View All SKUs &rarr;)
+              </button>
+            </div>
             <div className="flex items-center gap-2">
               <span className="text-[7.5px] font-extrabold opacity-40 uppercase">By Revenue</span>
               <div className="flex items-center border border-black/10 dark:border-white/10 rounded-sm overflow-hidden bg-black/5 dark:bg-white/5 p-0.5 ml-1 normal-case">
@@ -357,27 +366,35 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
           </div>
 
           {skuViewMode === 'list' ? (
-            <div className="space-y-1.5 overflow-y-auto flex-1 pr-1 min-h-0">
-              {topSkus.map(s => {
-                const widthPct = Math.round((s.rev / maxSkuRev) * 100);
-                return (
-                  <button
-                    key={s.name}
-                    onClick={() => setSelectedSku(s)}
-                    className="w-full text-left space-y-1 block hover:bg-black/5 dark:hover:bg-white/5 py-1.5 px-2.5 rounded transition-all group cursor-pointer border-none bg-transparent outline-none"
-                  >
-                    <div className="flex justify-between items-center text-[10.5px]">
-                      <span className="font-bold text-zinc-700 dark:text-zinc-350 group-hover:text-acies-yellow dark:group-hover:text-acies-yellow truncate max-w-[220px] transition-colors">
-                        {s.name}
-                      </span>
-                      <span className="font-extrabold text-acies-yellow group-hover:underline">₹{s.rev}Cr</span>
-                    </div>
-                    <div className="w-full h-1.5 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
-                      <div className="h-full bg-acies-yellow transition-all group-hover:bg-yellow-400" style={{ width: `${widthPct}%` }} />
-                    </div>
-                  </button>
-                );
-              })}
+            <div className="flex-1 flex flex-col min-h-0">
+              <div className="space-y-1.5 overflow-y-auto flex-1 pr-1 pb-2">
+                {topSkus.map(s => {
+                  const widthPct = Math.round((s.rev / maxSkuRev) * 100);
+                  return (
+                    <button
+                      key={s.name}
+                      onClick={() => setSelectedSku(s)}
+                      className="w-full text-left space-y-1 block hover:bg-black/5 dark:hover:bg-white/5 py-1.5 px-2.5 rounded transition-all group cursor-pointer border-none bg-transparent outline-none"
+                    >
+                      <div className="flex justify-between items-center text-[10.5px]">
+                        <span className="font-bold text-zinc-700 dark:text-zinc-350 group-hover:text-acies-yellow dark:group-hover:text-acies-yellow truncate max-w-[220px] transition-colors">
+                          {s.name}
+                        </span>
+                        <span className="font-extrabold text-acies-yellow group-hover:underline">₹{s.rev}Cr</span>
+                      </div>
+                      <div className="w-full h-1.5 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
+                        <div className="h-full bg-acies-yellow transition-all group-hover:bg-yellow-400" style={{ width: `${widthPct}%` }} />
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+              <button
+                onClick={() => setActiveTab(4)}
+                className="mt-2 w-full py-1.5 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border border-black/10 dark:border-white/10 text-center text-[8px] font-bold uppercase tracking-widest text-[#6d28d9] dark:text-[#a78bfa] transition-all cursor-pointer rounded-sm shrink-0"
+              >
+                View Full SKU Rationalization Directory &rarr;
+              </button>
             </div>
           ) : (
             <div className="flex-1 min-h-0 flex items-center justify-center relative pb-4">
