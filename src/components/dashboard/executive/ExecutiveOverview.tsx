@@ -312,7 +312,11 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
             <div className="flex items-center gap-2">
               <span>Top SKU Performance</span>
               <button
-                onClick={() => setActiveTab(4)}
+                onClick={() => {
+                  (window as any).__scrollToDirectory = true;
+                  window.location.hash = 'product-directory-section';
+                  setActiveTab(4);
+                }}
                 className="text-[8.5px] font-bold tracking-widest text-[#6d28d9] dark:text-[#a78bfa] hover:text-indigo-500 dark:hover:text-indigo-300 hover:underline cursor-pointer border-none bg-transparent flex items-center gap-1 transition-colors normal-case ml-2"
                 title="View All SKUs in SKU Rationalization Command Desk"
               >
@@ -390,7 +394,11 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
                 })}
               </div>
               <button
-                onClick={() => setActiveTab(4)}
+                onClick={() => {
+                  (window as any).__scrollToDirectory = true;
+                  window.location.hash = 'product-directory-section';
+                  setActiveTab(4);
+                }}
                 className="mt-2 w-full py-1.5 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border border-black/10 dark:border-white/10 text-center text-[8px] font-bold uppercase tracking-widest text-[#6d28d9] dark:text-[#a78bfa] transition-all cursor-pointer rounded-sm shrink-0"
               >
                 View Full SKU Rationalization Directory &rarr;

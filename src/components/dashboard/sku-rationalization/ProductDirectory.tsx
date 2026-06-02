@@ -5,13 +5,14 @@
 
 import React, { useState, useMemo } from 'react';
 import { SKUS } from '../../../constants/data';
-import { srClassify, SR_CLASSES } from './SKURationalization';
+import { srClassify, SR_CLASSES, getSkuLocation } from './SKURationalization';
 
 interface ProductDirectoryProps {
   onSelectSku: (sku: typeof SKUS[0]) => void;
+  selectedLocation?: string;
 }
 
-export const ProductDirectory: React.FC<ProductDirectoryProps> = ({ onSelectSku }) => {
+export const ProductDirectory: React.FC<ProductDirectoryProps> = ({ onSelectSku, selectedLocation }) => {
   // Product Directory Search & Filtering States
   const [dirSearch, setDirSearch] = useState('');
   const [dirCatFilter, setDirCatFilter] = useState('ALL');
@@ -29,9 +30,11 @@ export const ProductDirectory: React.FC<ProductDirectoryProps> = ({ onSelectSku 
       const segment = srClassify(s);
       const matchSegment = dirSegmentFilter === 'ALL' || segment === dirSegmentFilter;
       
-      return matchSearch && matchCat && matchSegment;
+      const matchLocation = !selectedLocation || selectedLocation === 'ALL' || getSkuLocation(s.name) === selectedLocation;
+      
+      return matchSearch && matchCat && matchSegment && matchLocation;
     });
-  }, [dirSearch, dirCatFilter, dirSegmentFilter]);
+  }, [dirSearch, dirCatFilter, dirSegmentFilter, selectedLocation]);
 
   return (
     <div className="space-y-3 pt-6 border-t border-black/5 dark:border-white/5">
@@ -96,7 +99,7 @@ export const ProductDirectory: React.FC<ProductDirectoryProps> = ({ onSelectSku 
               >
                 <div>
                   <div className="text-[10px] font-black text-acies-gray dark:text-white truncate group-hover:text-[#8b5cf6] transition-colors">{sku.name}</div>
-                  <div className="text-[8px] text-zinc-450 dark:text-zinc-500 font-bold uppercase mt-0.5">{sku.cat} · ₹{sku.rev}Cr</div>
+                  <div className="text-[8px] text-zinc-450 dark:text-zinc-500 font-bold uppercase mt-0.5">{sku.cat} · ₹{sku.rev}Cr · {getSkuLocation(sku.name)}</div>
                 </div>
                 <div className="flex justify-between items-center mt-2">
                   <span className="text-[7px] font-extrabold px-1.5 py-0.5 rounded-sm uppercase tracking-widest" style={{ backgroundColor: cfg.bg, color: cfg.color }}>
