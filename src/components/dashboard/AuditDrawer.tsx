@@ -286,7 +286,7 @@ const AUDIT_DATA: Record<string, AuditContent> = {
       { name: 'gross_margin', type: 'float [DIRECT]', desc: 'Resulting margin per promotional transaction compared to non-promo transactions.' }
     ],
     formula: '\\text{Promo Dependency} = \\frac{\\sum \\text{Sales}_{promo}}{\\sum \\text{Sales}_{total}} \\quad \\text{and} \\quad \\text{Margin Erosion} = \\text{Margin}_{non\\text{-}promo} - \\text{Margin}_{promo}',
-    formulaDescription: 'Promo Dependency is the ratio of promotional sales to total sales. Margin Erosion measures the difference in gross margin percentage between non-promotional and promotional periods.',
+    formulaDescription: 'Promo Dependency is the ratio of promotional sales to total sales. Margin Erosion measures the difference in gross margin percentage between non-promional and promotional periods.',
     assumptions: [
       'Incremental volume limits: Assumes promotion-driven volume lift does not offset the margin rate erosion unless a specific elasticity threshold is met.'
     ],
@@ -298,6 +298,304 @@ const AUDIT_DATA: Record<string, AuditContent> = {
       ['BrandE Juice', '27.62%', '14.20', '$1.65M'],
       ['BrandA Chocolate', '24.70%', '13.80', '$1.80M'],
       ['BrandA Softener', '23.10%', '13.50', '$1.40M']
+    ]
+  },
+  'Overall Readiness %': {
+    title: 'Overall Readiness %',
+    value: '82%',
+    soWhat: 'Overall category launch readiness stands at 82% (or 79% under delays), dragged down by supplier bottlenecks in Household and Dairy labels.',
+    action: 'Escalate lead-time reviews with regional supplier partners and clear the Q4 launch pipeline backlog.',
+    columns: [
+      { name: 'gate_progress', type: 'float [DERIVED]', desc: 'Completed milestones / total milestones for the product release.' },
+      { name: 'readiness_score', type: 'float [DERIVED]', desc: 'Dimension-specific readiness score (Market, Supply Chain, Operations).' }
+    ],
+    formula: 'R_{\\text{avg}} = \\frac{1}{M} \\sum_{i=1}^{M} \\text{readiness\\_score}_i',
+    formulaDescription: 'Calculates the arithmetic average of readiness scores across all active launches in the pipeline.',
+    assumptions: [
+      'Equal gate weights: Assumes conceptual, supply chain, and retail operations gates have identical impact on overall launch stability.'
+    ],
+    trendTitle: 'Readiness Score by Launch Dimension',
+    trendHeaders: ['Launch Dimension', 'Avg Readiness %', 'Status', 'Risk Factor'],
+    trendRows: [
+      ['Market Demand', '87%', 'On Track', 'Low'],
+      ['Supply Chain', '74%', 'At Risk', 'High (Lead times)'],
+      ['Channel Allocation', '82%', 'On Track', 'Medium'],
+      ['Pricing Architecture', '85%', 'On Track', 'Low'],
+      ['Operations Validation', '82%', 'On Track', 'Medium']
+    ]
+  },
+  'Net Profit': {
+    title: 'Net Profit',
+    value: '₹95.2 Cr',
+    soWhat: 'Net profitability reaches ₹95.2 Cr, driven by strong growth in core beverages, but impacted by rising raw milk COGS in Dairy.',
+    action: 'Re-negotiate milk procurement contracts and increase high-margin snack items distribution focus.',
+    columns: [
+      { name: 'gross_revenue', type: 'float [DIRECT]', desc: 'Gross sales revenue generated.' },
+      { name: 'cogs', type: 'float [DIRECT]', desc: 'Cost of goods sold from raw materials and production.' },
+      { name: 'opex', type: 'float [DIRECT]', desc: 'Operating expenses, including logistics, marketing, and administration.' }
+    ],
+    formula: 'NP = R_{\\text{gross}} - \\text{COGS} - \\text{OPEX} - \\text{Tax}',
+    formulaDescription: 'Net Profit is derived by subtracting Cost of Goods Sold, Operating Expenses, and Taxes from gross revenue.',
+    assumptions: [
+      'Excludes dynamic capital adjustments: Standardized tax and interest expense factors are assumed for reporting periods.'
+    ],
+    trendTitle: 'Net Profit and Volatility by Category',
+    trendHeaders: ['Category', 'Revenue Contribution', 'Net Margin %', 'Volatility'],
+    trendRows: [
+      ['Beverages', '₹280 Cr', '14.2%', 'Low'],
+      ['Snacks', '₹260 Cr', '11.8%', 'Medium'],
+      ['Dairy', '₹180 Cr', '8.5%', 'High'],
+      ['Personal Care', '₹131 Cr', '12.1%', 'Medium']
+    ]
+  },
+  'Gross Margin %': {
+    title: 'Gross Margin %',
+    value: '36.2%',
+    soWhat: 'Average segment gross margin is 36.2%, compressed by deep promotional discounts on cookies and chips.',
+    action: 'Cap promotional discount depths at 15% and enforce margin pricing corridors.',
+    columns: [
+      { name: 'revenue', type: 'float [DIRECT]', desc: 'Net sales revenue.' },
+      { name: 'cogs', type: 'float [DIRECT]', desc: 'Cost of goods sold from supplier inventory.' }
+    ],
+    formula: 'GM\\% = \\frac{R - \\text{COGS}}{R} \\times 100',
+    formulaDescription: 'Calculates the percentage of revenue remaining after covering the direct costs of goods sold.',
+    assumptions: [
+      'Inventory Valuation: Assumes FIFO inventory pricing methods are uniform across all regions.'
+    ],
+    trendTitle: 'Gross Margin Performance by Region',
+    trendHeaders: ['Country', 'Gross Margin %', 'YoY Change', 'Target'],
+    trendRows: [
+      ['Italy', '38.53%', '+0.2pp', '40.0%'],
+      ['Spain', '38.60%', '+0.4pp', '40.0%'],
+      ['Germany', '38.48%', '-0.1pp', '40.0%'],
+      ['France', '38.55%', '+0.1pp', '40.0%']
+    ]
+  },
+  'Revenue Growth %': {
+    title: 'Revenue Growth %',
+    value: '+8.4%',
+    soWhat: 'YoY growth is +8.4%, led by beverages (+18.4% demand change in APAC) while Household sales declined by 4%.',
+    action: 'Reallocate marketing budget from declining Household cleaners to high-growth beverages.',
+    columns: [
+      { name: 'sales_current', type: 'float [DIRECT]', desc: 'Net sales in the current reporting period.' },
+      { name: 'sales_prior', type: 'float [DIRECT]', desc: 'Net sales in the corresponding prior period.' }
+    ],
+    formula: 'RG\\% = \\frac{S_{\\text{current}} - S_{\\text{prior}}}{S_{\\text{prior}}} \\times 100',
+    formulaDescription: 'Measures the percentage change in net sales revenue compared to the prior baseline period.',
+    assumptions: [
+      'Exchange Rate Stability: Constant currency rates are used to normalize growth metrics across international regions.'
+    ],
+    trendTitle: 'Revenue Growth by Regional Market',
+    trendHeaders: ['Region', 'Current Sales', 'Prior Sales', 'Growth Rate'],
+    trendRows: [
+      ['APAC', '₹312 Cr', '₹290 Cr', '+7.6%'],
+      ['EMEA', '₹311 Cr', '₹305 Cr', '+2.0%'],
+      ['Americas', '₹228 Cr', '₹240 Cr', '-5.0%']
+    ]
+  },
+  'Launch ROI': {
+    title: 'Launch ROI',
+    value: '1.85x',
+    soWhat: 'Expected launch return stands at 1.85x ROI, buoyed by the upcoming premium Mango Fizz 750ml rollout.',
+    action: 'Approve the ₹4.2 Cr launch budget and run early cross-promotions with snacks.',
+    columns: [
+      { name: 'projected_revenue', type: 'float [DIRECT]', desc: 'Projected first-year sales revenue.' },
+      { name: 'launch_budget', type: 'float [DIRECT]', desc: 'Total initial marketing and logistics launch budget.' }
+    ],
+    formula: 'ROI = \\frac{R_{\\text{projected}}}{\\text{Cost}_{\\text{launch}}}',
+    formulaDescription: 'Dividing the projected first-year sales revenue by the dedicated initial launch budget.',
+    assumptions: [
+      'Marketing efficiency: Assumes target retailer shelf placements are secured within 30 days of release.'
+    ],
+    trendTitle: 'Expected ROI for Active Launches',
+    trendHeaders: ['Launch Concept', 'Projected Revenue', 'Budget Allocated', 'Expected ROI'],
+    trendRows: [
+      ['BrandA Premium Energy', '₹24.5 Cr', '₹12.0 Cr', '2.04x'],
+      ['BrandD Organic Yogurt', '₹18.2 Cr', '₹10.5 Cr', '1.73x'],
+      ['Mango Fizz 750ml Launch', '₹8.4 Cr', '₹4.2 Cr', '2.00x']
+    ]
+  },
+  'Portfolio SKUs': {
+    title: 'Portfolio SKUs',
+    value: '127',
+    soWhat: 'Portfolio contains 127 total active SKUs, recently optimized by sun-setting 3 low-value tail products.',
+    action: 'Maintain category assortments and monitor baseline volume transfer to core hero SKUs.',
+    columns: [
+      { name: 'sku_id', type: 'string [DIRECT]', desc: 'Unique database identifier for each active stock-keeping unit.' },
+      { name: 'status', type: 'string [DIRECT]', desc: 'Flag indicating if the SKU is active, pending, or discontinued.' }
+    ],
+    formula: 'N_{\\text{SKUs}} = \\text{Count}(\\text{sku\\_id}) \\quad \\text{where status} = \\text{\'active\'}',
+    formulaDescription: 'Sum of all unique product configurations marked as active in the master data ledger.',
+    assumptions: [
+      'Excludes temporary items: Promotional bundles and seasonal packs are omitted from the active baseline count.'
+    ],
+    trendTitle: 'SKU Count and Active Categories',
+    trendHeaders: ['Category', 'SKU Count', 'Active Brands', 'Share of Catalog'],
+    trendRows: [
+      ['Beverages', '32', '6 Brands', '25.2%'],
+      ['Snacks', '30', '5 Brands', '23.6%'],
+      ['Dairy', '22', '4 Brands', '17.3%'],
+      ['Personal Care', '22', '4 Brands', '17.3%'],
+      ['Household', '21', '4 Brands', '16.5%']
+    ]
+  },
+  'Sunset Candidates': {
+    title: 'Sunset Candidates',
+    value: '6',
+    soWhat: 'AI has identified 6 critical sunset candidates (like Fabric Softener, Floor Cleaner, and Aloe Face Wash) that drive margin leakage.',
+    action: 'Execute phase-out for the bottom 3 performers immediately to reclaim supplier administrative capacity.',
+    columns: [
+      { name: 'val', type: 'float [DERIVED]', desc: 'Normalized commercial value score based on sales, growth, and margins.' },
+      { name: 'cx', type: 'float [DERIVED]', desc: 'Normalized operational complexity index.' }
+    ],
+    formula: 'N_{\\text{sunset}} = \\text{Count}(\\text{SKUs}) \\quad \\text{where } val < 0.4 \\text{ and } cx \\ge 0.6',
+    formulaDescription: 'Counts the volume of SKUs meeting the AI threshold for poor performance (low commercial value and high operational complexity).',
+    assumptions: [
+      'Substitution efficiency: Assumes consumer demand can be successfully redirected to primary hero SKUs.'
+    ],
+    trendTitle: 'Identified Sunset Candidate Variants',
+    trendHeaders: ['Sunset SKU', 'Category', 'Commercial Value', 'Complexity Index', 'Net Sales'],
+    trendRows: [
+      ['Fabric Softener', 'Household', '0.22', '0.81', '₹28 Cr'],
+      ['Floor Cleaner', 'Household', '0.29', '0.74', '₹38 Cr'],
+      ['Aloe Face Wash', 'Personal Care', '0.28', '0.78', '₹32 Cr'],
+      ['BrandB Yogurt 1kg', 'Dairy', '0.35', '0.68', '₹42 Cr'],
+      ['BrandE Yogurt (Straw)', 'Dairy', '0.29', '0.72', '₹35 Cr'],
+      ['Choco Wafers', 'Snacks', '0.34', '0.71', '₹44 Cr']
+    ]
+  },
+  'Revenue at Risk': {
+    title: 'Revenue at Risk',
+    value: '₹148 Cr',
+    soWhat: 'Total revenue exposure is ₹148 Cr if all 6 sunset candidates are pruned simultaneously without substitution transfer.',
+    action: 'Enforce product replacement recommendations (e.g. redirecting demand to hero Mango Fizz or Soap variants).',
+    columns: [
+      { name: 'revenue', type: 'float [DIRECT]', desc: 'Direct annual revenue contribution of the sunset candidate SKU.' }
+    ],
+    formula: 'R_{\\text{risk}} = \\sum_{i \\in \\text{Sunset}} \\text{revenue}_i',
+    formulaDescription: 'Sum of net sales revenue for all 6 active SKUs currently flagged in the sunset recommendations quadrant.',
+    assumptions: [
+      'Zero Substitution Worst Case: Assumes zero volume transfer to substitute items to establish the baseline maximum financial exposure.'
+    ],
+    trendTitle: 'Sunset Candidate Revenue Exposure',
+    trendHeaders: ['Sunset SKU', 'Category', 'Annual Sales', 'Volume Share'],
+    trendRows: [
+      ['Choco Wafers', 'Snacks', '₹44 Cr', '29.7%'],
+      ['BrandB Yogurt 1kg', 'Dairy', '₹42 Cr', '28.4%'],
+      ['Floor Cleaner', 'Household', '₹38 Cr', '25.7%'],
+      ['BrandE Yogurt (Straw)', 'Dairy', '₹35 Cr', '23.6%'],
+      ['Aloe Face Wash', 'Personal Care', '₹32 Cr', '21.6%'],
+      ['Fabric Softener', 'Household', '₹28 Cr', '18.9%']
+    ]
+  },
+  'Avg Complexity': {
+    title: 'Avg Complexity',
+    value: '0.48',
+    soWhat: 'Catalog complexity average is 0.48, exceeding the corporate ceiling of 0.40 due to vendor fragmentation.',
+    action: 'Consolidate logistics by routing tail-end variants to distributor-held fulfillment models.',
+    columns: [
+      { name: 'complexity_score', type: 'float [DERIVED]', desc: 'SKU-level normalized operational complexity score.' }
+    ],
+    formula: 'C_{\\text{avg}} = \\frac{1}{N} \\sum_{i=1}^{N} \\text{complexity\\_score}_i',
+    formulaDescription: 'The arithmetic average of the normalized complexity indices across all active items in the portfolio.',
+    assumptions: [
+      'Weights are equivalent: Sourcing fragmentation and stockout frequency carry equal weights in the underlying sub-indexes.'
+    ],
+    trendTitle: 'Catalog Complexity Volatility by Category',
+    trendHeaders: ['Category', 'SKU Count', 'Avg Complexity', 'Status'],
+    trendRows: [
+      ['Household', '21', '0.51', 'Critical'],
+      ['Dairy', '22', '0.49', 'Elevated'],
+      ['Personal Care', '22', '0.48', 'Elevated'],
+      ['Beverages', '32', '0.45', 'Stable'],
+      ['Snacks', '30', '0.44', 'Stable']
+    ]
+  },
+  'Total Active Signals': {
+    title: 'Total Active Signals',
+    value: '6',
+    soWhat: 'A total of 6 critical operational signals are active, led by NPS drops in EMEA and cannibalization alerts in India.',
+    action: 'Review signals queue and triage urgent tickets to respective category managers.',
+    columns: [
+      { name: 'signal_id', type: 'string [DIRECT]', desc: 'Primary key used to track individual operational alerts.' },
+      { name: 'status', type: 'string [DIRECT]', desc: 'Flag marking the alert as active or archived.' }
+    ],
+    formula: 'S_{\\text{active}} = \\text{Count}(\\text{signal\\_id}) \\quad \\text{where status} = \\text{\'active\'}',
+    formulaDescription: 'Counts the sum of all active, unresolved alerts and notifications logged in the signals board.',
+    assumptions: [
+      'Archived filter: Assumes signals marked as acknowledged or archived do not count towards the active executive list.'
+    ],
+    trendTitle: 'Active Signals by Category',
+    trendHeaders: ['Alert Domain', 'Active Alerts', 'Max Severity', 'Action Required'],
+    trendRows: [
+      ['Supply Sourcing', '2 Alerts', 'Critical', 'Triage logistics lead times'],
+      ['Margin Dilution', '2 Alerts', 'Critical', 'Review promo discount depth'],
+      ['Demand Changes', '1 Alert', 'Warning', 'Adjust channel stock buffers'],
+      ['Cannibalization', '1 Alert', 'Warning', 'Audit category overlaps']
+    ]
+  },
+  'Competitor Alerts': {
+    title: 'Competitor Alerts',
+    value: '2',
+    soWhat: 'Active competitor alerts indicate aggressive pricing cuts on snacks and soap lines in regional supermarkets.',
+    action: 'Monitor daily discount tracking and stabilize baseline retail price corridors.',
+    columns: [
+      { name: 'alert_id', type: 'string [DIRECT]', desc: 'Unique key identifying competitive pricing campaign alerts.' },
+      { name: 'type', type: 'string [DIRECT]', desc: 'Categorizes the competitive activity (Price cut, promo, new launch).' }
+    ],
+    formula: 'C_{\\text{alerts}} = \\text{Count}(\\text{alert\\_id}) \\quad \\text{where type} = \\text{\'Competitor\'}',
+    formulaDescription: 'Sum of competitor-related alerts logged by regional market scraping algorithms.',
+    assumptions: [
+      'Accuracy: Assumes scraped competitor prices reflect actual shelf execution rather than digital-only discounts.'
+    ],
+    trendTitle: 'Competitor Campaign Incidents',
+    trendHeaders: ['Category Segment', 'Alert Type', 'Market Impact', 'Competitor Brand'],
+    trendRows: [
+      ['Snacks (Biscuits)', 'Aggressive Promo', 'High margin risk', 'Supermarket private labels'],
+      ['Personal Care (Soap)', 'Direct Price Cut', 'Medium volume risk', 'Traditional market leader']
+    ]
+  },
+  'Market Demand Change': {
+    title: 'Market Demand Change',
+    value: '+18.4%',
+    soWhat: 'Market demand is up +18.4% overall, heavily driven by carbonated and natural beverages in APAC.',
+    action: 'Establish dedicated priority freight corridors to prevent stockouts in high-demand zones.',
+    columns: [
+      { name: 'demand_index', type: 'float [DIRECT]', desc: 'Normal consumer purchasing index generated from transactions.' }
+    ],
+    formula: 'D_{\\text{change}}\\% = \\frac{I_{\\text{current}} - I_{\\text{prior}}}{I_{\\text{prior}}} \\times 100',
+    formulaDescription: 'Measures the YoY change in the aggregate consumer purchase velocity and demand index.',
+    assumptions: [
+      'Baseline: Ignores seasonal spikes (e.g. festival demand) by conducting year-over-year same-period comparisons.'
+    ],
+    trendTitle: 'Demand Shift by Category & Region',
+    trendHeaders: ['Region', 'Category Segment', 'YoY Shift %', 'Inventory Priority'],
+    trendRows: [
+      ['APAC', 'Beverages', '+18.4%', 'Highest priority'],
+      ['EMEA', 'Snacks', '+4.2%', 'Moderate priority'],
+      ['Americas', 'Personal Care', '-2.1%', 'Reallocate volume']
+    ]
+  },
+  'Customer Sentiment Score': {
+    title: 'Customer Sentiment Score',
+    value: '72',
+    soWhat: 'Customer Net Promoter Score is stable at 72, though EMEA snacks saw a 3-point dip due to recent logistics delays.',
+    action: 'Implement local customer feedback loops and optimize warehouse dispatch times in Europe.',
+    columns: [
+      { name: 'nps_response', type: 'int [DIRECT]', desc: 'NPS survey rating scale 0 to 10.' }
+    ],
+    formula: 'NPS = \\% \\text{Promoters} - \\% \\text{Detractors}',
+    formulaDescription: 'Calculated by subtracting the percentage of Detractors (0-6 ratings) from the percentage of Promoters (9-10 ratings).',
+    assumptions: [
+      'Sample size: Assumes survey distributions are statistically representative of regional buyer volumes.'
+    ],
+    trendTitle: 'Customer Sentiment Net Promoter Index',
+    trendHeaders: ['Product Segment', 'NPS Index', 'YoY Trend', 'Status'],
+    trendRows: [
+      ['Beverages', '76 NPS', '+2 YoY', 'Strong'],
+      ['Snacks', '70 NPS', '-3 YoY', 'Stable (Logistics drag)'],
+      ['Personal Care', '73 NPS', 'Flat YoY', 'Strong'],
+      ['Dairy', '69 NPS', '+1 YoY', 'Stable']
     ]
   }
 };
