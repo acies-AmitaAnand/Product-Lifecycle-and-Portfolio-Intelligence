@@ -27,6 +27,7 @@ interface CannibalizationPair {
 interface SKURationalizationProps {
   role: Role;
   isDarkMode: boolean;
+  setActiveTab?: (tabId: number) => void;
 }
 
 // AI Classification Configuration
@@ -82,7 +83,7 @@ export function srClassify(s: any) {
   return 'reposition';
 }
 
-export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, isDarkMode }) => {
+export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, isDarkMode, setActiveTab }) => {
   // Chart Visual Constants
   const gridStroke = isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
   const tickColor = isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)';
@@ -273,6 +274,30 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
   const [category, setCategory] = useState('Beverages');
   const [hasScored, setHasScored] = useState(true);
   const [guideOpen, setGuideOpen] = useState(false);
+
+  // SKU Detail Modal State
+  const [selectedSkuDetails, setSelectedSkuDetails] = useState<typeof SKUS[0] | null>(null);
+  
+  // Product Directory Search & Filtering States
+  const [dirSearch, setDirSearch] = useState('');
+  const [dirCatFilter, setDirCatFilter] = useState('ALL');
+  const [dirSegmentFilter, setDirSegmentFilter] = useState('ALL');
+
+  // Filter Directory SKUs
+  const filteredDirSKUs = useMemo(() => {
+    return SKUS.filter(s => {
+      const matchSearch = s.name.toLowerCase().includes(dirSearch.toLowerCase()) || 
+                          s.cat.toLowerCase().includes(dirSearch.toLowerCase());
+      
+      const normalizedCat = s.cat === 'Home Care' ? 'Household' : s.cat;
+      const matchCat = dirCatFilter === 'ALL' || normalizedCat === dirCatFilter;
+      
+      const segment = srClassify(s);
+      const matchSegment = dirSegmentFilter === 'ALL' || segment === dirSegmentFilter;
+      
+      return matchSearch && matchCat && matchSegment;
+    });
+  }, [dirSearch, dirCatFilter, dirSegmentFilter]);
 
   // Dynamic filter for SKU B based on SKU A category
   const skuACategory = useMemo(() => {
@@ -612,9 +637,21 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
                               Complexity {sku.cx.toFixed(2)} · Value {sku.val.toFixed(2)} · ₹{sku.rev}Cr
                             </div>
                           </div>
-                          <span className="text-[7.5px] font-extrabold px-1.5 py-0.5 rounded-sm shrink-0 uppercase tracking-widest" style={{ backgroundColor: cfg.bg, color: cfg.color }}>
-                            {cfg.label}
-                          </span>
+                          <div className="flex items-center gap-1.5 shrink-0">
+                            <span className="text-[7.5px] font-extrabold px-1.5 py-0.5 rounded-sm uppercase tracking-widest" style={{ backgroundColor: cfg.bg, color: cfg.color }}>
+                              {cfg.label}
+                            </span>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedSkuDetails(sku);
+                              }}
+                              className="w-5 h-5 rounded hover:bg-black/5 dark:hover:bg-white/5 flex items-center justify-center text-zinc-450 hover:text-[#8b5cf6] transition-all cursor-pointer border-none bg-transparent outline-none shrink-0"
+                              title="Open SKU Intelligence Card"
+                            >
+                              <Sparkles size={10} />
+                            </button>
+                          </div>
                         </div>
                       );
                     })}
@@ -672,7 +709,18 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
 
                   {simTab !== 'launch' && (
                     <div className="flex flex-col gap-1.5">
-                      <label className="text-[8.5px] font-black uppercase tracking-widest opacity-45">Target SKU Variant</label>
+                      <div className="flex items-center justify-between">
+                        <label className="text-[8.5px] font-black uppercase tracking-widest opacity-45">Target SKU Variant</label>
+                        <button 
+                          onClick={() => {
+                            const s = SKUS.find(item => item.name === selectedSkuName);
+                            if (s) setSelectedSkuDetails(s);
+                          }}
+                          className="text-[8px] text-[#8b5cf6] dark:text-purple-300 font-bold uppercase tracking-widest hover:underline cursor-pointer border-none bg-transparent outline-none"
+                        >
+                          Inspect ℹ️
+                        </button>
+                      </div>
                       <select
                         value={selectedSkuName}
                         onChange={(e) => setSelectedSkuName(e.target.value)}
@@ -1103,7 +1151,18 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
             
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="flex flex-col gap-1">
-                <label className="text-[8px] font-bold uppercase tracking-widest opacity-40">SKU A (Base Variant)</label>
+                <div className="flex items-center justify-between">
+                  <label className="text-[8px] font-bold uppercase tracking-widest opacity-40">SKU A (Base Variant)</label>
+                  <button 
+                    onClick={() => {
+                      const s = SKUS.find(item => item.name === skuA);
+                      if (s) setSelectedSkuDetails(s);
+                    }}
+                    className="text-[8px] text-[#8b5cf6] dark:text-purple-300 font-bold uppercase tracking-widest hover:underline cursor-pointer border-none bg-transparent outline-none"
+                  >
+                    Inspect ℹ️
+                  </button>
+                </div>
                 <select 
                   value={skuA}
                   onChange={(e) => setSkuA(e.target.value)}
@@ -1119,7 +1178,18 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
                 </select>
               </div>
               <div className="flex flex-col gap-1">
-                <label className="text-[8px] font-bold uppercase tracking-widest opacity-40">SKU B (Compare Variant)</label>
+                <div className="flex items-center justify-between">
+                  <label className="text-[8px] font-bold uppercase tracking-widest opacity-40">SKU B (Compare Variant)</label>
+                  <button 
+                    onClick={() => {
+                      const s = SKUS.find(item => item.name === skuB);
+                      if (s) setSelectedSkuDetails(s);
+                    }}
+                    className="text-[8px] text-[#8b5cf6] dark:text-purple-300 font-bold uppercase tracking-widest hover:underline cursor-pointer border-none bg-transparent outline-none"
+                  >
+                    Inspect ℹ️
+                  </button>
+                </div>
                 <select 
                   value={skuB}
                   onChange={(e) => setSkuB(e.target.value)}
@@ -1346,6 +1416,258 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
             </div>
           </div>
 
+        </div>
+      )}
+
+      {/* ⑤ PORTFOLIO INTELLIGENCE DIRECTORY */}
+      <div className="space-y-3 pt-6 border-t border-black/5 dark:border-white/5">
+        <div className="flex items-center justify-between gap-4 py-0.5 w-full">
+          <div className="flex items-center gap-2 border-l-4 border-[#8b5cf6] pl-3">
+            <h3 className="text-xs font-bold uppercase tracking-widest text-[#8b5cf6] dark:text-purple-300">
+              ⑤ Portfolio Product Directory & Auditing Explorer
+            </h3>
+          </div>
+          <span className="text-[8px] text-zinc-400 dark:text-zinc-500 font-bold uppercase tracking-widest hidden sm:inline">Click any product to audit detail analytics</span>
+        </div>
+
+        <div className="glass-card bg-white dark:bg-[#1a1a24] border border-black/10 dark:border-white/10 p-5 shadow-sm rounded-xl space-y-4">
+          {/* Directory Filter Bar */}
+          <div className="flex flex-col sm:flex-row gap-3">
+            <div className="flex-1 relative">
+              <input 
+                type="text" 
+                placeholder="Search SKUs by name or category..." 
+                value={dirSearch}
+                onChange={(e) => setDirSearch(e.target.value)}
+                className="w-full bg-black/5 dark:bg-[#121214] border border-black/10 dark:border-white/10 rounded-lg py-2 px-3 pl-8 text-xs font-semibold text-acies-gray dark:text-white outline-none focus:border-acies-yellow"
+              />
+              <span className="absolute left-2.5 top-2 text-zinc-450 dark:text-zinc-500 text-xs">🔍</span>
+            </div>
+            <select 
+              value={dirCatFilter}
+              onChange={(e) => setDirCatFilter(e.target.value)}
+              className="bg-black/5 dark:bg-[#121214] border border-black/10 dark:border-white/10 rounded-lg py-2 px-3 text-xs font-bold text-acies-gray dark:text-white outline-none focus:border-acies-yellow"
+            >
+              <option value="ALL">All Categories</option>
+              <option value="Beverages">Beverages</option>
+              <option value="Snacks">Snacks</option>
+              <option value="Personal Care">Personal Care</option>
+              <option value="Dairy">Dairy</option>
+              <option value="Household">Household</option>
+            </select>
+            <select 
+              value={dirSegmentFilter}
+              onChange={(e) => setDirSegmentFilter(e.target.value)}
+              className="bg-black/5 dark:bg-[#121214] border border-black/10 dark:border-white/10 rounded-lg py-2 px-3 text-xs font-bold text-acies-gray dark:text-white outline-none focus:border-acies-yellow"
+            >
+              <option value="ALL">All Segments</option>
+              <option value="retain">Retain</option>
+              <option value="grow">Grow</option>
+              <option value="bundle">Bundle</option>
+              <option value="reposition">Reposition</option>
+              <option value="sunset">Sunset</option>
+            </select>
+          </div>
+
+          {/* Scrollable list/grid */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 max-h-80 overflow-y-auto pr-1">
+            {filteredDirSKUs.map((sku) => {
+              const cls = srClassify(sku);
+              const cfg = SR_CLASSES[cls];
+              return (
+                <div 
+                  key={`dir-${sku.name}`}
+                  onClick={() => setSelectedSkuDetails(sku)}
+                  className="p-3 bg-black/[0.02] dark:bg-white/[0.02] border border-black/5 dark:border-white/5 rounded-lg hover:border-purple-500/30 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] cursor-pointer transition-all flex flex-col justify-between h-24 group relative overflow-hidden"
+                >
+                  <div>
+                    <div className="text-[10px] font-black text-acies-gray dark:text-white truncate group-hover:text-[#8b5cf6] transition-colors">{sku.name}</div>
+                    <div className="text-[8px] text-zinc-450 dark:text-zinc-500 font-bold uppercase mt-0.5">{sku.cat} · ₹{sku.rev}Cr</div>
+                  </div>
+                  <div className="flex justify-between items-center mt-2">
+                    <span className="text-[7px] font-extrabold px-1.5 py-0.5 rounded-sm uppercase tracking-widest" style={{ backgroundColor: cfg.bg, color: cfg.color }}>
+                      {cfg.label}
+                    </span>
+                    <span className="text-[9px] text-[#8b5cf6] dark:text-purple-300 font-bold opacity-0 group-hover:opacity-100 transition-opacity">Inspect →</span>
+                  </div>
+                </div>
+              );
+            })}
+            {filteredDirSKUs.length === 0 && (
+              <div className="col-span-full py-8 text-center text-xs font-bold text-zinc-400 uppercase tracking-widest">
+                No matching product SKUs found
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* SKU DETAIL MODAL WINDOW */}
+      {selectedSkuDetails && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
+          {/* Backdrop click to close */}
+          <div 
+            className="absolute inset-0 cursor-pointer"
+            onClick={() => setSelectedSkuDetails(null)}
+          />
+          
+          {/* Modal Container */}
+          <div className="relative glass-card bg-white dark:bg-[#1a1a24] border border-black/10 dark:border-white/10 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl p-6 space-y-6 animate-scaleIn">
+            {/* Modal Header */}
+            <div className="flex justify-between items-start border-b border-black/5 dark:border-white/5 pb-4">
+              <div>
+                <span className="text-[8px] font-black uppercase tracking-widest text-[#8b5cf6] dark:text-purple-300">SKU Operational Profile</span>
+                <h3 className="text-lg font-display font-extrabold text-acies-gray dark:text-white mt-1 leading-none">{selectedSkuDetails.name}</h3>
+                <span className="text-[9px] text-zinc-400 font-bold uppercase tracking-wider">{selectedSkuDetails.cat} Category</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span 
+                  className="text-[8px] font-black px-2 py-0.5 rounded border uppercase tracking-widest"
+                  style={{ 
+                    backgroundColor: SR_CLASSES[srClassify(selectedSkuDetails)].bg, 
+                    color: SR_CLASSES[srClassify(selectedSkuDetails)].color,
+                    borderColor: SR_CLASSES[srClassify(selectedSkuDetails)].border
+                  }}
+                >
+                  {SR_CLASSES[srClassify(selectedSkuDetails)].icon} {SR_CLASSES[srClassify(selectedSkuDetails)].label}
+                </span>
+                <button 
+                  onClick={() => setSelectedSkuDetails(null)}
+                  className="w-7 h-7 rounded-full bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 flex items-center justify-center text-zinc-555 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-all cursor-pointer border-none outline-none"
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+
+            {/* KPI grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              <div className="bg-black/5 dark:bg-white/5 p-3 rounded-xl border border-black/5 dark:border-white/5">
+                <span className="text-[8px] font-bold uppercase tracking-widest text-zinc-400 block">Annual Sales</span>
+                <span className="text-base font-black text-acies-gray dark:text-white mt-1 block">₹{selectedSkuDetails.rev} Cr</span>
+                <span className="text-[7.5px] font-bold text-zinc-450 dark:text-zinc-550 uppercase">Category sales impact</span>
+              </div>
+              
+              <div className="bg-black/5 dark:bg-white/5 p-3 rounded-xl border border-black/5 dark:border-white/5">
+                <span className="text-[8px] font-bold uppercase tracking-widest text-zinc-400 block">Gross Profit Margin</span>
+                <span className="text-base font-black text-emerald-500 mt-1 block">{selectedSkuDetails.margin}%</span>
+                <span className="text-[7.5px] font-bold text-zinc-450 dark:text-zinc-550 uppercase">Benchmark: 40% target</span>
+              </div>
+
+              <div className="bg-black/5 dark:bg-white/5 p-3 rounded-xl border border-black/5 dark:border-white/5">
+                <span className="text-[8px] font-bold uppercase tracking-widest text-zinc-400 block">YoY Growth</span>
+                <span className={`text-base font-black mt-1 block ${selectedSkuDetails.growth >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
+                  {selectedSkuDetails.growth >= 0 ? '+' : ''}{(selectedSkuDetails.growth * 100).toFixed(0)}%
+                </span>
+                <span className="text-[7.5px] font-bold text-zinc-450 dark:text-zinc-550 uppercase">Volume shift rate</span>
+              </div>
+
+              <div className="bg-black/5 dark:bg-white/5 p-3 rounded-xl border border-black/5 dark:border-white/5">
+                <span className="text-[8px] font-bold uppercase tracking-widest text-zinc-400 block">Complexity Index</span>
+                <span className="text-base font-black mt-1 block text-acies-yellow">{selectedSkuDetails.cx.toFixed(2)}</span>
+                <span className="text-[7.5px] font-bold text-zinc-450 dark:text-zinc-550 uppercase">Supply chain friction</span>
+              </div>
+
+              <div className="bg-black/5 dark:bg-white/5 p-3 rounded-xl border border-black/5 dark:border-white/5">
+                <span className="text-[8px] font-bold uppercase tracking-widest text-zinc-400 block">Promo Dependency</span>
+                <span className="text-base font-black mt-1 block text-[#8b5cf6] dark:text-purple-300">{(selectedSkuDetails.promo * 100).toFixed(0)}%</span>
+                <span className="text-[7.5px] font-bold text-zinc-450 dark:text-zinc-550 uppercase">Discount sales load</span>
+              </div>
+
+              <div className="bg-black/5 dark:bg-white/5 p-3 rounded-xl border border-black/5 dark:border-white/5">
+                <span className="text-[8px] font-bold uppercase tracking-widest text-zinc-400 block">Fulfillment lead time</span>
+                <span className="text-base font-black mt-1 block text-blue-500">{selectedSkuDetails.lead} days</span>
+                <span className="text-[7.5px] font-bold text-zinc-450 dark:text-zinc-550 uppercase">Vendor cycle duration</span>
+              </div>
+            </div>
+
+            {/* AI Reasoning and diagnostic summary */}
+            <div className="bg-[#8b5cf6]/5 border border-[#8b5cf6]/10 p-4 rounded-xl space-y-1.5">
+              <span className="text-[8px] font-black uppercase tracking-widest text-[#8b5cf6] dark:text-purple-300 flex items-center gap-1">
+                <Cpu size={10} /> AI Recommendation Rationale
+              </span>
+              <p className="text-[10.5px] leading-relaxed text-zinc-600 dark:text-zinc-350 font-semibold">
+                {selectedSkuDetails.name} has been classified under the <strong>{SR_CLASSES[srClassify(selectedSkuDetails)].label}</strong> segment because it has a commercial value score of <strong>{(selectedSkuDetails.val * 100).toFixed(0)}/100</strong> and an operational complexity score of <strong>{(selectedSkuDetails.cx * 100).toFixed(0)}/100</strong>.
+                {srClassify(selectedSkuDetails) === 'sunset' && ` Discontinuing this SKU will eliminate ${selectedSkuDetails.stockouts} annual stockout events and reduce lead times across other ${selectedSkuDetails.cat} variants, freeing up vital logistics capacity.`}
+                {srClassify(selectedSkuDetails) === 'grow' && ` With an impressive YoY growth rate of +${(selectedSkuDetails.growth * 100).toFixed(0)}% and a healthy profit margin of ${selectedSkuDetails.margin}%, we recommend increasing vendor capacity, supporting the distributor channels, and expanding marketing to capitalize on demand momentum.`}
+                {srClassify(selectedSkuDetails) === 'retain' && ` As a core product with very low complexity (${(selectedSkuDetails.cx * 100).toFixed(0)}%) and high value, this item represents a stable anchor for the category. Maintain stock availability and safeguard margin equity.`}
+                {srClassify(selectedSkuDetails) === 'bundle' && ` With a healthy profit margin (${selectedSkuDetails.margin}%) but lower raw sales value, this product is an ideal bundling candidate. Cross-promote it alongside high-volume hero SKUs to increase average order values.`}
+                {srClassify(selectedSkuDetails) === 'reposition' && ` This item exhibits a high operational lead time of ${selectedSkuDetails.lead} days. Pricing adjustments or distribution channel changes are recommended to recover complexity costs.`}
+              </p>
+            </div>
+
+            {/* Navigation links connect tabs */}
+            <div className="space-y-2.5 pt-2">
+              <span className="text-[8px] font-black uppercase tracking-widest text-zinc-400 block">Connected Workspace Audits (Cross-Tab Router)</span>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => {
+                    setSelectedSkuDetails(null);
+                    if (setActiveTab) setActiveTab(2); // Launch readiness
+                  }}
+                  className="flex items-center gap-3 p-3 bg-black/[0.02] dark:bg-white/[0.02] hover:bg-[#8b5cf6]/5 border border-black/5 dark:border-white/5 hover:border-purple-500/20 rounded-xl text-left cursor-pointer transition-all outline-none"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-500 shrink-0 text-xs">
+                    🚀
+                  </div>
+                  <div>
+                    <div className="text-[10px] font-black text-acies-gray dark:text-white uppercase tracking-wider">Launch Readiness</div>
+                    <p className="text-[7.5px] text-zinc-400 font-bold uppercase mt-0.5">Audit timelines & launch profiles</p>
+                  </div>
+                </button>
+
+                <button
+                  onClick={() => {
+                    setSelectedSkuDetails(null);
+                    if (setActiveTab) setActiveTab(3); // Profitability tree
+                  }}
+                  className="flex items-center gap-3 p-3 bg-black/[0.02] dark:bg-white/[0.02] hover:bg-[#8b5cf6]/5 border border-black/5 dark:border-white/5 hover:border-purple-500/20 rounded-xl text-left cursor-pointer transition-all outline-none"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-500 shrink-0 text-xs">
+                    🌳
+                  </div>
+                  <div>
+                    <div className="text-[10px] font-black text-acies-gray dark:text-white uppercase tracking-wider">Profitability Tree</div>
+                    <p className="text-[7.5px] text-zinc-400 font-bold uppercase mt-0.5">Drill into margins & costs</p>
+                  </div>
+                </button>
+
+                <button
+                  onClick={() => {
+                    setSelectedSkuDetails(null);
+                    if (setActiveTab) setActiveTab(5); // Signals board
+                  }}
+                  className="flex items-center gap-3 p-3 bg-black/[0.02] dark:bg-white/[0.02] hover:bg-[#8b5cf6]/5 border border-black/5 dark:border-white/5 hover:border-purple-500/20 rounded-xl text-left cursor-pointer transition-all outline-none"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-purple-500/10 flex items-center justify-center text-purple-500 shrink-0 text-xs">
+                    🔔
+                  </div>
+                  <div>
+                    <div className="text-[10px] font-black text-acies-gray dark:text-white uppercase tracking-wider">Signals & Alerts</div>
+                    <p className="text-[7.5px] text-zinc-400 font-bold uppercase mt-0.5">Competitors, sentiment, alerts</p>
+                  </div>
+                </button>
+
+                <button
+                  onClick={() => {
+                    setSelectedSkuDetails(null);
+                    setSelectedSkuName(selectedSkuDetails.name);
+                    setSimTab('remove');
+                    setActiveView('simulator'); // Switch view
+                  }}
+                  className="flex items-center gap-3 p-3 bg-black/[0.02] dark:bg-white/[0.02] hover:bg-[#8b5cf6]/5 border border-black/5 dark:border-white/5 hover:border-purple-500/20 rounded-xl text-left cursor-pointer transition-all outline-none"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-acies-yellow/10 flex items-center justify-center text-acies-yellow shrink-0 text-xs">
+                    🛠️
+                  </div>
+                  <div>
+                    <div className="text-[10px] font-black text-acies-gray dark:text-white uppercase tracking-wider">P&L Simulator Desk</div>
+                    <p className="text-[7.5px] text-zinc-400 font-bold uppercase mt-0.5">Model pricing & deactivations</p>
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 

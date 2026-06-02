@@ -619,12 +619,12 @@ export default function App() {
                     tourActive={launchTourActive}
                     onTourClose={() => setLaunchTourActive(false)}
                     isDarkMode={isDarkMode}
-simulateDelay={simulateDelay}
+                    simulateDelay={simulateDelay}
                     setSimulateDelay={setSimulateDelay}
                   />
                 )}
                 {activeTab === 3 && <ProfitabilityTree role={role} onAuditClick={setActiveAuditMetric} isDarkMode={isDarkMode} />}
-                {activeTab === 4 && <SKURationalization role={role} isDarkMode={isDarkMode} />}
+                {activeTab === 4 && <SKURationalization role={role} isDarkMode={isDarkMode} setActiveTab={setActiveTab} />}
                 {activeTab === 5 && <SignalsBoard role={role} setActiveTab={setActiveTab} isDarkMode={isDarkMode} />}
                 {activeTab === 6 && <TopDownDrilldown isDarkMode={isDarkMode} role={role} />}
                 {activeTab === 7 && <AgentOrchestrator isDarkMode={isDarkMode} role={role} />}
