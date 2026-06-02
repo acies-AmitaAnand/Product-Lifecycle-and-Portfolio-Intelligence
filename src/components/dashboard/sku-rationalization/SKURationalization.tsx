@@ -437,67 +437,72 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
   return (
     <div className="space-y-6 pb-12 animate-fadeIn text-zinc-800 dark:text-white">
       
-      {/* Dynamic View Swapper Tab Menu */}
-      <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3 rounded shadow-sm flex flex-col sm:flex-row items-center justify-between gap-6 w-full">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-          <span className="text-[9px] uppercase font-bold tracking-wider text-zinc-500 dark:text-zinc-450">Workspaces:</span>
-          <div className="flex bg-black/5 dark:bg-white/5 p-0.5 rounded border border-black/5 dark:border-white/10 min-w-[340px]">
-            {[
-              { id: 'simulator', label: 'Portfolio Simulator Command' },
-              { id: 'analyst', label: 'Cannibalization & Promo Analyst' }
-            ].map(tab => (
-              <button
-                key={tab.id}
-                onClick={() => {
-                  setActiveView(tab.id as any);
-                  setSelectedAiClass(null); // Reset class selection
-                }}
-                className={`flex-1 py-1 text-[8.5px] font-bold uppercase tracking-wider rounded-sm transition-all border-none cursor-pointer text-center outline-none ${
-                  activeView === tab.id
-                    ? 'bg-acies-yellow text-white dark:text-acies-gray font-extrabold shadow-sm shadow-black/10'
-                    : 'bg-transparent text-zinc-555 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-white'
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <Sparkles size={14} className="text-acies-yellow animate-pulse" />
-          <span className="text-[9px] font-bold uppercase tracking-widest text-zinc-400">
-            Acies AI Product Rationalization Engine v1.1
-          </span>
-        </div>
-      </div>
-
-      {/* Main Header Descriptor block */}
-      <div className="glass-card bg-gradient-to-r from-acies-gray via-acies-gray to-acies-gray/85 text-white py-5 px-6 relative overflow-hidden">
-        <div className="absolute top-0 right-0 p-4 opacity-5 rotate-12 pointer-events-none text-acies-yellow">
-          <Layers size={100} />
-        </div>
-        <div>
-          <p className="text-[9px] uppercase font-bold tracking-widest opacity-40 mb-2">Category Assortment & Portfolio Optimization · Tab 4 of 6</p>
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
-            <h2 className="text-xl font-display font-medium text-white">
-              {activeView === 'simulator' 
-                ? 'SKU Rationalization Command Desk' 
-                : 'Cannibalization & Promotional Margin Audit'}
-            </h2>
-            <div className="flex items-center gap-2 self-start sm:self-auto">
-              <span className="flex items-center gap-1.5 px-3 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-extrabold uppercase tracking-widest rounded-full">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
-                Active Ledger Sync
-              </span>
-              <span className="text-[10px] opacity-40 font-bold tracking-widest">Refreshed {refreshTime}</span>
+      {/* Consolidated Toolbar Header */}
+      <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3 rounded shadow-sm flex flex-col lg:flex-row items-center justify-between gap-4 w-full">
+        
+        {/* Left Side: Title & Info Tooltip */}
+        <div className="flex items-center gap-2.5 self-start lg:self-auto">
+          <div className="w-1.5 h-6 bg-acies-yellow rounded-full shrink-0 animate-pulse" />
+          <div>
+            <div className="flex items-center gap-1.5">
+              <h2 className="text-[12px] font-display font-extrabold uppercase tracking-wider text-acies-gray dark:text-white leading-none">
+                {activeView === 'simulator' 
+                  ? 'SKU Rationalization Command Desk' 
+                  : 'Cannibalization & Margin Audit'}
+              </h2>
+              {/* Info Icon Tooltip */}
+              <div className="relative group/help">
+                <HelpCircle size={12} className="text-zinc-400 hover:text-acies-yellow transition-colors cursor-help shrink-0" />
+                <div className="absolute left-0 top-5 w-64 bg-zinc-900 border border-white/10 text-white text-[9px] p-2.5 rounded shadow-2xl z-50 pointer-events-none opacity-0 group-hover/help:opacity-100 transition-opacity duration-200 leading-relaxed">
+                  <p className="font-bold mb-1 text-acies-yellow">
+                    {activeView === 'simulator' ? 'Simulation Workspace Guide:' : 'Audit Analyst Guide:'}
+                  </p>
+                  <p className="opacity-85">
+                    {activeView === 'simulator'
+                      ? 'Audit product assortments using AI segmentation, run multi-variable gross margin simulations, and analyze Pareto distributions to optimize tail-end catalog complexity.'
+                      : 'Model cross-product cannibalization coefficients, evaluate price-pack margin elasticity corridors, and identify high promotion dependency risks.'}
+                  </p>
+                </div>
+              </div>
             </div>
+            <p className="text-[8px] font-bold text-zinc-400 uppercase tracking-widest mt-1">Category Assortment Workspace · Tab 4 of 6</p>
           </div>
-          <p className="text-xs text-zinc-300 font-medium max-w-2xl leading-relaxed">
-            {activeView === 'simulator'
-              ? 'Audit product assortments using AI segmentation, run multi-variable gross margin simulations, and analyze Pareto distributions to optimize tail-end catalog complexity.'
-              : 'Model cross-product cannibalization coefficients, evaluate price-pack margin elasticity corridors, and identify high promotion dependency risks.'}
-          </p>
         </div>
+
+        {/* Center: View Switcher */}
+        <div className="flex bg-black/5 dark:bg-white/5 p-0.5 rounded border border-black/5 dark:border-white/10 min-w-[340px]">
+          {[
+            { id: 'simulator', label: 'Portfolio Simulator Command' },
+            { id: 'analyst', label: 'Cannibalization & Promo Analyst' }
+          ].map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => {
+                setActiveView(tab.id as any);
+                setSelectedAiClass(null);
+              }}
+              className={`flex-1 py-1.5 text-[8.5px] font-bold uppercase tracking-wider rounded-sm transition-all border-none cursor-pointer text-center outline-none ${
+                activeView === tab.id
+                  ? 'bg-acies-yellow text-white dark:text-acies-gray font-extrabold shadow-sm shadow-black/10'
+                  : 'bg-transparent text-zinc-555 dark:text-zinc-400 hover:text-zinc-850 dark:hover:text-white'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Right Side: Ledger Sync State */}
+        <div className="flex items-center gap-3 self-end lg:self-auto">
+          <div className="flex items-center gap-2">
+            <span className="flex items-center gap-1 px-2 py-0.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[8px] font-black uppercase tracking-wider rounded-full">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+              Active Ledger Sync
+            </span>
+            <span className="text-[9px] font-mono opacity-40 font-bold">Refreshed {refreshTime}</span>
+          </div>
+        </div>
+
       </div>
 
       {/* KPI Cards Strip */}
