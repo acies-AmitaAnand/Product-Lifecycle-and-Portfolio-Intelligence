@@ -103,6 +103,26 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
   // Filter Highlight state from category cards
   const [selectedAiClass, setSelectedAiClass] = useState<string | null>(null);
 
+  // Group SKUs by category helper for select dropdowns
+  const skusByCategory = useMemo(() => {
+    const map: Record<string, typeof SKUS> = {
+      Beverages: [],
+      Snacks: [],
+      'Personal Care': [],
+      Dairy: [],
+      Household: []
+    };
+    SKUS.forEach(s => {
+      const categoryLabel = s.cat === 'Home Care' ? 'Household' : s.cat;
+      if (map[categoryLabel]) {
+        map[categoryLabel].push(s);
+      } else {
+        map[categoryLabel] = [s];
+      }
+    });
+    return map;
+  }, []);
+
   // Simulator State variables
   const [simTab, setSimTab] = useState<'remove' | 'price' | 'launch'>('remove');
   const [selectedSkuName, setSelectedSkuName] = useState(SKUS[0].name);
@@ -254,6 +274,23 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
   const [hasScored, setHasScored] = useState(true);
   const [guideOpen, setGuideOpen] = useState(false);
 
+  // Dynamic filter for SKU B based on SKU A category
+  const skuACategory = useMemo(() => {
+    const s = SKUS.find(item => item.name === skuA);
+    return s ? s.cat : 'Beverages';
+  }, [skuA]);
+
+  const skuBOptions = useMemo(() => {
+    return SKUS.filter(s => s.cat === skuACategory && s.name !== skuA);
+  }, [skuACategory, skuA]);
+
+  useEffect(() => {
+    const isStillValid = skuBOptions.some(opt => opt.name === skuB);
+    if (!isStillValid && skuBOptions.length > 0) {
+      setSkuB(skuBOptions[0].name);
+    }
+  }, [skuBOptions, skuB]);
+
   const pairsData: CannibalizationPair[] = [
     { a: 'Mango Fizz 500ml', b: 'Aloe Vera Drink', risk: 0.62, cat: 'Beverages', revAtRisk: 42 },
     { a: 'Oat Cookies', b: 'Choco Wafers', risk: 0.38, cat: 'Snacks', revAtRisk: 18 },
@@ -381,11 +418,21 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
           
           {/* ① AI SEGMENTATION RECOMMENDATION CARDS (Filters charts on click) */}
           <div className="space-y-3">
-            <div className="flex items-center gap-2 border-l-4 border-[#8b5cf6] pl-3 py-0.5">
-              <h3 className="text-xs font-bold uppercase tracking-widest text-[#8b5cf6] dark:text-purple-300">
-                ① Portfolio Segment Filters
-              </h3>
-              <span className="text-[8px] text-zinc-400 font-bold uppercase tracking-widest ml-2">Click cards to highlight items in charts below</span>
+            <div className="flex items-center justify-between gap-4 py-0.5 w-full">
+              <div className="flex items-center gap-2 border-l-4 border-[#8b5cf6] pl-3">
+                <h3 className="text-xs font-bold uppercase tracking-widest text-[#8b5cf6] dark:text-purple-300">
+                  ① Portfolio Segment Filters
+                </h3>
+                <span className="text-[8px] text-zinc-400 font-bold uppercase tracking-widest ml-2 hidden sm:inline">Click cards to filter charts below</span>
+              </div>
+              {selectedAiClass && (
+                <button
+                  onClick={() => setSelectedAiClass(null)}
+                  className="px-2.5 py-1 bg-purple-500/10 hover:bg-purple-500/20 text-[#8b5cf6] dark:text-purple-300 text-[8px] font-bold uppercase tracking-widest rounded border border-purple-500/20 transition-all cursor-pointer outline-none"
+                >
+                  ✕ Clear Filter ({SR_CLASSES[selectedAiClass]?.label})
+                </button>
+              )}
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-3">
@@ -602,12 +649,16 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
                       <select
                         value={selectedSkuName}
                         onChange={(e) => setSelectedSkuName(e.target.value)}
-                        className="w-full bg-black/5 dark:bg-[#121214] border border-black/10 dark:border-white/10 rounded-lg p-2.5 text-xs font-bold text-acies-gray dark:text-white outline-none"
+                        className="w-full bg-black/5 dark:bg-[#121214] border border-black/10 dark:border-white/10 rounded-lg p-2.5 text-xs font-bold text-acies-gray dark:text-white outline-none focus:border-acies-yellow"
                       >
-                        {SKUS.map(s => (
-                          <option key={s.name} value={s.name} className="dark:bg-[#1a1a24] text-xs font-semibold">
-                            {s.name} (₹{s.rev}Cr • Vol {s.rev} • Margin {s.margin}%)
-                          </option>
+                        {Object.entries(skusByCategory).map(([cat, list]) => (
+                          <optgroup key={`optg-${cat}`} label={cat.toUpperCase()} className="font-extrabold text-[8px] tracking-wider text-zinc-400 dark:text-zinc-500 bg-white dark:bg-[#1a1a24] py-1">
+                            {list.map(s => (
+                              <option key={s.name} value={s.name} className="dark:bg-[#1a1a24] text-xs font-semibold text-zinc-800 dark:text-white">
+                                {s.name} (₹{s.rev}Cr • Margin {s.margin}%)
+                              </option>
+                            ))}
+                          </optgroup>
                         ))}
                       </select>
                     </div>
@@ -728,9 +779,15 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
                 {/* Simulator Outputs Column */}
                 <div className="flex flex-col justify-between gap-4">
                   <div className="p-4 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 rounded-xl flex-1 space-y-4">
-                    <div className="flex items-center gap-1.5 border-b border-black/5 dark:border-white/5 pb-2">
-                      <BarChart2 size={12} className="text-acies-yellow" />
-                      <h5 className="text-[10px] font-black uppercase tracking-widest opacity-45">Simulated P&L Delta Metrics</h5>
+                    <div className="flex items-center justify-between border-b border-black/5 dark:border-white/5 pb-2">
+                      <div className="flex items-center gap-1.5">
+                        <BarChart2 size={12} className="text-acies-yellow" />
+                        <h5 className="text-[10px] font-black uppercase tracking-widest opacity-45">Simulated P&L Delta Metrics</h5>
+                      </div>
+                      <span className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-500 border border-purple-500/20 text-[7px] font-extrabold uppercase tracking-widest animate-pulse">
+                        <span className="w-1 h-1 rounded-full bg-purple-500" />
+                        Live Projection
+                      </span>
                     </div>
 
                     <div className="grid grid-cols-2 gap-3">
@@ -1019,27 +1076,33 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
             
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="flex flex-col gap-1">
-                <label className="text-[8px] font-bold uppercase tracking-widest opacity-40">SKU A Name</label>
+                <label className="text-[8px] font-bold uppercase tracking-widest opacity-40">SKU A (Base Variant)</label>
                 <select 
                   value={skuA}
                   onChange={(e) => setSkuA(e.target.value)}
                   className="bg-black/5 dark:bg-[#121214] border border-black/10 dark:border-white/10 rounded px-2.5 py-2 text-xs font-semibold text-acies-gray dark:text-white outline-none focus:border-acies-yellow"
                 >
-                  {SKUS.map(s => (
-                    <option key={`a-${s.name}`} value={s.name} className="dark:bg-[#1a1a24] text-xs font-semibold">{s.name}</option>
+                  {Object.entries(skusByCategory).map(([cat, list]) => (
+                    <optgroup key={`optg-a-${cat}`} label={cat.toUpperCase()} className="font-extrabold text-[8px] tracking-wider text-zinc-400 dark:text-zinc-500 bg-white dark:bg-[#1a1a24] py-1">
+                      {list.map(s => (
+                        <option key={`a-${s.name}`} value={s.name} className="dark:bg-[#1a1a24] text-xs font-semibold text-zinc-800 dark:text-white">{s.name}</option>
+                      ))}
+                    </optgroup>
                   ))}
                 </select>
               </div>
               <div className="flex flex-col gap-1">
-                <label className="text-[8px] font-bold uppercase tracking-widest opacity-40">SKU B Name</label>
+                <label className="text-[8px] font-bold uppercase tracking-widest opacity-40">SKU B (Compare Variant)</label>
                 <select 
                   value={skuB}
                   onChange={(e) => setSkuB(e.target.value)}
                   className="bg-black/5 dark:bg-[#121214] border border-black/10 dark:border-white/10 rounded px-2.5 py-2 text-xs font-semibold text-acies-gray dark:text-white outline-none focus:border-acies-yellow"
                 >
-                  {SKUS.map(s => (
-                    <option key={`b-${s.name}`} value={s.name} className="dark:bg-[#1a1a24] text-xs font-semibold">{s.name}</option>
-                  ))}
+                  <optgroup label={`${skuACategory.toUpperCase()} VARIANTS`} className="font-extrabold text-[8px] tracking-wider text-zinc-400 dark:text-zinc-500 bg-white dark:bg-[#1a1a24] py-1">
+                    {skuBOptions.map(s => (
+                      <option key={`b-${s.name}`} value={s.name} className="dark:bg-[#1a1a24] text-xs font-semibold text-zinc-800 dark:text-white">{s.name}</option>
+                    ))}
+                  </optgroup>
                 </select>
               </div>
               <div className="flex flex-col gap-1">
