@@ -515,55 +515,8 @@ export default function App() {
                     }
                   ];
                 }
-                if (activeTab === 4 && role === 'VP Product Management') {
-                  const sunsetCount = SKUS.filter(s => {
-                    const val = s.val;
-                    const cx = s.cx;
-                    const growth = s.growth;
-                    const margin = s.margin;
-                    if (val >= 0.7 && cx <= 0.4) return false;
-                    if (val >= 0.6 && growth >= 0.15) return false;
-                    if (val < 0.5 && cx < 0.5 && margin >= 30) return false;
-                    if (val < 0.4 && cx >= 0.6) return true;
-                    return false;
-                  }).length;
-                  return [
-                    {
-                      label: 'Portfolio SKUs',
-                      value: '127',
-                      trend: 'up',
-                      trendValue: '−3 rationalized this Q',
-                      info: 'Total active SKUs across the global portfolio. Cleaned up low-value items.',
-                      highlight: ['VP Product Management']
-                    },
-                    {
-                      label: 'Sunset Candidates',
-                      value: String(sunsetCount),
-                      trend: 'down',
-                      trendValue: 'Immediate action required',
-                      info: 'Low value and high complexity tail SKUs recommended for removal by AI.',
-                      highlight: ['VP Product Management'],
-                      isRisk: true
-                    },
-                    {
-                      label: 'Revenue at Risk',
-                      value: '₹148 Cr',
-                      trend: 'down',
-                      trendValue: 'If tail SKUs removed',
-                      info: 'Estimated maximum revenue exposure if all sunset candidates are removed concurrently.',
-                      highlight: ['VP Product Management'],
-                      isRisk: true
-                    },
-                    {
-                      label: 'Avg Complexity',
-                      value: '0.48',
-                      trend: 'down',
-                      trendValue: 'Target <0.40',
-                      info: 'Average operational and manufacturing complexity index across the active catalog.',
-                      highlight: ['VP Product Management'],
-                      isRisk: true
-                    }
-                  ];
+                if (activeTab === 4) {
+                  return [];
                 }
                 if (activeTab === 6) {
                   return [];

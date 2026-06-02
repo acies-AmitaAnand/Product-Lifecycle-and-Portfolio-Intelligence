@@ -17,6 +17,8 @@ import { Role } from '../../../types/dashboard';
 import { SkuIntelligenceModal } from './SkuIntelligenceModal';
 import { ProductDirectory } from './ProductDirectory';
 import { CalculatorScorer } from './CalculatorScorer';
+import { KPICard } from '../KPICard';
+import { KpiActionModal } from './KpiActionModal';
 
 // Types
 interface CannibalizationPair {
@@ -100,6 +102,59 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
   );
 
   const [refreshTime, setRefreshTime] = useState('');
+  const [activeKpiAction, setActiveKpiAction] = useState<string | null>(null);
+
+  // Get active KPI cards for SKU Rationalization tab
+  const kpis = useMemo(() => {
+    const sunsetCount = SKUS.filter(s => {
+      const val = s.val;
+      const cx = s.cx;
+      const growth = s.growth;
+      const margin = s.margin;
+      if (val >= 0.7 && cx <= 0.4) return false;
+      if (val >= 0.6 && growth >= 0.15) return false;
+      if (val < 0.5 && cx < 0.5 && margin >= 30) return false;
+      if (val < 0.4 && cx >= 0.6) return true;
+      return false;
+    }).length;
+    return [
+      {
+        label: 'Portfolio SKUs',
+        value: '127',
+        trend: 'up' as const,
+        trendValue: '−3 rationalized this Q',
+        info: 'Total active SKUs across the global portfolio. Cleaned up low-value items.',
+        highlight: ['VP Product Management']
+      },
+      {
+        label: 'Sunset Candidates',
+        value: String(sunsetCount),
+        trend: 'down' as const,
+        trendValue: 'Immediate action required',
+        info: 'Low value and high complexity tail SKUs recommended for removal by AI.',
+        highlight: ['VP Product Management'],
+        isRisk: true
+      },
+      {
+        label: 'Revenue at Risk',
+        value: '₹148 Cr',
+        trend: 'down' as const,
+        trendValue: 'If tail SKUs removed',
+        info: 'Estimated maximum revenue exposure if all sunset candidates are removed concurrently.',
+        highlight: ['VP Product Management'],
+        isRisk: true
+      },
+      {
+        label: 'Avg Complexity',
+        value: '0.48',
+        trend: 'down' as const,
+        trendValue: 'Target <0.40',
+        info: 'Average operational and manufacturing complexity index across the active catalog.',
+        highlight: ['VP Product Management'],
+        isRisk: true
+      }
+    ];
+  }, []);
   useEffect(() => {
     setRefreshTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
   }, []);
@@ -444,6 +499,18 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
         </div>
       </div>
 
+      {/* KPI Cards Strip */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        {kpis.map((kpi) => (
+          <KPICard 
+            key={kpi.label}
+            kpi={kpi} 
+            role={role} 
+            onAuditClick={() => setActiveKpiAction(kpi.label)}
+          />
+        ))}
+      </div>
+
       {/* ──────────────────────────────────────────────────────────────────────── */}
       {/* WORKSPACE VIEW 1: STRATEGIC SIMULATOR VIEW                             */}
       {/* ──────────────────────────────────────────────────────────────────────── */}
@@ -511,7 +578,7 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
           </div>
 
           {/* ② VALUE vs COMPLEXITY MATRIX + PRIORITY RANKINGS */}
-          <div className="space-y-3">
+          <div className="space-y-3" id="quadrant-matrix-section" style={{ scrollMarginTop: '100px' }}>
             <div className="flex items-center gap-2 border-l-4 border-[#8b5cf6] pl-3 py-0.5">
               <h3 className="text-xs font-bold uppercase tracking-widest text-[#8b5cf6] dark:text-purple-300">
                 ② Commercial Value vs Complexity Matrix
@@ -520,7 +587,7 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* Scatter Map */}
-              <div className="lg:col-span-2 glass-card bg-white dark:bg-[#1a1a24] border border-black/10 dark:border-white/10 p-5 shadow-sm rounded-xl">
+              <div id="complexity-matrix-section" style={{ scrollMarginTop: '100px' }} className="lg:col-span-2 glass-card bg-white dark:bg-[#1a1a24] border border-black/10 dark:border-white/10 p-5 shadow-sm rounded-xl">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
                   <div>
                     <h4 className="text-xs font-bold uppercase tracking-widest text-acies-gray dark:text-white">Commercial Value & Complexity Quadrants</h4>
@@ -650,7 +717,7 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
           </div>
 
           {/* ③ DYNAMIC P&L SIMULATOR COMMAND DESK */}
-          <div className="space-y-3">
+          <div className="space-y-3" id="simulation-desk-section" style={{ scrollMarginTop: '100px' }}>
             <div className="flex items-center gap-2 border-l-4 border-[#8b5cf6] pl-3 py-0.5">
               <h3 className="text-xs font-bold uppercase tracking-widest text-[#8b5cf6] dark:text-purple-300">
                 ③ Real-time P&L Simulation Desk
@@ -1015,7 +1082,7 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
           </div>
 
           {/* ④ PARETO - REVENUE CONCENTRATION WITH GHOST SIMULATION OVERLAY */}
-          <div className="space-y-3">
+          <div className="space-y-3" id="pareto-chart-section" style={{ scrollMarginTop: '100px' }}>
             <div className="flex items-center gap-2 border-l-4 border-[#8b5cf6] pl-3 py-0.5">
               <h3 className="text-xs font-bold uppercase tracking-widest text-[#8b5cf6] dark:text-purple-300">
                 ④ Revenue Concentration — Pareto View with Ghost Simulation Overlay
@@ -1151,7 +1218,7 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             
             {/* Cannibalization Scatter Map (Interacts with Pair Scorer on click) */}
-            <div className="glass-card bg-white dark:bg-[#1a1a24] border border-black/10 dark:border-white/10 p-5 rounded-xl shadow-sm">
+            <div id="cannibalization-section" style={{ scrollMarginTop: '100px' }} className="glass-card bg-white dark:bg-[#1a1a24] border border-black/10 dark:border-white/10 p-5 rounded-xl shadow-sm">
               <div className="mb-4">
                 <h3 className="text-xs font-bold uppercase tracking-widest text-acies-gray dark:text-white">Substitution Risk Scatter Map</h3>
                 <p className="text-[9px] text-zinc-555 font-bold uppercase tracking-widest mt-0.5">
@@ -1210,7 +1277,7 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
             </div>
 
             {/* Promo Erosion Horizontal Bar Chart */}
-            <div className="glass-card bg-white dark:bg-[#1a1a24] border border-black/10 dark:border-white/10 p-5 rounded-xl shadow-sm">
+            <div id="promo-erosion-section" style={{ scrollMarginTop: '100px' }} className="glass-card bg-white dark:bg-[#1a1a24] border border-black/10 dark:border-white/10 p-5 rounded-xl shadow-sm">
               <div className="mb-4">
                 <h3 className="text-xs font-bold uppercase tracking-widest text-acies-gray dark:text-white">Promotional Erosion — Top 10 Dependent SKUs</h3>
                 <p className="text-[9px] text-zinc-555 font-bold uppercase tracking-widest mt-0.5">
@@ -1299,7 +1366,9 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
       )}
 
       {/* ⑤ PORTFOLIO INTELLIGENCE DIRECTORY */}
-      <ProductDirectory onSelectSku={(sku) => setSelectedSkuDetails(sku)} />
+      <div id="product-directory-section" style={{ scrollMarginTop: '100px' }}>
+        <ProductDirectory onSelectSku={(sku) => setSelectedSkuDetails(sku)} />
+      </div>
 
       {/* SKU DETAIL MODAL WINDOW */}
       <SkuIntelligenceModal
@@ -1311,6 +1380,17 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
           setSimTab('remove');
           setActiveView('simulator');
         }}
+      />
+
+      {/* KPI ACTION OPTIONS MODAL */}
+      <KpiActionModal
+        activeKpi={activeKpiAction}
+        onClose={() => setActiveKpiAction(null)}
+        setSelectedAiClass={setSelectedAiClass}
+        setActiveView={setActiveView}
+        setSimTab={setSimTab}
+        setSelectedSkuName={setSelectedSkuName}
+        setSelectedSkuDetails={(sku) => setSelectedSkuDetails(sku)}
       />
 
     </div>
