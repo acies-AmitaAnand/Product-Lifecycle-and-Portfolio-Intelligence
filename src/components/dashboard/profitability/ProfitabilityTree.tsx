@@ -8,6 +8,7 @@ import {
 } from 'recharts';
 import { Role } from '../../../types/dashboard';
 import { SKUS } from '../../../constants/data';
+import { ForecastAccuracySimulator } from './ForecastAccuracySimulator';
 
 interface ProfitabilityTreeProps {
   role: Role;
@@ -39,6 +40,7 @@ const VPProfitabilityTreeView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode
   const tooltipText = isDarkMode ? '#fff' : '#000';
 
 
+  const [showForecastSimulator, setShowForecastSimulator] = useState<boolean>(false);
   const [simRawMaterial, setSimRawMaterial] = useState<number>(0);
   const [simPriceChange, setSimPriceChange] = useState<number>(0);
   const [simPromoCut, setSimPromoCut] = useState<number>(0);
@@ -260,6 +262,15 @@ const VPProfitabilityTreeView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode
   const scenarioSkusBelow20 = simRawMaterial > 8 ? 4 : 2;
 
 
+
+  if (showForecastSimulator) {
+    return (
+      <ForecastAccuracySimulator 
+        isDarkMode={isDarkMode} 
+        onClose={() => setShowForecastSimulator(false)} 
+      />
+    );
+  }
 
   return (
     <div className="space-y-6 animate-fade-in font-body pb-12">
@@ -607,7 +618,7 @@ const VPProfitabilityTreeView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode
                 Medium
               </span>
               <button 
-                onClick={() => showToast("Opening LSTM forecasting model parameters panel.", "info")}
+                onClick={() => setShowForecastSimulator(true)}
                 className="flex items-center gap-1.5 px-3 py-1.5 border border-black/10 dark:border-white/10 rounded-lg text-[9.5px] font-bold hover:bg-black/5 dark:hover:bg-white/5 transition-all text-zinc-600 dark:text-zinc-300 cursor-pointer"
               >
                 Deep dive <ArrowUpRight size={12} className="stroke-[2.5]" />
