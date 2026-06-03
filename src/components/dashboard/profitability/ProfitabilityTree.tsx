@@ -38,7 +38,7 @@ const VPProfitabilityTreeView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode
   const tooltipBorder = isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
   const tooltipText = isDarkMode ? '#fff' : '#000';
 
-  const [selectedWaterfallSku, setSelectedWaterfallSku] = useState<string>('Hand Cream SPF');
+
   const [simRawMaterial, setSimRawMaterial] = useState<number>(0);
   const [simPriceChange, setSimPriceChange] = useState<number>(0);
   const [simPromoCut, setSimPromoCut] = useState<number>(0);
@@ -201,41 +201,7 @@ const VPProfitabilityTreeView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode
     },
   ];
 
-  const getWaterfallChartData = (sku: string) => {
-    let revVal = 62, cogsVal = -42, gpVal = 20, mktVal = -12, opsVal = -3, ebitdaVal = 5, depVal = -1, ebitVal = 4;
-    if (sku === 'Choco Wafers') { revVal = 44; cogsVal = -34; gpVal = 10; mktVal = -8; opsVal = -2; ebitdaVal = 0; depVal = -1; ebitVal = -1; }
-    else if (sku === 'Floor Cleaner') { revVal = 30; cogsVal = -24; gpVal = 6; mktVal = -3; opsVal = -1; ebitdaVal = 2; depVal = -0.5; ebitVal = 1.5; }
-    else if (sku === 'Fabric Softener') { revVal = 28; cogsVal = -23.8; gpVal = 4.2; mktVal = -2.5; opsVal = -0.8; ebitdaVal = 0.9; depVal = -0.4; ebitVal = 0.5; }
-    else if (sku === 'Green Tea RTD') { revVal = 76; cogsVal = -54; gpVal = 22; mktVal = -14; opsVal = -4; ebitdaVal = 4; depVal = -1.5; ebitVal = 2.5; }
-    
-    const raw = [
-      { name: 'Revenue', val: revVal, type: 'total' },
-      { name: 'COGS', val: cogsVal, type: 'change' },
-      { name: 'Gross Profit', val: gpVal, type: 'total' },
-      { name: 'Marketing', val: mktVal, type: 'change' },
-      { name: 'Ops Cost', val: opsVal, type: 'change' },
-      { name: 'EBITDA', val: ebitdaVal, type: 'total' },
-      { name: 'Depreciation', val: depVal, type: 'change' },
-      { name: 'EBIT', val: ebitVal, type: 'total' }
-    ];
 
-    return raw.map((d) => {
-      let color = accentColor;
-      if (d.name === 'Revenue') color = '#10b981';
-      else if (d.name === 'Gross Profit') color = '#3b82f6';
-      else if (d.name === 'EBITDA') color = '#8b5cf6';
-      else if (d.name === 'EBIT') color = '#3b82f6';
-      else color = d.val >= 0 ? '#10b981' : '#ef4444';
-
-      return { 
-        name: d.name, 
-        bottom: 0, 
-        value: Math.abs(d.val), 
-        displayVal: Math.abs(Math.round(d.val * 10) / 10), 
-        color 
-      };
-    });
-  };
 
   const marginVelocityAlerts = [
     { name: 'Snacks', detail: 'from 22% margin', delta: '-1.2pp/mo', status: 'critical', sColor: '#ef4444' },
@@ -293,7 +259,7 @@ const VPProfitabilityTreeView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode
   const scenarioGpImpact = scenarioGp - 851.2 * 0.362;
   const scenarioSkusBelow20 = simRawMaterial > 8 ? 4 : 2;
 
-  const currentWaterfallData = getWaterfallChartData(selectedWaterfallSku);
+
 
   return (
     <div className="space-y-6 animate-fade-in font-body pb-12">
@@ -741,58 +707,6 @@ const VPProfitabilityTreeView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode
           );
         })}
       </div>
-
-
-      <div className="glass-card bg-white dark:bg-[#1a1a24]/90 border border-black/10 dark:border-white/10 rounded-xl overflow-hidden shadow-sm">
-        <div className="flex items-center justify-between p-3.5 border-b bg-[#8b5cf6]/[0.03]">
-          <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-lg bg-[#8b5cf6]/15 text-[#8b5cf6] flex items-center justify-center text-sm flex-shrink-0">
-              📊
-            </div>
-            <span className="text-[12px] font-bold font-display text-[#8b5cf6]">
-              SKU P&L Waterfall Analysis
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <label className="text-[8px] font-bold uppercase tracking-widest opacity-50 mr-2">SKU Preset:</label>
-            <select
-              value={selectedWaterfallSku}
-              onChange={(e) => setSelectedWaterfallSku(e.target.value)}
-              className="bg-white dark:bg-zinc-800 border border-black/10 dark:border-white/10 rounded px-2 py-1 text-[10px] font-bold outline-none text-zinc-800 dark:text-zinc-150"
-            >
-              <option value="Hand Cream SPF">Hand Cream SPF</option>
-              <option value="Choco Wafers">Choco Wafers</option>
-              <option value="Floor Cleaner">Floor Cleaner</option>
-              <option value="Fabric Softener">Fabric Softener</option>
-              <option value="Green Tea RTD">Green Tea RTD</option>
-            </select>
-          </div>
-        </div>
-        <div className="p-6">
-          <div className="h-72">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={currentWaterfallData} margin={{ top: 15, right: 10, left: -25, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridStroke} />
-                <XAxis dataKey="name" tick={{ fill: tickColor, fontSize: 8 }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fill: tickColor, fontSize: 8 }} axisLine={false} tickLine={false} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, color: tooltipText }}
-                  itemStyle={{ fontSize: 10 }}
-                  formatter={(value: any, name: any, props: any) => [`₹${props.payload.displayVal}Cr`, 'Value']}
-                />
-                <Bar dataKey="bottom" stackId="wfall" fill="transparent" />
-                <Bar dataKey="value" stackId="wfall" radius={2}>
-                  {currentWaterfallData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-      </div>
-
-
 
       <div className="glass-card bg-white dark:bg-[#1a1a24]/90 border border-black/10 dark:border-white/10 rounded-xl overflow-hidden shadow-sm">
         <div className="flex items-center justify-between p-3.5 border-b bg-[#f59e0b]/[0.03]">
