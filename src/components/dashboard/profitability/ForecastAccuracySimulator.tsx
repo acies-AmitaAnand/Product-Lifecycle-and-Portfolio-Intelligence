@@ -61,8 +61,8 @@ export const ForecastAccuracySimulator: React.FC<ForecastAccuracySimulatorProps>
       month: d.month,
       current: d.current,
       ai: aiVal,
-      // Recharts Area can take an array representing [min, max] for a range Area
-      savingsZone: [minVal, maxVal]
+      savingsMin: minVal,
+      savingsMax: maxVal
     };
   });
 
@@ -271,7 +271,8 @@ export const ForecastAccuracySimulator: React.FC<ForecastAccuracySimulatorProps>
                 {/* Savings Zone Range Area */}
                 <Area 
                   type="monotone" 
-                  dataKey="savingsZone" 
+                  dataKey="savingsMax" 
+                  baseValue="savingsMin"
                   stroke="none" 
                   fill="url(#savingsGrad)" 
                   name="Savings zone"
