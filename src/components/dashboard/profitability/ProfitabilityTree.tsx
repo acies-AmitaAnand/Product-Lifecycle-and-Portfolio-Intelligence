@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { 
-  Layers, Calculator, Save, CheckCircle2, Info, TrendingUp, HelpCircle, ArrowRight
+  Layers, Calculator, Save, CheckCircle2, Info, TrendingUp, HelpCircle, ArrowRight, Award
 } from 'lucide-react';
 import { 
   ResponsiveContainer, BarChart, Bar, Cell, XAxis, YAxis, Tooltip, CartesianGrid,
@@ -276,7 +276,6 @@ const VPProfitabilityTreeView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode
 
   return (
     <div className="space-y-6 animate-fade-in font-body pb-12">
-      
       <div className="p-4 bg-gradient-to-r from-purple-500/10 to-indigo-500/10 border-l-4 border-[#8b5cf6] dark:border-purple-400 rounded-r shadow-sm flex items-start gap-3">
         <div className="w-5 h-5 rounded-full bg-[#8b5cf6]/15 flex items-center justify-center shrink-0 mt-0.5 animate-pulse">
           <div className="w-2 h-2 rounded-full bg-[#8b5cf6]" />
@@ -286,6 +285,152 @@ const VPProfitabilityTreeView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode
           <p className="text-[11px] font-medium leading-relaxed text-zinc-700 dark:text-zinc-300">
             Portfolio gross margin increased <span className="text-emerald-500 font-extrabold">+1.1pp to 36.2%</span>. Total P&L leakage cost of <span className="text-[#8b5cf6] font-extrabold">₹64 Cr</span> represents 7.5% of total revenue. Promo erosion is high, with <span className="text-red-500 font-extrabold">{activeErosionPromos} active campaigns</span> destroying margin.
           </p>
+        </div>
+      </div>
+
+      {/* Top Profit Contributors Card */}
+      <div className="glass-card bg-white dark:bg-[#1a1a24]/90 border border-black/10 dark:border-white/10 rounded-xl overflow-hidden shadow-sm">
+        <div className="flex items-center justify-between p-3.5 border-b bg-teal-500/[0.03]">
+          <div className="flex items-center gap-2.5">
+            <div className="w-7 h-7 rounded-lg bg-teal-500/15 text-teal-650 dark:text-teal-400 flex items-center justify-center text-sm flex-shrink-0">
+              <Award size={16} className="stroke-[2.5]" />
+            </div>
+            <span className="text-[12px] font-bold font-display text-teal-650 dark:text-teal-400">
+              Top profit contributors
+            </span>
+          </div>
+          <span className="text-[9.5px] font-bold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider">
+            Categories & Brands · YTD
+          </span>
+        </div>
+        <div className="p-5 grid grid-cols-1 lg:grid-cols-2 gap-8 divide-y lg:divide-y-0 lg:divide-x divide-black/[0.08] dark:divide-white/[0.08]">
+          
+          {/* BY CATEGORY */}
+          <div className="space-y-4">
+            <h4 className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">BY CATEGORY</h4>
+            <div className="flex flex-row items-center justify-between gap-4 flex-wrap sm:flex-nowrap">
+              <div className="w-[140px] h-[140px] flex-shrink-0 relative mx-auto sm:mx-0">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={[
+                        { name: 'Electronics', value: 9.4, percent: 30, color: '#1d4ed8' },
+                        { name: 'Apparel', value: 7.2, percent: 23, color: '#2563eb' },
+                        { name: 'Home & Living', value: 5.8, percent: 18, color: '#3b82f6' },
+                        { name: 'Beauty', value: 4.9, percent: 16, color: '#60a5fa' },
+                        { name: 'Sports', value: 4.3, percent: 14, color: '#93c5fd' },
+                      ]}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={38}
+                      outerRadius={56}
+                      paddingAngle={2}
+                      dataKey="value"
+                    >
+                      {[
+                        '#1d4ed8',
+                        '#2563eb',
+                        '#3b82f6',
+                        '#60a5fa',
+                        '#93c5fd'
+                      ].map((color, index) => (
+                        <Cell key={`cell-${index}`} fill={color} />
+                      ))}
+                    </Pie>
+                    <Tooltip 
+                      contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, color: tooltipText }}
+                      itemStyle={{ fontSize: 9.5 }}
+                      formatter={(value) => [`$${value}M`, 'Profit']}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="flex-1 space-y-2 w-full">
+                {[
+                  { name: 'Electronics', value: 9.4, percent: 30, color: '#1d4ed8' },
+                  { name: 'Apparel', value: 7.2, percent: 23, color: '#2563eb' },
+                  { name: 'Home & Living', value: 5.8, percent: 18, color: '#3b82f6' },
+                  { name: 'Beauty', value: 4.9, percent: 16, color: '#60a5fa' },
+                  { name: 'Sports', value: 4.3, percent: 14, color: '#93c5fd' },
+                ].map((item, idx) => (
+                  <div key={idx} className="flex items-center justify-between text-xs font-semibold text-zinc-700 dark:text-zinc-300">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2.5 h-2.5 rounded-sm animate-pulse-slow" style={{ backgroundColor: item.color }} />
+                      <span>{item.name}</span>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <span className="font-bold text-zinc-850 dark:text-zinc-150">${item.value}M</span>
+                      <span className="text-zinc-450 dark:text-zinc-500 font-mono w-8 text-right">{item.percent}%</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* BY BRAND */}
+          <div className="space-y-4 pt-6 lg:pt-0 lg:pl-8">
+            <h4 className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">BY BRAND</h4>
+            <div className="flex flex-row items-center justify-between gap-4 flex-wrap sm:flex-nowrap">
+              <div className="w-[140px] h-[140px] flex-shrink-0 relative mx-auto sm:mx-0">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={[
+                        { name: 'BrandX', value: 6.1, percent: 19, color: '#047857' },
+                        { name: 'NovaLine', value: 5.4, percent: 17, color: '#059669' },
+                        { name: 'Apex', value: 4.8, percent: 15, color: '#10b981' },
+                        { name: 'Zestora', value: 3.9, percent: 12, color: '#34d399' },
+                        { name: 'Other', value: 11.4, percent: 36, color: '#a7f3d0' },
+                      ]}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={38}
+                      outerRadius={56}
+                      paddingAngle={2}
+                      dataKey="value"
+                    >
+                      {[
+                        '#047857',
+                        '#059669',
+                        '#10b981',
+                        '#34d399',
+                        '#a7f3d0'
+                      ].map((color, index) => (
+                        <Cell key={`cell-${index}`} fill={color} />
+                      ))}
+                    </Pie>
+                    <Tooltip 
+                      contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, color: tooltipText }}
+                      itemStyle={{ fontSize: 9.5 }}
+                      formatter={(value) => [`$${value}M`, 'Profit']}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="flex-1 space-y-2 w-full">
+                {[
+                  { name: 'BrandX', value: 6.1, percent: 19, color: '#047857' },
+                  { name: 'NovaLine', value: 5.4, percent: 17, color: '#059669' },
+                  { name: 'Apex', value: 4.8, percent: 15, color: '#10b981' },
+                  { name: 'Zestora', value: 3.9, percent: 12, color: '#34d399' },
+                  { name: 'Other', value: 11.4, percent: 36, color: '#a7f3d0' },
+                ].map((item, idx) => (
+                  <div key={idx} className="flex items-center justify-between text-xs font-semibold text-zinc-700 dark:text-zinc-300">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2.5 h-2.5 rounded-sm animate-pulse-slow" style={{ backgroundColor: item.color }} />
+                      <span>{item.name}</span>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <span className="font-bold text-zinc-850 dark:text-zinc-150">${item.value}M</span>
+                      <span className="text-zinc-450 dark:text-zinc-500 font-mono w-8 text-right">{item.percent}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
 
