@@ -1,37 +1,81 @@
-import React, { useState } from 'react';
-import { ArrowLeft, Sparkles, Info, AlertCircle, RefreshCw, BarChart2 } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ArrowLeft, Sparkles, Info, RefreshCw, BarChart2, DollarSign, RefreshCcw, FileText, CheckCircle2 } from 'lucide-react';
 import { 
-  ResponsiveContainer, ComposedChart, Line, Area, XAxis, YAxis, Tooltip, Legend, CartesianGrid 
+  ResponsiveContainer, ComposedChart, Line, Area, XAxis, YAxis, Tooltip, Legend, CartesianGrid, BarChart, Bar, Cell 
 } from 'recharts';
+
+export type SimulatorTab = 'pricing' | 'returns' | 'forecasting' | 'contract';
 
 interface ForecastAccuracySimulatorProps {
   isDarkMode: boolean;
   onClose: () => void;
+  initialTab?: SimulatorTab;
 }
 
 export const ForecastAccuracySimulator: React.FC<ForecastAccuracySimulatorProps> = ({
   isDarkMode,
-  onClose
+  onClose,
+  initialTab = 'forecasting'
 }) => {
-  // Sliders State
+  const [activeTab, setActiveTab] = useState<SimulatorTab>(initialTab);
+
+  // Sync state if initialTab changes
+  useEffect(() => {
+    setActiveTab(initialTab);
+  }, [initialTab]);
+
+  // ==========================================
+  // 1. DYNAMIC PRICING ENGINE STATE & DRIVERS
+  // ==========================================
+  const [priceOptimization, setPriceOptimization] = useState<number>(5); // target price optimization %
+  const [elasticity, setElasticity] = useState<number>(-1.5); // elasticity multiplier
+  const [skuCoverage, setSkuCoverage] = useState<number>(2400); // SKU coverage
+
+  // Calculations for Dynamic Pricing
+  const pricingGpUplift = Math.max(0, priceOptimization * 0.36);
+  const pricingVolumeImpact = Math.round(priceOptimization * elasticity * 10) / 10;
+  const pricingNetRecovery = (skuCoverage / 2400) * (priceOptimization * 0.12) * (1 - Math.abs(pricingVolumeImpact) * 0.05);
+
+  const pricingChartData = [
+    { name: 'Beverages', baseline: 42, optimized: 42 + priceOptimization * 0.4 },
+    { name: 'Snacks', baseline: 36, optimized: 36 + priceOptimization * 0.38 },
+    { name: 'Personal Care', baseline: 48, optimized: 48 + priceOptimization * 0.42 },
+    { name: 'Household', baseline: 32, optimized: 32 + priceOptimization * 0.35 },
+  ];
+
+  // ==========================================
+  // 2. RETURNS PROPENSITY AI STATE & DRIVERS
+  // ==========================================
+  const [riskThreshold, setRiskThreshold] = useState<number>(8.0);
+  const [inspectionRate, setInspectionRate] = useState<number>(12);
+  const [avgRefundCost, setAvgRefundCost] = useState<number>(45);
+
+  // Calculations for Returns
+  const returnsReduction = Math.max(0, 9.8 - riskThreshold);
+  const returnsAuditVolume = Math.round(inspectionRate * 37.5);
+  const returnsRefundPrevented = (returnsReduction / 1.8) * (avgRefundCost / 45) * 0.40;
+
+  const returnsChartData = [
+    { name: 'W1', baseline: 9.8, prevented: Math.max(5.0, 9.8 - returnsReduction * 0.2) },
+    { name: 'W2', baseline: 10.2, prevented: Math.max(5.0, 10.2 - returnsReduction * 0.4) },
+    { name: 'W3', baseline: 9.5, prevented: Math.max(5.0, 9.5 - returnsReduction * 0.7) },
+    { name: 'W4', baseline: 9.9, prevented: Math.max(5.0, 9.9 - returnsReduction) },
+  ];
+
+  // ==========================================
+  // 3. AI DEMAND FORECASTING STATE & DRIVERS
+  // ==========================================
   const [currentAccuracy, setCurrentAccuracy] = useState<number>(71);
   const [aiTargetAccuracy, setAiTargetAccuracy] = useState<number>(88);
   const [inventoryAtRisk, setInventoryAtRisk] = useState<number>(1.4); // in $ Millions
   const [avgMargin, setAvgMargin] = useState<number>(34); // in %
 
-  // Calculations
+  // Calculations for Demand Forecasting
   const accuracyGain = Math.max(0, aiTargetAccuracy - currentAccuracy);
-  
-  // Overstock Reduction matches the screenshot (default: 30% for 71% -> 88%)
-  // Formula calibrated to give 30% for default values (17 * 1.765 = 30%)
   const overstockReduction = Math.max(0, Math.min(90, Math.round(accuracyGain * 1.765)));
-  
-  // Margin Recovery matches the screenshot (default: $0.41M for $1.4M inventory)
-  // Calibrated using a multiplier to match the mockup's business logic
   const marginRecovery = inventoryAtRisk * (overstockReduction / 100) * (avgMargin / 100) * 2.85;
 
-  // Base inventory data for the year (in units) representing the peaks/dips in the mockup
-  const baseData = [
+  const forecastingBaseData = [
     { month: 'Jul', current: 280, optimal: 310 },
     { month: 'Aug', current: 310, optimal: 295 },
     { month: 'Sep', current: 390, optimal: 345 },
@@ -46,14 +90,9 @@ export const ForecastAccuracySimulator: React.FC<ForecastAccuracySimulatorProps>
     { month: 'Jun', current: 420, optimal: 390 },
   ];
 
-  // Dynamic chart data where the green AI line and savings area respond to sliders
-  const chartData = baseData.map((d) => {
-    const accuracyDelta = (aiTargetAccuracy - 50) / 50; // normalized weight (0 to 1)
-    
-    // AI model gets closer to optimal demand as target accuracy increases
+  const forecastingChartData = forecastingBaseData.map((d) => {
+    const accuracyDelta = (aiTargetAccuracy - 50) / 50; 
     const aiVal = Math.round(d.current - (d.current - d.optimal) * accuracyDelta);
-    
-    // The savings zone area lies between the current model line and the AI model line
     const minVal = Math.min(d.current, aiVal);
     const maxVal = Math.max(d.current, aiVal);
 
@@ -66,10 +105,51 @@ export const ForecastAccuracySimulator: React.FC<ForecastAccuracySimulatorProps>
     };
   });
 
+  // ==========================================
+  // 4. CONTRACT INTELLIGENCE STATE & DRIVERS
+  // ==========================================
+  const [contractsAudited, setContractsAudited] = useState<number>(340);
+  const [anomalyFrequency, setAnomalyFrequency] = useState<number>(4.2);
+  const [resolutionSuccess, setResolutionSuccess] = useState<number>(75);
+
+  // Calculations for Contract Intelligence
+  const contractAnomalies = Math.round(contractsAudited * (anomalyFrequency / 100));
+  const contractDiscrepancyResolved = (contractsAudited / 340) * (anomalyFrequency / 4.2) * 2.4 * (resolutionSuccess / 100);
+  const contractNetValue = contractDiscrepancyResolved * 0.083; // converted to $M directly
+
+  const contractChartData = [
+    { name: 'Logistics', detected: contractAnomalies * 0.4, recovered: contractAnomalies * 0.4 * (resolutionSuccess / 100) },
+    { name: 'Packaging', detected: contractAnomalies * 0.3, recovered: contractAnomalies * 0.3 * (resolutionSuccess / 100) },
+    { name: 'Raw Material', detected: contractAnomalies * 0.2, recovered: contractAnomalies * 0.2 * (resolutionSuccess / 100) },
+    { name: 'Overhead Services', detected: contractAnomalies * 0.1, recovered: contractAnomalies * 0.1 * (resolutionSuccess / 100) },
+  ];
+
+  // Helper to reset the active simulator settings
+  const handleReset = () => {
+    if (activeTab === 'pricing') {
+      setPriceOptimization(5);
+      setElasticity(-1.5);
+      setSkuCoverage(2400);
+    } else if (activeTab === 'returns') {
+      setRiskThreshold(8.0);
+      setInspectionRate(12);
+      setAvgRefundCost(45);
+    } else if (activeTab === 'forecasting') {
+      setCurrentAccuracy(71);
+      setAiTargetAccuracy(88);
+      setInventoryAtRisk(1.4);
+      setAvgMargin(34);
+    } else if (activeTab === 'contract') {
+      setContractsAudited(340);
+      setAnomalyFrequency(4.2);
+      setResolutionSuccess(75);
+    }
+  };
+
   return (
     <div className="space-y-6 animate-fade-in font-body pb-12 text-zinc-300">
       
-      {/* Top Navigation / Action Bar */}
+      {/* Top Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-[#1e1e28] border border-white/10 rounded-xl p-4 gap-4 shadow-lg">
         <div className="flex items-center gap-3">
           <button
@@ -82,22 +162,39 @@ export const ForecastAccuracySimulator: React.FC<ForecastAccuracySimulatorProps>
           <div>
             <span className="text-[8px] uppercase font-bold tracking-widest text-[#a78bfa]">AI OPPORTUNITIES DEEP DIVE</span>
             <h2 className="text-sm font-display font-black text-white uppercase tracking-wider">
-              Forecast Accuracy vs Overstock Savings — Interactive Simulator
+              {activeTab === 'pricing' && 'Dynamic Pricing Engine Simulator'}
+              {activeTab === 'returns' && 'Returns Propensity AI Simulator'}
+              {activeTab === 'forecasting' && 'Forecast Accuracy vs Overstock Savings Simulator'}
+              {activeTab === 'contract' && 'Contract Sourcing Intelligence Simulator'}
             </h2>
           </div>
         </div>
         
         <button
-          onClick={() => {
-            setCurrentAccuracy(71);
-            setAiTargetAccuracy(88);
-            setInventoryAtRisk(1.4);
-            setAvgMargin(34);
-          }}
+          onClick={handleReset}
           className="flex items-center gap-1.5 px-3 py-1.5 border border-white/15 bg-white/5 hover:bg-white/10 text-white text-[9.5px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer shadow"
         >
-          <RefreshCw size={12} /> Reset Parameters
+          <RefreshCcw size={12} /> Reset Parameters
         </button>
+      </div>
+
+      {/* Simulator Tab Bar Selector */}
+      <div className="flex border border-white/10 rounded-xl overflow-hidden bg-[#161620] p-1 gap-1">
+        {[
+          { id: 'pricing', label: 'Dynamic Pricing', icon: <DollarSign size={14} /> },
+          { id: 'returns', label: 'Returns Propensity', icon: <RefreshCw size={14} /> },
+          { id: 'forecasting', label: 'Demand Forecasting', icon: <BarChart2 size={14} /> },
+          { id: 'contract', label: 'Contract Audit', icon: <FileText size={14} /> }
+        ].map(tab => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id as SimulatorTab)}
+            className={`flex items-center justify-center gap-2 flex-1 py-2 px-3 text-xs font-bold rounded-lg transition-all cursor-pointer border-none ${activeTab === tab.id ? 'bg-[#a78bfa] text-black shadow-md' : 'text-zinc-400 hover:text-zinc-100 hover:bg-white/5'}`}
+          >
+            {tab.icon}
+            <span>{tab.label}</span>
+          </button>
+        ))}
       </div>
 
       {/* Main Grid */}
@@ -115,70 +212,203 @@ export const ForecastAccuracySimulator: React.FC<ForecastAccuracySimulatorProps>
             {/* Sliders Container */}
             <div className="space-y-5">
               
-              {/* Current Accuracy */}
-              <div className="space-y-1.5">
-                <div className="flex justify-between items-center text-[10.5px] font-bold">
-                  <span className="text-zinc-300">Current forecast accuracy</span>
-                  <span className="font-mono text-white text-xs">{currentAccuracy}%</span>
-                </div>
-                <input 
-                  type="range" min="50" max="95" step="1"
-                  value={currentAccuracy} 
-                  onChange={(e) => {
-                    const val = parseInt(e.target.value);
-                    setCurrentAccuracy(val);
-                    if (val > aiTargetAccuracy) {
-                      setAiTargetAccuracy(val);
-                    }
-                  }}
-                  className="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-[#a78bfa]"
-                />
-              </div>
+              {/* TAB 1: DYNAMIC PRICING SLIDERS */}
+              {activeTab === 'pricing' && (
+                <>
+                  <div className="space-y-1.5">
+                    <div className="flex justify-between items-center text-[10.5px] font-bold">
+                      <span className="text-zinc-300">Target price optimization</span>
+                      <span className="font-mono text-white text-xs">+{priceOptimization}%</span>
+                    </div>
+                    <input 
+                      type="range" min="-10" max="20" step="1"
+                      value={priceOptimization} 
+                      onChange={(e) => setPriceOptimization(parseInt(e.target.value))}
+                      className="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-[#a78bfa]"
+                    />
+                  </div>
 
-              {/* AI Target Accuracy */}
-              <div className="space-y-1.5">
-                <div className="flex justify-between items-center text-[10.5px] font-bold">
-                  <span className="text-zinc-300">AI target accuracy</span>
-                  <span className="font-mono text-white text-xs">{aiTargetAccuracy}%</span>
-                </div>
-                <input 
-                  type="range" min="55" max="100" step="1"
-                  value={aiTargetAccuracy} 
-                  onChange={(e) => {
-                    const val = parseInt(e.target.value);
-                    setAiTargetAccuracy(Math.max(val, currentAccuracy));
-                  }}
-                  className="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-emerald-500"
-                />
-              </div>
+                  <div className="space-y-1.5">
+                    <div className="flex justify-between items-center text-[10.5px] font-bold">
+                      <span className="text-zinc-300">Expected Volume Elasticity</span>
+                      <span className="font-mono text-white text-xs">{elasticity}x</span>
+                    </div>
+                    <input 
+                      type="range" min="-3.0" max="-0.5" step="0.1"
+                      value={elasticity} 
+                      onChange={(e) => setElasticity(parseFloat(e.target.value))}
+                      className="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-sky-400"
+                    />
+                  </div>
 
-              {/* Inventory At Risk */}
-              <div className="space-y-1.5">
-                <div className="flex justify-between items-center text-[10.5px] font-bold">
-                  <span className="text-zinc-300">Inventory at risk ($M)</span>
-                  <span className="font-mono text-white text-xs">${inventoryAtRisk.toFixed(1)}M</span>
-                </div>
-                <input 
-                  type="range" min="0.5" max="5.0" step="0.1"
-                  value={inventoryAtRisk} 
-                  onChange={(e) => setInventoryAtRisk(parseFloat(e.target.value))}
-                  className="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-sky-450"
-                />
-              </div>
+                  <div className="space-y-1.5">
+                    <div className="flex justify-between items-center text-[10.5px] font-bold">
+                      <span className="text-zinc-300">Applicable SKU Coverage</span>
+                      <span className="font-mono text-white text-xs">{skuCoverage} SKUs</span>
+                    </div>
+                    <input 
+                      type="range" min="500" max="5000" step="100"
+                      value={skuCoverage} 
+                      onChange={(e) => setSkuCoverage(parseInt(e.target.value))}
+                      className="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                    />
+                  </div>
+                </>
+              )}
 
-              {/* Avg Margin */}
-              <div className="space-y-1.5">
-                <div className="flex justify-between items-center text-[10.5px] font-bold">
-                  <span className="text-zinc-300">Avg margin on at-risk SKUs</span>
-                  <span className="font-mono text-white text-xs">{avgMargin}%</span>
-                </div>
-                <input 
-                  type="range" min="15" max="60" step="1"
-                  value={avgMargin} 
-                  onChange={(e) => setAvgMargin(parseInt(e.target.value))}
-                  className="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-amber-500"
-                />
-              </div>
+              {/* TAB 2: RETURNS PROPENSITY SLIDERS */}
+              {activeTab === 'returns' && (
+                <>
+                  <div className="space-y-1.5">
+                    <div className="flex justify-between items-center text-[10.5px] font-bold">
+                      <span className="text-zinc-300">Returns Risk Trigger Threshold</span>
+                      <span className="font-mono text-white text-xs">{riskThreshold.toFixed(1)}%</span>
+                    </div>
+                    <input 
+                      type="range" min="5.0" max="15.0" step="0.5"
+                      value={riskThreshold} 
+                      onChange={(e) => setRiskThreshold(parseFloat(e.target.value))}
+                      className="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <div className="flex justify-between items-center text-[10.5px] font-bold">
+                      <span className="text-zinc-300">Manual inspection rate</span>
+                      <span className="font-mono text-white text-xs">{inspectionRate}%</span>
+                    </div>
+                    <input 
+                      type="range" min="0" max="50" step="2"
+                      value={inspectionRate} 
+                      onChange={(e) => setInspectionRate(parseInt(e.target.value))}
+                      className="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-[#a78bfa]"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <div className="flex justify-between items-center text-[10.5px] font-bold">
+                      <span className="text-zinc-300">Avg Refund Cost ($)</span>
+                      <span className="font-mono text-white text-xs">${avgRefundCost}</span>
+                    </div>
+                    <input 
+                      type="range" min="10" max="100" step="5"
+                      value={avgRefundCost} 
+                      onChange={(e) => setAvgRefundCost(parseInt(e.target.value))}
+                      className="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-sky-400"
+                    />
+                  </div>
+                </>
+              )}
+
+              {/* TAB 3: DEMAND FORECASTING SLIDERS */}
+              {activeTab === 'forecasting' && (
+                <>
+                  <div className="space-y-1.5">
+                    <div className="flex justify-between items-center text-[10.5px] font-bold">
+                      <span className="text-zinc-300">Current forecast accuracy</span>
+                      <span className="font-mono text-white text-xs">{currentAccuracy}%</span>
+                    </div>
+                    <input 
+                      type="range" min="50" max="95" step="1"
+                      value={currentAccuracy} 
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value);
+                        setCurrentAccuracy(val);
+                        if (val > aiTargetAccuracy) {
+                          setAiTargetAccuracy(val);
+                        }
+                      }}
+                      className="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-[#a78bfa]"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <div className="flex justify-between items-center text-[10.5px] font-bold">
+                      <span className="text-zinc-300">AI target accuracy</span>
+                      <span className="font-mono text-white text-xs">{aiTargetAccuracy}%</span>
+                    </div>
+                    <input 
+                      type="range" min="55" max="100" step="1"
+                      value={aiTargetAccuracy} 
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value);
+                        setAiTargetAccuracy(Math.max(val, currentAccuracy));
+                      }}
+                      className="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <div className="flex justify-between items-center text-[10.5px] font-bold">
+                      <span className="text-zinc-300">Inventory at risk ($M)</span>
+                      <span className="font-mono text-white text-xs">${inventoryAtRisk.toFixed(1)}M</span>
+                    </div>
+                    <input 
+                      type="range" min="0.5" max="5.0" step="0.1"
+                      value={inventoryAtRisk} 
+                      onChange={(e) => setInventoryAtRisk(parseFloat(e.target.value))}
+                      className="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-sky-400"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <div className="flex justify-between items-center text-[10.5px] font-bold">
+                      <span className="text-zinc-300">Avg margin on at-risk SKUs</span>
+                      <span className="font-mono text-white text-xs">{avgMargin}%</span>
+                    </div>
+                    <input 
+                      type="range" min="15" max="60" step="1"
+                      value={avgMargin} 
+                      onChange={(e) => setAvgMargin(parseInt(e.target.value))}
+                      className="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-amber-500"
+                    />
+                  </div>
+                </>
+              )}
+
+              {/* TAB 4: CONTRACT AUDIT SLIDERS */}
+              {activeTab === 'contract' && (
+                <>
+                  <div className="space-y-1.5">
+                    <div className="flex justify-between items-center text-[10.5px] font-bold">
+                      <span className="text-zinc-300">NLP Sourcing Audit Depth</span>
+                      <span className="font-mono text-white text-xs">{contractsAudited} contracts</span>
+                    </div>
+                    <input 
+                      type="range" min="50" max="1000" step="50"
+                      value={contractsAudited} 
+                      onChange={(e) => setContractsAudited(parseInt(e.target.value))}
+                      className="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-[#a78bfa]"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <div className="flex justify-between items-center text-[10.5px] font-bold">
+                      <span className="text-zinc-300">Detected Anomaly Frequency</span>
+                      <span className="font-mono text-white text-xs">{anomalyFrequency.toFixed(1)}%</span>
+                    </div>
+                    <input 
+                      type="range" min="1.0" max="10.0" step="0.2"
+                      value={anomalyFrequency} 
+                      onChange={(e) => setAnomalyFrequency(parseFloat(e.target.value))}
+                      className="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-sky-400"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <div className="flex justify-between items-center text-[10.5px] font-bold">
+                      <span className="text-zinc-300">Recovery Resolution Success</span>
+                      <span className="font-mono text-white text-xs">{resolutionSuccess}%</span>
+                    </div>
+                    <input 
+                      type="range" min="50" max="100" step="5"
+                      value={resolutionSuccess} 
+                      onChange={(e) => setResolutionSuccess(parseInt(e.target.value))}
+                      className="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                    />
+                  </div>
+                </>
+              )}
 
             </div>
           </div>
@@ -186,27 +416,51 @@ export const ForecastAccuracySimulator: React.FC<ForecastAccuracySimulatorProps>
           {/* Metric Cards Row */}
           <div className="grid grid-cols-3 gap-3 pt-6 border-t border-white/5">
             
-            {/* Accuracy Gain */}
+            {/* CARD 1 */}
             <div className="p-3 bg-white/[0.02] border border-white/5 rounded-lg flex flex-col justify-between h-20 shadow">
-              <span className="text-[7.5px] font-bold uppercase tracking-widest text-zinc-500">ACCURACY GAIN</span>
+              <span className="text-[7.5px] font-bold uppercase tracking-widest text-zinc-500">
+                {activeTab === 'pricing' && 'GP% UPLIFT'}
+                {activeTab === 'returns' && 'RETURN REDUCTION'}
+                {activeTab === 'forecasting' && 'ACCURACY GAIN'}
+                {activeTab === 'contract' && 'ANOMALIES FOUND'}
+              </span>
               <p className="text-base font-display font-black text-emerald-400 font-mono mt-1">
-                +{accuracyGain}pp
+                {activeTab === 'pricing' && `+${pricingGpUplift.toFixed(2)}pp`}
+                {activeTab === 'returns' && `-${returnsReduction.toFixed(1)}pp`}
+                {activeTab === 'forecasting' && `+${accuracyGain}pp`}
+                {activeTab === 'contract' && `${contractAnomalies} items`}
               </p>
             </div>
 
-            {/* Overstock Reduction */}
+            {/* CARD 2 */}
             <div className="p-3 bg-white/[0.02] border border-white/5 rounded-lg flex flex-col justify-between h-20 shadow">
-              <span className="text-[7.5px] font-bold uppercase tracking-widest text-zinc-500">OVERSTOCK REDUCTION</span>
-              <p className="text-base font-display font-black text-teal-400 font-mono mt-1">
-                {overstockReduction}%
+              <span className="text-[7.5px] font-bold uppercase tracking-widest text-zinc-500">
+                {activeTab === 'pricing' && 'DEMAND IMPACT'}
+                {activeTab === 'returns' && 'AUDIT VOLUME'}
+                {activeTab === 'forecasting' && 'OVERSTOCK REDUCTION'}
+                {activeTab === 'contract' && 'DISCREPANCY RESOLVED'}
+              </span>
+              <p className={`text-base font-display font-black font-mono mt-1 ${activeTab === 'pricing' ? 'text-rose-400' : 'text-teal-400'}`}>
+                {activeTab === 'pricing' && `${pricingVolumeImpact}%`}
+                {activeTab === 'returns' && `${returnsAuditVolume}/mo`}
+                {activeTab === 'forecasting' && `${overstockReduction}%`}
+                {activeTab === 'contract' && `₹${contractDiscrepancyResolved.toFixed(1)}Cr`}
               </p>
             </div>
 
-            {/* Margin Recovery */}
+            {/* CARD 3 */}
             <div className="p-3 bg-white/[0.02] border border-white/5 rounded-lg flex flex-col justify-between h-20 shadow">
-              <span className="text-[7.5px] font-bold uppercase tracking-widest text-zinc-500">MARGIN RECOVERY</span>
+              <span className="text-[7.5px] font-bold uppercase tracking-widest text-zinc-500">
+                {activeTab === 'pricing' && 'NET RECOVERY'}
+                {activeTab === 'returns' && 'LOSS PREVENTED'}
+                {activeTab === 'forecasting' && 'MARGIN RECOVERY'}
+                {activeTab === 'contract' && 'NET VALUE'}
+              </span>
               <p className="text-base font-display font-black text-emerald-400 font-mono mt-1">
-                ${marginRecovery.toFixed(2)}M
+                {activeTab === 'pricing' && `$${pricingNetRecovery.toFixed(2)}M`}
+                {activeTab === 'returns' && `$${returnsRefundPrevented.toFixed(2)}M`}
+                {activeTab === 'forecasting' && `$${marginRecovery.toFixed(2)}M`}
+                {activeTab === 'contract' && `$${contractNetValue.toFixed(2)}M`}
               </p>
             </div>
 
@@ -217,95 +471,184 @@ export const ForecastAccuracySimulator: React.FC<ForecastAccuracySimulatorProps>
         {/* Right Column: High-fidelity Recharts Chart */}
         <div className="lg:col-span-7 bg-[#161620] border border-white/5 rounded-xl p-6 flex flex-col shadow-xl">
           
-          {/* Legend and Info Header */}
+          {/* Chart Header & Legend */}
           <div className="flex flex-wrap justify-between items-center gap-4 mb-6">
             <div className="flex items-center gap-2">
               <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-1.5">
-                <BarChart2 size={12} className="text-[#a78bfa]" /> Annual Inventory Profile (Units)
+                <BarChart2 size={12} className="text-[#a78bfa]" /> 
+                {activeTab === 'pricing' && 'Gross Margin % Comparison'}
+                {activeTab === 'returns' && 'Weekly Return Rates (%)'}
+                {activeTab === 'forecasting' && 'Annual Inventory Profile (Units)'}
+                {activeTab === 'contract' && 'NLP Billing Audit Anomalies ($K)'}
               </span>
             </div>
             
-            {/* Custom Legend to match Mockup exactly */}
+            {/* Custom Legend to match Mockup */}
             <div className="flex items-center gap-4 text-[10px] font-bold">
-              <div className="flex items-center gap-1.5">
-                <div className="w-2.5 h-0.5 bg-blue-500" />
-                <span className="text-zinc-450">Current model</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <div className="w-2.5 h-0.5 bg-emerald-500" />
-                <span className="text-zinc-450">AI model</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <div className="w-3.5 h-2.5 bg-emerald-500/10 border border-dashed border-emerald-500/20 rounded-sm" />
-                <span className="text-zinc-455">Savings zone</span>
-              </div>
+              {activeTab === 'forecasting' ? (
+                <>
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-2.5 h-0.5 bg-blue-500" />
+                    <span className="text-zinc-400">Current model</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-2.5 h-0.5 bg-emerald-500" />
+                    <span className="text-zinc-400">AI model</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-3.5 h-2.5 bg-emerald-500/10 border border-dashed border-emerald-500/20 rounded-sm" />
+                    <span className="text-zinc-450">Savings zone</span>
+                  </div>
+                </>
+              ) : activeTab === 'pricing' ? (
+                <>
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-3 h-3 bg-zinc-600 rounded-sm" />
+                    <span className="text-zinc-400">Baseline GP%</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-3 h-3 bg-[#a78bfa] rounded-sm" />
+                    <span className="text-zinc-400">Optimized GP%</span>
+                  </div>
+                </>
+              ) : activeTab === 'returns' ? (
+                <>
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-2.5 h-0.5 bg-rose-500" />
+                    <span className="text-zinc-400">Baseline Return%</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-2.5 h-0.5 bg-emerald-500" />
+                    <span className="text-zinc-400">Prevented Return%</span>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-3.5 h-2.5 bg-red-500/20 border border-red-500/30 rounded-sm" />
+                    <span className="text-zinc-400">Detected Anomalies</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-3.5 h-2.5 bg-emerald-500/20 border border-emerald-500/30 rounded-sm" />
+                    <span className="text-zinc-400">Recovered Value</span>
+                  </div>
+                </>
+              )}
             </div>
           </div>
 
           {/* Chart Wrapper */}
           <div className="h-72 w-full flex-1">
             <ResponsiveContainer width="100%" height="100%">
-              <ComposedChart data={chartData} margin={{ top: 15, right: 10, left: -25, bottom: 5 }}>
-                <defs>
-                  <linearGradient id="savingsGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#10b981" stopOpacity={0.15} />
-                    <stop offset="100%" stopColor="#10b981" stopOpacity={0.02} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
-                <XAxis dataKey="month" tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
-                <YAxis 
-                  tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 8 }} 
-                  axisLine={false} 
-                  tickLine={false} 
-                  domain={[260, 460]}
-                  ticks={[260, 280, 300, 320, 340, 360, 380, 400, 420, 440, 460]}
-                  tickFormatter={(val) => `${val} u`}
-                />
-                
-                <Tooltip 
-                  contentStyle={{ backgroundColor: '#1e1e28', border: '1px solid rgba(255,255,255,0.1)', color: '#fff' }}
-                  itemStyle={{ fontSize: 9.5 }}
-                />
+              {activeTab === 'forecasting' ? (
+                <ComposedChart data={forecastingChartData} margin={{ top: 15, right: 10, left: -25, bottom: 5 }}>
+                  <defs>
+                    <linearGradient id="savingsGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#10b981" stopOpacity={0.15} />
+                      <stop offset="100%" stopColor="#10b981" stopOpacity={0.02} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
+                  <XAxis dataKey="month" tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
+                  <YAxis 
+                    tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 8 }} 
+                    axisLine={false} 
+                    tickLine={false} 
+                    domain={[260, 460]}
+                    ticks={[260, 280, 300, 320, 340, 360, 380, 400, 420, 440, 460]}
+                    tickFormatter={(val) => `${val} u`}
+                  />
+                  
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: '#1e1e28', border: '1px solid rgba(255,255,255,0.1)', color: '#fff' }}
+                    itemStyle={{ fontSize: 9.5 }}
+                  />
 
-                {/* Savings Zone Range Area */}
-                <Area 
-                  type="monotone" 
-                  dataKey="savingsMax" 
-                  baseValue={"savingsMin" as any}
-                  stroke="none" 
-                  fill="url(#savingsGrad)" 
-                  name="Savings zone"
-                />
+                  {/* Savings Zone Range Area */}
+                  <Area 
+                    type="monotone" 
+                    dataKey="savingsMax" 
+                    baseValue={"savingsMin" as any}
+                    stroke="none" 
+                    fill="url(#savingsGrad)" 
+                    name="Savings zone"
+                  />
 
-                {/* Current Model Line */}
-                <Line 
-                  type="monotone" 
-                  dataKey="current" 
-                  name="Current model" 
-                  stroke="#3b82f6" 
-                  strokeWidth={2} 
-                  dot={false}
-                />
+                  {/* Current Model Line */}
+                  <Line 
+                    type="monotone" 
+                    dataKey="current" 
+                    name="Current model" 
+                    stroke="#3b82f6" 
+                    strokeWidth={2} 
+                    dot={false}
+                  />
 
-                {/* AI Model Line */}
-                <Line 
-                  type="monotone" 
-                  dataKey="ai" 
-                  name="AI model" 
-                  stroke="#10b981" 
-                  strokeWidth={2} 
-                  strokeDasharray="3 3"
-                  dot={false}
-                />
-              </ComposedChart>
+                  {/* AI Model Line */}
+                  <Line 
+                    type="monotone" 
+                    dataKey="ai" 
+                    name="AI model" 
+                    stroke="#10b981" 
+                    strokeWidth={2} 
+                    strokeDasharray="3 3"
+                    dot={false}
+                  />
+                </ComposedChart>
+              ) : activeTab === 'pricing' ? (
+                <BarChart data={pricingChartData} margin={{ top: 15, right: 10, left: -25, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
+                  <XAxis dataKey="name" tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
+                  <YAxis 
+                    tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 8 }} 
+                    axisLine={false} 
+                    tickLine={false}
+                    domain={[0, 60]}
+                    tickFormatter={(val) => `${val}%`}
+                  />
+                  <Tooltip contentStyle={{ backgroundColor: '#1e1e28', border: '1px solid rgba(255,255,255,0.1)', color: '#fff' }} />
+                  <Bar dataKey="baseline" name="Baseline GP%" fill="rgba(255,255,255,0.15)" radius={[2, 2, 0, 0]} barSize={20} />
+                  <Bar dataKey="optimized" name="Optimized GP%" fill="#a78bfa" radius={[2, 2, 0, 0]} barSize={20} />
+                </BarChart>
+              ) : activeTab === 'returns' ? (
+                <ComposedChart data={returnsChartData} margin={{ top: 15, right: 10, left: -25, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
+                  <XAxis dataKey="name" tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
+                  <YAxis 
+                    tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 8 }} 
+                    axisLine={false} 
+                    tickLine={false}
+                    domain={[0, 12]}
+                    tickFormatter={(val) => `${val}%`}
+                  />
+                  <Tooltip contentStyle={{ backgroundColor: '#1e1e28', border: '1px solid rgba(255,255,255,0.1)', color: '#fff' }} />
+                  <Line type="monotone" dataKey="baseline" name="Baseline Return%" stroke="#f43f5e" strokeWidth={2} dot={{ r: 3 }} />
+                  <Line type="monotone" dataKey="prevented" name="Prevented Return%" stroke="#10b981" strokeWidth={2} dot={{ r: 3 }} />
+                </ComposedChart>
+              ) : (
+                <BarChart data={contractChartData} margin={{ top: 15, right: 10, left: -25, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
+                  <XAxis dataKey="name" tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
+                  <YAxis 
+                    tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 8 }} 
+                    axisLine={false} 
+                    tickLine={false}
+                  />
+                  <Tooltip contentStyle={{ backgroundColor: '#1e1e28', border: '1px solid rgba(255,255,255,0.1)', color: '#fff' }} />
+                  <Bar dataKey="detected" name="Detected Anomalies" fill="rgba(239, 68, 68, 0.2)" stroke="#ef4444" strokeWidth={1} radius={[2, 2, 0, 0]} barSize={20} />
+                  <Bar dataKey="recovered" name="Recovered Value" fill="rgba(16, 185, 129, 0.2)" stroke="#10b981" strokeWidth={1} radius={[2, 2, 0, 0]} barSize={20} />
+                </BarChart>
+              )}
             </ResponsiveContainer>
           </div>
 
           <div className="mt-4 p-3 bg-white/[0.02] border border-white/5 rounded-lg flex items-start gap-2.5">
             <Info size={14} className="text-[#a78bfa] shrink-0 mt-0.5" />
             <p className="text-[9.5px] text-zinc-550 font-medium leading-relaxed">
-              <strong>Savings Zone:</strong> The shaded area represents the overstock inventory units saved annually. Smoother scheduling and advanced demand sensing reduce peak safety stock targets and raw materials buffering by aligning supply with actual forecast velocity.
+              {activeTab === 'pricing' && 'Dynamic Pricing Engine optimizes localized SKU margin targets based on buyer price elasticity models. Real-time target settings lift margins without impacting overall unit volume retention thresholds.'}
+              {activeTab === 'returns' && 'Returns Propensity AI monitors order risk signals pre-fulfillment. Flagging high-probability return items saves freight forwarding logistics costs, processing overhead, and warehouse markdown losses.'}
+              {activeTab === 'forecasting' && 'The shaded area represents the overstock inventory units saved annually. Smoother scheduling and advanced demand sensing reduce peak safety stock targets and raw materials buffering by aligning supply with actual forecast velocity.'}
+              {activeTab === 'contract' && 'Contract Intelligence reviews invoicing line items against historical agreements using NLP search. Detecting billing anomalies and overcharges automatically creates recovery claims reports for vendors.'}
             </p>
           </div>
 

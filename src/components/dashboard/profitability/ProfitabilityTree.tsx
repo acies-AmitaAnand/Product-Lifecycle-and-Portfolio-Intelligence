@@ -41,6 +41,7 @@ const VPProfitabilityTreeView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode
 
 
   const [showForecastSimulator, setShowForecastSimulator] = useState<boolean>(false);
+  const [simulatorTab, setSimulatorTab] = useState<'pricing' | 'returns' | 'forecasting' | 'contract'>('forecasting');
   const [simRawMaterial, setSimRawMaterial] = useState<number>(0);
   const [simPriceChange, setSimPriceChange] = useState<number>(0);
   const [simPromoCut, setSimPromoCut] = useState<number>(0);
@@ -268,6 +269,7 @@ const VPProfitabilityTreeView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode
       <ForecastAccuracySimulator 
         isDarkMode={isDarkMode} 
         onClose={() => setShowForecastSimulator(false)} 
+        initialTab={simulatorTab}
       />
     );
   }
@@ -560,7 +562,7 @@ const VPProfitabilityTreeView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode
                 High impact
               </span>
               <button 
-                onClick={() => showToast("Dynamic pricing simulation launched in pilot workspace.", "info")}
+                onClick={() => { setSimulatorTab('pricing'); setShowForecastSimulator(true); }}
                 className="flex items-center gap-1.5 px-3 py-1.5 border border-black/10 dark:border-white/10 rounded-lg text-[9.5px] font-bold hover:bg-black/5 dark:hover:bg-white/5 transition-all text-zinc-600 dark:text-zinc-300 cursor-pointer"
               >
                 Deep dive <ArrowUpRight size={12} className="stroke-[2.5]" />
@@ -589,7 +591,7 @@ const VPProfitabilityTreeView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode
                 High impact
               </span>
               <button 
-                onClick={() => showToast("Returns propensity model setup documentation opened.", "info")}
+                onClick={() => { setSimulatorTab('returns'); setShowForecastSimulator(true); }}
                 className="flex items-center gap-1.5 px-3 py-1.5 border border-black/10 dark:border-white/10 rounded-lg text-[9.5px] font-bold hover:bg-black/5 dark:hover:bg-white/5 transition-all text-zinc-600 dark:text-zinc-300 cursor-pointer"
               >
                 Deep dive <ArrowUpRight size={12} className="stroke-[2.5]" />
@@ -618,7 +620,7 @@ const VPProfitabilityTreeView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode
                 Medium
               </span>
               <button 
-                onClick={() => setShowForecastSimulator(true)}
+                onClick={() => { setSimulatorTab('forecasting'); setShowForecastSimulator(true); }}
                 className="flex items-center gap-1.5 px-3 py-1.5 border border-black/10 dark:border-white/10 rounded-lg text-[9.5px] font-bold hover:bg-black/5 dark:hover:bg-white/5 transition-all text-zinc-600 dark:text-zinc-300 cursor-pointer"
               >
                 Deep dive <ArrowUpRight size={12} className="stroke-[2.5]" />
@@ -647,7 +649,7 @@ const VPProfitabilityTreeView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode
                 Medium
               </span>
               <button 
-                onClick={() => showToast("NLP contract audit anomaly list fetched.", "info")}
+                onClick={() => { setSimulatorTab('contract'); setShowForecastSimulator(true); }}
                 className="flex items-center gap-1.5 px-3 py-1.5 border border-black/10 dark:border-white/10 rounded-lg text-[9.5px] font-bold hover:bg-black/5 dark:hover:bg-white/5 transition-all text-zinc-600 dark:text-zinc-300 cursor-pointer"
               >
                 Deep dive <ArrowUpRight size={12} className="stroke-[2.5]" />
