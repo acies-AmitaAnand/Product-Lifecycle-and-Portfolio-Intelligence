@@ -272,7 +272,7 @@ export const ForecastAccuracySimulator: React.FC<ForecastAccuracySimulatorProps>
                 <Area 
                   type="monotone" 
                   dataKey="savingsMax" 
-                  baseValue="savingsMin"
+                  baseValue={"savingsMin" as any}
                   stroke="none" 
                   fill="url(#savingsGrad)" 
                   name="Savings zone"
