@@ -266,6 +266,21 @@ const VPProfitabilityTreeView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode
     { month: 'Aug', actual: 36.1, forecast: 37.0 }
   ];
 
+  const revenueVsProfitData = [
+    { month: 'Jul', revenue: 58, profit: 22, margin: 38.0 },
+    { month: 'Aug', revenue: 60, profit: 23, margin: 38.3 },
+    { month: 'Sep', revenue: 63, profit: 24, margin: 38.8 },
+    { month: 'Oct', revenue: 66, profit: 25, margin: 39.0 },
+    { month: 'Nov', revenue: 68, profit: 26, margin: 38.2 },
+    { month: 'Dec', revenue: 71, profit: 27, margin: 38.7 },
+    { month: 'Jan', revenue: 73, profit: 28, margin: 38.8 },
+    { month: 'Feb', revenue: 75, profit: 28.5, margin: 38.0 },
+    { month: 'Mar', revenue: 78, profit: 29, margin: 38.2 },
+    { month: 'Apr', revenue: 80, profit: 29.5, margin: 37.5 },
+    { month: 'May', revenue: 82, profit: 31, margin: 37.8 },
+    { month: 'Jun', revenue: 84, profit: 32, margin: 37.5 }
+  ];
+
   const scenarioRev = 851.2 * (1 + simPriceChange / 100);
   const scenarioGp = 851.2 * (0.362 + (simPriceChange * 0.8) / 100 - (simRawMaterial * 0.6) / 100 + (simPromoCut * 0.4) / 100);
   const scenarioGmPct = scenarioRev > 0 ? ((scenarioGp / scenarioRev) * 100).toFixed(1) : '0';
@@ -994,6 +1009,106 @@ const VPProfitabilityTreeView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode
               💡 Tip: Click any monthly category percentage cell above to audit granular margin health.
             </div>
           )}
+        </div>
+      </div>
+
+      {/* Revenue vs Profit Trend Card */}
+      <div className="glass-card bg-white dark:bg-[#1a1a24]/90 border border-black/10 dark:border-white/10 rounded-xl overflow-hidden shadow-sm">
+        <div className="p-5 border-b border-black/5 dark:border-white/5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div>
+            <h3 className="text-xs font-bold text-zinc-850 dark:text-zinc-150 uppercase tracking-wider">
+              REVENUE VS PROFIT TREND — LAST 12 MONTHS
+            </h3>
+            
+            {/* Custom Legend */}
+            <div className="flex flex-wrap items-center gap-4 mt-2 text-[10px] font-bold text-zinc-550 dark:text-zinc-400">
+              <div className="flex items-center gap-1.5">
+                <div className="w-3 h-3 rounded-sm bg-[#2563eb]" />
+                <span>Revenue</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <div className="w-3 h-3 rounded-sm bg-[#0d9488]" />
+                <span>Gross profit</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <div className="w-5 h-0.5 border-t border-dashed border-[#ea580c] relative flex items-center justify-center">
+                  <div className="w-2 h-2 rounded-full bg-[#ea580c] absolute" />
+                </div>
+                <span className="ml-1.5">Margin %</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="p-6">
+          <div className="h-72">
+            <ResponsiveContainer width="100%" height="100%">
+              <ComposedChart data={revenueVsProfitData} margin={{ left: -15, right: 15, top: 15, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridStroke} />
+                <XAxis dataKey="month" tick={{ fill: tickColor, fontSize: 9 }} axisLine={false} tickLine={false} />
+                
+                {/* Left YAxis for Revenue & Profit */}
+                <YAxis 
+                  yAxisId="left" 
+                  tick={{ fill: tickColor, fontSize: 9 }} 
+                  tickFormatter={(val) => `$${val}M`} 
+                  axisLine={false} 
+                  tickLine={false} 
+                />
+                
+                {/* Right YAxis for Margin % */}
+                <YAxis 
+                  yAxisId="right" 
+                  orientation="right" 
+                  tick={{ fill: tickColor, fontSize: 9 }} 
+                  tickFormatter={(val) => `${val}%`} 
+                  domain={[30, 45]} 
+                  ticks={[30, 32, 34, 36, 38, 40, 42, 45]} 
+                  axisLine={false} 
+                  tickLine={false} 
+                />
+                
+                <Tooltip 
+                  contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, color: tooltipText }}
+                  itemStyle={{ fontSize: 9.5 }}
+                  formatter={(value: any, name: any) => {
+                    if (name === 'Margin %') return [`${value}%`, name];
+                    return [`$${value}M`, name];
+                  }}
+                />
+                
+                {/* Side-by-side grouped bars: Gross profit on left, Revenue on right */}
+                <Bar 
+                  yAxisId="left" 
+                  dataKey="profit" 
+                  name="Gross profit" 
+                  fill="#0d9488" 
+                  radius={[2, 2, 0, 0]} 
+                  barSize={12} 
+                />
+                <Bar 
+                  yAxisId="left" 
+                  dataKey="revenue" 
+                  name="Revenue" 
+                  fill="#2563eb" 
+                  radius={[2, 2, 0, 0]} 
+                  barSize={12} 
+                />
+                
+                {/* Secondary Axis Line for Margin % */}
+                <Line 
+                  yAxisId="right" 
+                  type="monotone" 
+                  dataKey="margin" 
+                  name="Margin %" 
+                  stroke="#ea580c" 
+                  strokeWidth={2} 
+                  strokeDasharray="4 4" 
+                  dot={{ r: 3.5, fill: '#ea580c', stroke: '#ea580c', strokeWidth: 1 }} 
+                  activeDot={{ r: 5 }} 
+                />
+              </ComposedChart>
+            </ResponsiveContainer>
+          </div>
         </div>
       </div>
 
