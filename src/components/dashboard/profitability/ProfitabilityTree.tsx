@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { 
-  Layers, Calculator, Save, CheckCircle2, Info, TrendingUp, HelpCircle, ArrowRight, Award, AlertTriangle
+  Layers, Calculator, Save, CheckCircle2, Info, TrendingUp, HelpCircle, ArrowRight, Award, AlertTriangle, Sparkles, RefreshCw, Package, FileText, ArrowUpRight
 } from 'lucide-react';
 import { 
   ResponsiveContainer, BarChart, Bar, Cell, XAxis, YAxis, Tooltip, CartesianGrid,
@@ -43,6 +43,12 @@ const VPProfitabilityTreeView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode
   const [simPriceChange, setSimPriceChange] = useState<number>(0);
   const [simPromoCut, setSimPromoCut] = useState<number>(0);
   const [selectedCell, setSelectedCell] = useState<{ category: string; month: string; val: number } | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'info' | 'warning' } | null>(null);
+  
+  const showToast = (message: string, type: 'success' | 'info' | 'warning' = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
 
   const [openNodes, setOpenNodes] = useState<Record<string, boolean>>({
     'pt-revenue': false,
@@ -533,6 +539,142 @@ const VPProfitabilityTreeView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode
             </p>
             <div className="w-full bg-black/5 dark:bg-white/10 h-1 mt-4 rounded-full overflow-hidden">
               <div className="bg-red-500 h-full rounded-full" style={{ width: '18%' }} />
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      {/* AI Opportunity Recommendations Card */}
+      <div className="glass-card bg-white dark:bg-[#1a1a24]/90 border border-black/10 dark:border-white/10 rounded-xl overflow-hidden shadow-sm">
+        <div className="flex items-center justify-between p-3.5 border-b bg-emerald-500/[0.03]">
+          <div className="flex items-center gap-2.5">
+            <div className="w-7 h-7 rounded-lg bg-emerald-500/15 text-emerald-650 dark:text-emerald-400 flex items-center justify-center text-sm flex-shrink-0">
+              <Sparkles size={16} className="stroke-[2.5]" />
+            </div>
+            <span className="text-[12px] font-bold font-display text-emerald-650 dark:text-emerald-400">
+              AI opportunity recommendations
+            </span>
+          </div>
+          <span className="text-[9.5px] font-bold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider">
+            4 actions · ~$1.6M potential
+          </span>
+        </div>
+        <div className="p-5 grid grid-cols-1 md:grid-cols-2 gap-4">
+          
+          {/* Dynamic pricing engine */}
+          <div className="p-4 rounded-xl border border-black/5 dark:border-white/5 bg-black/[0.01] dark:bg-white/[0.01] flex flex-col justify-between min-h-[145px] hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition-all">
+            <div>
+              <div className="flex items-start gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-500 dark:text-blue-400 flex items-center justify-center shrink-0">
+                  <TrendingUp size={16} className="stroke-[2.5]" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-zinc-850 dark:text-zinc-205">Dynamic pricing engine</h4>
+                  <p className="text-[10px] font-extrabold text-emerald-550 dark:text-emerald-400 mt-0.5">+$0.6M potential</p>
+                </div>
+              </div>
+              <p className="text-[10px] text-zinc-550 dark:text-zinc-400 font-medium mt-3 leading-relaxed">
+                Elasticity model on 2,400 SKUs optimises prices in real-time. Pilot on Electronics estimated 6.4% margin uplift.
+              </p>
+            </div>
+            <div className="flex justify-between items-center mt-4">
+              <span className="text-[9px] font-bold text-emerald-655 dark:text-emerald-400 bg-emerald-500/10 dark:bg-emerald-500/20 px-2.5 py-1 rounded-full">
+                High impact
+              </span>
+              <button 
+                onClick={() => showToast("Dynamic pricing simulation launched in pilot workspace.", "info")}
+                className="flex items-center gap-1.5 px-3 py-1.5 border border-black/10 dark:border-white/10 rounded-lg text-[9.5px] font-bold hover:bg-black/5 dark:hover:bg-white/5 transition-all text-zinc-600 dark:text-zinc-300 cursor-pointer"
+              >
+                Deep dive <ArrowUpRight size={12} className="stroke-[2.5]" />
+              </button>
+            </div>
+          </div>
+
+          {/* Returns propensity AI */}
+          <div className="p-4 rounded-xl border border-black/5 dark:border-white/5 bg-black/[0.01] dark:bg-white/[0.01] flex flex-col justify-between min-h-[145px] hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition-all">
+            <div>
+              <div className="flex items-start gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-500 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                  <RefreshCw size={16} className="stroke-[2.5]" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-zinc-850 dark:text-zinc-205">Returns propensity AI</h4>
+                  <p className="text-[10px] font-extrabold text-emerald-550 dark:text-emerald-400 mt-0.5">+$0.4M potential</p>
+                </div>
+              </div>
+              <p className="text-[10px] text-zinc-550 dark:text-zinc-400 font-medium mt-3 leading-relaxed">
+                Pre-shipment risk scoring cuts return rate from 9.8% → 8.0%. Integrates with OMS with 2-week setup.
+              </p>
+            </div>
+            <div className="flex justify-between items-center mt-4">
+              <span className="text-[9px] font-bold text-emerald-655 dark:text-emerald-400 bg-emerald-500/10 dark:bg-emerald-500/20 px-2.5 py-1 rounded-full">
+                High impact
+              </span>
+              <button 
+                onClick={() => showToast("Returns propensity model setup documentation opened.", "info")}
+                className="flex items-center gap-1.5 px-3 py-1.5 border border-black/10 dark:border-white/10 rounded-lg text-[9.5px] font-bold hover:bg-black/5 dark:hover:bg-white/5 transition-all text-zinc-600 dark:text-zinc-300 cursor-pointer"
+              >
+                Deep dive <ArrowUpRight size={12} className="stroke-[2.5]" />
+              </button>
+            </div>
+          </div>
+
+          {/* AI demand forecasting */}
+          <div className="p-4 rounded-xl border border-black/5 dark:border-white/5 bg-black/[0.01] dark:bg-white/[0.01] flex flex-col justify-between min-h-[145px] hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition-all">
+            <div>
+              <div className="flex items-start gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-500 dark:text-amber-400 flex items-center justify-center shrink-0">
+                  <Package size={16} className="stroke-[2.5]" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-zinc-850 dark:text-zinc-205">AI demand forecasting</h4>
+                  <p className="text-[10px] font-extrabold text-emerald-550 dark:text-emerald-400 mt-0.5">+$0.4M potential</p>
+                </div>
+              </div>
+              <p className="text-[10px] text-zinc-550 dark:text-zinc-400 font-medium mt-3 leading-relaxed">
+                LSTM time-series model lifts forecast accuracy to 88%, cutting overstock write-offs by 30% across 12 problem SKUs.
+              </p>
+            </div>
+            <div className="flex justify-between items-center mt-4">
+              <span className="text-[9px] font-bold text-amber-655 dark:text-amber-400 bg-amber-500/10 dark:bg-amber-500/20 px-2.5 py-1 rounded-full">
+                Medium
+              </span>
+              <button 
+                onClick={() => showToast("Opening LSTM forecasting model parameters panel.", "info")}
+                className="flex items-center gap-1.5 px-3 py-1.5 border border-black/10 dark:border-white/10 rounded-lg text-[9.5px] font-bold hover:bg-black/5 dark:hover:bg-white/5 transition-all text-zinc-600 dark:text-zinc-300 cursor-pointer"
+              >
+                Deep dive <ArrowUpRight size={12} className="stroke-[2.5]" />
+              </button>
+            </div>
+          </div>
+
+          {/* Contract intelligence */}
+          <div className="p-4 rounded-xl border border-black/5 dark:border-white/5 bg-black/[0.01] dark:bg-white/[0.01] flex flex-col justify-between min-h-[145px] hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition-all">
+            <div>
+              <div className="flex items-start gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-red-500/10 text-red-500 dark:text-red-400 flex items-center justify-center shrink-0">
+                  <FileText size={16} className="stroke-[2.5]" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-zinc-850 dark:text-zinc-205">Contract intelligence</h4>
+                  <p className="text-[10px] font-extrabold text-emerald-550 dark:text-emerald-400 mt-0.5">+$0.2M potential</p>
+                </div>
+              </div>
+              <p className="text-[10px] text-zinc-550 dark:text-zinc-400 font-medium mt-3 leading-relaxed">
+                NLP audit of 340 supplier contracts surfaces billing anomalies and triggers renegotiation workflow automatically.
+              </p>
+            </div>
+            <div className="flex justify-between items-center mt-4">
+              <span className="text-[9px] font-bold text-amber-655 dark:text-amber-400 bg-amber-500/10 dark:bg-amber-500/20 px-2.5 py-1 rounded-full">
+                Medium
+              </span>
+              <button 
+                onClick={() => showToast("NLP contract audit anomaly list fetched.", "info")}
+                className="flex items-center gap-1.5 px-3 py-1.5 border border-black/10 dark:border-white/10 rounded-lg text-[9.5px] font-bold hover:bg-black/5 dark:hover:bg-white/5 transition-all text-zinc-600 dark:text-zinc-300 cursor-pointer"
+              >
+                Deep dive <ArrowUpRight size={12} className="stroke-[2.5]" />
+              </button>
             </div>
           </div>
 
@@ -1159,6 +1301,13 @@ const VPProfitabilityTreeView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode
           </div>
         </div>
       </div>
+
+      {toast && (
+        <div className="fixed bottom-5 right-5 z-50 bg-[#16161c] text-white border border-white/10 px-4 py-3 rounded-lg shadow-2xl flex items-center gap-3 animate-slide-in">
+          <div className={`w-2 h-2 rounded-full ${toast.type === 'success' ? 'bg-emerald-400' : toast.type === 'warning' ? 'bg-red-400' : 'bg-blue-400'}`} />
+          <span className="text-xs font-bold">{toast.message}</span>
+        </div>
+      )}
 
     </div>
   );
