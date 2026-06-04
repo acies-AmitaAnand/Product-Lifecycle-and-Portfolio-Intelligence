@@ -250,17 +250,6 @@ const VPProfitabilityTreeView: React.FC<{
     { category: 'Herbal Shampoo', months: [40, 40, 40, 40, 38, 38, 40, 40, 47, 47, 48, 45] }
   ];
 
-  const forecastVsActualData = [
-    { month: 'Jan', actual: 34.0, forecast: 34.8 },
-    { month: 'Feb', actual: 34.4, forecast: 35.1 },
-    { month: 'Mar', actual: 34.7, forecast: 35.4 },
-    { month: 'Apr', actual: 35.0, forecast: 35.8 },
-    { month: 'May', actual: 35.3, forecast: 36.1 },
-    { month: 'Jun', actual: 35.6, forecast: 36.4 },
-    { month: 'Jul', actual: 35.9, forecast: 36.7 },
-    { month: 'Aug', actual: 36.1, forecast: 37.0 }
-  ];
-
   const revenueVsProfitMonths = [
     { label: 'Jul', revenue: 58, profit: 22, margin: 38.0 },
     { label: 'Aug', revenue: 60, profit: 23, margin: 38.3 },
@@ -1362,54 +1351,6 @@ const VPProfitabilityTreeView: React.FC<{
                   activeDot={{ r: 5 }} 
                 />
               </ComposedChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-      </div>
-
-      <div className="glass-card bg-white dark:bg-[#1a1a24]/90 border border-black/10 dark:border-white/10 rounded-xl overflow-hidden shadow-sm">
-        <div className="p-5 border-b border-black/5 dark:border-white/5">
-          <h3 className="text-xs font-bold text-zinc-800 dark:text-zinc-150">Forecast vs Actual Margin</h3>
-          <p className="text-[9px] text-zinc-500 uppercase tracking-widest mt-0.5">Are we tracking to the margin plan?</p>
-        </div>
-        <div className="p-6">
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={forecastVsActualData} margin={{ left: -25, right: 10, top: 10, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} vertical={false} />
-                <XAxis dataKey="month" tick={{ fill: tickColor, fontSize: 9 }} axisLine={false} tickLine={false} />
-                <YAxis 
-                  domain={[33.5, 37.5]} 
-                  tick={{ fill: tickColor, fontSize: 9 }} 
-                  axisLine={false} 
-                  tickLine={false} 
-                  tickFormatter={(val) => `${val.toFixed(1)}%`}
-                />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, color: tooltipText }}
-                  itemStyle={{ fontSize: 9.5 }}
-                  formatter={(val: any) => [`${val.toFixed(1)}%`, 'GM %']}
-                />
-                <Legend wrapperStyle={{ fontSize: 8.5 }} verticalAlign="bottom" align="center" />
-                <Line 
-                  type="monotone" 
-                  dataKey="actual" 
-                  name="Actual GM%" 
-                  stroke="#10b981" 
-                  strokeWidth={2} 
-                  dot={{ r: 3.5, fill: '#10b981', stroke: '#10b981', strokeWidth: 1 }} 
-                  activeDot={{ r: 5 }} 
-                />
-                <Line 
-                  type="monotone" 
-                  dataKey="forecast" 
-                  name="Forecast GM%" 
-                  stroke="#b0b0bc" 
-                  strokeWidth={1.5} 
-                  strokeDasharray="4 4" 
-                  dot={false} 
-                />
-              </LineChart>
             </ResponsiveContainer>
           </div>
         </div>
