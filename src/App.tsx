@@ -83,18 +83,6 @@ const getTabDisplayName = (id: number, name: string): string => {
   }
 };
 
-const getActiveAgentForTab = (tabId: number) => {
-  switch (tabId) {
-    case 1: return { name: 'Portfolio Agent', status: 'Monitoring 102 SKUs', color: 'text-purple-500 bg-purple-500/10 border-purple-500/20 dark:bg-purple-500/5 dark:border-purple-500/20 border' };
-    case 2: return { name: 'Supply Chain Agent', status: 'Sourcing & Lead Times Online', color: 'text-orange-500 bg-orange-500/10 border-orange-500/20 dark:bg-orange-500/5 dark:border-orange-500/20 border' };
-    case 3: return { name: 'FP&A Agent', status: 'Margin & Cash flows Synced', color: 'text-purple-500 bg-purple-500/10 border-purple-500/20 dark:bg-purple-500/5 dark:border-purple-500/20 border' };
-    case 4: return { name: 'Merchandiser Agent', status: 'Categories & Inventory Synced', color: 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20 dark:bg-emerald-500/5 dark:border-emerald-500/20 border' };
-    case 5: return { name: 'Controller Agent', status: 'Continuous Close & Ledger Audit', color: 'text-blue-500 bg-blue-500/10 border-blue-500/20 dark:bg-blue-500/5 dark:border-blue-500/20 border' };
-    case 6: return { name: 'Scenario Agent', status: 'Drilldown simulation active', color: 'text-amber-500 bg-amber-500/10 border-amber-500/20 dark:bg-amber-500/5 dark:border-amber-500/20 border' };
-    case 7: return { name: 'Orchestrator Agent', status: 'Routing active workflows', color: 'text-red-500 bg-red-500/10 border-red-500/20 dark:bg-red-500/5 dark:border-red-500/20 border' };
-    default: return null;
-  }
-};
 
 const getAgentThoughtsForTab = (tabId: number) => {
   switch (tabId) {
@@ -223,6 +211,7 @@ export default function App() {
   const [activeAuditMetric, setActiveAuditMetric] = useState<string | null>(null);
   const [launchTourActive, setLaunchTourActive] = useState(false);
   const [simulateDelay, setSimulateDelay] = useState(false);
+  const [isProfitabilitySimulatorOpen, setIsProfitabilitySimulatorOpen] = useState<boolean>(false);
   const [showWelcomeGate, setShowWelcomeGate] = useState<boolean>(() => {
     const roleParam = getHashParam('role');
     if (roleParam !== null) return false;
@@ -253,6 +242,7 @@ export default function App() {
   useEffect(() => {
     safeSetItem('acies_active_tab', activeTab.toString());
     updateHash('tab', activeTab.toString());
+    setIsProfitabilitySimulatorOpen(false);
   }, [activeTab]);
 
   useEffect(() => {
@@ -357,34 +347,13 @@ export default function App() {
 
           {/* Main Content Area */}
           <main className="flex-1 min-w-0">
-            {activeTab !== 0 && (
+            {activeTab !== 0 && !(activeTab === 3 && isProfitabilitySimulatorOpen) && (
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                 <div>
                   <h2 className="text-xl font-display leading-tight text-acies-gray dark:text-white">{tabs[activeTab]?.name || 'Unknown Module'}</h2>
                   <p className="text-[9px] font-bold opacity-45 uppercase tracking-widest mt-1">Domain Module {activeTab} of 6</p>
                 </div>
                 <div className="flex items-center gap-4 self-end sm:self-auto">
-                   {getActiveAgentForTab(activeTab) && (() => {
-                     const agent = getActiveAgentForTab(activeTab)!;
-                     return (
-                       <button
-                         onClick={() => setActiveTab(7)}
-                         className={`flex items-center gap-2 px-3 py-1.5 border rounded text-[9px] font-bold uppercase tracking-wider transition-all hover:scale-[1.01] hover:border-acies-yellow/45 cursor-pointer outline-none ${agent.color}`}
-                       >
-                         <span className="relative flex h-2 w-2">
-                           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                           <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                         </span>
-                         <span>{agent.name}: {agent.status}</span>
-                         <ChevronRight size={10} className="opacity-50" />
-                       </button>
-                     );
-                   })()}
-
-                   <div className="text-right hidden sm:block">
-                     <p className="text-[9px] font-bold opacity-40 uppercase tracking-widest">Active Intelligence</p>
-                     <p className="text-[11px] font-medium text-acies-gray dark:text-white">5 Agents Operating</p>
-                   </div>
                    <button 
                     onClick={() => setIsSidebarOpen(true)}
                     className="flex items-center gap-2 px-4 py-2 bg-acies-gray text-white text-[9px] font-bold uppercase tracking-widest hover:bg-acies-yellow hover:text-acies-gray transition-all cursor-pointer"
@@ -454,7 +423,7 @@ export default function App() {
                       highlight: ['VP Product Management']
                     },
                     {
-                      label: 'Gross Margin %',
+                      label: 'Gross margin %',
                       value: '36.2%',
                       trend: 'up',
                       trendValue: '+1.1pp MTD',
@@ -462,11 +431,19 @@ export default function App() {
                       highlight: ['VP Product Management']
                     },
                     {
-                      label: 'Revenue Growth %',
-                      value: '+8.4%',
+                      label: 'Gross Profit',
+                      value: '₹308.1 Cr',
                       trend: 'up',
-                      trendValue: 'Target: +10.0%',
-                      info: 'Year-over-year revenue growth percentage compared to last year same period.',
+                      trendValue: '+2.4% YoY',
+                      info: 'Total gross profit generated after subtracting all supplier COGS from net sales.',
+                      highlight: ['VP Product Management']
+                    },
+                    {
+                      label: 'Revenue MTD',
+                      value: '₹851.2 Cr',
+                      trend: 'up',
+                      trendValue: '+8.4% vs last month',
+                      info: 'Total portfolio revenue generated month-to-date (MTD) across all markets and channels.',
                       highlight: ['VP Product Management']
                     },
                     {
@@ -495,6 +472,15 @@ export default function App() {
                       trend: 'up',
                       trendValue: 'Active campaigns',
                       info: 'Total volume of active competitor campaign alerts, launches, and discount warnings.',
+                      highlight: ['VP Product Management']
+                    },
+                    {
+                      label: 'Active Stockouts',
+                      value: '7',
+                      trend: 'up',
+                      trendValue: '3 Threshold',
+                      info: 'Number of active stockouts across regional distribution centers.',
+                      isRisk: true,
                       highlight: ['VP Product Management']
                     },
                     {
@@ -527,13 +513,13 @@ export default function App() {
               const gridClass = (() => {
                 if (activeTab === 1) return 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4';
                 if (activeTab === 2 && role === 'VP Product Management') return 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4';
-                if (activeTab === 3 && role === 'VP Product Management') return 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4';
+                if (activeTab === 3 && role === 'VP Product Management') return 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-5';
                 if (activeTab === 4 && role === 'VP Product Management') return 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4';
-                if (activeTab === 5 && role === 'VP Product Management') return 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4';
+                if (activeTab === 5 && role === 'VP Product Management') return 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-5';
                 return 'grid-cols-2 md:grid-cols-4 lg:grid-cols-8';
               })();
 
-              if (tabKpis.length === 0) return null;
+              if (tabKpis.length === 0 || (activeTab === 3 && isProfitabilitySimulatorOpen)) return null;
 
               return (
                 <div className={`grid gap-3 mb-6 ${gridClass}`}>
@@ -576,7 +562,15 @@ export default function App() {
                     setSimulateDelay={setSimulateDelay}
                   />
                 )}
-                {activeTab === 3 && <ProfitabilityTree role={role} onAuditClick={setActiveAuditMetric} isDarkMode={isDarkMode} />}
+                {activeTab === 3 && (
+                  <ProfitabilityTree 
+                    role={role} 
+                    onAuditClick={setActiveAuditMetric} 
+                    isDarkMode={isDarkMode} 
+                    isSimulatorOpen={isProfitabilitySimulatorOpen}
+                    setIsSimulatorOpen={setIsProfitabilitySimulatorOpen}
+                  />
+                )}
                 {activeTab === 4 && <SKURationalization role={role} isDarkMode={isDarkMode} setActiveTab={setActiveTab} />}
                 {activeTab === 5 && <SignalsBoard role={role} setActiveTab={setActiveTab} isDarkMode={isDarkMode} />}
                 {activeTab === 6 && <TopDownDrilldown isDarkMode={isDarkMode} role={role} />}

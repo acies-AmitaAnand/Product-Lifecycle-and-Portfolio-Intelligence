@@ -348,8 +348,8 @@ const AUDIT_DATA: Record<string, AuditContent> = {
       ['Personal Care', '₹131 Cr', '12.1%', 'Medium']
     ]
   },
-  'Gross Margin %': {
-    title: 'Gross Margin %',
+  'Gross margin %': {
+    title: 'Gross margin %',
     value: '36.2%',
     soWhat: 'Average segment gross margin is 36.2%, compressed by deep promotional discounts on cookies and chips.',
     action: 'Cap promotional discount depths at 15% and enforce margin pricing corridors.',
@@ -371,26 +371,50 @@ const AUDIT_DATA: Record<string, AuditContent> = {
       ['France', '38.55%', '+0.1pp', '40.0%']
     ]
   },
-  'Revenue Growth %': {
-    title: 'Revenue Growth %',
-    value: '+8.4%',
-    soWhat: 'YoY growth is +8.4%, led by beverages (+18.4% demand change in APAC) while Household sales declined by 4%.',
-    action: 'Reallocate marketing budget from declining Household cleaners to high-growth beverages.',
+  'Gross Profit': {
+    title: 'Gross Profit',
+    value: '₹308.1 Cr',
+    soWhat: 'Gross profit contribution stands at ₹308.1 Cr (36.2% of sales), driven by Beverages and Snacks categories, but restricted by packaging material inflation in Personal Care.',
+    action: 'Optimize raw material procurement contracts and consolidate vendor logistics to reduce COGS.',
     columns: [
-      { name: 'sales_current', type: 'float [DIRECT]', desc: 'Net sales in the current reporting period.' },
-      { name: 'sales_prior', type: 'float [DIRECT]', desc: 'Net sales in the corresponding prior period.' }
+      { name: 'net_sales', type: 'float [DIRECT]', desc: 'Primary sales revenue generated.' },
+      { name: 'purchase_cost / COGS', type: 'float [DIRECT]', desc: 'Cost of goods sold including supplier production and packaging costs.' }
     ],
-    formula: 'RG\\% = \\frac{S_{\\text{current}} - S_{\\text{prior}}}{S_{\\text{prior}}} \\times 100',
-    formulaDescription: 'Measures the percentage change in net sales revenue compared to the prior baseline period.',
+    formula: '\\text{Gross Profit} = \\sum (\\text{net\\_sales} - \\text{cogs})',
+    formulaDescription: 'Gross profit is calculated by subtracting the total cost of goods sold (COGS) from total net sales revenue.',
     assumptions: [
-      'Exchange Rate Stability: Constant currency rates are used to normalize growth metrics across international regions.'
+      'Inventory cost matching: Supplier base pricing is evaluated using current period inventory receipts.',
+      'Logistics exclusions: Operational costs like transport and storage are categorized under OPEX and excluded from Gross Profit.'
     ],
-    trendTitle: 'Revenue Growth by Regional Market',
-    trendHeaders: ['Region', 'Current Sales', 'Prior Sales', 'Growth Rate'],
+    trendTitle: 'Gross Profit by Category',
+    trendHeaders: ['Category', 'Revenue Contribution', 'Gross Margin %', 'Gross Profit'],
     trendRows: [
-      ['APAC', '₹312 Cr', '₹290 Cr', '+7.6%'],
-      ['EMEA', '₹311 Cr', '₹305 Cr', '+2.0%'],
-      ['Americas', '₹228 Cr', '₹240 Cr', '-5.0%']
+      ['Beverages', '₹280 Cr', '38.45%', '₹107.7 Cr'],
+      ['Snacks', '₹260 Cr', '38.53%', '₹100.2 Cr'],
+      ['Dairy', '₹180 Cr', '38.50%', '₹69.3 Cr'],
+      ['Personal Care', '₹131 Cr', '39.52%', '₹51.8 Cr']
+    ]
+  },
+  'Revenue MTD': {
+    title: 'Revenue MTD',
+    value: '₹851.2 Cr',
+    soWhat: 'MTD revenue reaches ₹851.2 Cr, showing +8.4% growth compared to last month. Beverages continue to dominate, contributing 37.1% of total sales.',
+    action: 'Reallocate logistics priority to high-demand beverage SKUs in APAC and EMEA to sustain volume.',
+    columns: [
+      { name: 'net_sales', type: 'float [DIRECT]', desc: 'Revenue per transaction row (units sold × price).' },
+      { name: 'date', type: 'date [DIRECT]', desc: 'Transaction timestamp to filter for the current month-to-date.' }
+    ],
+    formula: 'R_{\\text{MTD}} = \\sum_{i=1}^{M} \\text{net\\_sales}_i',
+    formulaDescription: 'Total portfolio MTD sales is the sum of all transaction records matching the current month-to-date filter.',
+    assumptions: [
+      'Current month alignment: Data is filtered dynamically to compare the current elapsed days of the month against the prior month same period.'
+    ],
+    trendTitle: 'MTD Revenue by Region',
+    trendHeaders: ['Region', 'MTD Revenue', 'Growth MoM', 'Target'],
+    trendRows: [
+      ['APAC', '₹312 Cr', '+7.6%', '₹330 Cr'],
+      ['EMEA', '₹311 Cr', '+2.0%', '₹320 Cr'],
+      ['Americas', '₹228.2 Cr', '-5.0%', '₹250 Cr']
     ]
   },
   'Launch ROI': {

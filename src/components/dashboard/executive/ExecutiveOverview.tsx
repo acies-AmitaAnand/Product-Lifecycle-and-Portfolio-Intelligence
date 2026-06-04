@@ -20,10 +20,16 @@ interface ExecutiveOverviewProps {
   isDarkMode: boolean;
 }
 
-export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _role, setActiveTab, isDarkMode }) => {
+export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setActiveTab, isDarkMode }) => {
   const [alerts, setAlerts] = useState(() => VP_ALERTS.map(a => ({ ...a })));
   const [approvals, setApprovals] = useState(() => VP_APPROVALS.map(a => ({ ...a })));
-  const [kpis, setKpis] = useState(() => VP_KPI_BASE.map(k => ({ ...k, sparkPoints: k.spark.map((v, i) => ({ index: i, value: v })) })));
+  const [kpis, setKpis] = useState(() => {
+    let baseKpis = VP_KPI_BASE;
+    if (role === 'VP Product Management') {
+      baseKpis = baseKpis.filter(k => k.label !== 'Gross Margin');
+    }
+    return baseKpis.map(k => ({ ...k, sparkPoints: k.spark.map((v, i) => ({ index: i, value: v })) }));
+  });
   const [lastRefreshed, setLastRefreshed] = useState<string>('Refreshed just now');
 
   // Category filter and modal states for Top SKU Performance card
@@ -52,11 +58,11 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
 
   const handleRefresh = () => {
     // Jitter KPIs slightly to simulate real-time updates
-    setKpis(prevKpis => prevKpis.map((kpi, idx) => {
+    setKpis(prevKpis => prevKpis.map((kpi) => {
       let newValue = kpi.value;
-      if (idx === 0) {
+      if (kpi.label === 'Total Revenue') {
         newValue = +(kpi.value + (Math.random() * 0.6 - 0.2)).toFixed(1);
-      } else if (idx === 1) {
+      } else if (kpi.label === 'Gross Margin') {
         newValue = +(kpi.value + (Math.random() * 0.04 - 0.01)).toFixed(1);
       }
       
@@ -113,16 +119,77 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
     : SKUS.filter(s => s.cat === activeCategory);
   const topSkus = [...filteredSkus].sort((a, b) => b.rev - a.rev).slice(0, 5);
   const maxSkuRev = topSkus[0]?.rev || 1;
+  const alertsBlock = (
+    <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3.5">
+      <div className="flex justify-between items-center pb-2.5 border-b border-black/5 dark:border-white/5 mb-2.5">
+        <h3 className="text-[11px] font-bold uppercase tracking-widest flex items-center gap-1.5">
+          Smart Alerts
+          <span className="text-[9px] font-extrabold bg-red-500 text-white rounded-full px-1.5 py-0.5">
+            {alerts.length}
+          </span>
+        </h3>
+        {alerts.length > 0 && (
+          <button 
+            type="button"
+            onClick={handleAckAllAlerts}
+            className="text-[8px] font-bold uppercase tracking-widest border border-black/10 dark:border-white/10 px-2 py-1 hover:bg-black/5 dark:hover:bg-white/5 transition-all cursor-pointer"
+          >
+            Acknowledge All
+          </button>
+        )}
+      </div>
 
+      {alerts.length === 0 ? (
+        <div className="py-6 text-center text-zinc-400 dark:text-zinc-500 text-[11px] font-bold uppercase tracking-widest flex flex-col items-center gap-2">
+          <Check size={22} className="text-green-500" />
+          No active alerts — all clear
+        </div>
+      ) : (
+        <div className="max-h-[235px] overflow-y-auto divide-y divide-black/5 dark:divide-white/5 pr-1.5">
+          {alerts.map(a => {
+            const borderCol = a.sev === 'critical' ? 'border-red-500/30' : a.sev === 'warning' ? 'border-amber-500/30' : 'border-blue-500/30';
+            const indicatorCol = a.sev === 'critical' ? 'bg-red-500' : a.sev === 'warning' ? 'bg-amber-500' : 'bg-blue-500';
+            return (
+              <div key={a.id} className={`py-2 flex justify-between items-center gap-3 transition-all hover:bg-black/[0.01] dark:hover:bg-white/[0.02] border-l-2 ${borderCol} pl-2`}>
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className={`w-1 h-1 rounded-full shrink-0 ${indicatorCol}`} />
+                  <div className="min-w-0">
+                    <p className="text-[11px] font-bold text-acies-gray dark:text-white truncate">{a.title}</p>
+                    <p className="text-[9px] text-zinc-500 dark:text-zinc-400 truncate mt-0.5">{a.detail}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <button 
+                    type="button"
+                    onClick={() => setActiveTab(a.sev === 'critical' ? 4 : 5)} // jumps to relevant Tab
+                    className="text-[8px] font-bold uppercase tracking-widest text-acies-yellow hover:underline cursor-pointer border-none bg-transparent"
+                  >
+                    Investigate
+                  </button>
+                  <button 
+                    type="button"
+                    onClick={() => handleAckAlert(a.id)}
+                    className="text-[8px] font-bold uppercase tracking-widest border border-black/10 dark:border-white/10 px-1.5 py-0.5 hover:bg-black/5 dark:hover:bg-white/5 transition-all cursor-pointer"
+                  >
+                    Dismiss
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
 
   return (
     <div className="space-y-4">
       
       {/* KPI Cards Strip */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className={`grid grid-cols-1 sm:grid-cols-2 ${role === 'VP Product Management' ? 'lg:grid-cols-3' : 'lg:grid-cols-4'} gap-3`}>
         {kpis.map((k, i) => {
           const isUp = k.trend >= 0;
-          const isRisk = i === 3; // Alerts card
+          const isRisk = k.label === 'Critical Alerts';
           const trendIcon = isUp ? <TrendingUp size={10} /> : <TrendingDown size={10} />;
           const trendColor = isRisk 
             ? (isUp ? 'text-red-500 bg-red-500/10' : 'text-green-500 bg-green-500/10')
@@ -133,8 +200,8 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
               key={k.label} 
               className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3.5 relative overflow-hidden transition-all hover:border-acies-yellow/50 cursor-pointer"
               onClick={() => {
-                if (i === 1) setActiveTab(1); // Portfolio Map
-                if (i === 3) setActiveTab(5); // Signals Board
+                if (k.label === 'Gross Margin') setActiveTab(1); // Portfolio Map
+                if (k.label === 'Critical Alerts') setActiveTab(5); // Signals Board
               }}
             >
               <div className="absolute top-0 left-0 w-full h-1" style={{ backgroundColor: k.color }} />
@@ -145,7 +212,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
               <div className="flex items-center justify-between mt-3">
                 <span className={`text-[8px] font-extrabold uppercase tracking-widest px-1.5 py-0.5 rounded-sm flex items-center gap-1 ${trendColor}`}>
                   {trendIcon}
-                  {Math.abs(k.trend)}{i === 0 ? ' Cr' : i === 1 ? 'pp' : ''} MoM
+                  {Math.abs(k.trend)}{k.label === 'Total Revenue' ? ' Cr' : k.label === 'Gross Margin' ? 'pp' : ''} MoM
                 </span>
                 
                 {/* Micro Sparkline Chart */}
@@ -189,64 +256,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
         </button>
       </div>
 
-      {/* Smart Alerts Dashboard */}
-      <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3.5">
-        <div className="flex justify-between items-center pb-2.5 border-b border-black/5 dark:border-white/5 mb-2.5">
-          <h3 className="text-[11px] font-bold uppercase tracking-widest flex items-center gap-1.5">
-            Smart Alerts
-            <span className="text-[9px] font-extrabold bg-red-500 text-white rounded-full px-1.5 py-0.5">
-              {alerts.length}
-            </span>
-          </h3>
-          {alerts.length > 0 && (
-            <button 
-              onClick={handleAckAllAlerts}
-              className="text-[8px] font-bold uppercase tracking-widest border border-black/10 dark:border-white/10 px-2 py-1 hover:bg-black/5 dark:hover:bg-white/5 transition-all cursor-pointer"
-            >
-              Acknowledge All
-            </button>
-          )}
-        </div>
-
-        {alerts.length === 0 ? (
-          <div className="py-6 text-center text-zinc-400 dark:text-zinc-500 text-[11px] font-bold uppercase tracking-widest flex flex-col items-center gap-2">
-            <Check size={22} className="text-green-500" />
-            No active alerts — all clear
-          </div>
-        ) : (
-          <div className="max-h-[235px] overflow-y-auto divide-y divide-black/5 dark:divide-white/5 pr-1.5">
-            {alerts.map(a => {
-              const borderCol = a.sev === 'critical' ? 'border-red-500/30' : a.sev === 'warning' ? 'border-amber-500/30' : 'border-blue-500/30';
-              const indicatorCol = a.sev === 'critical' ? 'bg-red-500' : a.sev === 'warning' ? 'bg-amber-500' : 'bg-blue-500';
-              return (
-                <div key={a.id} className={`py-2 flex justify-between items-center gap-3 transition-all hover:bg-black/[0.01] dark:hover:bg-white/[0.02] border-l-2 ${borderCol} pl-2`}>
-                  <div className="flex items-center gap-2 min-w-0">
-                    <span className={`w-1 h-1 rounded-full shrink-0 ${indicatorCol}`} />
-                    <div className="min-w-0">
-                      <p className="text-[11px] font-bold text-acies-gray dark:text-white truncate">{a.title}</p>
-                      <p className="text-[9px] text-zinc-500 dark:text-zinc-400 truncate mt-0.5">{a.detail}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1.5 shrink-0">
-                    <button 
-                      onClick={() => setActiveTab(a.sev === 'critical' ? 4 : 5)} // jumps to relevant Tab
-                      className="text-[8px] font-bold uppercase tracking-widest text-acies-yellow hover:underline cursor-pointer border-none bg-transparent"
-                    >
-                      Investigate
-                    </button>
-                    <button 
-                      onClick={() => handleAckAlert(a.id)}
-                      className="text-[8px] font-bold uppercase tracking-widest border border-black/10 dark:border-white/10 px-1.5 py-0.5 hover:bg-black/5 dark:hover:bg-white/5 transition-all cursor-pointer"
-                    >
-                      Dismiss
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
+      {role !== 'VP Product Management' && alertsBlock}
 
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -577,7 +587,13 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role: _rol
             </div>
           )}
         </div>
+      </div>
+
+      {role === 'VP Product Management' && (
+        <div className="mt-4">
+          {alertsBlock}
         </div>
+      )}
 
       {/* Sku Details Modal */}
       <SkuDetailsModal 

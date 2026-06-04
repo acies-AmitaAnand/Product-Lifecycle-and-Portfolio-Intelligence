@@ -15,6 +15,7 @@ import { BottleneckDetailsModal } from './BottleneckDetailsModal';
 import { EmailComposerModal } from './EmailComposerModal';
 import { ScheduleMeetingModal } from './ScheduleMeetingModal';
 import { EventsCalendarModal } from './EventsCalendarModal';
+import { SuccessFeedbackModal } from './SuccessFeedbackModal';
 
 interface PortfolioHealthMapProps {
   role: Role;
@@ -33,6 +34,30 @@ interface CustomSKUType {
   growth: number;
   lead: number;
 }
+
+const RECIPIENT_TITLES: Record<string, string> = {
+  'ananya.sen@aciesglobal.com': 'VP Finance',
+  'vikram.solanki@aciesglobal.com': 'QC Manager & Logistics Lead',
+  'priya.sharma@aciesglobal.com': 'Product Manager',
+  'rajendra.patel@aciesglobal.com': 'Vapi Hub Director',
+  'amit.verma@aciesglobal.com': 'NPD Lead',
+  'karan.johar@aciesglobal.com': 'Retail Relations Director',
+  'k.srinivasan@aciesglobal.com': 'Maintenance Director',
+  'priyanka.rao@aciesglobal.com': 'Chennai Plant Supervisor',
+  'gautam.sen@aciesglobal.com': 'National Distribution Manager',
+  'marcus.ng@aciesglobal.com': 'Global Procurement Director',
+  'elena.rostova@aciesglobal.com': 'R&D Product Lead',
+  'vijay.kumar@aciesglobal.com': 'APAC Logistics Head',
+  'rohan.sharma@aciesglobal.com': 'Plant Manager - Baddi',
+  'amit.mehta@aciesglobal.com': 'Supplier Quality QA Lead',
+  'pooja.iyer@aciesglobal.com': 'Citrus Category Manager',
+  'siddharth.roy@aciesglobal.com': 'NPD Project Lead',
+  'nisha.patel@aciesglobal.com': 'Demand Planning Lead',
+  'rajesh.verma@aciesglobal.com': 'VP Sales',
+  'jp.dubois@aciesglobal.com': 'Commodities Hedging Director',
+  'sarah.jenkins@aciesglobal.com': 'Product Formulation Scientist',
+  'dieter.maes@aciesglobal.com': 'Production Scheduler'
+};
 
 // ══════════════════════════════════════════════════════════════════════════════
 // VP COMMAND CENTER SUB-COMPONENT
@@ -94,13 +119,22 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
   const [composerEmail, setComposerEmail] = useState({ to: '', subject: '', body: '', name: '', action: '' });
   const [viewFormat, setViewFormat] = useState<'grid' | 'table'>('grid');
   const [calendarOpen, setCalendarOpen] = useState(false);
+  const [successFeedback, setSuccessFeedback] = useState<{
+    isOpen: boolean;
+    recipientName: string;
+    recipientTitle: string;
+    recipientEmail: string;
+    contextType: 'approval' | 'bottleneck';
+    contextTitle: string;
+    channel: 'email' | 'message';
+  } | null>(null);
 
   // KPIs
   const [kpis, setKpis] = useState({
-    rev: { val: 851.2, hist: [790, 800, 811, 820, 829, 838, 845, 851.2], target: 900, label: 'Revenue — MTD', suffix: ' Cr', prefix: '₹', color: '#3b82f6' },
-    margin: { val: 36.2, hist: [34.2, 34.6, 34.9, 35.2, 35.6, 35.9, 36.0, 36.2], target: 37.0, label: 'Gross Margin', suffix: '%', prefix: '', color: '#10b981' },
+    rev: { val: 851.2, hist: [790, 800, 811, 820, 829, 838, 845, 851.2], target: 900, label: 'Portfolio Revenue', suffix: ' Cr', prefix: '₹', color: '#3b82f6' },
+    skuCount: { val: 102, hist: [105, 104, 104, 103, 103, 102, 102, 102], target: 100, label: 'Portfolio SKU Count', suffix: '', prefix: '', color: '#10b981' },
+    growth: { val: 8.4, hist: [7.2, 7.5, 7.8, 8.0, 8.1, 8.3, 8.3, 8.4], target: 10.0, label: 'Growth Rate', suffix: '%', prefix: '', color: '#ec4899' },
     orders: { val: 4218, hist: [3800, 3900, 3980, 4050, 4100, 4150, 4190, 4218], target: 5000, label: 'Orders — Today', suffix: '', prefix: '', color: '#8b5cf6' },
-    stock: { val: 7, hist: [3, 3, 4, 4, 5, 6, 6, 7], target: 3, label: 'Active Stockouts', suffix: '', prefix: '', color: '#ef4444' },
     fcast: { val: 94.6, hist: [96.1, 95.8, 95.4, 95.2, 95.0, 94.9, 94.7, 94.6], target: 97.0, label: 'Forecast Attainment', suffix: '%', prefix: '', color: '#f59e0b' },
   });
   const [kpiFlash, setKpiFlash] = useState<Record<string, 'up' | 'dn' | null>>({});
@@ -109,36 +143,22 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
   const stockToasted = useRef(false);
   useEffect(() => {
     const interval = setInterval(() => {
-      const keys = ['rev', 'margin', 'orders', 'stock', 'fcast'] as const;
+      const keys = ['rev', 'orders', 'fcast', 'skuCount', 'growth'] as const;
       const key = keys[Math.floor(Math.random() * keys.length)];
-      const delta = (Math.random() - 0.3) * { rev: 0.4, margin: 0.02, orders: 8, stock: 0.3, fcast: 0.05 }[key];
+      const delta = (Math.random() - 0.3) * { rev: 0.4, orders: 8, fcast: 0.05, skuCount: 0, growth: 0.05 }[key];
 
       setKpis(prev => {
-        const k = prev[key];
+        const k = (prev as any)[key];
         const rawVal = k.val + delta;
-        const newVal = key === 'orders' ? Math.max(0, Math.round(rawVal)) : parseFloat(Math.max(0, rawVal).toFixed(1));
+        const newVal = key === 'orders' || key === 'skuCount'
+          ? Math.max(0, Math.round(rawVal)) 
+          : parseFloat(Math.max(0, rawVal).toFixed(1));
 
         const wasUp = newVal > k.val;
         setKpiFlash(f => ({ ...f, [key]: wasUp ? 'up' : 'dn' }));
         setTimeout(() => {
           setKpiFlash(f => ({ ...f, [key]: null }));
         }, 800);
-
-        if (key === 'stock' && newVal > 8 && !stockToasted.current) {
-          stockToasted.current = true;
-          addToast('Stockout threshold breach', `${newVal} active stockouts — threshold is 3`, '#ef4444');
-          setAlerts(prevAlerts => {
-            const newAlert = {
-              id: 'stk-' + Date.now(),
-              sev: 'critical',
-              sevC: '#ef4444',
-              title: `Active stockouts now at ${newVal} — threshold breached`,
-              desc: 'Supply · Auto-escalation triggered',
-              dismissed: false
-            };
-            return [newAlert, ...prevAlerts];
-          });
-        }
 
         const newHist = [...k.hist.slice(1), newVal];
         return {
@@ -582,17 +602,17 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
           if (key === 'rev') {
             deltaText = '▲ +8.4% vs last month';
             deltaColor = 'text-emerald-500';
-          } else if (key === 'margin') {
-            deltaText = '▲ +1.1pp vs last month';
-            deltaColor = 'text-emerald-500';
           } else if (key === 'orders') {
             deltaText = '▲ +12.3% vs yesterday';
             deltaColor = 'text-emerald-500';
-          } else if (key === 'stock') {
-            deltaText = kpi.val > 3 ? '▲ Threshold breached' : '▼ Within limit';
-            deltaColor = kpi.val > 3 ? 'text-red-500 font-bold' : 'text-emerald-500';
           } else if (key === 'fcast') {
             deltaText = '▼ −2.1pp vs target';
+            deltaColor = 'text-amber-500';
+          } else if (key === 'skuCount') {
+            deltaText = '▼ −3 SKUs rationalized';
+            deltaColor = 'text-emerald-500';
+          } else if (key === 'growth') {
+            deltaText = '▼ −1.6pp vs target';
             deltaColor = 'text-amber-500';
           }
 
@@ -637,12 +657,12 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
 
       {/* Main Command Center Grid */}
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
-        {/* LEFT COLUMN: PENDING APPROVALS */}
+        {/* LEFT COLUMN: EXECUTIVE APPROVAL BOARD */}
         <div className="xl:col-span-4 space-y-6">
-          {/* Pending Approvals */}
+          {/* Executive Approval Board */}
           <div className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm space-y-4">
             <div className="flex justify-between items-center pb-2 border-b border-black/5 dark:border-white/5">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Pending Approvals</span>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Executive Approval Board</span>
               <span className="text-[8px] font-bold uppercase tracking-wider text-[#8b5cf6] bg-[#8b5cf6]/10 px-2 py-0.5 rounded-full">{approvals.length} Pending</span>
             </div>
             
@@ -719,12 +739,12 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
           </div>
         </div>
 
-        {/* CENTER COLUMN: SUPPLY BOTTLENECKS */}
+        {/* CENTER COLUMN: INDUSTRY BOTTLENECKS */}
         <div className="xl:col-span-4 space-y-6">
-          {/* Supply Bottlenecks */}
+          {/* Industry Bottlenecks */}
           <div className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm space-y-4">
             <div className="flex justify-between items-center pb-2 border-b border-black/5 dark:border-white/5">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Supply Bottlenecks</span>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Industry Bottlenecks</span>
               <span className="text-[8px] font-bold uppercase tracking-wider text-red-500 bg-red-500/10 px-2 py-0.5 rounded-full">2 Critical</span>
             </div>
             <div className="space-y-3">
@@ -815,11 +835,11 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
         </div>
       </div>
 
-      {/* FULL WIDTH: LIVE EVENT STREAM */}
+      {/* FULL WIDTH: LIVE INDUSTRY UPDATES */}
       <div className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm mt-6 flex flex-col gap-4 w-full">
         <div className="flex justify-between items-center pb-2 border-b border-black/5 dark:border-white/5">
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Live Event Stream</span>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Live Industry Updates</span>
             <span className="flex h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
           </div>
           <div className="flex items-center gap-3">
@@ -983,25 +1003,61 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
         isOpen={composerOpen}
         onClose={() => setComposerOpen(false)}
         initialEmail={composerEmail}
-        onSend={(name, email, subject, body) => {
+        onSend={(name, email, subject, body, channel) => {
           setComposerOpen(false);
+          const resolvedTitle = RECIPIENT_TITLES[email.toLowerCase()] || 'Product Manager';
           if (composerEmail.action) {
+            const approval = approvals.find(x => x.id === composerEmail.action);
+            const title = approval ? approval.title : '';
+            setSuccessFeedback({
+              isOpen: true,
+              recipientName: name,
+              recipientTitle: resolvedTitle,
+              recipientEmail: email,
+              contextType: 'approval',
+              contextTitle: title,
+              channel
+            });
             addToast(
               'Sync Meeting Invitation Sent', 
-              `Meeting invite email sent successfully to ${name} (${email}).`, 
+              `Meeting invite ${channel === 'email' ? 'email' : 'message'} sent successfully to ${name} (${email}).`, 
               '#10b981'
             );
             setApprovals(prev => prev.filter(a => a.id !== composerEmail.action));
             setActiveApprovalMeeting(null);
           } else {
+            setSuccessFeedback({
+              isOpen: true,
+              recipientName: name,
+              recipientTitle: resolvedTitle,
+              recipientEmail: email,
+              contextType: 'bottleneck',
+              contextTitle: activeBottleneck || '',
+              channel
+            });
             addToast(
               'Mitigation Request Sent', 
-              `Request email has been sent successfully to ${name} (${email}) regarding this bottleneck.`, 
+              `Request ${channel === 'email' ? 'email' : 'message'} has been sent successfully to ${name} (${email}) regarding this bottleneck.`, 
               '#10b981'
             );
           }
         }}
       />
+
+      {/* Success Feedback Modal */}
+      {successFeedback && (
+        <SuccessFeedbackModal
+          isOpen={successFeedback.isOpen}
+          onClose={() => setSuccessFeedback(null)}
+          recipientName={successFeedback.recipientName}
+          recipientTitle={successFeedback.recipientTitle}
+          recipientEmail={successFeedback.recipientEmail}
+          contextType={successFeedback.contextType}
+          contextTitle={successFeedback.contextTitle}
+          isDarkMode={isDarkMode}
+          channel={successFeedback.channel}
+        />
+      )}
 
       {/* Bottleneck Details Modal */}
       <BottleneckDetailsModal 

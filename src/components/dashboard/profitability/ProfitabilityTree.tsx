@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { 
-  Layers, Calculator, Save, CheckCircle2, Info, TrendingUp, HelpCircle, ArrowRight, Award, AlertTriangle, Sparkles, RefreshCw, Package, FileText, ArrowUpRight
+  Layers, Calculator, Save, CheckCircle2, Info, TrendingUp, HelpCircle, ArrowRight, Award, AlertTriangle, Sparkles, RefreshCw, Package, FileText, ArrowUpRight, ArrowLeft
 } from 'lucide-react';
 import { 
   ResponsiveContainer, BarChart, Bar, Cell, XAxis, YAxis, Tooltip, CartesianGrid,
@@ -14,6 +14,8 @@ interface ProfitabilityTreeProps {
   role: Role;
   onAuditClick?: (metric: string | null) => void;
   isDarkMode: boolean;
+  isSimulatorOpen?: boolean;
+  setIsSimulatorOpen?: (open: boolean) => void;
 }
 
 interface Scenario {
@@ -31,7 +33,11 @@ interface Scenario {
   ebitPct: string;
 }
 
-const VPProfitabilityTreeView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
+const VPProfitabilityTreeView: React.FC<{ 
+  isDarkMode: boolean;
+  isSimulatorOpen?: boolean;
+  setIsSimulatorOpen?: (open: boolean) => void;
+}> = ({ isDarkMode, isSimulatorOpen, setIsSimulatorOpen }) => {
   const accentColor = isDarkMode ? '#a78bfa' : '#6d28d9';
   const gridStroke = isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
   const tickColor = isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)';
@@ -40,12 +46,15 @@ const VPProfitabilityTreeView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode
   const tooltipText = isDarkMode ? '#fff' : '#000';
 
 
-  const [showForecastSimulator, setShowForecastSimulator] = useState<boolean>(false);
+  const [showForecastSimulatorLocal, setShowForecastSimulatorLocal] = useState<boolean>(false);
+  const showForecastSimulator = setIsSimulatorOpen ? (isSimulatorOpen ?? false) : showForecastSimulatorLocal;
+  const setShowForecastSimulator = setIsSimulatorOpen ? setIsSimulatorOpen : setShowForecastSimulatorLocal;
   const [simRawMaterial, setSimRawMaterial] = useState<number>(0);
   const [simPriceChange, setSimPriceChange] = useState<number>(0);
   const [simPromoCut, setSimPromoCut] = useState<number>(0);
   const [selectedCell, setSelectedCell] = useState<{ category: string; month: string; val: number } | null>(null);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'info' | 'warning' } | null>(null);
+  const [trendHorizon, setTrendHorizon] = useState<'months' | 'weeks' | 'years'>('months');
   
   const showToast = (message: string, type: 'success' | 'info' | 'warning' = 'success') => {
     setToast({ message, type });
@@ -76,24 +85,36 @@ const VPProfitabilityTreeView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode
     });
   };
 
-  const [promoCampaigns, setPromoCampaigns] = useState([
-    { id: 1, name: 'Choco Wafers Summer Deal', sku: 'Choco Wafers', category: 'Snacks', type: 'Price Off', lift: '+22%', spend: 18.4, revenue: 22.4, roi: -0.42, status: 'Promo Erosion' },
-    { id: 2, name: 'Floor Cleaner Bundle', sku: 'Floor Cleaner', category: 'Household', type: 'Bundle', lift: '+14%', spend: 11.2, revenue: 13.0, roi: -0.18, status: 'Promo Erosion' },
-    { id: 3, name: 'Green Tea BOGO', sku: 'Green Tea RTD', category: 'Beverages', type: 'BOGO', lift: '+31%', spend: 24.3, revenue: 28.0, roi: -0.62, status: 'Promo Erosion' },
-    { id: 4, name: 'Mango Fizz Feature Display', sku: 'Mango Fizz', category: 'Beverages', type: 'Display', lift: '+18%', spend: 8.2, revenue: 18.4, roi: 1.24, status: 'High Perform' },
-    { id: 5, name: 'Oat Cookies Endcap', sku: 'Oat Cookies', category: 'Snacks', type: 'Display', lift: '+25%', spend: 9.8, revenue: 25.0, roi: 1.55, status: 'High Perform' },
-    { id: 6, name: 'Herbal Shampoo Digital', sku: 'Herbal Shampoo', category: 'Personal Care', type: 'Digital', lift: '+18%', spend: 11.4, revenue: 36.2, roi: 2.18, status: 'High Perform' },
-  ]);
+  // ROI by Category / SKU Chart Data
+  const categoryRoiData = [
+    { name: 'Beverages', spend: 38, revenue: 90, roi: 137 },
+    { name: 'Snacks', spend: 52, revenue: 105, roi: 102 },
+    { name: 'Personal Care', spend: 28, revenue: 62, roi: 121 },
+    { name: 'Household', spend: 22, revenue: 55, roi: 150 },
+  ];
 
-  const handlePrunePromo = (id: number, name: string) => {
-    setPromoCampaigns(prev => prev.map(c => c.id === id ? { ...c, spend: 0, revenue: 0, roi: 0, status: 'Pruned' } : c));
-  };
+  const skuRoiData = [
+    // Beverages
+    { name: 'Cola Max', spend: 12, revenue: 32, roi: 167, category: 'Beverages' },
+    { name: 'Green Tea RTD', spend: 15, revenue: 31, roi: 107, category: 'Beverages' },
+    { name: 'Mango Fizz', spend: 11, revenue: 27, roi: 145, category: 'Beverages' },
+    // Snacks
+    { name: 'Choco Wafers', spend: 18, revenue: 35, roi: 94, category: 'Snacks' },
+    { name: 'Oat Cookies', spend: 14, revenue: 30, roi: 114, category: 'Snacks' },
+    { name: 'Potato Chips', spend: 20, revenue: 40, roi: 100, category: 'Snacks' },
+    // Personal Care
+    { name: 'Herbal Shampoo', spend: 10, revenue: 25, roi: 150, category: 'Personal Care' },
+    { name: 'Foam Face Wash', spend: 12, revenue: 23, roi: 92, category: 'Personal Care' },
+    { name: 'Aloe Vera Gel', spend: 6, revenue: 14, roi: 133, category: 'Personal Care' },
+    // Household
+    { name: 'Floor Cleaner', spend: 8, revenue: 21, roi: 163, category: 'Household' },
+    { name: 'Fabric Softener', spend: 9, revenue: 22, roi: 144, category: 'Household' },
+    { name: 'Dishwash Gel', spend: 5, revenue: 12, roi: 140, category: 'Household' },
+  ];
 
-  const handleBoostPromo = (id: number, name: string) => {
-    setPromoCampaigns(prev => prev.map(c => c.id === id ? { ...c, spend: Math.round(c.spend * 1.3 * 10) / 10, revenue: Math.round(c.revenue * 1.35 * 10) / 10, roi: Math.round(((c.revenue * 1.35) / (c.spend * 1.3) - 1) * 100) / 100 } : c));
-  };
-
-  const activeErosionPromos = promoCampaigns.filter(c => c.roi < 0 && c.status !== 'Pruned').length;
+  const [roiViewMode, setRoiViewMode] = useState<'category' | 'sku'>('category');
+  const [selectedRoiCategory, setSelectedRoiCategory] = useState<string | null>(null);
+  const activeErosionPromos = 3;
 
   const atRiskSKUs = [
     { name: 'Fabric Softener', cat: 'Household', margin: 15, promo: 0.76, rev: 28, isCrit: true },
@@ -240,20 +261,49 @@ const VPProfitabilityTreeView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode
     { month: 'Aug', actual: 36.1, forecast: 37.0 }
   ];
 
-  const revenueVsProfitData = [
-    { month: 'Jul', revenue: 58, profit: 22, margin: 38.0 },
-    { month: 'Aug', revenue: 60, profit: 23, margin: 38.3 },
-    { month: 'Sep', revenue: 63, profit: 24, margin: 38.8 },
-    { month: 'Oct', revenue: 66, profit: 25, margin: 39.0 },
-    { month: 'Nov', revenue: 68, profit: 26, margin: 38.2 },
-    { month: 'Dec', revenue: 71, profit: 27, margin: 38.7 },
-    { month: 'Jan', revenue: 73, profit: 28, margin: 38.8 },
-    { month: 'Feb', revenue: 75, profit: 28.5, margin: 38.0 },
-    { month: 'Mar', revenue: 78, profit: 29, margin: 38.2 },
-    { month: 'Apr', revenue: 80, profit: 29.5, margin: 37.5 },
-    { month: 'May', revenue: 82, profit: 31, margin: 37.8 },
-    { month: 'Jun', revenue: 84, profit: 32, margin: 37.5 }
+  const revenueVsProfitMonths = [
+    { label: 'Jul', revenue: 58, profit: 22, margin: 38.0 },
+    { label: 'Aug', revenue: 60, profit: 23, margin: 38.3 },
+    { label: 'Sep', revenue: 63, profit: 24, margin: 38.8 },
+    { label: 'Oct', revenue: 66, profit: 25, margin: 39.0 },
+    { label: 'Nov', revenue: 68, profit: 26, margin: 38.2 },
+    { label: 'Dec', revenue: 71, profit: 27, margin: 38.7 },
+    { label: 'Jan', revenue: 73, profit: 28, margin: 38.8 },
+    { label: 'Feb', revenue: 75, profit: 28.5, margin: 38.0 },
+    { label: 'Mar', revenue: 78, profit: 29, margin: 38.2 },
+    { label: 'Apr', revenue: 80, profit: 29.5, margin: 37.5 },
+    { label: 'May', revenue: 82, profit: 31, margin: 37.8 },
+    { label: 'Jun', revenue: 84, profit: 32, margin: 37.5 }
   ];
+
+  const revenueVsProfitWeeks = [
+    { label: 'W20', revenue: 14.5, profit: 5.5, margin: 37.9 },
+    { label: 'W21', revenue: 15.0, profit: 5.7, margin: 38.0 },
+    { label: 'W22', revenue: 15.2, profit: 5.8, margin: 38.2 },
+    { label: 'W23', revenue: 14.8, profit: 5.6, margin: 37.8 },
+    { label: 'W24', revenue: 16.1, profit: 6.2, margin: 38.5 },
+    { label: 'W25', revenue: 16.5, profit: 6.4, margin: 38.8 },
+    { label: 'W26', revenue: 17.0, profit: 6.5, margin: 38.2 },
+    { label: 'W27', revenue: 16.8, profit: 6.3, margin: 37.5 },
+    { label: 'W28', revenue: 17.2, profit: 6.6, margin: 38.4 },
+    { label: 'W29', revenue: 18.0, profit: 6.9, margin: 38.3 },
+    { label: 'W30', revenue: 18.5, profit: 7.0, margin: 37.8 },
+    { label: 'W31', revenue: 19.0, profit: 7.2, margin: 37.9 }
+  ];
+
+  const revenueVsProfitYears = [
+    { label: '2022', revenue: 640, profit: 236, margin: 36.9 },
+    { label: '2023', revenue: 710, profit: 266, margin: 37.5 },
+    { label: '2024', revenue: 780, profit: 298, margin: 38.2 },
+    { label: '2025', revenue: 840, profit: 320, margin: 38.1 },
+    { label: '2026 YTD', revenue: 851, profit: 328, margin: 38.5 }
+  ];
+
+  const activeTrendData = trendHorizon === 'months' 
+    ? revenueVsProfitMonths 
+    : trendHorizon === 'weeks' 
+      ? revenueVsProfitWeeks 
+      : revenueVsProfitYears;
 
   const scenarioRev = 851.2 * (1 + simPriceChange / 100);
   const scenarioGp = 851.2 * (0.362 + (simPriceChange * 0.8) / 100 - (simRawMaterial * 0.6) / 100 + (simPromoCut * 0.4) / 100);
@@ -286,28 +336,27 @@ const VPProfitabilityTreeView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode
         </div>
       </div>
 
-      {/* Top Profit Contributors Card */}
-      <div className="glass-card bg-white dark:bg-[#1a1a24]/90 border border-black/10 dark:border-white/10 rounded-xl overflow-hidden shadow-sm">
-        <div className="flex items-center justify-between p-3.5 border-b bg-teal-500/[0.03]">
-          <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-lg bg-teal-500/15 text-teal-650 dark:text-teal-400 flex items-center justify-center text-sm flex-shrink-0">
-              <Award size={16} className="stroke-[2.5]" />
+      {/* Top Profit Contributors Cards */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        
+        {/* BY CATEGORY */}
+        <div className="glass-card bg-white dark:bg-[#1a1a24]/90 border border-black/10 dark:border-white/10 rounded-xl overflow-hidden shadow-sm">
+          <div className="flex items-center justify-between p-3.5 border-b bg-teal-500/[0.03]">
+            <div className="flex items-center gap-2.5">
+              <div className="w-7 h-7 rounded-lg bg-teal-500/15 text-teal-650 dark:text-teal-400 flex items-center justify-center text-sm flex-shrink-0">
+                <Award size={16} className="stroke-[2.5]" />
+              </div>
+              <span className="text-[12px] font-bold font-display text-teal-650 dark:text-teal-400">
+                Top profit contributors by category
+              </span>
             </div>
-            <span className="text-[12px] font-bold font-display text-teal-650 dark:text-teal-400">
-              Top profit contributors
+            <span className="text-[9.5px] font-bold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider">
+              YTD
             </span>
           </div>
-          <span className="text-[9.5px] font-bold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider">
-            Categories & Brands · YTD
-          </span>
-        </div>
-        <div className="p-5 grid grid-cols-1 lg:grid-cols-2 gap-8 divide-y lg:divide-y-0 lg:divide-x divide-black/[0.08] dark:divide-white/[0.08]">
-          
-          {/* BY CATEGORY */}
-          <div className="space-y-4">
-            <h4 className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">BY CATEGORY</h4>
-            <div className="flex flex-row items-center justify-between gap-4 flex-wrap sm:flex-nowrap">
-              <div className="w-[140px] h-[140px] flex-shrink-0 relative mx-auto sm:mx-0">
+          <div className="p-5">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
+              <div className="w-[180px] h-[180px] flex-shrink-0 relative mx-auto sm:mx-0">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
@@ -320,8 +369,8 @@ const VPProfitabilityTreeView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode
                       ]}
                       cx="50%"
                       cy="50%"
-                      innerRadius={38}
-                      outerRadius={56}
+                      innerRadius={50}
+                      outerRadius={75}
                       paddingAngle={2}
                       dataKey="value"
                     >
@@ -365,12 +414,26 @@ const VPProfitabilityTreeView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode
               </div>
             </div>
           </div>
+        </div>
 
-          {/* BY BRAND */}
-          <div className="space-y-4 pt-6 lg:pt-0 lg:pl-8">
-            <h4 className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">BY BRAND</h4>
-            <div className="flex flex-row items-center justify-between gap-4 flex-wrap sm:flex-nowrap">
-              <div className="w-[140px] h-[140px] flex-shrink-0 relative mx-auto sm:mx-0">
+        {/* BY BRAND */}
+        <div className="glass-card bg-white dark:bg-[#1a1a24]/90 border border-black/10 dark:border-white/10 rounded-xl overflow-hidden shadow-sm">
+          <div className="flex items-center justify-between p-3.5 border-b bg-teal-500/[0.03]">
+            <div className="flex items-center gap-2.5">
+              <div className="w-7 h-7 rounded-lg bg-teal-500/15 text-teal-650 dark:text-teal-400 flex items-center justify-center text-sm flex-shrink-0">
+                <Award size={16} className="stroke-[2.5]" />
+              </div>
+              <span className="text-[12px] font-bold font-display text-teal-650 dark:text-teal-400">
+                Top profit contributors by brand
+              </span>
+            </div>
+            <span className="text-[9.5px] font-bold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider">
+              YTD
+            </span>
+          </div>
+          <div className="p-5">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
+              <div className="w-[180px] h-[180px] flex-shrink-0 relative mx-auto sm:mx-0">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
@@ -383,8 +446,8 @@ const VPProfitabilityTreeView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode
                       ]}
                       cx="50%"
                       cy="50%"
-                      innerRadius={38}
-                      outerRadius={56}
+                      innerRadius={50}
+                      outerRadius={75}
                       paddingAngle={2}
                       dataKey="value"
                     >
@@ -421,15 +484,15 @@ const VPProfitabilityTreeView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode
                     </div>
                     <div className="flex items-center gap-4">
                       <span className="font-bold text-zinc-850 dark:text-zinc-150">${item.value}M</span>
-                      <span className="text-zinc-450 dark:text-zinc-500 font-mono w-8 text-right">{item.percent}</span>
+                      <span className="text-zinc-450 dark:text-zinc-500 font-mono w-8 text-right">{item.percent}%</span>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
           </div>
-
         </div>
+
       </div>
 
       {/* Profit Leakage Card */}
@@ -720,109 +783,216 @@ const VPProfitabilityTreeView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode
       </div>
 
       <div className="glass-card bg-white dark:bg-[#1a1a24]/90 border border-black/10 dark:border-white/10 rounded-xl overflow-hidden shadow-sm">
-        <div className="flex items-center justify-between p-3.5 border-b bg-[#f59e0b]/[0.03]">
-          <div className="flex items-start flex-col gap-0.5">
-            <div className="flex items-center gap-2.5">
-              <div className="w-7 h-7 rounded-lg bg-[#f59e0b]/15 text-[#f59e0b] flex items-center justify-center text-sm flex-shrink-0">
-                🎯
-              </div>
-              <span className="text-[12px] font-bold font-display text-[#f59e0b]">
-                Promo ROI Tracker
+        <div className="flex items-center justify-between p-4 border-b border-black/5 dark:border-white/5 bg-black/[0.01] dark:bg-white/[0.01]">
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-1">
+              {selectedRoiCategory && (
+                <button
+                  onClick={() => {
+                    setSelectedRoiCategory(null);
+                    setRoiViewMode('category');
+                  }}
+                  className="p-1 rounded-lg hover:bg-black/5 dark:hover:bg-white/10 flex items-center justify-center text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 transition-all cursor-pointer mr-1"
+                  title="Back to Categories"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                </button>
+              )}
+              <span className="text-[13px] font-bold font-display text-zinc-800 dark:text-zinc-100">
+                {roiViewMode === 'category'
+                  ? 'ROI by Category'
+                  : selectedRoiCategory
+                    ? `ROI by SKU — ${selectedRoiCategory}`
+                    : 'ROI by SKU'}
               </span>
             </div>
-            <p className="text-[9.5px] text-zinc-400 font-medium ml-9 mt-0.5">Volume lift vs margin cost — promos above break-even line are ROI-positive</p>
-          </div>
-          {activeErosionPromos > 0 && (
-            <span className="text-[8.5px] font-black bg-red-500/10 text-red-500 border border-red-500/20 px-2 py-0.5 rounded-full shrink-0">
-              {activeErosionPromos} promos destroying value
-            </span>
-          )}
-        </div>
-        <div className="p-6 space-y-6">
-          <div className="space-y-2">
-            <h4 className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">📊 Campaign Spend vs Incremental Revenue vs ROI%</h4>
-            <div className="h-64 border border-black/5 dark:border-white/5 p-4 rounded-lg bg-black/[0.005] dark:bg-white/[0.005]">
-              <ResponsiveContainer width="100%" height="100%">
-                <ComposedChart data={promoCampaigns} margin={{ top: 15, right: -5, left: -25, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridStroke} />
-                  <XAxis dataKey="name" tick={{ fill: tickColor, fontSize: 7.5 }} axisLine={false} tickLine={false} />
-                  <YAxis yAxisId="left" tick={{ fill: tickColor, fontSize: 8 }} axisLine={false} tickLine={false} label={{ value: 'Spend / Rev (₹ Cr)', angle: -90, position: 'insideLeft', fill: tickColor, fontSize: 8 }} />
-                  <YAxis yAxisId="right" orientation="right" tick={{ fill: tickColor, fontSize: 8 }} axisLine={false} tickLine={false} label={{ value: 'ROI Multiplier', angle: 90, position: 'insideRight', fill: tickColor, fontSize: 8 }} />
-                  <Tooltip contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, color: tooltipText }} itemStyle={{ fontSize: 9.5 }} />
-                  <Legend wrapperStyle={{ fontSize: 8.5 }} />
-                  <Bar yAxisId="left" dataKey="spend" name="Spend (₹ Cr)" fill="#f59e0b" radius={[2, 2, 0, 0]} barSize={25} />
-                  <Bar yAxisId="left" dataKey="revenue" name="Incremental Revenue (₹ Cr)" fill="#3b82f6" radius={[2, 2, 0, 0]} barSize={25} />
-                  <Line yAxisId="right" type="monotone" dataKey="roi" name="ROI Multiplier" stroke="#10b981" strokeWidth={2} dot={{ r: 3, strokeWidth: 1 }} />
-                </ComposedChart>
-              </ResponsiveContainer>
+            {/* Custom Legend */}
+            <div className="flex items-center gap-4 text-[10.5px] font-semibold text-zinc-550 dark:text-zinc-400 mt-1">
+              <div className="flex items-center gap-1.5">
+                <div className="w-2.5 h-2.5 rounded-full bg-[#5faad9]" />
+                <span>Spend</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <div className="w-2.5 h-2.5 rounded-full bg-[#52d69b]" />
+                <span>Revenue</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-0.5">
+                  <div className="w-4 h-0.5 border-t border-dashed border-[#f27a35]" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#f27a35] -ml-1" />
+                </div>
+                <span>ROI%</span>
+              </div>
             </div>
           </div>
 
-          <div className="border border-black/10 dark:border-white/10 rounded-lg overflow-hidden bg-white dark:bg-zinc-900/50 shadow-sm">
-            <div className="p-3 bg-black/[0.01] dark:bg-white/[0.01] border-b border-black/5 dark:border-white/5 flex justify-between items-center text-[9px] font-bold uppercase tracking-widest text-zinc-400">
-              <span>🎯 Marketing Campaigns Ledger</span>
+          <div className="flex flex-col items-end gap-1">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => {
+                  setRoiViewMode('category');
+                  setSelectedRoiCategory(null);
+                }}
+                className={`px-3.5 py-1 text-xs font-bold rounded-lg border transition-all cursor-pointer ${
+                  roiViewMode === 'category'
+                    ? 'bg-[#18181b] text-white border-[#18181b] dark:bg-zinc-100 dark:text-zinc-900 dark:border-zinc-100 shadow-sm'
+                    : 'bg-transparent text-zinc-500 border-zinc-200 hover:text-zinc-800 hover:border-zinc-300 dark:text-zinc-405 dark:border-zinc-800 dark:hover:text-zinc-200 dark:hover:border-zinc-700'
+                }`}
+              >
+                Category
+              </button>
+              <button
+                onClick={() => {
+                  setRoiViewMode('sku');
+                }}
+                className={`px-3.5 py-1 text-xs font-bold rounded-lg border transition-all cursor-pointer ${
+                  roiViewMode === 'sku'
+                    ? 'bg-[#18181b] text-white border-[#18181b] dark:bg-zinc-100 dark:text-zinc-900 dark:border-zinc-100 shadow-sm'
+                    : 'bg-transparent text-zinc-500 border-zinc-200 hover:text-zinc-800 hover:border-zinc-300 dark:text-zinc-405 dark:border-zinc-800 dark:hover:text-zinc-200 dark:hover:border-zinc-700'
+                }`}
+              >
+                SKU
+              </button>
             </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse text-xs font-semibold text-zinc-700 dark:text-zinc-300">
-                <thead>
-                  <tr className="bg-black/[0.02] dark:bg-white/[0.02] border-b border-black/5 dark:border-white/5 text-[9px] font-bold uppercase tracking-wider text-zinc-400">
-                    <th className="py-2.5 px-4">PROMO / SKU</th>
-                    <th className="py-2.5 px-4">TYPE</th>
-                    <th className="py-2.5 px-4 text-center">VOLUME LIFT</th>
-                    <th className="py-2.5 px-4 text-right">MARGIN COST</th>
-                    <th className="py-2.5 px-4 text-center">ROI</th>
-                    <th className="py-2.5 px-4 text-center">ACTION CONTROLS</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-black/[0.04] dark:divide-white/[0.04]">
-                  {promoCampaigns.map((c) => {
-                    const isPruned = c.spend === 0;
-                    return (
-                      <tr key={c.id} className="hover:bg-black/[0.01] dark:hover:bg-white/[0.01] transition-all">
-                        <td className="py-3 px-4">
-                          <p className="font-bold text-zinc-805 dark:text-zinc-200">{c.name}</p>
-                          <p className="text-[9px] text-zinc-400 uppercase tracking-widest">{c.sku}</p>
-                        </td>
-                        <td className="py-3 px-4 text-[10px] text-zinc-500 font-bold uppercase tracking-wider">{c.type}</td>
-                        <td className="py-3 px-4 text-center font-mono font-bold text-blue-500">{isPruned ? '0%' : c.lift}</td>
-                        <td className="py-3 px-4 text-right font-mono font-bold text-red-400">₹{isPruned ? '0.0' : c.spend}Cr</td>
-                        <td className="py-3 px-4 flex justify-center items-center gap-3">
-                          <div className="w-24 bg-black/5 dark:bg-white/10 h-2 rounded relative flex items-center overflow-hidden shrink-0">
-                            {c.roi < 0 ? (
-                              <div className="absolute right-1/2 top-0 bottom-0 bg-red-400" style={{ width: `${Math.min(50, Math.abs(c.roi) * 60)}%` }} />
-                            ) : (
-                              <div className="absolute left-1/2 top-0 bottom-0 bg-emerald-400" style={{ width: `${Math.min(50, c.roi * 20)}%` }} />
-                            )}
-                            <div className="absolute left-1/2 w-px h-full bg-zinc-350 dark:bg-zinc-600" />
+            {roiViewMode === 'category' && (
+              <span className="text-[10px] text-zinc-400 dark:text-zinc-500 font-medium">Click a bar to drill down</span>
+            )}
+          </div>
+        </div>
+
+        <div className="p-6">
+          <div className="h-72 border border-black/5 dark:border-white/5 p-4 rounded-lg bg-black/[0.005] dark:bg-white/[0.005]">
+            <ResponsiveContainer width="100%" height="100%">
+              <ComposedChart
+                data={
+                  roiViewMode === 'category'
+                    ? categoryRoiData
+                    : selectedRoiCategory
+                      ? skuRoiData.filter((item) => item.category === selectedRoiCategory)
+                      : skuRoiData
+                }
+                margin={{ top: 15, right: -5, left: -20, bottom: 5 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridStroke} />
+                <XAxis
+                  dataKey="name"
+                  tick={{ fill: tickColor, fontSize: 8.5, fontWeight: 600 }}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <YAxis
+                  yAxisId="left"
+                  domain={[0, roiViewMode === 'category' ? 120 : 'auto']}
+                  ticks={roiViewMode === 'category' ? [0, 20, 40, 60, 80, 100, 120] : undefined}
+                  tick={{ fill: tickColor, fontSize: 9, fontWeight: 600 }}
+                  axisLine={false}
+                  tickLine={false}
+                  tickFormatter={(v) => `₹${v}Cr`}
+                />
+                <YAxis
+                  yAxisId="right"
+                  orientation="right"
+                  domain={[90, roiViewMode === 'category' ? 150 : 'auto']}
+                  ticks={roiViewMode === 'category' ? [90, 100, 110, 120, 130, 140, 150] : undefined}
+                  tick={{ fill: tickColor, fontSize: 9, fontWeight: 600 }}
+                  axisLine={false}
+                  tickLine={false}
+                  tickFormatter={(v) => `${v}%`}
+                />
+                <Tooltip
+                  content={({ active, payload, label }) => {
+                    if (active && payload && payload.length) {
+                      const spendVal = payload.find((p) => p.dataKey === 'spend')?.value;
+                      const revenueVal = payload.find((p) => p.dataKey === 'revenue')?.value;
+                      const roiVal = payload.find((p) => p.dataKey === 'roi')?.value;
+                      return (
+                        <div className="p-3 bg-[#18181b] border border-white/10 rounded-lg text-white text-[11px] shadow-xl space-y-1 font-semibold">
+                          <p className="font-bold text-xs text-zinc-200 border-b border-white/10 pb-1 mb-1">{label}</p>
+                          <div className="flex items-center justify-between gap-4">
+                            <span className="text-zinc-400">Spend:</span>
+                            <span className="font-mono">₹{spendVal}Cr</span>
                           </div>
-                          <span className={`w-12 font-mono font-bold text-[10.5px] ${isPruned ? 'text-zinc-400' : c.roi < 0 ? 'text-red-500' : 'text-emerald-500'}`}>
-                            {isPruned ? '0.00x' : `${c.roi >= 0 ? '+' : ''}${c.roi.toFixed(2)}x`}
-                          </span>
-                        </td>
-                        <td className="py-3 px-4 text-center">
-                          <div className="flex gap-2 justify-center">
-                            <button
-                              disabled={isPruned}
-                              onClick={() => handlePrunePromo(c.id, c.name)}
-                              className={`px-2 py-1 text-[8.5px] font-bold uppercase rounded border transition-all cursor-pointer ${isPruned ? 'border-zinc-200 text-zinc-450 opacity-40 cursor-not-allowed' : 'border-red-500/30 text-red-500 hover:bg-red-500/10'}`}
-                            >
-                              Prune / Sunset
-                            </button>
-                            <button
-                              disabled={isPruned}
-                              onClick={() => handleBoostPromo(c.id, c.name)}
-                              className={`px-2 py-1 text-[8.5px] font-bold uppercase rounded border transition-all cursor-pointer ${isPruned ? 'border-zinc-200 text-zinc-450 opacity-40 cursor-not-allowed' : 'border-emerald-500/30 text-emerald-500 hover:bg-emerald-500/10'}`}
-                            >
-                              Boost (+30%)
-                            </button>
+                          <div className="flex items-center justify-between gap-4">
+                            <span className="text-zinc-400">Revenue:</span>
+                            <span className="font-mono text-[#52d69b]">₹{revenueVal}Cr</span>
                           </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+                          <div className="flex items-center justify-between gap-4">
+                            <span className="text-zinc-400">ROI:</span>
+                            <span className="font-mono text-[#f27a35]">{roiVal}%</span>
+                          </div>
+                        </div>
+                      );
+                    }
+                    return null;
+                  }}
+                />
+                <Bar
+                  yAxisId="left"
+                  dataKey="spend"
+                  name="Spend"
+                  fill="#5faad9"
+                  radius={[3, 3, 0, 0]}
+                  barSize={roiViewMode === 'category' ? 24 : 16}
+                >
+                  {(
+                    roiViewMode === 'category'
+                      ? categoryRoiData
+                      : selectedRoiCategory
+                        ? skuRoiData.filter((item) => item.category === selectedRoiCategory)
+                        : skuRoiData
+                  ).map((entry, index) => (
+                    <Cell
+                      key={`cell-spend-${index}`}
+                      className={roiViewMode === 'category' ? 'cursor-pointer hover:opacity-85 transition-all' : ''}
+                      onClick={() => {
+                        if (roiViewMode === 'category') {
+                          setSelectedRoiCategory(entry.name);
+                          setRoiViewMode('sku');
+                        }
+                      }}
+                    />
+                  ))}
+                </Bar>
+                <Bar
+                  yAxisId="left"
+                  dataKey="revenue"
+                  name="Revenue"
+                  fill="#52d69b"
+                  radius={[3, 3, 0, 0]}
+                  barSize={roiViewMode === 'category' ? 24 : 16}
+                >
+                  {(
+                    roiViewMode === 'category'
+                      ? categoryRoiData
+                      : selectedRoiCategory
+                        ? skuRoiData.filter((item) => item.category === selectedRoiCategory)
+                        : skuRoiData
+                  ).map((entry, index) => (
+                    <Cell
+                      key={`cell-revenue-${index}`}
+                      className={roiViewMode === 'category' ? 'cursor-pointer hover:opacity-85 transition-all' : ''}
+                      onClick={() => {
+                        if (roiViewMode === 'category') {
+                          setSelectedRoiCategory(entry.name);
+                          setRoiViewMode('sku');
+                        }
+                      }}
+                    />
+                  ))}
+                </Bar>
+                <Line
+                  yAxisId="right"
+                  type="monotone"
+                  dataKey="roi"
+                  name="ROI%"
+                  stroke="#f27a35"
+                  strokeWidth={2}
+                  strokeDasharray="4 4"
+                  activeDot={{ r: 6 }}
+                  dot={{ r: 4, strokeWidth: 1, fill: '#f27a35' }}
+                />
+              </ComposedChart>
+            </ResponsiveContainer>
           </div>
         </div>
       </div>
@@ -1084,7 +1254,7 @@ const VPProfitabilityTreeView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode
         <div className="p-5 border-b border-black/5 dark:border-white/5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
             <h3 className="text-xs font-bold text-zinc-850 dark:text-zinc-150 uppercase tracking-wider">
-              REVENUE VS PROFIT TREND — LAST 12 MONTHS
+              REVENUE VS PROFIT TREND — {trendHorizon === 'months' ? 'LAST 12 MONTHS' : trendHorizon === 'weeks' ? 'LAST 12 WEEKS' : 'LAST 5 YEARS'}
             </h3>
             
             {/* Custom Legend */}
@@ -1105,13 +1275,31 @@ const VPProfitabilityTreeView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode
               </div>
             </div>
           </div>
+
+          {/* Time Horizon Button Toggles */}
+          <div className="flex gap-1 bg-zinc-100 dark:bg-zinc-800/80 p-0.5 rounded-lg shrink-0">
+            {(['weeks', 'months', 'years'] as const).map((horizon) => (
+              <button
+                key={horizon}
+                type="button"
+                onClick={() => setTrendHorizon(horizon)}
+                className={`px-3 py-1 text-[9px] font-bold uppercase tracking-wider rounded-md transition-all cursor-pointer border-none outline-none ${
+                  trendHorizon === horizon
+                    ? 'bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white shadow-sm'
+                    : 'text-zinc-400 dark:text-zinc-500 hover:text-zinc-650 dark:hover:text-zinc-300 bg-transparent'
+                }`}
+              >
+                {horizon}
+              </button>
+            ))}
+          </div>
         </div>
         <div className="p-6">
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
-              <ComposedChart data={revenueVsProfitData} margin={{ left: -15, right: 15, top: 15, bottom: 5 }}>
+              <ComposedChart data={activeTrendData} margin={{ left: -15, right: 15, top: 15, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridStroke} />
-                <XAxis dataKey="month" tick={{ fill: tickColor, fontSize: 9 }} axisLine={false} tickLine={false} />
+                <XAxis dataKey="label" tick={{ fill: tickColor, fontSize: 9 }} axisLine={false} tickLine={false} />
                 
                 {/* Left YAxis for Revenue & Profit */}
                 <YAxis 
@@ -1238,9 +1426,20 @@ const VPProfitabilityTreeView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode
   );
 };
 
-export const ProfitabilityTree: React.FC<ProfitabilityTreeProps> = ({ role, isDarkMode }) => {
+export const ProfitabilityTree: React.FC<ProfitabilityTreeProps> = ({ 
+  role, 
+  isDarkMode,
+  isSimulatorOpen,
+  setIsSimulatorOpen
+}) => {
   if (role === 'VP Product Management') {
-    return <VPProfitabilityTreeView isDarkMode={isDarkMode} />;
+    return (
+      <VPProfitabilityTreeView 
+        isDarkMode={isDarkMode} 
+        isSimulatorOpen={isSimulatorOpen}
+        setIsSimulatorOpen={setIsSimulatorOpen}
+      />
+    );
   }
   const accentColor = isDarkMode ? '#a78bfa' : '#6d28d9';
   const gridStroke = isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';

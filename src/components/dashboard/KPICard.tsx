@@ -51,13 +51,17 @@ const KPI_TOOLTIPS: Record<string, { soWhat: string; action: string }> = {
     soWhat: 'Net profitability reaches ₹95.2 Cr, driven by strong growth in core beverages, but impacted by rising raw milk COGS in Dairy.',
     action: 'Re-negotiate milk procurement contracts and increase high-margin snack items distribution focus.'
   },
-  'Gross Margin %': {
+  'Gross margin %': {
     soWhat: 'Average segment gross margin is 36.2%, compressed by deep promotional discounts on cookies and chips.',
     action: 'Cap promotional discount depths at 15% and enforce margin pricing corridors.'
   },
-  'Revenue Growth %': {
-    soWhat: 'YoY growth is +8.4%, led by beverages (+18.4% demand change in APAC) while Household sales declined by 4%.',
-    action: 'Reallocate marketing budget from declining Household cleaners to high-growth beverages.'
+  'Gross Profit': {
+    soWhat: 'Gross profit reached ₹308.1 Cr, driven by strong volumes in carbonated beverages and snacks.',
+    action: 'Optimize supply chain logistics to reduce supplier COGS and protect the margins.'
+  },
+  'Revenue MTD': {
+    soWhat: 'MTD revenue reaches ₹851.2 Cr (8.4% increase vs last month), driven by a demand surge in natural beverages.',
+    action: 'Expedite distribution channel replenishments in high-velocity retail stores to capture demand.'
   },
   'Launch ROI': {
     soWhat: 'Expected launch return stands at 1.85x ROI, buoyed by the upcoming premium Mango Fizz 750ml rollout.',
@@ -81,6 +85,10 @@ const KPI_TOOLTIPS: Record<string, { soWhat: string; action: string }> = {
     action: 'Consolidate logistics by routing tail-end variants to distributor-held fulfillment models.'
   },
   // Tab 5 (Signals Board) KPIs
+  'Active Stockouts': {
+    soWhat: 'Active stockouts stand at 7, exceeding the threshold of 3, primarily driven by surfactant packaging delays at the Baddi plant.',
+    action: 'Expedite surfactant safety stock transfer and coordinate local vendor transition.'
+  },
   'Total Active Signals': {
     soWhat: 'A total of 6 critical operational signals are active, led by NPS drops in EMEA and cannibalization alerts in India.',
     action: 'Review signals queue and triage urgent tickets to respective category managers.'

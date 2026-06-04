@@ -4,13 +4,13 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Mail, X } from 'lucide-react';
+import { Mail, MessageSquare, X } from 'lucide-react';
 
 interface EmailComposerModalProps {
   isOpen: boolean;
   onClose: () => void;
   initialEmail: { to: string; subject: string; body: string; name: string };
-  onSend: (recipientName: string, recipientEmail: string, subject: string, body: string) => void;
+  onSend: (recipientName: string, recipientEmail: string, subject: string, body: string, channel: 'email' | 'message') => void;
 }
 
 const RECIPIENT_OPTIONS = [
@@ -40,6 +40,7 @@ export const EmailComposerModal: React.FC<EmailComposerModalProps> = ({
   initialEmail,
   onSend
 }) => {
+  const [activeTab, setActiveTab] = useState<'email' | 'message'>('email');
   const [selectedRecipient, setSelectedRecipient] = useState<string>('custom');
   const [recipientName, setRecipientName] = useState<string>('');
   const [recipientEmail, setRecipientEmail] = useState<string>('');
@@ -98,6 +99,34 @@ export const EmailComposerModal: React.FC<EmailComposerModalProps> = ({
             <X size={14} />
           </button>
         </div>
+
+        {/* Tabs Row in Composer */}
+        <div className="grid grid-cols-2 p-0.5 bg-zinc-100 dark:bg-zinc-800/80 rounded-xl">
+          <button
+            type="button"
+            onClick={() => setActiveTab('email')}
+            className={`flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg font-bold text-[10.5px] cursor-pointer transition-all border-none outline-none ${
+              activeTab === 'email'
+                ? 'bg-white dark:bg-zinc-900 text-zinc-800 dark:text-zinc-100 shadow-sm'
+                : 'text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 bg-transparent'
+            }`}
+          >
+            <Mail size={11} className={activeTab === 'email' ? 'text-blue-500' : ''} />
+            <span>Send Email</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('message')}
+            className={`flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg font-bold text-[10.5px] cursor-pointer transition-all border-none outline-none ${
+              activeTab === 'message'
+                ? 'bg-white dark:bg-zinc-900 text-zinc-800 dark:text-zinc-100 shadow-sm'
+                : 'text-zinc-400 dark:text-zinc-500 hover:text-zinc-650 bg-transparent'
+            }`}
+          >
+            <MessageSquare size={11} className={activeTab === 'message' ? 'text-emerald-500' : ''} />
+            <span>Send Instant Message</span>
+          </button>
+        </div>
         
         <div className="space-y-3">
           {/* Recipient Dropdown */}
@@ -130,7 +159,9 @@ export const EmailComposerModal: React.FC<EmailComposerModalProps> = ({
                 />
               </div>
               <div className="flex flex-col gap-1">
-                <label className="font-bold text-[9px] uppercase tracking-wider text-zinc-400">Contact Email</label>
+                <label className="font-bold text-[9px] uppercase tracking-wider text-zinc-400">
+                  {activeTab === 'email' ? 'Contact Email' : 'Contact Email / Handle'}
+                </label>
                 <input 
                   type="email" 
                   value={recipientEmail}
@@ -148,18 +179,22 @@ export const EmailComposerModal: React.FC<EmailComposerModalProps> = ({
             </div>
           )}
           
-          <div className="flex flex-col gap-1">
-            <label className="font-bold text-[9px] uppercase tracking-wider text-zinc-400">Subject</label>
-            <input 
-              type="text" 
-              value={subject}
-              onChange={(e) => setSubject(e.target.value)}
-              className="px-3 py-2 border border-black/10 dark:border-white/10 bg-transparent rounded font-medium text-zinc-700 dark:text-zinc-300 outline-none focus:border-[#6d28d9] dark:focus:border-[#a78bfa] transition-colors"
-            />
-          </div>
+          {activeTab === 'email' && (
+            <div className="flex flex-col gap-1">
+              <label className="font-bold text-[9px] uppercase tracking-wider text-zinc-400">Subject</label>
+              <input 
+                type="text" 
+                value={subject}
+                onChange={(e) => setSubject(e.target.value)}
+                className="px-3 py-2 border border-black/10 dark:border-white/10 bg-transparent rounded font-medium text-zinc-700 dark:text-zinc-300 outline-none focus:border-[#6d28d9] dark:focus:border-[#a78bfa] transition-colors"
+              />
+            </div>
+          )}
           
           <div className="flex flex-col gap-1">
-            <label className="font-bold text-[9px] uppercase tracking-wider text-zinc-400">Message Body</label>
+            <label className="font-bold text-[9px] uppercase tracking-wider text-zinc-400">
+              {activeTab === 'email' ? 'Message Body' : 'Instant Message Body'}
+            </label>
             <textarea 
               rows={6}
               value={body}
@@ -182,7 +217,7 @@ export const EmailComposerModal: React.FC<EmailComposerModalProps> = ({
                 alert('Please provide both recipient name and email.');
                 return;
               }
-              onSend(recipientName, recipientEmail, subject, body);
+              onSend(recipientName, recipientEmail, subject, body, activeTab);
             }}
             className="px-4 py-2 bg-[#6d28d9] dark:bg-[#a78bfa] text-white rounded-sm font-bold uppercase tracking-wider hover:opacity-95 transition-opacity cursor-pointer border-none"
           >

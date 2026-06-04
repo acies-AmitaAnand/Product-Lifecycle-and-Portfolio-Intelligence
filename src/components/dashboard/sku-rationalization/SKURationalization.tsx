@@ -153,12 +153,12 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
 
     const avgComplexity = locationFilteredSkus.reduce((sum, s) => sum + s.cx, 0) / (activeSkusCount || 1);
 
-    return [
+    const cards = [
       {
         label: 'Portfolio SKUs',
         value: String(activeSkusCount),
         trend: 'up' as const,
-        trendValue: '−3 rationalized this Q',
+        trendValue: '▲ 3 rationalized this Q',
         info: 'Total active SKUs across the global portfolio. Cleaned up low-value items.',
         highlight: ['VP Product Management']
       },
@@ -190,7 +190,12 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
         isRisk: true
       }
     ];
-  }, [locationFilteredSkus]);
+
+    if (role === 'VP Product Management') {
+      return cards.filter(c => c.label !== 'Portfolio SKUs');
+    }
+    return cards;
+  }, [locationFilteredSkus, role]);
 
   useEffect(() => {
     setRefreshTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
@@ -620,7 +625,7 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
       </div>
 
       {/* KPI Cards Strip */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className={`grid grid-cols-1 sm:grid-cols-2 ${role === 'VP Product Management' ? 'lg:grid-cols-3' : 'lg:grid-cols-4'} gap-3`}>
         {kpis.map((kpi) => (
           <KPICard 
             key={kpi.label}
