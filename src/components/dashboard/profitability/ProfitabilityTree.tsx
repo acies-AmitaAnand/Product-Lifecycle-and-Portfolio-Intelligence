@@ -313,6 +313,124 @@ const VPProfitabilityTreeView: React.FC<{
 
   return (
     <div className="space-y-6 animate-fade-in font-body pb-12">
+      {/* Revenue vs Profit Trend Card */}
+      <div className="glass-card bg-white dark:bg-[#1a1a24]/90 border border-black/10 dark:border-white/10 rounded-xl overflow-hidden shadow-sm">
+        <div className="p-5 border-b border-black/5 dark:border-white/5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div>
+            <h3 className="text-xs font-bold text-zinc-855 dark:text-zinc-150 uppercase tracking-wider">
+              REVENUE VS PROFIT TREND — {trendHorizon === 'months' ? 'LAST 12 MONTHS' : trendHorizon === 'weeks' ? 'LAST 12 WEEKS' : 'LAST 5 YEARS'}
+            </h3>
+            
+            {/* Custom Legend */}
+            <div className="flex flex-wrap items-center gap-4 mt-2 text-[10px] font-bold text-zinc-550 dark:text-zinc-400">
+              <div className="flex items-center gap-1.5">
+                <div className="w-3 h-3 rounded-sm bg-[#2563eb]" />
+                <span>Revenue</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <div className="w-3 h-3 rounded-sm bg-[#0d9488]" />
+                <span>Gross profit</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <div className="w-5 h-0.5 border-t border-dashed border-[#ea580c] relative flex items-center justify-center">
+                  <div className="w-2 h-2 rounded-full bg-[#ea580c] absolute" />
+                </div>
+                <span className="ml-1.5">Margin %</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Time Horizon Button Toggles */}
+          <div className="flex gap-1 bg-zinc-100 dark:bg-zinc-800/80 p-0.5 rounded-lg shrink-0">
+            {(['weeks', 'months', 'years'] as const).map((horizon) => (
+              <button
+                key={horizon}
+                type="button"
+                onClick={() => setTrendHorizon(horizon)}
+                className={`px-3 py-1 text-[9px] font-bold uppercase tracking-wider rounded-md transition-all cursor-pointer border-none outline-none ${
+                  trendHorizon === horizon
+                    ? 'bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white shadow-sm'
+                    : 'text-zinc-400 dark:text-zinc-500 hover:text-zinc-650 dark:hover:text-zinc-300 bg-transparent'
+                }`}
+              >
+                {horizon}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="p-6">
+          <div className="h-72">
+            <ResponsiveContainer width="100%" height="100%">
+              <ComposedChart data={activeTrendData} margin={{ left: -15, right: 15, top: 15, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridStroke} />
+                <XAxis dataKey="label" tick={{ fill: tickColor, fontSize: 9 }} axisLine={false} tickLine={false} />
+                
+                {/* Left YAxis for Revenue & Profit */}
+                <YAxis 
+                  yAxisId="left" 
+                  tick={{ fill: tickColor, fontSize: 9 }} 
+                  tickFormatter={(val) => `$${val}M`} 
+                  axisLine={false} 
+                  tickLine={false} 
+                />
+                
+                {/* Right YAxis for Margin % */}
+                <YAxis 
+                  yAxisId="right" 
+                  orientation="right" 
+                  tick={{ fill: tickColor, fontSize: 9 }} 
+                  tickFormatter={(val) => `${val}%`} 
+                  domain={[30, 45]} 
+                  ticks={[30, 32, 34, 36, 38, 40, 42, 45]} 
+                  axisLine={false} 
+                  tickLine={false} 
+                />
+                
+                <Tooltip 
+                  contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, color: tooltipText }}
+                  itemStyle={{ fontSize: 9.5 }}
+                  formatter={(value: any, name: any) => {
+                    if (name === 'Margin %') return [`${value}%`, name];
+                    return [`$${value}M`, name];
+                  }}
+                />
+                
+                {/* Side-by-side grouped bars: Revenue on left, Gross profit on right */}
+                <Bar 
+                  yAxisId="left" 
+                  dataKey="revenue" 
+                  name="Revenue" 
+                  fill="#2563eb" 
+                  radius={[2, 2, 0, 0]} 
+                  barSize={12} 
+                />
+                <Bar 
+                  yAxisId="left" 
+                  dataKey="profit" 
+                  name="Gross profit" 
+                  fill="#0d9488" 
+                  radius={[2, 2, 0, 0]} 
+                  barSize={12} 
+                />
+                
+                {/* Secondary Axis Line for Margin % */}
+                <Line 
+                  yAxisId="right" 
+                  type="monotone" 
+                  dataKey="margin" 
+                  name="Margin %" 
+                  stroke="#ea580c" 
+                  strokeWidth={2} 
+                  strokeDasharray="4 4" 
+                  dot={{ r: 3.5, fill: '#ea580c', stroke: '#ea580c', strokeWidth: 1 }} 
+                  activeDot={{ r: 5 }} 
+                />
+              </ComposedChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </div>
+
       <div className="p-4 bg-gradient-to-r from-purple-500/10 to-indigo-500/10 border-l-4 border-[#8b5cf6] dark:border-purple-400 rounded-r shadow-sm flex items-start gap-3">
         <div className="w-5 h-5 rounded-full bg-[#8b5cf6]/15 flex items-center justify-center shrink-0 mt-0.5 animate-pulse">
           <div className="w-2 h-2 rounded-full bg-[#8b5cf6]" />
@@ -1238,123 +1356,6 @@ const VPProfitabilityTreeView: React.FC<{
         </div>
       </div>
 
-      {/* Revenue vs Profit Trend Card */}
-      <div className="glass-card bg-white dark:bg-[#1a1a24]/90 border border-black/10 dark:border-white/10 rounded-xl overflow-hidden shadow-sm">
-        <div className="p-5 border-b border-black/5 dark:border-white/5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <div>
-            <h3 className="text-xs font-bold text-zinc-850 dark:text-zinc-150 uppercase tracking-wider">
-              REVENUE VS PROFIT TREND — {trendHorizon === 'months' ? 'LAST 12 MONTHS' : trendHorizon === 'weeks' ? 'LAST 12 WEEKS' : 'LAST 5 YEARS'}
-            </h3>
-            
-            {/* Custom Legend */}
-            <div className="flex flex-wrap items-center gap-4 mt-2 text-[10px] font-bold text-zinc-550 dark:text-zinc-400">
-              <div className="flex items-center gap-1.5">
-                <div className="w-3 h-3 rounded-sm bg-[#2563eb]" />
-                <span>Revenue</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <div className="w-3 h-3 rounded-sm bg-[#0d9488]" />
-                <span>Gross profit</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <div className="w-5 h-0.5 border-t border-dashed border-[#ea580c] relative flex items-center justify-center">
-                  <div className="w-2 h-2 rounded-full bg-[#ea580c] absolute" />
-                </div>
-                <span className="ml-1.5">Margin %</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Time Horizon Button Toggles */}
-          <div className="flex gap-1 bg-zinc-100 dark:bg-zinc-800/80 p-0.5 rounded-lg shrink-0">
-            {(['weeks', 'months', 'years'] as const).map((horizon) => (
-              <button
-                key={horizon}
-                type="button"
-                onClick={() => setTrendHorizon(horizon)}
-                className={`px-3 py-1 text-[9px] font-bold uppercase tracking-wider rounded-md transition-all cursor-pointer border-none outline-none ${
-                  trendHorizon === horizon
-                    ? 'bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white shadow-sm'
-                    : 'text-zinc-400 dark:text-zinc-500 hover:text-zinc-650 dark:hover:text-zinc-300 bg-transparent'
-                }`}
-              >
-                {horizon}
-              </button>
-            ))}
-          </div>
-        </div>
-        <div className="p-6">
-          <div className="h-72">
-            <ResponsiveContainer width="100%" height="100%">
-              <ComposedChart data={activeTrendData} margin={{ left: -15, right: 15, top: 15, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridStroke} />
-                <XAxis dataKey="label" tick={{ fill: tickColor, fontSize: 9 }} axisLine={false} tickLine={false} />
-                
-                {/* Left YAxis for Revenue & Profit */}
-                <YAxis 
-                  yAxisId="left" 
-                  tick={{ fill: tickColor, fontSize: 9 }} 
-                  tickFormatter={(val) => `$${val}M`} 
-                  axisLine={false} 
-                  tickLine={false} 
-                />
-                
-                {/* Right YAxis for Margin % */}
-                <YAxis 
-                  yAxisId="right" 
-                  orientation="right" 
-                  tick={{ fill: tickColor, fontSize: 9 }} 
-                  tickFormatter={(val) => `${val}%`} 
-                  domain={[30, 45]} 
-                  ticks={[30, 32, 34, 36, 38, 40, 42, 45]} 
-                  axisLine={false} 
-                  tickLine={false} 
-                />
-                
-                <Tooltip 
-                  contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, color: tooltipText }}
-                  itemStyle={{ fontSize: 9.5 }}
-                  formatter={(value: any, name: any) => {
-                    if (name === 'Margin %') return [`${value}%`, name];
-                    return [`$${value}M`, name];
-                  }}
-                />
-                
-                {/* Side-by-side grouped bars: Gross profit on left, Revenue on right */}
-                <Bar 
-                  yAxisId="left" 
-                  dataKey="profit" 
-                  name="Gross profit" 
-                  fill="#0d9488" 
-                  radius={[2, 2, 0, 0]} 
-                  barSize={12} 
-                />
-                <Bar 
-                  yAxisId="left" 
-                  dataKey="revenue" 
-                  name="Revenue" 
-                  fill="#2563eb" 
-                  radius={[2, 2, 0, 0]} 
-                  barSize={12} 
-                />
-                
-                {/* Secondary Axis Line for Margin % */}
-                <Line 
-                  yAxisId="right" 
-                  type="monotone" 
-                  dataKey="margin" 
-                  name="Margin %" 
-                  stroke="#ea580c" 
-                  strokeWidth={2} 
-                  strokeDasharray="4 4" 
-                  dot={{ r: 3.5, fill: '#ea580c', stroke: '#ea580c', strokeWidth: 1 }} 
-                  activeDot={{ r: 5 }} 
-                />
-              </ComposedChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-      </div>
 
       {toast && (
         <div className="fixed bottom-5 right-5 z-50 bg-[#16161c] text-white border border-white/10 px-4 py-3 rounded-lg shadow-2xl flex items-center gap-3 animate-slide-in">
