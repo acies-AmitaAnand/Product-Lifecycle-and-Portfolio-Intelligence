@@ -69,7 +69,7 @@ export const CalculatorScorer: React.FC<CalculatorScorerProps> = ({
               onChange={(e) => setSkuA(e.target.value)}
               className="bg-black/5 dark:bg-[#121214] border border-black/10 dark:border-white/10 rounded px-2.5 py-2 text-xs font-semibold text-acies-gray dark:text-white outline-none focus:border-acies-yellow"
             >
-              {Object.entries(skusByCategory).map(([cat, list]) => (
+              {(Object.entries(skusByCategory) as [string, any[]][]).map(([cat, list]) => (
                 <optgroup key={`optg-a-${cat}`} label={cat.toUpperCase()} className="font-extrabold text-[8px] tracking-wider text-zinc-400 dark:text-zinc-500 bg-white dark:bg-[#1a1a24] py-1">
                   {list.map(s => (
                     <option key={`a-${s.name}`} value={s.name} className="dark:bg-[#1a1a24] text-xs font-semibold text-zinc-800 dark:text-white">{s.name}</option>
