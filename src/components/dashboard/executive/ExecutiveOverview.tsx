@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  TrendingUp, TrendingDown, Check, X, AlertTriangle, RefreshCw, Zap, Clock, Home, List, PieChart, BarChart2 
+  TrendingUp, TrendingDown, Check, X, AlertTriangle, RefreshCw, Zap, Clock, Home, List, PieChart, BarChart2,
+  LineChart as LucideLineChart, AreaChart as LucideAreaChart, Radar as LucideRadar
 } from 'lucide-react';
 import { 
-  ResponsiveContainer, AreaChart, Area, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, BarChart, Bar, Cell, PieChart as RePieChart, Pie, Legend 
+  ResponsiveContainer, AreaChart, Area, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, BarChart, Bar, Cell, PieChart as RePieChart, Pie, Legend,
+  RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar
 } from 'recharts';
 import { Role } from '../../../types/dashboard';
 import { 
@@ -13,14 +15,163 @@ import { SkuDetailsModal } from './SkuDetailsModal';
 import { RegionalForecastModal } from './RegionalForecastModal';
 import { EmailComposerModal } from '../portfolio-health/EmailComposerModal';
 
+interface CustomerInsight {
+  name: string;
+  segment: string;
+  revContribution: string;
+  interestTrend: string;
+  buyingFocus: string[];
+  growthTrend: string;
+  growthDirection: 'up' | 'down' | 'neutral';
+}
+
+const CUSTOMER_INSIGHTS: Record<string, CustomerInsight[]> = {
+  Beverages: [
+    {
+      name: 'Apex Hypermarkets',
+      segment: 'Enterprise Chain • 98% Retention',
+      revContribution: '₹24.8 Cr',
+      interestTrend: 'Rising demand for eco-friendly packaging and natural mineral mixers.',
+      buyingFocus: ['BrandF Water Eco-Pack', 'Coconut Water 1L'],
+      growthTrend: '+12.4% YoY',
+      growthDirection: 'up'
+    },
+    {
+      name: 'QuickCart Convenience',
+      segment: 'Regional Chain • 94% Retention',
+      revContribution: '₹14.2 Cr',
+      interestTrend: 'Shifting shelf preference toward high-energy single-serve options.',
+      buyingFocus: ['BrandC Energy Drink', 'Mango Fizz 250ml'],
+      growthTrend: '+8.7% YoY',
+      growthDirection: 'up'
+    },
+    {
+      name: 'Zenith Distributors',
+      segment: 'Wholesale Partner • 91% Retention',
+      revContribution: '₹18.5 Cr',
+      interestTrend: 'Bulk purchasing of premium fruit-based beverage offerings.',
+      buyingFocus: ['Mango Fizz 500ml', 'Aloe Vera Drink'],
+      growthTrend: '+4.2% YoY',
+      growthDirection: 'up'
+    }
+  ],
+  Snacks: [
+    {
+      name: 'MetroFoods Group',
+      segment: 'Key Account • 97% Retention',
+      revContribution: '₹19.6 Cr',
+      interestTrend: 'Spike in premium healthy baked items and baked grain products.',
+      buyingFocus: ['Oat Cookies', 'Masala Puffs'],
+      growthTrend: '+15.3% YoY',
+      growthDirection: 'up'
+    },
+    {
+      name: 'Apex Hypermarkets',
+      segment: 'Enterprise Chain • 98% Retention',
+      revContribution: '₹16.8 Cr',
+      interestTrend: 'High volume restocking of classic snack portfolios.',
+      buyingFocus: ['BrandB Chips', 'BrandD Chocolate 100g'],
+      growthTrend: '+3.4% YoY',
+      growthDirection: 'up'
+    },
+    {
+      name: 'Star Retailers',
+      segment: 'Mid-Market Chain • 89% Retention',
+      revContribution: '₹8.4 Cr',
+      interestTrend: 'Margin compression on chocolate products due to promotional shifts.',
+      buyingFocus: ['Choco Wafers', 'BrandD Chocolate 250g'],
+      growthTrend: '-2.1% YoY',
+      growthDirection: 'down'
+    }
+  ],
+  'Personal Care': [
+    {
+      name: 'Luminate Boutique',
+      segment: 'Specialty Retailer • 95% Retention',
+      revContribution: '₹11.2 Cr',
+      interestTrend: 'Surging demand for organic ingredients and active-SPF hand care.',
+      buyingFocus: ['Hand Cream SPF', 'Herbal Shampoo'],
+      growthTrend: '+22.4% YoY',
+      growthDirection: 'up'
+    },
+    {
+      name: 'GlobalMart Inc',
+      segment: 'Enterprise Chain • 96% Retention',
+      revContribution: '₹14.5 Cr',
+      interestTrend: 'Steady interest in family-pack cleansing and hygiene products.',
+      buyingFocus: ['BrandB Soap', 'BrandD Toothpaste'],
+      growthTrend: '+6.1% YoY',
+      growthDirection: 'up'
+    },
+    {
+      name: 'EcoBeauty Distribs',
+      segment: 'Niche Wholesaler • 92% Retention',
+      revContribution: '₹6.8 Cr',
+      interestTrend: 'Stocking up on foaming cleansers; sensitive skin variants preferred.',
+      buyingFocus: ['Foam Face Wash', 'Aloe Face Wash'],
+      growthTrend: '+8.2% YoY',
+      growthDirection: 'up'
+    }
+  ],
+  Dairy: [
+    {
+      name: 'MetroFoods Group',
+      segment: 'Key Account • 97% Retention',
+      revContribution: '₹12.4 Cr',
+      interestTrend: 'Expanding premium European cheese inventory across key metro centers.',
+      buyingFocus: ['BrandD Cheese Blocks', 'BrandB Yogurt 500g'],
+      growthTrend: '+11.2% YoY',
+      growthDirection: 'up'
+    },
+    {
+      name: 'Apex Hypermarkets',
+      segment: 'Enterprise Chain • 98% Retention',
+      revContribution: '₹10.5 Cr',
+      interestTrend: 'Steady volume orders for organic and gut-health probiotic brands.',
+      buyingFocus: ['BrandB Yogurt 1kg', 'BrandE Yogurt (Straw)'],
+      growthTrend: '+4.5% YoY',
+      growthDirection: 'up'
+    }
+  ],
+  Household: [
+    {
+      name: 'GlobalMart Inc',
+      segment: 'Enterprise Chain • 96% Retention',
+      revContribution: '₹18.2 Cr',
+      interestTrend: 'Substantial transition to premium concentrated cleaning capsules.',
+      buyingFocus: ['Laundry Pods Premium', 'Dish Soap 1L'],
+      growthTrend: '+14.6% YoY',
+      growthDirection: 'up'
+    },
+    {
+      name: 'Apex Hypermarkets',
+      segment: 'Enterprise Chain • 98% Retention',
+      revContribution: '₹12.6 Cr',
+      interestTrend: 'Volume restocking of general dish soaps and standard detergents.',
+      buyingFocus: ['BrandF Detergent', 'Dish Soap 1L'],
+      growthTrend: '+5.3% YoY',
+      growthDirection: 'up'
+    },
+    {
+      name: 'QuickCart Convenience',
+      segment: 'Regional Chain • 94% Retention',
+      revContribution: '₹4.8 Cr',
+      interestTrend: 'Decline in fabric softeners due to localized chemical regulatory flags.',
+      buyingFocus: ['Fabric Softener', 'Floor Cleaner'],
+      growthTrend: '-8.4% YoY',
+      growthDirection: 'down'
+    }
+  ]
+};
 
 interface ExecutiveOverviewProps {
   role: Role;
   setActiveTab: (tab: number) => void;
   isDarkMode: boolean;
+  onAuditClick: (metric: string) => void;
 }
 
-export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setActiveTab, isDarkMode }) => {
+export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setActiveTab, isDarkMode, onAuditClick }) => {
   const [alerts, setAlerts] = useState(() => VP_ALERTS.map(a => ({ ...a })));
   const [approvals, setApprovals] = useState(() => VP_APPROVALS.map(a => ({ ...a })));
   const [kpis, setKpis] = useState(() => {
@@ -34,6 +185,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
 
   // Category filter and modal states for Top SKU Performance card
   const [activeCategory, setActiveCategory] = useState<string>('All');
+  const [activeCustomerCategory, setActiveCustomerCategory] = useState<string>('Beverages');
   const [selectedSku, setSelectedSku] = useState<any>(null);
   const [selectedRegion, setSelectedRegion] = useState<any>(null);
   const [isEmailOpen, setIsEmailOpen] = useState<boolean>(false);
@@ -41,6 +193,8 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
   const [skuViewMode, setSkuViewMode] = useState<'list' | 'chart'>('list');
   const [hoveredSku, setHoveredSku] = useState<any>(null);
   const [regionViewMode, setRegionViewMode] = useState<'list' | 'chart'>('chart');
+  const [revenueViewMode, setRevenueViewMode] = useState<'line' | 'area' | 'bar'>('line');
+  const [categoryViewMode, setCategoryViewMode] = useState<'donut' | 'bar' | 'radar'>('donut');
 
 
   // Dynamic accent color based on theme
@@ -181,7 +335,6 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
       )}
     </div>
   );
-
   return (
     <div className="space-y-4">
       
@@ -200,8 +353,11 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
               key={k.label} 
               className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3.5 relative overflow-hidden transition-all hover:border-acies-yellow/50 cursor-pointer"
               onClick={() => {
-                if (k.label === 'Gross Margin') setActiveTab(1); // Portfolio Map
-                if (k.label === 'Critical Alerts') setActiveTab(5); // Signals Board
+                console.log("KPI card clicked on Home:", k.label);
+                if (k.label === 'Total Revenue') onAuditClick('Total Revenue');
+                else if (k.label === 'Active SKUs') onAuditClick('Active SKUs');
+                else if (k.label === 'Critical Alerts') onAuditClick('Critical Alerts');
+                else if (k.label === 'Gross Margin') onAuditClick('Gross Margin');
               }}
             >
               <div className="absolute top-0 left-0 w-full h-1" style={{ backgroundColor: k.color }} />
@@ -263,50 +419,208 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
         
         {/* Revenue Trend actual vs target */}
         <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3.5 h-[320px] flex flex-col">
-          <div className="mb-2.5">
-            <h3 className="text-[11px] font-bold uppercase tracking-widest">Revenue Trend</h3>
-            <p className="text-[8.5px] text-zinc-500 uppercase tracking-widest mt-0.5">Monthly Actual vs Target (₹ Cr) — This Year</p>
+          <div className="mb-2.5 flex justify-between items-start">
+            <div>
+              <h3 className="text-[11px] font-bold uppercase tracking-widest">Revenue Trend</h3>
+              <p className="text-[8.5px] text-zinc-500 uppercase tracking-widest mt-0.5">Monthly Actual vs Target (₹ Cr) — This Year</p>
+            </div>
+            <div className="flex items-center border border-black/10 dark:border-white/10 rounded-sm overflow-hidden bg-black/5 dark:bg-white/5 p-0.5 ml-1">
+              <button
+                type="button"
+                onClick={() => setRevenueViewMode('line')}
+                className={`p-1 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm ${
+                  revenueViewMode === 'line' 
+                    ? 'bg-blue-500 text-white shadow-sm' 
+                    : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 bg-transparent'
+                }`}
+                title="Line Chart"
+              >
+                <LucideLineChart size={14} />
+              </button>
+              <button
+                type="button"
+                onClick={() => setRevenueViewMode('area')}
+                className={`p-1 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm ${
+                  revenueViewMode === 'area' 
+                    ? 'bg-blue-500 text-white shadow-sm' 
+                    : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 bg-transparent'
+                }`}
+                title="Area Chart"
+              >
+                <LucideAreaChart size={14} />
+              </button>
+              <button
+                type="button"
+                onClick={() => setRevenueViewMode('bar')}
+                className={`p-1 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm ${
+                  revenueViewMode === 'bar' 
+                    ? 'bg-blue-500 text-white shadow-sm' 
+                    : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 bg-transparent'
+                }`}
+                title="Bar Chart"
+              >
+                <BarChart2 size={14} />
+              </button>
+            </div>
           </div>
           <div className="flex-1 min-h-0">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={revenueTrendData} margin={{ top: 5, right: 5, left: -25, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridStroke} />
-                <XAxis dataKey="month" tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, color: tooltipText }} 
-                  itemStyle={{ color: tooltipText, fontSize: 10 }}
-                  labelStyle={{ fontSize: 10, fontWeight: 'bold' }}
-                />
-                <Line type="monotone" dataKey="Actual" stroke={accentColor} strokeWidth={2} activeDot={{ r: 5 }} dot={{ r: 2.5 }} />
-                <Line type="monotone" dataKey="Target" stroke={isDarkMode ? '#facc15' : '#d97706'} strokeDasharray="4 4" dot={false} strokeWidth={1.8} />
-              </LineChart>
+              {revenueViewMode === 'line' ? (
+                <LineChart data={revenueTrendData} margin={{ top: 5, right: 5, left: -25, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridStroke} />
+                  <XAxis dataKey="month" tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, color: tooltipText }} 
+                    itemStyle={{ color: tooltipText, fontSize: 10 }}
+                    labelStyle={{ fontSize: 10, fontWeight: 'bold' }}
+                  />
+                  <Line type="monotone" dataKey="Actual" stroke={accentColor} strokeWidth={2} activeDot={{ r: 5 }} dot={{ r: 2.5 }} />
+                  <Line type="monotone" dataKey="Target" stroke={isDarkMode ? '#facc15' : '#d97706'} strokeDasharray="4 4" dot={false} strokeWidth={1.8} />
+                </LineChart>
+              ) : revenueViewMode === 'area' ? (
+                <AreaChart data={revenueTrendData} margin={{ top: 5, right: 5, left: -25, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="actualGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor={accentColor} stopOpacity={0.2} />
+                      <stop offset="100%" stopColor={accentColor} stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridStroke} />
+                  <XAxis dataKey="month" tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, color: tooltipText }} 
+                    itemStyle={{ color: tooltipText, fontSize: 10 }}
+                    labelStyle={{ fontSize: 10, fontWeight: 'bold' }}
+                  />
+                  <Area type="monotone" dataKey="Actual" stroke={accentColor} strokeWidth={2} fill="url(#actualGrad)" activeDot={{ r: 5 }} dot={{ r: 2.5 }} />
+                  <Area type="monotone" dataKey="Target" stroke={isDarkMode ? '#facc15' : '#d97706'} fill="transparent" strokeDasharray="4 4" dot={false} strokeWidth={1.8} />
+                </AreaChart>
+              ) : (
+                <BarChart data={revenueTrendData} margin={{ top: 5, right: 5, left: -25, bottom: 0 }} barGap={4}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridStroke} />
+                  <XAxis dataKey="month" tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, color: tooltipText }} 
+                    itemStyle={{ fontSize: 10 }}
+                    labelStyle={{ fontSize: 10, fontWeight: 'bold' }}
+                  />
+                  <Bar dataKey="Actual" fill={accentColor} radius={[2, 2, 0, 0]} barSize={12} />
+                  <Bar dataKey="Target" fill={isDarkMode ? '#facc15' : '#d97706'} radius={[2, 2, 0, 0]} barSize={12} />
+                </BarChart>
+              )}
             </ResponsiveContainer>
           </div>
         </div>
 
         {/* Category Performance */}
         <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3.5 h-[320px] flex flex-col">
-          <div className="mb-2.5">
-            <h3 className="text-[11px] font-bold uppercase tracking-widest">Category Performance</h3>
-            <p className="text-[8.5px] text-zinc-550 dark:text-zinc-450 uppercase tracking-widest mt-0.5">Revenue ₹ Cr by Category — Current Month</p>
+          <div className="mb-2.5 flex justify-between items-start">
+            <div>
+              <h3 className="text-[11px] font-bold uppercase tracking-widest">Category Performance</h3>
+              <p className="text-[8.5px] text-zinc-550 dark:text-zinc-450 uppercase tracking-widest mt-0.5">Revenue ₹ Cr by Category — Current Month</p>
+            </div>
+            <div className="flex items-center border border-black/10 dark:border-white/10 rounded-sm overflow-hidden bg-black/5 dark:bg-white/5 p-0.5 ml-1">
+              <button
+                type="button"
+                onClick={() => setCategoryViewMode('donut')}
+                className={`p-1 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm ${
+                  categoryViewMode === 'donut' 
+                    ? 'bg-blue-500 text-white shadow-sm' 
+                    : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 bg-transparent'
+                }`}
+                title="Donut Chart"
+              >
+                <PieChart size={14} />
+              </button>
+              <button
+                type="button"
+                onClick={() => setCategoryViewMode('bar')}
+                className={`p-1 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm ${
+                  categoryViewMode === 'bar' 
+                    ? 'bg-blue-500 text-white shadow-sm' 
+                    : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 bg-transparent'
+                }`}
+                title="Bar Chart"
+              >
+                <BarChart2 size={14} />
+              </button>
+              <button
+                type="button"
+                onClick={() => setCategoryViewMode('radar')}
+                className={`p-1 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm ${
+                  categoryViewMode === 'radar' 
+                    ? 'bg-blue-500 text-white shadow-sm' 
+                    : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 bg-transparent'
+                }`}
+                title="Radar Chart"
+              >
+                <LucideRadar size={14} />
+              </button>
+            </div>
           </div>
           <div className="flex-1 min-h-0">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={categoryPerfData} layout="vertical" margin={{ top: 5, right: 5, left: 0, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke={gridStroke} />
-                <XAxis type="number" tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
-                <YAxis dataKey="name" type="category" tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, color: tooltipText }}
-                  itemStyle={{ fontSize: 10 }}
-                />
-                <Bar dataKey="value" barSize={11} radius={[0, 3, 3, 0]}>
-                  {categoryPerfData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Bar>
-              </BarChart>
+              {categoryViewMode === 'donut' ? (
+                <RePieChart>
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, color: tooltipText }}
+                    itemStyle={{ fontSize: 10 }}
+                    formatter={(value: any) => [`₹${value}Cr`]}
+                  />
+                  <Pie
+                    data={categoryPerfData}
+                    cx="50%"
+                    cy="40%"
+                    innerRadius={55}
+                    outerRadius={75}
+                    paddingAngle={2}
+                    dataKey="value"
+                    nameKey="name"
+                  >
+                    {categoryPerfData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Legend 
+                    verticalAlign="bottom" 
+                    align="center"
+                    iconType="circle"
+                    iconSize={8}
+                    wrapperStyle={{ fontSize: 8.5, fontWeight: 'bold', bottom: 5 }}
+                  />
+                </RePieChart>
+              ) : categoryViewMode === 'bar' ? (
+                <BarChart data={categoryPerfData} margin={{ top: 15, right: 5, left: -20, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridStroke} />
+                  <XAxis dataKey="name" tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, color: tooltipText }}
+                    itemStyle={{ fontSize: 10 }}
+                    formatter={(value: any) => [`₹${value}Cr`]}
+                  />
+                  <Bar dataKey="value" barSize={18} radius={[3, 3, 0, 0]}>
+                    {categoryPerfData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              ) : (
+                <RadarChart cx="50%" cy="50%" outerRadius="70%" data={categoryPerfData}>
+                  <PolarGrid stroke={gridStroke} />
+                  <PolarAngleAxis dataKey="name" tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)', fontSize: 8, fontWeight: 'bold' }} />
+                  <PolarRadiusAxis angle={30} domain={[0, 350]} tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 7 }} />
+                  <Radar name="Revenue" dataKey="value" stroke={accentColor} fill={accentColor} fillOpacity={0.3} />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, color: tooltipText }}
+                    itemStyle={{ fontSize: 10 }}
+                    formatter={(value: any) => [`₹${value}Cr`]}
+                  />
+                </RadarChart>
+              )}
             </ResponsiveContainer>
           </div>
         </div>
@@ -314,7 +628,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
       </div>
 
       {/* Bottom Row grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         
         {/* Top SKU Performance List */}
         <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3.5 h-[360px] flex flex-col">
@@ -467,6 +781,83 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
             </div>
           )}
         </div>
+
+        {/* Top Customer Insights List */}
+        <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3.5 h-[360px] flex flex-col">
+          <h3 className="text-[11px] font-bold uppercase tracking-widest pb-2 border-b border-black/5 dark:border-white/5 mb-2 flex items-center justify-between gap-1.5">
+            <span>Top Customer Insights</span>
+            <span className="text-[7.5px] font-extrabold opacity-40 uppercase">Buying Intent</span>
+          </h3>
+
+          {/* Customer Category Filter Pills */}
+          <div className="flex flex-wrap gap-1 mb-2 border-b border-black/5 dark:border-white/5 pb-2">
+            {['Beverages', 'Snacks', 'Personal Care', 'Dairy', 'Household'].map(cat => (
+              <button
+                key={cat}
+                type="button"
+                onClick={() => setActiveCustomerCategory(cat)}
+                className={`px-2 py-0.5 text-[8.5px] font-bold uppercase tracking-wider rounded-sm transition-all border border-black/5 dark:border-white/10 cursor-pointer ${
+                  activeCustomerCategory === cat
+                    ? 'bg-acies-yellow text-acies-gray font-extrabold border-acies-yellow'
+                    : 'bg-black/5 dark:bg-white/5 text-zinc-650 dark:text-zinc-400 hover:bg-black/10 dark:hover:bg-white/10'
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+
+          {/* Customer List */}
+          <div className="flex-1 overflow-y-auto pr-1 pb-1 space-y-2 min-h-0 no-scrollbar">
+            {(CUSTOMER_INSIGHTS[activeCustomerCategory] || []).map((c) => {
+              const trendCol = c.growthDirection === 'up' ? 'text-green-500' : c.growthDirection === 'down' ? 'text-red-500' : 'text-zinc-550';
+              return (
+                <div
+                  key={c.name}
+                  className="bg-black/2 dark:bg-white/2 border border-black/5 dark:border-white/5 p-2 rounded-sm space-y-1 hover:border-acies-yellow/30 transition-all"
+                >
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h4 className="text-[10px] font-extrabold text-zinc-800 dark:text-zinc-200 truncate max-w-[170px]">
+                        {c.name}
+                      </h4>
+                      <p className="text-[8px] text-zinc-500 font-semibold tracking-wide truncate max-w-[170px]">
+                        {c.segment}
+                      </p>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <span className="text-[9.5px] font-mono font-bold text-acies-yellow block">
+                        {c.revContribution}
+                      </span>
+                      <span className={`text-[7.5px] font-bold ${trendCol}`}>
+                        {c.growthTrend}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <p className="text-[9px] text-zinc-650 dark:text-zinc-400 leading-normal">
+                      <span className="font-bold text-zinc-850 dark:text-zinc-300">Interest: </span>
+                      {c.interestTrend}
+                    </p>
+                    <div className="flex flex-wrap gap-1 items-center">
+                      <span className="text-[7.5px] font-bold text-zinc-500 uppercase shrink-0">Focus:</span>
+                      {c.buyingFocus.map(focusItem => (
+                        <span
+                          key={focusItem}
+                          className="bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 px-1 py-0.5 rounded-sm text-[7.5px] font-bold text-[#6d28d9] dark:text-[#a78bfa] truncate max-w-[110px]"
+                        >
+                          {focusItem}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
         {/* Forecast vs Actual by Region */}
         <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3.5 h-[360px] flex flex-col">
           <h3 className="text-[11px] font-bold uppercase tracking-widest pb-2 border-b border-black/5 dark:border-white/5 mb-2 flex items-center justify-between gap-1.5">
