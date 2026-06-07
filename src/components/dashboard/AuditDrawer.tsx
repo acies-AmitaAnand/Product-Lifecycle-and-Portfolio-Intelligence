@@ -626,7 +626,7 @@ const AUDIT_DATA: Record<string, AuditContent> = {
 
 export const AuditDrawer: React.FC<AuditDrawerProps> = ({ activeMetric, close }) => {
   const content = activeMetric ? AUDIT_DATA[activeMetric] : null;
-  const [activeSection, setActiveSection] = useState<'action' | 'sowhat' | 'lineage' | 'formula' | 'trends' | 'decisions'>('action');
+  const [activeSection, setActiveSection] = useState<'action' | 'sowhat' | 'lineage' | 'formula' | 'trends' | 'decisions'>('formula');
 
   // Handle escape key to close
   useEffect(() => {
@@ -637,10 +637,10 @@ export const AuditDrawer: React.FC<AuditDrawerProps> = ({ activeMetric, close })
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [close]);
 
-  // Reset active tab to 'action' on metric change
+  // Reset active tab to 'formula' on metric change
   useEffect(() => {
     if (activeMetric) {
-      setActiveSection('action');
+      setActiveSection('formula');
     }
   }, [activeMetric]);
 
