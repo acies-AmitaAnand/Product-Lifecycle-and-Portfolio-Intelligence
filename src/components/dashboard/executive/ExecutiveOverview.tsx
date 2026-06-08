@@ -322,7 +322,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
                   <button 
                     type="button"
                     onClick={() => setSelectedAlert(a)}
-                    className="text-[8px] font-bold uppercase tracking-widest text-acies-yellow hover:underline cursor-pointer border-none bg-transparent"
+                    className="text-[8px] font-extrabold uppercase tracking-widest bg-acies-yellow text-acies-gray px-2 py-0.5 rounded-sm hover:bg-yellow-400 transition-all cursor-pointer border-none"
                   >
                     Investigate
                   </button>
