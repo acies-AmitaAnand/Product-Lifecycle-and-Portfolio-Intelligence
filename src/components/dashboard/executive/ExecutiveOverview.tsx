@@ -252,7 +252,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
 
   // Recharts actual vs target data
   const revMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  const revActual = [58, 61, 65, 70, 74, 77, 80, 84, 88, 91];
+  const revActual = [58, 61, 65, 70, 74, 77, 80, 84, 88, 91, 92.4, 95.1];
   const revTarget = [60, 63, 66, 70, 74, 76, 80, 83, 86, 90, 93, 96];
 
   const revenueTrendData = revMonths.map((m, idx) => ({
@@ -420,7 +420,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         
         {/* Revenue Trend actual vs target */}
-        <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3.5 h-[320px] flex flex-col">
+        <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3.5 h-[380px] flex flex-col">
           <div className="mb-2.5 flex justify-between items-start">
             <div>
               <h3 className="text-[11px] font-bold uppercase tracking-widest">Revenue Trend</h3>
@@ -530,7 +530,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
         </div>
 
         {/* Category Performance */}
-        <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3.5 h-[320px] flex flex-col">
+        <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3.5 h-[380px] flex flex-col">
           <div className="mb-2.5 flex justify-between items-start">
             <div>
               <h3 className="text-[11px] font-bold uppercase tracking-widest">Category Performance</h3>
