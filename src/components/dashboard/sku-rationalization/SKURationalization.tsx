@@ -576,14 +576,14 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
             : 'bg-white border-black/10 text-zinc-800 shadow-sm'
         }`}>
           {/* Main Row */}
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-            <div className="flex flex-col sm:flex-row sm:items-center gap-5">
-              <div>
-                <h2 className={`text-base font-display font-extrabold transition-colors duration-200 ${isDarkMode ? 'text-white' : 'text-zinc-900'}`}>SKU Rationalization</h2>
-                <p className={`text-[10px] font-bold uppercase tracking-wider mt-1 transition-colors duration-200 ${isDarkMode ? 'text-zinc-400' : 'text-zinc-500'}`}>Category assortment workspace · Tab 4 of 6</p>
-              </div>
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 w-full">
+            {/* Left side: Title */}
+            <div className="w-full md:flex-1 flex justify-start">
+              <h2 className={`text-base font-display font-extrabold transition-colors duration-200 ${isDarkMode ? 'text-white' : 'text-zinc-900'}`}>SKU Rationalization</h2>
+            </div>
 
-              {/* Tab Navigation Buttons */}
+            {/* Center: View Switcher Buttons */}
+            <div className="w-full md:flex-1 flex justify-start md:justify-center">
               <div className="flex items-center gap-2 shrink-0">
                 <button
                   type="button"
@@ -594,7 +594,7 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
                   className={`px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer text-center outline-none border ${
                     activeView === 'simulator'
                       ? 'bg-[#5850ec] text-white border-[#5850ec] shadow-sm shadow-[#5850ec]/20 font-extrabold'
-                      : `bg-transparent border-black/15 dark:border-white/15 text-zinc-550 dark:text-zinc-400 hover:border-black/25 dark:hover:border-white/25 hover:text-zinc-800 dark:hover:text-zinc-200 hover:bg-black/5 dark:hover:bg-white/5`
+                      : `bg-transparent border-black/15 dark:border-white/15 text-zinc-555 dark:text-zinc-400 hover:border-black/25 dark:hover:border-white/25 hover:text-zinc-800 dark:hover:text-zinc-200 hover:bg-black/5 dark:hover:bg-white/5`
                   }`}
                 >
                   Portfolio Simulator
@@ -608,7 +608,7 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
                   className={`px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer text-center outline-none border ${
                     activeView === 'analyst'
                       ? 'bg-[#5850ec] text-white border-[#5850ec] shadow-sm shadow-[#5850ec]/20 font-extrabold'
-                      : `bg-transparent border-black/15 dark:border-white/15 text-zinc-550 dark:text-zinc-400 hover:border-black/25 dark:hover:border-white/25 hover:text-zinc-800 dark:hover:text-zinc-200 hover:bg-black/5 dark:hover:bg-white/5`
+                      : `bg-transparent border-black/15 dark:border-white/15 text-zinc-555 dark:text-zinc-400 hover:border-black/25 dark:hover:border-white/25 hover:text-zinc-800 dark:hover:text-zinc-200 hover:bg-black/5 dark:hover:bg-white/5`
                   }`}
                 >
                   Cannibalisation Simulator
@@ -616,7 +616,8 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
               </div>
             </div>
 
-            <div className="flex items-center gap-3 self-end md:self-auto">
+            {/* Right side: Region Select & Active Sync Badge */}
+            <div className="w-full md:flex-1 flex justify-start md:justify-end items-center gap-3">
               {/* Region Select */}
               <div className={`flex items-center gap-1.5 bg-transparent border rounded-lg px-2.5 py-1 transition-colors duration-200 ${
                 isDarkMode ? 'border-zinc-700 text-zinc-300' : 'border-zinc-300 text-zinc-700'
