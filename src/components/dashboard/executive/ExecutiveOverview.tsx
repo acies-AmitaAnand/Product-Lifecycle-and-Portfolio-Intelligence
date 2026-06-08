@@ -14,6 +14,7 @@ import {
 import { SkuDetailsModal } from './SkuDetailsModal';
 import { RegionalForecastModal } from './RegionalForecastModal';
 import { EmailComposerModal } from '../portfolio-health/EmailComposerModal';
+import { TrendMonthForecastModal } from './TrendMonthForecastModal';
 
 interface CustomerInsight {
   name: string;
@@ -195,6 +196,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
   const [regionViewMode, setRegionViewMode] = useState<'list' | 'chart'>('chart');
   const [revenueViewMode, setRevenueViewMode] = useState<'line' | 'combi' | 'bar'>('line');
   const [categoryViewMode, setCategoryViewMode] = useState<'donut' | 'bar' | 'radar'>('donut');
+  const [selectedTrendMonth, setSelectedTrendMonth] = useState<string | null>(null);
 
 
   // Dynamic accent color based on theme
@@ -422,7 +424,9 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
           <div className="mb-2.5 flex justify-between items-start">
             <div>
               <h3 className="text-[11px] font-bold uppercase tracking-widest">Revenue Trend</h3>
-              <p className="text-[8.5px] text-zinc-500 uppercase tracking-widest mt-0.5">Monthly Actual vs Target (₹ Cr) — This Year</p>
+              <p className="text-[8.5px] text-zinc-500 uppercase tracking-widest mt-0.5">
+                Monthly Actual vs Target (₹ Cr) — This Year • <span className="text-purple-600 dark:text-purple-400 font-extrabold normal-case">💡 Click any month to forecast next year & review price indexes</span>
+              </p>
             </div>
             <div className="flex items-center border border-black/10 dark:border-white/10 rounded-sm overflow-hidden bg-black/5 dark:bg-white/5 p-0.5 ml-1">
               <button
@@ -466,7 +470,12 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
           <div className="flex-1 min-h-0">
             <ResponsiveContainer width="100%" height="100%">
               {revenueViewMode === 'line' ? (
-                <LineChart data={revenueTrendData} margin={{ top: 5, right: 5, left: -25, bottom: 0 }}>
+                <LineChart 
+                  className="cursor-pointer"
+                  data={revenueTrendData} 
+                  margin={{ top: 5, right: 5, left: -25, bottom: 0 }}
+                  onClick={(state) => { if (state && state.activeLabel) setSelectedTrendMonth(state.activeLabel); }}
+                >
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridStroke} />
                   <XAxis dataKey="month" tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
@@ -479,7 +488,12 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
                   <Line type="monotone" dataKey="Target" stroke={isDarkMode ? '#facc15' : '#d97706'} strokeDasharray="4 4" dot={false} strokeWidth={1.8} />
                 </LineChart>
               ) : revenueViewMode === 'combi' ? (
-                <ComposedChart data={revenueTrendData} margin={{ top: 5, right: 5, left: -25, bottom: 0 }}>
+                <ComposedChart 
+                  className="cursor-pointer"
+                  data={revenueTrendData} 
+                  margin={{ top: 5, right: 5, left: -25, bottom: 0 }}
+                  onClick={(state) => { if (state && state.activeLabel) setSelectedTrendMonth(state.activeLabel); }}
+                >
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridStroke} />
                   <XAxis dataKey="month" tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
@@ -492,7 +506,13 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
                   <Line type="monotone" dataKey="Target" stroke={isDarkMode ? '#facc15' : '#d97706'} strokeWidth={2} dot={{ r: 2 }} activeDot={{ r: 4 }} />
                 </ComposedChart>
               ) : (
-                <BarChart data={revenueTrendData} margin={{ top: 5, right: 5, left: -25, bottom: 0 }} barGap={4}>
+                <BarChart 
+                  className="cursor-pointer"
+                  data={revenueTrendData} 
+                  margin={{ top: 5, right: 5, left: -25, bottom: 0 }} 
+                  barGap={4}
+                  onClick={(state) => { if (state && state.activeLabel) setSelectedTrendMonth(state.activeLabel); }}
+                >
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridStroke} />
                   <XAxis dataKey="month" tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
@@ -1000,6 +1020,13 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
           setEmailData({ to: email, name, subject, body });
           setIsEmailOpen(true);
         }}
+      />
+
+      {/* Trend Month Forecast Modal */}
+      <TrendMonthForecastModal 
+        isOpen={!!selectedTrendMonth}
+        month={selectedTrendMonth}
+        onClose={() => setSelectedTrendMonth(null)}
       />
 
       {/* Email Composer Modal */}
