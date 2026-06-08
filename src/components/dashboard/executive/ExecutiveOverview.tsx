@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { 
   TrendingUp, TrendingDown, Check, X, AlertTriangle, RefreshCw, Zap, Clock, Home, List, PieChart, BarChart2,
-  LineChart as LucideLineChart, AreaChart as LucideAreaChart, Radar as LucideRadar
+  LineChart as LucideLineChart, AreaChart as LucideAreaChart, Radar as LucideRadar, Activity
 } from 'lucide-react';
 import { 
   ResponsiveContainer, AreaChart, Area, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, BarChart, Bar, Cell, PieChart as RePieChart, Pie, Legend,
-  RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar
+  RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ComposedChart
 } from 'recharts';
 import { Role } from '../../../types/dashboard';
 import { 
@@ -193,7 +193,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
   const [skuViewMode, setSkuViewMode] = useState<'list' | 'chart'>('list');
   const [hoveredSku, setHoveredSku] = useState<any>(null);
   const [regionViewMode, setRegionViewMode] = useState<'list' | 'chart'>('chart');
-  const [revenueViewMode, setRevenueViewMode] = useState<'line' | 'area' | 'bar'>('line');
+  const [revenueViewMode, setRevenueViewMode] = useState<'line' | 'combi' | 'bar'>('line');
   const [categoryViewMode, setCategoryViewMode] = useState<'donut' | 'bar' | 'radar'>('donut');
 
 
@@ -439,15 +439,15 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
               </button>
               <button
                 type="button"
-                onClick={() => setRevenueViewMode('area')}
+                onClick={() => setRevenueViewMode('combi')}
                 className={`p-1 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm ${
-                  revenueViewMode === 'area' 
+                  revenueViewMode === 'combi' 
                     ? 'bg-blue-500 text-white shadow-sm' 
                     : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 bg-transparent'
                 }`}
-                title="Area Chart"
+                title="Combi Chart (Bar + Line)"
               >
-                <LucideAreaChart size={14} />
+                <Activity size={14} />
               </button>
               <button
                 type="button"
@@ -478,25 +478,19 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
                   <Line type="monotone" dataKey="Actual" stroke={accentColor} strokeWidth={2} activeDot={{ r: 5 }} dot={{ r: 2.5 }} />
                   <Line type="monotone" dataKey="Target" stroke={isDarkMode ? '#facc15' : '#d97706'} strokeDasharray="4 4" dot={false} strokeWidth={1.8} />
                 </LineChart>
-              ) : revenueViewMode === 'area' ? (
-                <AreaChart data={revenueTrendData} margin={{ top: 5, right: 5, left: -25, bottom: 0 }}>
-                  <defs>
-                    <linearGradient id="actualGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor={accentColor} stopOpacity={0.2} />
-                      <stop offset="100%" stopColor={accentColor} stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
+              ) : revenueViewMode === 'combi' ? (
+                <ComposedChart data={revenueTrendData} margin={{ top: 5, right: 5, left: -25, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridStroke} />
                   <XAxis dataKey="month" tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
                   <Tooltip 
                     contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, color: tooltipText }} 
-                    itemStyle={{ color: tooltipText, fontSize: 10 }}
+                    itemStyle={{ fontSize: 10 }}
                     labelStyle={{ fontSize: 10, fontWeight: 'bold' }}
                   />
-                  <Area type="monotone" dataKey="Actual" stroke={accentColor} strokeWidth={2} fill="url(#actualGrad)" activeDot={{ r: 5 }} dot={{ r: 2.5 }} />
-                  <Area type="monotone" dataKey="Target" stroke={isDarkMode ? '#facc15' : '#d97706'} fill="transparent" strokeDasharray="4 4" dot={false} strokeWidth={1.8} />
-                </AreaChart>
+                  <Bar dataKey="Actual" fill={accentColor} radius={[2, 2, 0, 0]} barSize={14} />
+                  <Line type="monotone" dataKey="Target" stroke={isDarkMode ? '#facc15' : '#d97706'} strokeWidth={2} dot={{ r: 2 }} activeDot={{ r: 4 }} />
+                </ComposedChart>
               ) : (
                 <BarChart data={revenueTrendData} margin={{ top: 5, right: 5, left: -25, bottom: 0 }} barGap={4}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridStroke} />
