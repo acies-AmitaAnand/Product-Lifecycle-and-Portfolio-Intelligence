@@ -570,19 +570,53 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
       
       {/* Consolidated Toolbar Header */}
       {role === 'VP Product Management' ? (
-        <div className={`p-4 rounded-xl flex flex-col gap-4 w-full border transition-colors duration-200 ${
+        <div className={`p-4 rounded-xl w-full border transition-colors duration-200 ${
           isDarkMode 
             ? 'bg-[#202022] border-[#2c2c30] text-white shadow-lg' 
             : 'bg-white border-black/10 text-zinc-800 shadow-sm'
         }`}>
-          {/* Top Row */}
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <div>
-              <h2 className={`text-base font-display font-extrabold transition-colors duration-200 ${isDarkMode ? 'text-white' : 'text-zinc-900'}`}>SKU Rationalization</h2>
-              <p className={`text-[10px] font-bold uppercase tracking-wider mt-1.5 transition-colors duration-200 ${isDarkMode ? 'text-zinc-400' : 'text-zinc-500'}`}>Category assortment workspace · Tab 4 of 6</p>
+          {/* Main Row */}
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-5">
+              <div>
+                <h2 className={`text-base font-display font-extrabold transition-colors duration-200 ${isDarkMode ? 'text-white' : 'text-zinc-900'}`}>SKU Rationalization</h2>
+                <p className={`text-[10px] font-bold uppercase tracking-wider mt-1 transition-colors duration-200 ${isDarkMode ? 'text-zinc-400' : 'text-zinc-500'}`}>Category assortment workspace · Tab 4 of 6</p>
+              </div>
+
+              {/* Tab Navigation Buttons */}
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveView('simulator');
+                    setSelectedAiClass(null);
+                  }}
+                  className={`px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer text-center outline-none border ${
+                    activeView === 'simulator'
+                      ? 'bg-[#5850ec] text-white border-[#5850ec] shadow-sm shadow-[#5850ec]/20 font-extrabold'
+                      : `bg-transparent border-black/15 dark:border-white/15 text-zinc-550 dark:text-zinc-400 hover:border-black/25 dark:hover:border-white/25 hover:text-zinc-800 dark:hover:text-zinc-200 hover:bg-black/5 dark:hover:bg-white/5`
+                  }`}
+                >
+                  Portfolio Simulator
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveView('analyst');
+                    setSelectedAiClass(null);
+                  }}
+                  className={`px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer text-center outline-none border ${
+                    activeView === 'analyst'
+                      ? 'bg-[#5850ec] text-white border-[#5850ec] shadow-sm shadow-[#5850ec]/20 font-extrabold'
+                      : `bg-transparent border-black/15 dark:border-white/15 text-zinc-550 dark:text-zinc-400 hover:border-black/25 dark:hover:border-white/25 hover:text-zinc-800 dark:hover:text-zinc-200 hover:bg-black/5 dark:hover:bg-white/5`
+                  }`}
+                >
+                  Cannibalisation Simulator
+                </button>
+              </div>
             </div>
-            
-            <div className="flex items-center gap-3 self-end sm:self-auto">
+
+            <div className="flex items-center gap-3 self-end md:self-auto">
               {/* Region Select */}
               <div className={`flex items-center gap-1.5 bg-transparent border rounded-lg px-2.5 py-1 transition-colors duration-200 ${
                 isDarkMode ? 'border-zinc-700 text-zinc-300' : 'border-zinc-300 text-zinc-700'
@@ -613,39 +647,6 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
                 <span>Active sync</span>
               </div>
             </div>
-          </div>
-
-          {/* Separator line */}
-          <div className={`h-px w-full transition-colors duration-200 ${isDarkMode ? 'bg-[#2c2c30]' : 'bg-black/10'}`} />
-
-          {/* Bottom Row: Tab Navigation */}
-          <div className="flex gap-4 items-center">
-            <button
-              onClick={() => {
-                setActiveView('simulator');
-                setSelectedAiClass(null);
-              }}
-              className={`px-4 py-1.5 text-xs font-bold rounded-lg border-none cursor-pointer transition-all ${
-                activeView === 'simulator'
-                  ? 'bg-[#5850ec] text-white shadow-sm'
-                  : `bg-transparent transition-colors duration-200 ${isDarkMode ? 'text-zinc-400 hover:text-zinc-200' : 'text-zinc-500 hover:text-zinc-800'}`
-              }`}
-            >
-              Portfolio Simulator
-            </button>
-            <button
-              onClick={() => {
-                setActiveView('analyst');
-                setSelectedAiClass(null);
-              }}
-              className={`px-4 py-1.5 text-xs font-bold rounded-lg border-none cursor-pointer transition-all ${
-                activeView === 'analyst'
-                  ? 'bg-[#5850ec] text-white shadow-sm'
-                  : `bg-transparent transition-colors duration-200 ${isDarkMode ? 'text-zinc-450 hover:text-zinc-200' : 'text-zinc-500 hover:text-zinc-800'}`
-              }`}
-            >
-              Cannibalisation Simulator
-            </button>
           </div>
         </div>
       ) : (
