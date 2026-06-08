@@ -428,42 +428,42 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
                 Monthly Actual vs Target (₹ Cr) — This Year • <span className="text-purple-600 dark:text-purple-400 font-extrabold normal-case">💡 Click any month to forecast next year & review price indexes</span>
               </p>
             </div>
-            <div className="flex items-center border border-black/10 dark:border-white/10 rounded-sm overflow-hidden bg-black/5 dark:bg-white/5 p-0.5 ml-1">
+            <div className="flex items-center border border-black/10 dark:border-white/10 rounded-md overflow-hidden bg-black/5 dark:bg-white/5 p-0.5 ml-1">
               <button
                 type="button"
                 onClick={() => setRevenueViewMode('line')}
-                className={`p-1 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm ${
+                className={`p-1.5 px-2.5 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm ${
                   revenueViewMode === 'line' 
                     ? 'bg-blue-500 text-white shadow-sm' 
                     : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 bg-transparent'
                 }`}
                 title="Line Chart"
               >
-                <LucideLineChart size={14} />
+                <LucideLineChart size={18} />
               </button>
               <button
                 type="button"
                 onClick={() => setRevenueViewMode('combi')}
-                className={`p-1 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm ${
+                className={`p-1.5 px-2.5 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm ${
                   revenueViewMode === 'combi' 
                     ? 'bg-blue-500 text-white shadow-sm' 
                     : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 bg-transparent'
                 }`}
                 title="Combi Chart (Bar + Line)"
               >
-                <Activity size={14} />
+                <Activity size={18} />
               </button>
               <button
                 type="button"
                 onClick={() => setRevenueViewMode('bar')}
-                className={`p-1 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm ${
+                className={`p-1.5 px-2.5 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm ${
                   revenueViewMode === 'bar' 
                     ? 'bg-blue-500 text-white shadow-sm' 
                     : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 bg-transparent'
                 }`}
                 title="Bar Chart"
               >
-                <BarChart2 size={14} />
+                <BarChart2 size={18} />
               </button>
             </div>
           </div>
@@ -536,42 +536,42 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
               <h3 className="text-[11px] font-bold uppercase tracking-widest">Category Performance</h3>
               <p className="text-[8.5px] text-zinc-550 dark:text-zinc-450 uppercase tracking-widest mt-0.5">Revenue ₹ Cr by Category — Current Month</p>
             </div>
-            <div className="flex items-center border border-black/10 dark:border-white/10 rounded-sm overflow-hidden bg-black/5 dark:bg-white/5 p-0.5 ml-1">
+            <div className="flex items-center border border-black/10 dark:border-white/10 rounded-md overflow-hidden bg-black/5 dark:bg-white/5 p-0.5 ml-1">
               <button
                 type="button"
                 onClick={() => setCategoryViewMode('donut')}
-                className={`p-1 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm ${
+                className={`p-1.5 px-2.5 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm ${
                   categoryViewMode === 'donut' 
                     ? 'bg-blue-500 text-white shadow-sm' 
                     : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 bg-transparent'
                 }`}
                 title="Donut Chart"
               >
-                <PieChart size={14} />
+                <PieChart size={18} />
               </button>
               <button
                 type="button"
                 onClick={() => setCategoryViewMode('bar')}
-                className={`p-1 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm ${
+                className={`p-1.5 px-2.5 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm ${
                   categoryViewMode === 'bar' 
                     ? 'bg-blue-500 text-white shadow-sm' 
                     : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 bg-transparent'
                 }`}
                 title="Bar Chart"
               >
-                <BarChart2 size={14} />
+                <BarChart2 size={18} />
               </button>
               <button
                 type="button"
                 onClick={() => setCategoryViewMode('radar')}
-                className={`p-1 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm ${
+                className={`p-1.5 px-2.5 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm ${
                   categoryViewMode === 'radar' 
                     ? 'bg-blue-500 text-white shadow-sm' 
                     : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 bg-transparent'
                 }`}
                 title="Radar Chart"
               >
-                <LucideRadar size={14} />
+                <LucideRadar size={18} />
               </button>
             </div>
           </div>
@@ -663,28 +663,28 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
             </div>
             <div className="flex items-center gap-2">
               <span className="text-[7.5px] font-extrabold opacity-40 uppercase">By Revenue</span>
-              <div className="flex items-center border border-black/10 dark:border-white/10 rounded-sm overflow-hidden bg-black/5 dark:bg-white/5 p-0.5 ml-1 normal-case">
+              <div className="flex items-center border border-black/10 dark:border-white/10 rounded-md overflow-hidden bg-black/5 dark:bg-white/5 p-0.5 ml-1 normal-case">
                 <button
                   onClick={() => setSkuViewMode('list')}
-                  className={`p-1 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm ${
+                  className={`p-1.5 px-2.5 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm ${
                     skuViewMode === 'list' 
                       ? 'bg-blue-500 text-white shadow-sm' 
                       : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 bg-transparent'
                   }`}
                   title="List View"
                 >
-                  <List size={15} />
+                  <List size={18} />
                 </button>
                 <button
                   onClick={() => setSkuViewMode('chart')}
-                  className={`p-1 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm ${
+                  className={`p-1.5 px-2.5 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm ${
                     skuViewMode === 'chart' 
                       ? 'bg-blue-500 text-white shadow-sm' 
                       : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 bg-transparent'
                   }`}
                   title="Pie Chart View"
                 >
-                  <PieChart size={15} />
+                  <PieChart size={18} />
                 </button>
               </div>
             </div>
@@ -878,28 +878,28 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
             <span>Regional Forecast</span>
             <div className="flex items-center gap-2">
               <span className="text-[7.5px] font-extrabold opacity-40 uppercase">Actual vs Target</span>
-              <div className="flex items-center border border-black/10 dark:border-white/10 rounded-sm overflow-hidden bg-black/5 dark:bg-white/5 p-0.5 ml-1 normal-case">
+              <div className="flex items-center border border-black/10 dark:border-white/10 rounded-md overflow-hidden bg-black/5 dark:bg-white/5 p-0.5 ml-1 normal-case">
                 <button
                   onClick={() => setRegionViewMode('list')}
-                  className={`p-1 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm ${
+                  className={`p-1.5 px-2.5 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm ${
                     regionViewMode === 'list' 
                       ? 'bg-blue-500 text-white shadow-sm' 
                       : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 bg-transparent'
                   }`}
                   title="List View"
                 >
-                  <List size={15} />
+                  <List size={18} />
                 </button>
                 <button
                   onClick={() => setRegionViewMode('chart')}
-                  className={`p-1 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm ${
+                  className={`p-1.5 px-2.5 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm ${
                     regionViewMode === 'chart' 
                       ? 'bg-blue-500 text-white shadow-sm' 
                       : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 bg-transparent'
                   }`}
                   title="Grouped Bar Chart"
                 >
-                  <BarChart2 size={15} />
+                  <BarChart2 size={18} />
                 </button>
               </div>
             </div>
