@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { 
   Layers, Filter, RefreshCw, BarChart2, PieChart, Info, HelpCircle, Save, Plus, Trash2, ArrowRight, Zap,
   Shield, Bell, Check, X, AlertTriangle, AlertCircle, TrendingUp, Globe, Activity as ActivityIcon,
-  Mail, MapPin, Calendar, LayoutGrid, List
+  Mail, MapPin, Calendar
 } from 'lucide-react';
 import { 
   ResponsiveContainer, ScatterChart, Scatter, XAxis, YAxis, ZAxis, Tooltip, CartesianGrid, LabelList,
@@ -14,7 +14,6 @@ import { SKUS } from '../../../constants/data';
 import { BottleneckDetailsModal } from './BottleneckDetailsModal';
 import { EmailComposerModal } from './EmailComposerModal';
 import { ScheduleMeetingModal } from './ScheduleMeetingModal';
-import { EventsCalendarModal } from './EventsCalendarModal';
 import { SuccessFeedbackModal } from './SuccessFeedbackModal';
 
 interface PortfolioHealthMapProps {
@@ -95,8 +94,6 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
   const [activeApprovalMeeting, setActiveApprovalMeeting] = useState<string | null>(null);
   const [composerOpen, setComposerOpen] = useState(false);
   const [composerEmail, setComposerEmail] = useState({ to: '', subject: '', body: '', name: '', action: '' });
-  const [viewFormat, setViewFormat] = useState<'grid' | 'table'>('grid');
-  const [calendarOpen, setCalendarOpen] = useState(false);
   const [successFeedback, setSuccessFeedback] = useState<{
     isOpen: boolean;
     recipientName: string;
@@ -146,80 +143,6 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
       });
     }, 3000);
     return () => clearInterval(interval);
-  }, []);
-
-  // Events Feed
-  const EVENT_TEMPLATES = [
-    { sev: 'info', sevC: '#3b82f6', type: 'Demand', msgs: ['Mango Fizz 500ml — reorder triggered: 12,000 units', 'E-Commerce channel orders up 18% in last 2hrs', 'Oat Cookies demand spike detected — APAC region', 'Customer return rate dropped to 1.2% — all categories'] },
-    { sev: 'warning', sevC: '#f59e0b', type: 'Supply', msgs: ['Fabric Softener stock level below safety threshold', 'Lead time breach — supplier notification sent', 'Cold chain temperature alert — Mumbai DC resolved', 'Freight cost increase 4% — Mumbai to Bangalore lane'] },
-    { sev: 'critical', sevC: '#ef4444', type: 'Margin', msgs: ['Margin erosion detected: Green Tea RTD promo overlap', 'Price floor breach on Choco Wafers — auto-flagged', 'Promotional budget 83% consumed — 14 days remaining', 'Cost variance alert: packaging +7% vs budget'] },
-    { sev: 'info', sevC: '#10b981', type: 'Finance', msgs: ['Invoice cleared: Supplier ID #4821 — ₹2.3 Cr', 'Revenue milestone: ₹850 Cr MTD achieved', 'GST reconciliation complete — no discrepancies', 'Quarterly audit trail generated and archived'] },
-    { sev: 'info', sevC: '#8b5cf6', type: 'Launch', msgs: ['Mango Fizz 750ml — shelf placement confirmed: 240 stores', 'Launch readiness score updated: 82/100', 'Market test: Herbal Shampoo new variant — positive signal', 'NPD gate review scheduled: Thursday 10:00 AM'] },
-  ];
-
-  const generateInitialEvents = () => {
-    const list = [];
-    const now = new Date();
-    for (let i = 0; i < 12; i++) {
-      const tmpl = EVENT_TEMPLATES[Math.floor(Math.random() * EVENT_TEMPLATES.length)];
-      const msg = tmpl.msgs[Math.floor(Math.random() * tmpl.msgs.length)];
-      const timeObj = new Date(now.getTime() - i * 60000);
-      const timeStr = timeObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-      list.push({
-        id: 'init-' + i + '-' + Date.now(),
-        sev: tmpl.sev,
-        sevC: tmpl.sevC,
-        type: tmpl.type,
-        msg,
-        time: timeStr
-      });
-    }
-    return list;
-  };
-
-  const [feedEvents, setFeedEvents] = useState(() => generateInitialEvents());
-  const [eventFilter, setEventFilter] = useState('all');
-
-  // Timer for adding events
-  useEffect(() => {
-    const scheduleNextEvent = () => {
-      const delay = 1800 + Math.random() * 4200;
-      return setTimeout(() => {
-        const tmpl = EVENT_TEMPLATES[Math.floor(Math.random() * EVENT_TEMPLATES.length)];
-        const msg = tmpl.msgs[Math.floor(Math.random() * tmpl.msgs.length)];
-        const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-        const newEv = {
-          id: 'dyn-' + Date.now(),
-          sev: tmpl.sev,
-          sevC: tmpl.sevC,
-          type: tmpl.type,
-          msg,
-          time: timeStr
-        };
-
-        setFeedEvents(prev => [newEv, ...prev.slice(0, 79)]);
-
-        if (tmpl.sev === 'critical' && Math.random() > 0.6) {
-          addToast('Critical alert', msg, '#ef4444');
-          setAlerts(prevAlerts => {
-            if (prevAlerts.some(a => a.title === msg)) return prevAlerts;
-            const newAlert = {
-              id: 'dyn-al-' + Date.now(),
-              sev: 'critical',
-              sevC: '#ef4444',
-              title: msg,
-              desc: tmpl.type + ' · Auto-detected',
-              dismissed: false
-            };
-            return [newAlert, ...prevAlerts.slice(0, 11)];
-          });
-        }
-        timerId = scheduleNextEvent();
-      }, delay);
-    };
-
-    let timerId = scheduleNextEvent();
-    return () => clearTimeout(timerId);
   }, []);
 
   // Alerts
@@ -539,7 +462,6 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
   const activeSkuHealthData = getFilteredSkuHealthData();
 
   const activeAlerts = alerts.filter(a => !a.dismissed);
-  const filteredEvents = eventFilter === 'all' ? feedEvents : feedEvents.filter(e => e.type === eventFilter);
 
   return (
     <div className="space-y-6">
@@ -789,152 +711,6 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
         </div>
       </div>
 
-      {/* FULL WIDTH: LIVE INDUSTRY UPDATES */}
-      <div className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm mt-6 flex flex-col gap-4 w-full">
-        <div className="flex justify-between items-center pb-2 border-b border-black/5 dark:border-white/5">
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Live Industry Updates</span>
-            <span className="flex h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-          </div>
-          <div className="flex items-center gap-3">
-            <select 
-              value={eventFilter}
-              onChange={(e) => setEventFilter(e.target.value)}
-              className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-sm p-1 text-[9px] font-bold text-zinc-600 dark:text-zinc-400 outline-none cursor-pointer"
-            >
-              <option value="all">All Events</option>
-              <option value="Supply">Supply</option>
-              <option value="Demand">Demand</option>
-              <option value="Margin">Margin</option>
-              <option value="Launch">Launch</option>
-              <option value="Finance">Finance</option>
-            </select>
-
-            {/* Layout Toggle Buttons */}
-            <div className="flex items-center border border-black/10 dark:border-white/10 rounded-sm overflow-hidden bg-black/5 dark:bg-white/5 p-0.5">
-              <button
-                onClick={() => setViewFormat('grid')}
-                className={`p-1 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm ${
-                  viewFormat === 'grid' 
-                    ? 'bg-blue-500 text-white shadow-sm' 
-                    : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 bg-transparent'
-                }`}
-                title="Grid View"
-              >
-                <LayoutGrid size={11} />
-              </button>
-              <button
-                onClick={() => setViewFormat('table')}
-                className={`p-1 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm ${
-                  viewFormat === 'table' 
-                    ? 'bg-blue-500 text-white shadow-sm' 
-                    : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 bg-transparent'
-                }`}
-                title="Table View"
-              >
-                <List size={11} />
-              </button>
-            </div>
-
-            {/* Calendar Button */}
-            <button
-              onClick={() => setCalendarOpen(true)}
-              className="px-2 py-0.5 transition-all cursor-pointer border border-black/10 dark:border-white/10 rounded-sm flex items-center justify-center gap-1.5 bg-black/5 dark:bg-white/5 text-zinc-600 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-100 hover:bg-black/10 dark:hover:bg-white/10 h-[21px] text-[9px] font-bold"
-              title="Open Calendar"
-            >
-              <Calendar size={11} />
-              <span>Calendar</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Scrollable event lists in a horizontal multi-column grid or premium P&L table */}
-        <div className="overflow-y-auto space-y-2 max-h-[300px] pr-1">
-          {viewFormat === 'grid' ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-              {filteredEvents.map((ev, i) => (
-                <div 
-                  key={ev.id} 
-                  className={`flex items-start justify-between gap-3 p-3.5 rounded-sm border border-black/5 dark:border-white/5 transition-all text-xs h-full ${
-                    i === 0 ? 'bg-black/[0.02] dark:bg-white/5 animate-pulse border-emerald-500/35 shadow-sm' : 'bg-transparent'
-                  }`}
-                >
-                  <div className="flex gap-2 min-w-0">
-                    <span 
-                      className="w-1.5 h-1.5 rounded-full shrink-0 mt-1.5" 
-                      style={{ backgroundColor: ev.sevC }} 
-                    />
-                    <div className="min-w-0">
-                      <p className="text-zinc-800 dark:text-zinc-200 leading-snug font-semibold break-words">{ev.msg}</p>
-                      <div className="flex items-center gap-1.5 mt-2">
-                        <span 
-                          className="text-[8px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-sm"
-                          style={{ backgroundColor: `${ev.sevC}15`, color: ev.sevC }}
-                        >
-                          {ev.type}
-                        </span>
-                        <span className="text-[8px] opacity-40 font-bold uppercase">{ev.sev}</span>
-                      </div>
-                    </div>
-                  </div>
-                  <span className="text-[9px] font-semibold text-zinc-400 dark:text-zinc-550 font-mono whitespace-nowrap">{ev.time}</span>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="w-full overflow-x-auto border border-black/5 dark:border-white/10 rounded-sm">
-              <table className="w-full border-collapse text-left text-xs">
-                <thead>
-                  <tr className="bg-black/5 dark:bg-white/5 border-b border-black/10 dark:border-white/10 text-[9px] uppercase tracking-wider font-bold text-zinc-400">
-                    <th className="py-2.5 px-4 w-[60px]">Status</th>
-                    <th className="py-2.5 px-4 min-w-[200px]">Description</th>
-                    <th className="py-2.5 px-4 w-[100px]">Category</th>
-                    <th className="py-2.5 px-4 w-[100px]">Priority</th>
-                    <th className="py-2.5 px-4 w-[100px] text-right">Timestamp</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-black/[0.03] dark:divide-white/[0.03]">
-                  {filteredEvents.map((ev, i) => (
-                    <tr 
-                      key={ev.id} 
-                      className={`hover:bg-black/[0.01] dark:hover:bg-white/[0.02] transition-colors ${
-                        i === 0 ? 'bg-black/[0.02] dark:bg-white/5 animate-pulse' : 'bg-transparent'
-                      }`}
-                    >
-                      <td className="py-2.5 px-4">
-                        <div className="flex items-center justify-center">
-                          <span 
-                            className="w-2 h-2 rounded-full" 
-                            style={{ backgroundColor: ev.sevC, boxShadow: `0 0 6px ${ev.sevC}66` }} 
-                          />
-                        </div>
-                      </td>
-                      <td className="py-2.5 px-4 font-semibold text-zinc-800 dark:text-zinc-200 leading-snug break-words">
-                        {ev.msg}
-                      </td>
-                      <td className="py-2.5 px-4 font-bold">
-                        <span 
-                          className="text-[8px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-sm"
-                          style={{ backgroundColor: `${ev.sevC}15`, color: ev.sevC }}
-                        >
-                          {ev.type}
-                        </span>
-                      </td>
-                      <td className="py-2.5 px-4 uppercase text-[9px] font-bold text-zinc-400">
-                        {ev.sev}
-                      </td>
-                      <td className="py-2.5 px-4 text-right font-mono text-[9.5px] text-zinc-500 dark:text-zinc-400 font-semibold whitespace-nowrap">
-                        {ev.time}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
-      </div>
-
       {/* Floating Corner Toasts Container */}
       <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none max-w-sm">
         {toasts.map(t => (
@@ -1049,12 +825,6 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
         }}
       />
 
-      {/* Smart Events Calendar Modal */}
-      <EventsCalendarModal 
-        isOpen={calendarOpen}
-        onClose={() => setCalendarOpen(false)}
-        isDarkMode={isDarkMode}
-      />
     </div>
   );
 };
