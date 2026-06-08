@@ -799,7 +799,7 @@ export default function App() {
       </div>
 
       <Sidebar isOpen={isSidebarOpen} close={() => setIsSidebarOpen(false)} />
-      <AuditDrawer activeMetric={activeAuditMetric} close={() => setActiveAuditMetric(null)} />
+      <AuditDrawer activeMetric={activeAuditMetric} close={() => setActiveAuditMetric(null)} isDarkMode={isDarkMode} />
       <SkuDetailsModal 
         isOpen={!!selectedSkuForSearch} 
         sku={selectedSkuForSearch} 

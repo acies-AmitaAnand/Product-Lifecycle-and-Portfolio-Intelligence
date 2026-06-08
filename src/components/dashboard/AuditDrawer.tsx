@@ -11,6 +11,7 @@ import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Cell, Cartes
 interface AuditDrawerProps {
   activeMetric: string | null;
   close: () => void;
+  isDarkMode: boolean;
 }
 
 interface AuditContent {
@@ -709,7 +710,7 @@ const getMetricTrend = (metricName: string) => {
 };
 
 // Sub-components
-const TrendChart: React.FC<{ headers: string[]; rows: string[][]; isDarkMode: boolean }> = ({ headers, rows }) => {
+const TrendChart: React.FC<{ headers: string[]; rows: string[][]; isDarkMode: boolean }> = ({ headers, rows, isDarkMode }) => {
   const chartData = parseTrendData(headers, rows);
   if (!chartData) return null;
   
@@ -718,10 +719,11 @@ const TrendChart: React.FC<{ headers: string[]; rows: string[][]; isDarkMode: bo
   
   const actualLabel = isYoY ? '2023 Sales' : hasTarget ? 'Actual' : headers[1] || 'Value';
   
-  const textCol = '#a1a1aa'; // zinc-400
-  const gridStroke = 'rgba(255,255,255,0.05)';
-  const tooltipBg = '#09090b';
-  const tooltipBorder = 'rgba(255,255,255,0.1)';
+  const textCol = isDarkMode ? '#a1a1aa' : '#71717a'; 
+  const gridStroke = isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
+  const tooltipBg = isDarkMode ? '#09090b' : '#ffffff';
+  const tooltipBorder = isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
+  const tooltipText = isDarkMode ? '#ffffff' : '#18181b';
   
   return (
     <div className="h-[200px] w-full mt-4 mb-2">
@@ -731,7 +733,7 @@ const TrendChart: React.FC<{ headers: string[]; rows: string[][]; isDarkMode: bo
           <XAxis dataKey="name" tick={{ fill: textCol, fontSize: 9 }} axisLine={false} tickLine={false} />
           <YAxis tick={{ fill: textCol, fontSize: 8 }} axisLine={false} tickLine={false} />
           <Tooltip 
-            contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, color: '#fff', borderRadius: '6px' }}
+            contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, color: tooltipText, borderRadius: '6px' }}
             itemStyle={{ fontSize: 10 }}
             labelStyle={{ fontSize: 10, fontWeight: 'bold' }}
           />
@@ -767,19 +769,19 @@ const AccordionSection: React.FC<{
   children: React.ReactNode;
 }> = ({ title, isOpen, onToggle, icon, children }) => {
   return (
-    <div className="border-b border-zinc-900 overflow-hidden">
+    <div className="border-b border-zinc-200 dark:border-zinc-900 overflow-hidden">
       <button
         onClick={onToggle}
-        className="w-full py-4 px-1 flex items-center justify-between text-left text-zinc-200 hover:text-white transition-colors cursor-pointer border-none bg-transparent outline-none"
+        className="w-full py-4 px-1 flex items-center justify-between text-left text-zinc-700 hover:text-zinc-950 dark:text-zinc-200 dark:hover:text-white transition-colors cursor-pointer border-none bg-transparent outline-none"
       >
         <div className="flex items-center gap-2.5">
-          <div className="text-purple-400">{icon}</div>
+          <div className="text-purple-500 dark:text-purple-400">{icon}</div>
           <span className="text-xs font-bold uppercase tracking-wider">{title}</span>
         </div>
         <motion.div
           animate={{ rotate: isOpen ? 180 : 0 }}
           transition={{ duration: 0.2 }}
-          className="text-zinc-500 hover:text-zinc-300"
+          className="text-zinc-400 hover:text-zinc-650 dark:text-zinc-500 dark:hover:text-zinc-300"
         >
           <ChevronDown size={14} />
         </motion.div>
@@ -792,7 +794,7 @@ const AccordionSection: React.FC<{
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.25, ease: 'easeInOut' }}
           >
-            <div className="pb-5 pt-1 px-1 text-xs text-zinc-400 leading-relaxed space-y-4">
+            <div className="pb-5 pt-1 px-1 text-xs text-zinc-550 dark:text-zinc-400 leading-relaxed space-y-4">
               {children}
             </div>
           </motion.div>
@@ -802,7 +804,7 @@ const AccordionSection: React.FC<{
   );
 };
 
-export const AuditDrawer: React.FC<AuditDrawerProps> = ({ activeMetric, close }) => {
+export const AuditDrawer: React.FC<AuditDrawerProps> = ({ activeMetric, close, isDarkMode }) => {
   // Map Home tab metrics to their respective Audit Drawer data keys
   const getMappedMetric = (metric: string | null): string | null => {
     if (!metric) return null;
@@ -876,23 +878,23 @@ export const AuditDrawer: React.FC<AuditDrawerProps> = ({ activeMetric, close })
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed top-0 right-0 h-full w-full md:w-[600px] bg-zinc-950/95 backdrop-blur-xl border-l border-zinc-900/60 z-[110] overflow-y-auto flex flex-col shadow-2xl text-zinc-100"
+            className="fixed top-0 right-0 h-full w-full md:w-[600px] bg-white/95 dark:bg-zinc-950/95 backdrop-blur-xl border-l border-zinc-200 dark:border-zinc-900/60 z-[110] overflow-y-auto flex flex-col shadow-2xl text-zinc-800 dark:text-zinc-100"
           >
             {/* Sticky KPI Header */}
-            <div className="border-b border-zinc-900 bg-zinc-950/85 backdrop-blur-md sticky top-0 z-30 px-8 py-5 flex flex-col gap-3.5">
+            <div className="border-b border-zinc-200 dark:border-zinc-900 bg-white/85 dark:bg-zinc-950/85 backdrop-blur-md sticky top-0 z-30 px-8 py-5 flex flex-col gap-3.5">
               <div className="flex justify-between items-start">
                 <div>
                   <div className="flex items-center gap-1.5 mb-1.5">
-                    <Sparkles size={11} className="text-purple-400 animate-pulse" />
-                    <span className="text-[8.5px] uppercase font-bold tracking-widest text-purple-400">AI-Powered Insights</span>
+                    <Sparkles size={11} className="text-purple-500 dark:text-purple-400 animate-pulse" />
+                    <span className="text-[8.5px] uppercase font-bold tracking-widest text-purple-600 dark:text-purple-400">AI-Powered Insights</span>
                     <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse ml-1" />
                   </div>
-                  <h3 className="text-lg font-display font-bold text-white leading-tight">{content.title}</h3>
+                  <h3 className="text-lg font-display font-bold text-zinc-900 dark:text-white leading-tight">{content.title}</h3>
                 </div>
                 
                 <button 
                   onClick={close} 
-                  className="p-1.5 hover:bg-white/5 rounded-full transition-colors text-white/50 hover:text-white cursor-pointer border-none bg-transparent outline-none"
+                  className="p-1.5 hover:bg-black/5 dark:hover:bg-white/5 rounded-full transition-colors text-zinc-400 hover:text-zinc-800 dark:text-white/50 dark:hover:text-white cursor-pointer border-none bg-transparent outline-none"
                   aria-label="Close Audit Drawer"
                 >
                   <X size={18} />
@@ -901,17 +903,17 @@ export const AuditDrawer: React.FC<AuditDrawerProps> = ({ activeMetric, close })
 
               {/* KPI Header Details (Value, Trend, Status) */}
               <div className="flex items-baseline gap-4 flex-wrap">
-                <span className="text-3xl font-display font-bold text-white tracking-tight">{content.value}</span>
+                <span className="text-3xl font-display font-bold text-zinc-900 dark:text-white tracking-tight">{content.value}</span>
                 
                 {/* Trend Pill */}
                 {(() => {
                   const trend = getMetricTrend(content.title);
                   const isAlert = content.title.toLowerCase().includes('alert') || content.title.toLowerCase().includes('signal');
                   const colorClass = isAlert 
-                    ? 'text-red-400 bg-red-500/10 border-red-500/20' 
+                    ? 'text-red-650 bg-red-500/10 border-red-500/20 dark:text-red-400' 
                     : trend.isUp 
-                      ? 'text-green-400 bg-green-500/10 border-green-500/20' 
-                      : 'text-amber-400 bg-amber-500/10 border-amber-500/20';
+                      ? 'text-green-650 bg-green-500/10 border-green-500/20 dark:text-green-400' 
+                      : 'text-amber-650 bg-amber-500/10 border-amber-500/20 dark:text-amber-400';
                   return (
                     <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded flex items-center gap-1 border ${colorClass}`}>
                       {trend.isUp ? <TrendingUp size={10} /> : <TrendingUp size={10} className="rotate-180" />}
@@ -926,8 +928,8 @@ export const AuditDrawer: React.FC<AuditDrawerProps> = ({ activeMetric, close })
                   return (
                     <span className={`text-[8.5px] font-bold px-2 py-0.5 rounded border uppercase tracking-wider ${
                       status.isRisk 
-                        ? 'text-red-400 bg-red-500/10 border-red-500/20' 
-                        : 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20'
+                        ? 'text-red-650 bg-red-500/10 border-red-500/20 dark:text-red-400' 
+                        : 'text-indigo-650 bg-indigo-500/10 border-indigo-500/20 dark:text-indigo-400'
                     }`}>
                       {status.label}
                     </span>
@@ -940,19 +942,19 @@ export const AuditDrawer: React.FC<AuditDrawerProps> = ({ activeMetric, close })
             <div className="flex-1 p-8 space-y-6">
               
               {/* AI Synthesis Summary Card */}
-              <div className="bg-gradient-to-r from-purple-950/20 to-indigo-950/20 border border-purple-500/20 rounded-xl p-4.5 shadow-lg relative overflow-hidden group">
+              <div className="bg-gradient-to-r from-purple-50/50 to-indigo-50/50 dark:from-purple-950/20 dark:to-indigo-950/20 border border-purple-500/20 rounded-xl p-4.5 shadow-lg relative overflow-hidden group">
                 <div className="absolute top-0 right-0 w-28 h-28 bg-purple-500/5 blur-2xl pointer-events-none rounded-full" />
                 <div className="flex items-center justify-between mb-2.5">
                   <div className="flex items-center gap-1.5">
-                    <Sparkles size={11} className="text-purple-400 animate-pulse" />
-                    <span className="text-[8.5px] uppercase font-bold text-zinc-300 tracking-wider">AI Executive Brief</span>
+                    <Sparkles size={11} className="text-purple-500 dark:text-purple-400 animate-pulse" />
+                    <span className="text-[8.5px] uppercase font-bold text-zinc-500 dark:text-zinc-300 tracking-wider">AI Executive Brief</span>
                   </div>
-                  <div className="bg-purple-500/10 border border-purple-500/30 text-[8.5px] font-bold text-purple-300 px-1.5 py-0.5 rounded">
+                  <div className="bg-purple-500/10 border border-purple-500/30 text-[8.5px] font-bold text-purple-600 dark:text-purple-300 px-1.5 py-0.5 rounded">
                     {getConfidenceScore(content.title)}% CONFIDENCE
                   </div>
                 </div>
-                <p className="text-xs text-zinc-300 leading-relaxed font-medium">
-                  {content.soWhat.split('.')[0]}. Enterprise intelligence suggests prioritizing: <span className="text-purple-300 font-semibold">{content.action.split(':')[0]}</span> as the recommended action plan.
+                <p className="text-xs text-zinc-650 dark:text-zinc-300 leading-relaxed font-medium">
+                  {content.soWhat.split('.')[0]}. Enterprise intelligence suggests prioritizing: <span className="text-purple-600 dark:text-purple-300 font-semibold">{content.action.split(':')[0]}</span> as the recommended action plan.
                 </p>
               </div>
 
@@ -967,7 +969,7 @@ export const AuditDrawer: React.FC<AuditDrawerProps> = ({ activeMetric, close })
                   icon={<AlertTriangle size={14} />}
                 >
                   <div className="bg-red-500/5 border-l-4 border-red-500 p-4 rounded-r-md">
-                    <p className="text-[11.5px] text-zinc-300 font-medium leading-relaxed">{content.soWhat}</p>
+                    <p className="text-[11.5px] text-zinc-700 dark:text-zinc-300 font-medium leading-relaxed">{content.soWhat}</p>
                   </div>
                 </AccordionSection>
 
@@ -980,23 +982,23 @@ export const AuditDrawer: React.FC<AuditDrawerProps> = ({ activeMetric, close })
                 >
                   <div className="space-y-4">
                     {/* Recharts chart */}
-                    <TrendChart headers={content.trendHeaders} rows={content.trendRows} isDarkMode={true} />
+                    <TrendChart headers={content.trendHeaders} rows={content.trendRows} isDarkMode={isDarkMode} />
 
                     {/* Table */}
-                    <div className="overflow-x-auto border border-zinc-900 rounded bg-zinc-950/40">
+                    <div className="overflow-x-auto border border-zinc-200 dark:border-zinc-900 rounded bg-zinc-50/40 dark:bg-zinc-950/40">
                       <table className="w-full text-left text-[10px] border-collapse">
                         <thead>
-                          <tr className="bg-zinc-900/50 border-b border-zinc-900 font-bold uppercase tracking-wider text-zinc-300">
+                          <tr className="bg-zinc-100/50 dark:bg-zinc-900/50 border-b border-zinc-200 dark:border-zinc-900 font-bold uppercase tracking-wider text-zinc-650 dark:text-zinc-300">
                             {content.trendHeaders.map((header, idx) => (
                               <th key={idx} className="p-2.5">{header}</th>
                             ))}
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-zinc-900 font-mono text-zinc-400">
+                        <tbody className="divide-y divide-zinc-200 dark:divide-zinc-900 font-mono text-zinc-600 dark:text-zinc-400">
                           {content.trendRows.map((row, rowIdx) => (
-                            <tr key={rowIdx} className="hover:bg-white/[0.02] transition-colors">
+                            <tr key={rowIdx} className="hover:bg-black/[0.01] dark:hover:bg-white/[0.02] transition-colors">
                               {row.map((cell, cellIdx) => (
-                                <td key={cellIdx} className={`p-2.5 ${cellIdx === 0 ? 'font-body font-medium text-zinc-200' : ''}`}>
+                                <td key={cellIdx} className={`p-2.5 ${cellIdx === 0 ? 'font-body font-bold text-zinc-800 dark:text-zinc-200' : ''}`}>
                                   {cell}
                                 </td>
                               ))}
@@ -1016,10 +1018,10 @@ export const AuditDrawer: React.FC<AuditDrawerProps> = ({ activeMetric, close })
                   icon={<BookOpen size={14} />}
                 >
                   <div className="space-y-3">
-                    <div className="bg-zinc-900/60 p-4 border border-zinc-800 flex items-center justify-center shadow-inner rounded-md">
-                      <code className="font-mono text-xs text-zinc-100 font-bold select-all text-center leading-relaxed">{content.formula}</code>
+                    <div className="bg-zinc-50 dark:bg-zinc-900/60 p-4 border border-zinc-200 dark:border-zinc-800 flex items-center justify-center shadow-inner rounded-md">
+                      <code className="font-mono text-xs text-zinc-800 dark:text-zinc-100 font-bold select-all text-center leading-relaxed">{content.formula}</code>
                     </div>
-                    <p className="text-[11px] text-zinc-400 italic leading-relaxed">{content.formulaDescription}</p>
+                    <p className="text-[11px] text-zinc-500 dark:text-zinc-400 italic leading-relaxed">{content.formulaDescription}</p>
                   </div>
                 </AccordionSection>
 
@@ -1031,17 +1033,17 @@ export const AuditDrawer: React.FC<AuditDrawerProps> = ({ activeMetric, close })
                   icon={<Database size={14} />}
                 >
                   <div className="space-y-2.5">
-                    <p className="text-[10px] text-zinc-500 font-medium">
+                    <p className="text-[10px] text-zinc-500 dark:text-zinc-550 font-medium">
                       Raw dataset variables audited from primary commercial schemas:
                     </p>
-                    <div className="border border-zinc-900 rounded divide-y divide-zinc-900 bg-zinc-900/10 overflow-hidden">
+                    <div className="border border-zinc-200 dark:border-zinc-900 rounded divide-y divide-zinc-200 dark:divide-zinc-900 bg-zinc-100/10 dark:bg-zinc-900/10 overflow-hidden">
                       {content.columns.map((col, idx) => (
-                        <div key={idx} className="p-3.5 hover:bg-white/[0.01] transition-colors">
+                        <div key={idx} className="p-3.5 hover:bg-black/[0.01] dark:hover:bg-white/[0.01] transition-colors">
                           <div className="flex justify-between items-baseline mb-1">
-                            <span className="font-mono text-xs text-amber-400 font-bold">{col.name}</span>
-                            <span className="text-[8px] bg-zinc-900 text-zinc-400 px-1.5 py-0.5 rounded uppercase font-bold tracking-wider">{col.type}</span>
+                            <span className="font-mono text-xs text-amber-600 dark:text-amber-400 font-bold">{col.name}</span>
+                            <span className="text-[8px] bg-zinc-200 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 px-1.5 py-0.5 rounded uppercase font-bold tracking-wider">{col.type}</span>
                           </div>
-                          <p className="text-[10px] opacity-70 leading-normal text-zinc-400">{col.desc}</p>
+                          <p className="text-[10px] opacity-70 leading-normal text-zinc-650 dark:text-zinc-400">{col.desc}</p>
                         </div>
                       ))}
                     </div>
@@ -1056,7 +1058,7 @@ export const AuditDrawer: React.FC<AuditDrawerProps> = ({ activeMetric, close })
                   icon={<CheckCircle size={14} />}
                 >
                   <div className="bg-emerald-500/5 border-l-4 border-emerald-500 p-4 rounded-r-md">
-                    <p className="text-[11.5px] text-zinc-300 font-medium leading-relaxed">{content.action}</p>
+                    <p className="text-[11.5px] text-zinc-700 dark:text-zinc-300 font-medium leading-relaxed">{content.action}</p>
                   </div>
                 </AccordionSection>
 
@@ -1067,9 +1069,9 @@ export const AuditDrawer: React.FC<AuditDrawerProps> = ({ activeMetric, close })
                   onToggle={() => toggleSection('decisions')}
                   icon={<HelpCircle size={14} />}
                 >
-                  <ul className="space-y-2.5 pl-4 list-disc text-[11px] text-zinc-400 leading-relaxed">
+                  <ul className="space-y-2.5 pl-4 list-disc text-[11px] text-zinc-650 dark:text-zinc-400 leading-relaxed">
                     {content.assumptions.map((item, idx) => (
-                      <li key={idx} className="marker:text-purple-400">
+                      <li key={idx} className="marker:text-purple-500 dark:marker:text-purple-400">
                         {item}
                       </li>
                     ))}
@@ -1079,7 +1081,7 @@ export const AuditDrawer: React.FC<AuditDrawerProps> = ({ activeMetric, close })
             </div>
 
             {/* Sticky Footer */}
-            <div className="px-8 py-4 border-t border-zinc-900 bg-zinc-950/80 text-center text-[8.5px] opacity-40 uppercase font-bold tracking-widest text-zinc-400 mt-auto">
+            <div className="px-8 py-4 border-t border-zinc-200 dark:border-zinc-900 bg-white/80 dark:bg-zinc-950/80 text-center text-[8.5px] opacity-40 uppercase font-bold tracking-widest text-zinc-550 dark:text-zinc-400 mt-auto">
               Acies Virtual Labs • Verifiable Data Trace
             </div>
           </motion.aside>
