@@ -644,7 +644,7 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
                   : `bg-transparent transition-colors duration-200 ${isDarkMode ? 'text-zinc-450 hover:text-zinc-200' : 'text-zinc-500 hover:text-zinc-800'}`
               }`}
             >
-              Cannibalization & promo
+              Cannibalisation Simulator
             </button>
           </div>
         </div>
@@ -684,7 +684,7 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
           <div className="flex bg-black/5 dark:bg-white/5 p-0.5 rounded border border-black/5 dark:border-white/10 min-w-[340px]">
             {[
               { id: 'simulator', label: 'Portfolio Simulator Command' },
-              { id: 'analyst', label: 'Cannibalization & Promo Analyst' }
+              { id: 'analyst', label: 'Cannibalisation Simulator' }
             ].map(tab => (
               <button
                 key={tab.id}
