@@ -502,7 +502,7 @@ const VPSignalsBoardView: React.FC<{ isDarkMode: boolean; setActiveTab: (tab: nu
     contextTitle: string;
     channel: 'email' | 'message';
   } | null>(null);
-
+  const [trendsTimeframe, setTrendsTimeframe] = useState<'weekly' | 'monthly'>('weekly');
 
   useEffect(() => {
     const updateTime = () => {
@@ -575,12 +575,21 @@ const VPSignalsBoardView: React.FC<{ isDarkMode: boolean; setActiveTab: (tab: nu
     : 91;
 
   // Recharts Trends Line Data
-  const categoryTrendsData = [
+  const categoryTrendsWeeklyData = [
     { name: 'W1', Beverages: 62, Snacks: 55, PersonalCare: 45, Household: 35 },
     { name: 'W2', Beverages: 68, Snacks: 53, PersonalCare: 48, Household: 34 },
     { name: 'W3', Beverages: 72, Snacks: 58, PersonalCare: 46, Household: 38 },
     { name: 'W4', Beverages: 78, Snacks: 54, PersonalCare: 44, Household: 42 },
   ];
+
+  const categoryTrendsMonthlyData = [
+    { name: 'Jan', Beverages: 58, Snacks: 50, PersonalCare: 40, Household: 30 },
+    { name: 'Feb', Beverages: 64, Snacks: 52, PersonalCare: 42, Household: 32 },
+    { name: 'Mar', Beverages: 70, Snacks: 56, PersonalCare: 45, Household: 36 },
+    { name: 'Apr', Beverages: 76, Snacks: 54, PersonalCare: 43, Household: 40 },
+  ];
+
+  const categoryTrendsData = trendsTimeframe === 'weekly' ? categoryTrendsWeeklyData : categoryTrendsMonthlyData;
 
   // NPS Trends Data
   const npsTrendsData = [
@@ -810,8 +819,37 @@ const VPSignalsBoardView: React.FC<{ isDarkMode: boolean; setActiveTab: (tab: nu
         {/* Category & Brand Momentum Trend Chart */}
         <div className="xl:col-span-5 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm space-y-4">
           <div className="flex justify-between items-center pb-2 border-b border-black/5 dark:border-white/5">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Category & Brand Momentum</span>
-            <span className="text-[8px] font-bold uppercase tracking-wider text-zinc-400">Weekly sales index</span>
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Category & Brand Momentum</span>
+              <p className="text-[8px] font-bold uppercase tracking-wider text-zinc-400 mt-0.5">
+                {trendsTimeframe === 'weekly' ? 'Weekly sales index' : 'Monthly sales index'}
+              </p>
+            </div>
+            
+            <div className="flex bg-black/5 dark:bg-white/5 p-0.5 rounded border border-black/5 dark:border-white/10 shrink-0">
+              <button
+                type="button"
+                onClick={() => setTrendsTimeframe('weekly')}
+                className={`px-2 py-0.5 text-[8.5px] font-bold uppercase tracking-wider rounded-sm transition-all border-none cursor-pointer outline-none ${
+                  trendsTimeframe === 'weekly'
+                    ? 'bg-[#5850ec] text-white shadow-sm'
+                    : `bg-transparent text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white`
+                }`}
+              >
+                Weekly
+              </button>
+              <button
+                type="button"
+                onClick={() => setTrendsTimeframe('monthly')}
+                className={`px-2 py-0.5 text-[8.5px] font-bold uppercase tracking-wider rounded-sm transition-all border-none cursor-pointer outline-none ${
+                  trendsTimeframe === 'monthly'
+                    ? 'bg-[#5850ec] text-white shadow-sm'
+                    : `bg-transparent text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white`
+                }`}
+              >
+                Monthly
+              </button>
+            </div>
           </div>
 
           <div className="h-64">
