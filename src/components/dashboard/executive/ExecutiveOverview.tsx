@@ -420,7 +420,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         
         {/* Revenue Trend actual vs target */}
-        <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3.5 h-[380px] flex flex-col">
+        <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3.5 h-[400px] flex flex-col">
           <div className="mb-2.5 flex justify-between items-start">
             <div>
               <h3 className="text-[11px] font-bold uppercase tracking-widest">Revenue Trend</h3>
@@ -473,7 +473,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
                 <LineChart 
                   className="cursor-pointer"
                   data={revenueTrendData} 
-                  margin={{ top: 5, right: 5, left: -25, bottom: 0 }}
+                  margin={{ top: 15, right: 20, left: -10, bottom: 5 }}
                   onClick={(state) => { if (state && state.activeLabel) setSelectedTrendMonth(state.activeLabel); }}
                 >
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridStroke} />
@@ -491,7 +491,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
                 <ComposedChart 
                   className="cursor-pointer"
                   data={revenueTrendData} 
-                  margin={{ top: 5, right: 5, left: -25, bottom: 0 }}
+                  margin={{ top: 15, right: 20, left: -10, bottom: 5 }}
                   onClick={(state) => { if (state && state.activeLabel) setSelectedTrendMonth(state.activeLabel); }}
                 >
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridStroke} />
@@ -509,7 +509,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
                 <BarChart 
                   className="cursor-pointer"
                   data={revenueTrendData} 
-                  margin={{ top: 5, right: 5, left: -25, bottom: 0 }} 
+                  margin={{ top: 15, right: 20, left: -10, bottom: 5 }} 
                   barGap={4}
                   onClick={(state) => { if (state && state.activeLabel) setSelectedTrendMonth(state.activeLabel); }}
                 >
@@ -530,7 +530,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
         </div>
 
         {/* Category Performance */}
-        <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3.5 h-[380px] flex flex-col">
+        <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3.5 h-[400px] flex flex-col">
           <div className="mb-2.5 flex justify-between items-start">
             <div>
               <h3 className="text-[11px] font-bold uppercase tracking-widest">Category Performance</h3>
@@ -607,7 +607,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
                   />
                 </RePieChart>
               ) : categoryViewMode === 'bar' ? (
-                <BarChart data={categoryPerfData} margin={{ top: 15, right: 5, left: -20, bottom: 5 }}>
+                <BarChart data={categoryPerfData} margin={{ top: 20, right: 20, left: -10, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridStroke} />
                   <XAxis dataKey="name" tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
