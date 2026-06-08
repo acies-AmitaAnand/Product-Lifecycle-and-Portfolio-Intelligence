@@ -421,6 +421,34 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
     });
   }, [selectedAiClass, locationFilteredSkus]);
 
+  // Grouped Bar Chart data (Commercial Value vs Complexity Score averages)
+  const groupedBarData = useMemo(() => {
+    const categories = [
+      { key: 'Retain/Grow', classes: ['retain', 'grow'], defaultVal: 0.74, defaultCx: 0.26 },
+      { key: 'Bundle', classes: ['bundle'], defaultVal: 0.64, defaultCx: 0.31 },
+      { key: 'Reposition', classes: ['reposition'], defaultVal: 0.57, defaultCx: 0.47 },
+      { key: 'Sunset', classes: ['sunset'], defaultVal: 0.29, defaultCx: 0.64 },
+    ];
+
+    return categories.map(cat => {
+      const filtered = locationFilteredSkus.filter(s => cat.classes.includes(srClassify(s)));
+      if (filtered.length === 0) {
+        return {
+          name: cat.key,
+          'Commercial value': cat.defaultVal,
+          'Complexity score': cat.defaultCx
+        };
+      }
+      const avgVal = filtered.reduce((sum, s) => sum + s.val, 0) / filtered.length;
+      const avgCx = filtered.reduce((sum, s) => sum + s.cx, 0) / filtered.length;
+      return {
+        name: cat.key,
+        'Commercial value': parseFloat(avgVal.toFixed(2)),
+        'Complexity score': parseFloat(avgCx.toFixed(2))
+      };
+    });
+  }, [locationFilteredSkus]);
+
   // ----------------------------------------------------
   // Cannibalization Analyst States (Standard view panel)
   // ----------------------------------------------------
@@ -731,7 +759,7 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
           />
 
           <ValueComplexitySection
-            matrixScatterData={matrixScatterData}
+            groupedBarData={groupedBarData}
             rankedPriorities={rankedPriorities}
             selectedAiClass={selectedAiClass}
             setSelectedSkuName={setSelectedSkuName}
