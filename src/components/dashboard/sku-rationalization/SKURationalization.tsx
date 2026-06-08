@@ -631,7 +631,7 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
                   : `bg-transparent transition-colors duration-200 ${isDarkMode ? 'text-zinc-400 hover:text-zinc-200' : 'text-zinc-500 hover:text-zinc-800'}`
               }`}
             >
-              Portfolio simulator
+              Portfolio Simulator
             </button>
             <button
               onClick={() => {
