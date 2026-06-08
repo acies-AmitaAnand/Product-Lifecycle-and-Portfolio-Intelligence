@@ -457,7 +457,6 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
   const [correlation, setCorrelation] = useState(-0.62);
   const [category, setCategory] = useState('Beverages');
   const [hasScored, setHasScored] = useState(true);
-  const [guideOpen, setGuideOpen] = useState(false);
 
   // SKU Detail Modal State
   const [selectedSkuDetails, setSelectedSkuDetails] = useState<typeof SKUS[0] | null>(null);
@@ -824,38 +823,7 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
       {activeView === 'analyst' && (
         <div className="space-y-6">
           
-          {/* ① DIAGNOSTIC GUIDE PANEL */}
-          <div className="glass-card bg-white dark:bg-[#1a1a24] border border-black/5 dark:border-white/10 p-4 rounded-xl shadow-sm">
-            <button 
-              onClick={() => setGuideOpen(!guideOpen)}
-              className="w-full text-left font-bold text-xs uppercase tracking-widest text-[#8b5cf6] dark:text-purple-300 flex justify-between items-center cursor-pointer border-none bg-transparent outline-none"
-            >
-              <span className="flex items-center gap-2">
-                <HelpCircle size={14} />
-                Rationalization Diagnostic Guide
-              </span>
-              <span className="text-[10px]">{guideOpen ? '✕ Collapse Info' : '▲ Expand Info'}</span>
-            </button>
-
-            {guideOpen && (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t border-black/5 dark:border-white/5 mt-3 text-[11px] leading-relaxed text-zinc-555 dark:text-zinc-400 font-semibold">
-                <div className="space-y-1">
-                  <h4 className="font-bold text-acies-gray dark:text-white uppercase text-[9px] tracking-wider text-[#8b5cf6]">1. Cannibalization Scatter Map</h4>
-                  <p>Represents variant overlaps. Bubble size denotes revenue at risk. Click bubbles to auto-load pairs inside the scorer card.</p>
-                </div>
-                <div className="space-y-1">
-                  <h4 className="font-bold text-acies-gray dark:text-white uppercase text-[9px] tracking-wider text-[#8b5cf6]">2. Promotional Erosion Analysis</h4>
-                  <p>Lists SKUs with high promo dependencies. Products with &gt;40% discount dependency erode margin equity and represent rationalization priorities.</p>
-                </div>
-                <div className="space-y-1">
-                  <h4 className="font-bold text-acies-gray dark:text-white uppercase text-[9px] tracking-wider text-[#8b5cf6]">3. Score SKU Pairs Calculator</h4>
-                  <p>Evaluates correlation coefficients. Large negative numbers reflect substitution shifts where promo items cannibalize organic baselines.</p>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* ② INTERACTIVE PAIR SCORER CALCULATOR */}
+          {/* ① INTERACTIVE PAIR SCORER CALCULATOR */}
           <CalculatorScorer
             skuA={skuA}
             setSkuA={setSkuA}
