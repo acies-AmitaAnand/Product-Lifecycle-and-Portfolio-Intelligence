@@ -672,7 +672,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         
         {/* Top SKU Performance List */}
-        <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3.5 h-[360px] flex flex-col">
+        <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3.5 h-[400px] flex flex-col">
           <h3 className="text-[11px] font-bold uppercase tracking-widest pb-2 border-b border-black/5 dark:border-white/5 mb-2 flex items-center justify-between gap-1.5">
             <div className="flex items-center gap-2">
               <span>Top SKU Performance</span>
@@ -758,16 +758,6 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
                   );
                 })}
               </div>
-              <button
-                onClick={() => {
-                  (window as any).__scrollToDirectory = true;
-                  window.location.hash = 'product-directory-section';
-                  setActiveTab(4);
-                }}
-                className="mt-2 w-full py-1.5 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border border-black/10 dark:border-white/10 text-center text-[8px] font-bold uppercase tracking-widest text-[#6d28d9] dark:text-[#a78bfa] transition-all cursor-pointer rounded-sm shrink-0"
-              >
-                View Full SKU Rationalization Directory &rarr;
-              </button>
             </div>
           ) : (
             <div className="flex-1 min-h-0 flex items-center justify-center relative pb-4">
@@ -781,10 +771,10 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
                   <Pie
                     data={topSkus}
                     cx="50%"
-                    cy="50%"
-                    innerRadius={0}
-                    outerRadius={100}
-                    paddingAngle={1}
+                    cy="42%"
+                    innerRadius={55}
+                    outerRadius={80}
+                    paddingAngle={2}
                     dataKey="rev"
                     nameKey="name"
                     onClick={(data) => setSelectedSku(data)}
@@ -793,17 +783,17 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
                     cursor="pointer"
                   >
                     {topSkus.map((entry, index) => {
-                      const getSkuColor = (cat: string, idx: number) => {
-                        if (cat === 'Beverages') return '#7C3AED';
-                        if (cat === 'Snacks') return '#0F6E56';
-                        if (cat === 'Personal Care') return '#185FA5';
-                        if (cat === 'Household') return '#854F0B';
-                        const fallbackColors = ['#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#ec4899'];
-                        return fallbackColors[idx % fallbackColors.length];
-                      };
-                      return <Cell key={`cell-${index}`} fill={getSkuColor(entry.cat, index)} />;
+                      const skuColors = ['#6366F1', '#8B5CF6', '#10B981', '#F43F5E', '#EAB308'];
+                      return <Cell key={`cell-${index}`} fill={skuColors[index % skuColors.length]} />;
                     })}
                   </Pie>
+                  <Legend 
+                    verticalAlign="bottom" 
+                    align="center"
+                    iconType="circle"
+                    iconSize={6}
+                    wrapperStyle={{ fontSize: 8.5, fontWeight: 'bold', bottom: 18 }}
+                  />
                 </RePieChart>
               </ResponsiveContainer>
               
@@ -824,7 +814,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
         </div>
 
         {/* Top Customer Insights List */}
-        <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3.5 h-[360px] flex flex-col">
+        <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3.5 h-[400px] flex flex-col">
           <h3 className="text-[11px] font-bold uppercase tracking-widest pb-2 border-b border-black/5 dark:border-white/5 mb-2 flex items-center justify-between gap-1.5">
             <span>Top Customer Insights</span>
             <span className="text-[7.5px] font-extrabold opacity-40 uppercase">Buying Intent</span>
@@ -900,7 +890,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
         </div>
 
         {/* Forecast vs Actual by Region */}
-        <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3.5 h-[360px] flex flex-col">
+        <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3.5 h-[400px] flex flex-col">
           <h3 className="text-[11px] font-bold uppercase tracking-widest pb-2 border-b border-black/5 dark:border-white/5 mb-2 flex items-center justify-between gap-1.5">
             <span>Regional Forecast</span>
             <div className="flex items-center gap-2">
