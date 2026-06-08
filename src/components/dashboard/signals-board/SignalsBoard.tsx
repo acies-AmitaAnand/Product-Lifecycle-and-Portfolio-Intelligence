@@ -8,6 +8,19 @@ import {
   LineChart, Line, BarChart, Bar, Cell
 } from 'recharts';
 import { Role } from '../../../types/dashboard';
+import { EmailComposerModal } from '../portfolio-health/EmailComposerModal';
+import { SuccessFeedbackModal } from '../portfolio-health/SuccessFeedbackModal';
+import { ResolveSignalModal } from './ResolveSignalModal';
+
+const RECIPIENT_TITLES: Record<string, string> = {
+  'ananya.sen@aciesglobal.com': 'VP Finance',
+  'vikram.solanki@aciesglobal.com': 'QC Manager & Logistics Lead',
+  'priya.sharma@aciesglobal.com': 'Product Manager',
+  'rajendra.patel@aciesglobal.com': 'Vapi Hub Director',
+  'amit.verma@aciesglobal.com': 'NPD Lead',
+  'karan.johar@aciesglobal.com': 'Retail Relations Director'
+};
+
 
 interface SignalsBoardProps {
   role: Role;
@@ -477,6 +490,20 @@ const VPSignalsBoardView: React.FC<{ isDarkMode: boolean; setActiveTab: (tab: nu
   const [lastRefreshed, setLastRefreshed] = useState('');
   const [toasts, setToasts] = useState<{ id: string; title: string; body: string; color: string }[]>([]);
 
+  const [activeResolveSignal, setActiveResolveSignal] = useState<string | null>(null);
+  const [composerOpen, setComposerOpen] = useState(false);
+  const [composerEmail, setComposerEmail] = useState({ to: '', name: '', subject: '', body: '', action: '' });
+  const [successFeedback, setSuccessFeedback] = useState<{
+    isOpen: boolean;
+    recipientName: string;
+    recipientTitle: string;
+    recipientEmail: string;
+    contextType: 'signal';
+    contextTitle: string;
+    channel: 'email' | 'message';
+  } | null>(null);
+
+
   useEffect(() => {
     const updateTime = () => {
       const now = new Date();
@@ -764,12 +791,7 @@ const VPSignalsBoardView: React.FC<{ isDarkMode: boolean; setActiveTab: (tab: nu
                       </button>
                       <button 
                         onClick={() => {
-                          let msg = '';
-                          if (sig.type === 'Opportunity') msg = 'Dispatched inventory allocation increase.';
-                          else if (sig.type === 'Risk') msg = 'Onboarded alternative logistics co-packer.';
-                          else if (sig.type === 'Competitor') msg = 'Adjusted strategic price thresholds.';
-                          else msg = 'Logged operational action ticket.';
-                          handleResolveSignal(sig.id, sig.title, msg);
+                          setActiveResolveSignal(sig.id);
                         }}
                         className="px-2.5 py-1 bg-acies-gray hover:bg-acies-yellow hover:text-acies-gray text-white rounded-sm text-[8.5px] font-bold uppercase tracking-wider transition-all cursor-pointer border-none flex items-center gap-1"
                       >
@@ -1066,6 +1088,71 @@ const VPSignalsBoardView: React.FC<{ isDarkMode: boolean; setActiveTab: (tab: nu
           </div>
         ))}
       </div>
+
+      {/* Resolve Sync Meeting Modal */}
+      <ResolveSignalModal
+        isOpen={!!activeResolveSignal}
+        signal={signals.find(x => x.id === activeResolveSignal) || null}
+        onClose={() => setActiveResolveSignal(null)}
+        onRequestAction={(email, name, subject, body) => {
+          setComposerEmail({
+            to: email,
+            name,
+            subject,
+            body,
+            action: activeResolveSignal || ''
+          });
+          setComposerOpen(true);
+        }}
+      />
+
+      {/* Email Composer Modal */}
+      <EmailComposerModal 
+        isOpen={composerOpen}
+        onClose={() => setComposerOpen(false)}
+        initialEmail={composerEmail}
+        onSend={(name, email, subject, body, channel) => {
+          setComposerOpen(false);
+          const resolvedTitle = RECIPIENT_TITLES[email.toLowerCase()] || 'Product Manager';
+          const signal = signals.find(x => x.id === composerEmail.action);
+          const title = signal ? signal.title : '';
+          
+          setSuccessFeedback({
+            isOpen: true,
+            recipientName: name,
+            recipientTitle: resolvedTitle,
+            recipientEmail: email,
+            contextType: 'signal',
+            contextTitle: title,
+            channel
+          });
+          
+          addToast(
+            'Sync Meeting Invitation Sent', 
+            `Meeting invite ${channel === 'email' ? 'email' : 'message'} sent successfully to ${name} (${email}).`, 
+            '#10b981'
+          );
+          
+          // Resolve signal
+          setSignals(prev => prev.filter(s => s.id !== composerEmail.action));
+          setActiveResolveSignal(null);
+        }}
+      />
+
+      {/* Success Feedback Modal */}
+      {successFeedback && (
+        <SuccessFeedbackModal
+          isOpen={successFeedback.isOpen}
+          onClose={() => setSuccessFeedback(null)}
+          recipientName={successFeedback.recipientName}
+          recipientTitle={successFeedback.recipientTitle}
+          recipientEmail={successFeedback.recipientEmail}
+          contextType={successFeedback.contextType}
+          contextTitle={successFeedback.contextTitle}
+          isDarkMode={isDarkMode}
+          channel={successFeedback.channel}
+        />
+      )}
 
     </div>
   );
