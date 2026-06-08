@@ -16,6 +16,7 @@ import { RegionalForecastModal } from './RegionalForecastModal';
 import { EmailComposerModal } from '../portfolio-health/EmailComposerModal';
 import { TrendMonthForecastModal } from './TrendMonthForecastModal';
 import { CategoryPerformanceDetailsModal } from './CategoryPerformanceDetailsModal';
+import { SmartAlertDetailsModal } from './SmartAlertDetailsModal';
 
 interface CustomerInsight {
   name: string;
@@ -199,6 +200,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
   const [categoryViewMode, setCategoryViewMode] = useState<'donut' | 'bar' | 'radar'>('donut');
   const [selectedTrendMonth, setSelectedTrendMonth] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedAlert, setSelectedAlert] = useState<any>(null);
 
 
   // Dynamic accent color based on theme
@@ -319,7 +321,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
                 <div className="flex items-center gap-1.5 shrink-0">
                   <button 
                     type="button"
-                    onClick={() => setActiveTab(a.sev === 'critical' ? 4 : 5)} // jumps to relevant Tab
+                    onClick={() => setSelectedAlert(a)}
                     className="text-[8px] font-bold uppercase tracking-widest text-acies-yellow hover:underline cursor-pointer border-none bg-transparent"
                   >
                     Investigate
@@ -1051,6 +1053,13 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
         isOpen={!!selectedCategory}
         categoryName={selectedCategory}
         onClose={() => setSelectedCategory(null)}
+      />
+
+      {/* Smart Alert Details Modal */}
+      <SmartAlertDetailsModal 
+        isOpen={!!selectedAlert}
+        alert={selectedAlert}
+        onClose={() => setSelectedAlert(null)}
       />
 
       {/* Email Composer Modal */}
