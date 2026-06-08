@@ -424,8 +424,12 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
           <div className="mb-2.5 flex justify-between items-start">
             <div>
               <h3 className="text-[11px] font-bold uppercase tracking-widest">Revenue Trend</h3>
-              <p className="text-[8.5px] text-zinc-500 uppercase tracking-widest mt-0.5">
-                Monthly Actual vs Target (₹ Cr) — This Year • <span className="text-purple-600 dark:text-purple-400 font-extrabold normal-case">💡 Click any month to forecast next year & review price indexes</span>
+              <p className="text-[8.5px] text-zinc-500 uppercase tracking-widest mt-0.5 leading-normal">
+                Monthly Actual vs Target (₹ Cr) — This Year
+                <br />
+                <span className="text-purple-600 dark:text-purple-400 font-extrabold normal-case">
+                  Click any month to forecast next year & review price indexes
+                </span>
               </p>
             </div>
             <div className="flex items-center border border-black/10 dark:border-white/10 rounded-md overflow-hidden bg-black/5 dark:bg-white/5 p-0.5 ml-1 shrink-0">
