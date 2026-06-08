@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  TrendingUp, TrendingDown, Check, X, AlertTriangle, RefreshCw, Zap, Clock, Home, List, PieChart, BarChart2, Calendar, LayoutGrid 
+  TrendingUp, TrendingDown, Check, X, AlertTriangle, RefreshCw, Zap, Clock, Home, List, PieChart, BarChart2, Calendar, LayoutGrid,
+  LineChart as LucideLineChart, Activity, Radar as LucideRadar
 } from 'lucide-react';
 import { 
-  ResponsiveContainer, AreaChart, Area, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, BarChart, Bar, Cell, PieChart as RePieChart, Pie, Legend 
+  ResponsiveContainer, AreaChart, Area, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, BarChart, Bar, Cell, PieChart as RePieChart, Pie, Legend,
+  ComposedChart, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar
 } from 'recharts';
 import { Role } from '../../../types/dashboard';
 import { 
@@ -21,7 +23,468 @@ interface ExecutiveOverviewProps {
   isDarkMode: boolean;
 }
 
-// Live Industry Updates Mock Data
+// Top Customer Insights Dataset
+const CUSTOMER_INSIGHTS_DATA: Record<string, Array<{
+  name: string;
+  segment: string;
+  revContribution: string;
+  interestTrend: string;
+  buyingFocus: string[];
+  growthTrend: string;
+  growthDirection: 'up' | 'down';
+}>> = {
+  Beverages: [
+    {
+      name: "Apex Hypermarkets",
+      segment: "Enterprise Chain • 98% Retention",
+      revContribution: "₹24.8 Cr",
+      interestTrend: "Rising demand for eco-friendly packaging and natural mineral mixers.",
+      buyingFocus: ["BrandF Water Eco-Pack", "Coconut Water 1L"],
+      growthTrend: "+12.4% YoY",
+      growthDirection: "up"
+    },
+    {
+      name: "QuickCart Convenience",
+      segment: "Regional Chain • 94% Retention",
+      revContribution: "₹14.2 Cr",
+      interestTrend: "Shifting shelf preference toward high-energy single-serve options.",
+      buyingFocus: ["BrandC Energy Drink", "Mango Fizz 250ml"],
+      growthTrend: "+8.7% YoY",
+      growthDirection: "up"
+    },
+    {
+      name: "Zenith Distributors",
+      segment: "Wholesale Partner • 91% Retention",
+      revContribution: "₹18.5 Cr",
+      interestTrend: "Bulk purchasing of premium fruit-based beverage offerings.",
+      buyingFocus: ["Mango Fizz 500ml", "Aloe Vera Drink"],
+      growthTrend: "+4.2% YoY",
+      growthDirection: "up"
+    }
+  ],
+  Snacks: [
+    {
+      name: "MetroFoods Group",
+      segment: "Key Account • 97% Retention",
+      revContribution: "₹19.6 Cr",
+      interestTrend: "Spike in premium healthy baked items and baked grain products.",
+      buyingFocus: ["Oat Cookies", "Masala Puffs"],
+      growthTrend: "+15.3% YoY",
+      growthDirection: "up"
+    },
+    {
+      name: "Apex Hypermarkets",
+      segment: "Enterprise Chain • 98% Retention",
+      revContribution: "₹16.8 Cr",
+      interestTrend: "High volume restocking of classic snack portfolios.",
+      buyingFocus: ["BrandB Chips", "BrandD Chocolate 100g"],
+      growthTrend: "+3.4% YoY",
+      growthDirection: "up"
+    },
+    {
+      name: "Star Retailers",
+      segment: "Mid-Market Chain • 89% Retention",
+      revContribution: "₹8.4 Cr",
+      interestTrend: "Margin compression on chocolate products due to promotional shifts.",
+      buyingFocus: ["Choco Wafers", "BrandD Chocolate 250g"],
+      growthTrend: "-2.1% YoY",
+      growthDirection: "down"
+    }
+  ],
+  "Personal Care": [
+    {
+      name: "Luminate Boutique",
+      segment: "Specialty Retailer • 95% Retention",
+      revContribution: "₹11.2 Cr",
+      interestTrend: "Surging demand for organic ingredients and active-SPF hand care.",
+      buyingFocus: ["Hand Cream SPF", "Herbal Shampoo"],
+      growthTrend: "+22.4% YoY",
+      growthDirection: "up"
+    },
+    {
+      name: "GlobalMart Inc",
+      segment: "Enterprise Chain • 96% Retention",
+      revContribution: "₹14.5 Cr",
+      interestTrend: "Steady interest in family-pack cleansing and hygiene products.",
+      buyingFocus: ["BrandB Soap", "BrandD Toothpaste"],
+      growthTrend: "+6.1% YoY",
+      growthDirection: "up"
+    },
+    {
+      name: "EcoBeauty Distribs",
+      segment: "Niche Wholesaler • 92% Retention",
+      revContribution: "₹6.8 Cr",
+      interestTrend: "Stocking up on foaming cleansers; sensitive skin variants preferred.",
+      buyingFocus: ["Foam Face Wash", "Aloe Face Wash"],
+      growthTrend: "+8.2% YoY",
+      growthDirection: "up"
+    }
+  ],
+  Dairy: [
+    {
+      name: "MetroFoods Group",
+      segment: "Key Account • 97% Retention",
+      revContribution: "₹12.4 Cr",
+      interestTrend: "Expanding premium European cheese inventory across key metro centers.",
+      buyingFocus: ["BrandD Cheese Blocks", "BrandB Yogurt 500g"],
+      growthTrend: "+11.2% YoY",
+      growthDirection: "up"
+    },
+    {
+      name: "Apex Hypermarkets",
+      segment: "Enterprise Chain • 98% Retention",
+      revContribution: "₹10.5 Cr",
+      interestTrend: "Steady volume orders for organic and gut-health probiotic brands.",
+      buyingFocus: ["BrandB Yogurt 1kg", "BrandE Yogurt (Straw)"],
+      growthTrend: "+4.5% YoY",
+      growthDirection: "up"
+    }
+  ],
+  Household: [
+    {
+      name: "GlobalMart Inc",
+      segment: "Enterprise Chain • 96% Retention",
+      revContribution: "₹18.2 Cr",
+      interestTrend: "Substantial transition to premium concentrated cleaning capsules.",
+      buyingFocus: ["Laundry Pods Premium", "Dish Soap 1L"],
+      growthTrend: "+14.6% YoY",
+      growthDirection: "up"
+    },
+    {
+      name: "Apex Hypermarkets",
+      segment: "Enterprise Chain • 98% Retention",
+      revContribution: "₹12.6 Cr",
+      interestTrend: "Volume restocking of general dish soaps and standard detergents.",
+      buyingFocus: ["BrandF Detergent", "Dish Soap 1L"],
+      growthTrend: "+5.3% YoY",
+      growthDirection: "up"
+    },
+    {
+      name: "QuickCart Convenience",
+      segment: "Regional Chain • 94% Retention",
+      revContribution: "₹4.8 Cr",
+      interestTrend: "Decline in fabric softeners due to localized chemical regulatory flags.",
+      buyingFocus: ["Fabric Softener", "Floor Cleaner"],
+      growthTrend: "-8.4% YoY",
+      growthDirection: "down"
+    }
+  ]
+};
+
+// Strategic Forecast Details Dataset
+const MONTH_FORECAST_DETAILS: Record<string, {
+  month: string;
+  fullName: string;
+  thisYearActual: string;
+  thisYearTarget: string;
+  lastYearActual: string;
+  nextYearForecast: string;
+  lastYearPriceIndex: string;
+  thisYearPriceIndex: string;
+  growthRate: string;
+  aiRecommendations: string[];
+}> = {
+  Jan: {
+    month: "Jan",
+    fullName: "January",
+    thisYearActual: "₹58.0 Cr",
+    thisYearTarget: "₹60.0 Cr",
+    lastYearActual: "₹51.8 Cr",
+    nextYearForecast: "₹65.0 Cr",
+    lastYearPriceIndex: "₹142 / unit",
+    thisYearPriceIndex: "₹148 / unit",
+    growthRate: "+12.4% projected",
+    aiRecommendations: [
+      "Raw material prices are projected to ease in Q1. Pre-negotiate wholesale sugar and packaging contracts to lock in a 4% cost reduction.",
+      "Sustain higher marketing allocation for APAC Beverages to offset the slight winter seasonal slowdown.",
+      "Transition low-velocity Dairy variants to regional distributors to lower direct administrative complexity."
+    ]
+  },
+  Feb: {
+    month: "Feb",
+    fullName: "February",
+    thisYearActual: "₹61.0 Cr",
+    thisYearTarget: "₹63.0 Cr",
+    lastYearActual: "₹54.5 Cr",
+    nextYearForecast: "₹68.3 Cr",
+    lastYearPriceIndex: "₹143 / unit",
+    thisYearPriceIndex: "₹149 / unit",
+    growthRate: "+12.0% projected",
+    aiRecommendations: [
+      "Run cross-promotional campaigns linking Beverages and Snacks to capture post-holiday retail velocity.",
+      "Increase safety stock levels by 6% in hypermarkets for top 10 hero SKUs to avoid recurring stockout leakage.",
+      "Hold contract pricing corridors stable across Italy and Spain; resist discount pressure from enterprise accounts."
+    ]
+  },
+  Mar: {
+    month: "Mar",
+    fullName: "March",
+    thisYearActual: "₹65.0 Cr",
+    thisYearTarget: "₹66.0 Cr",
+    lastYearActual: "₹58.1 Cr",
+    nextYearForecast: "₹72.8 Cr",
+    lastYearPriceIndex: "₹144 / unit",
+    thisYearPriceIndex: "₹151 / unit",
+    growthRate: "+12.0% projected",
+    aiRecommendations: [
+      "Lock in procurement logistics for Q2 peak shipping lanes to hedge against freight rates volatility.",
+      "Introduce secondary vendor options for primary flavor concentrates to hedge supply chain lead-time risks.",
+      "Prepare shelf layouts for upcoming BrandA Premium Energy launches; secure endcap space with retailers."
+    ]
+  },
+  Apr: {
+    month: "Apr",
+    fullName: "April",
+    thisYearActual: "₹70.0 Cr",
+    thisYearTarget: "₹70.0 Cr",
+    lastYearActual: "₹62.5 Cr",
+    nextYearForecast: "₹78.4 Cr",
+    lastYearPriceIndex: "₹144 / unit",
+    thisYearPriceIndex: "₹152 / unit",
+    growthRate: "+12.0% projected",
+    aiRecommendations: [
+      "Monitor raw milk supplier capacity; pre-arrange backup supply agreements to secure gross margin parameters.",
+      "Deploy regional price increases of 3.5% on snacks where demand elasticity is low to counter inflation.",
+      "Standardize currency hedging contracts to insulate EMEA sales margins from currency fluctuations."
+    ]
+  },
+  May: {
+    month: "May",
+    fullName: "May",
+    thisYearActual: "₹74.0 Cr",
+    thisYearTarget: "₹74.0 Cr",
+    lastYearActual: "₹66.1 Cr",
+    nextYearForecast: "₹82.9 Cr",
+    lastYearPriceIndex: "₹145 / unit",
+    thisYearPriceIndex: "₹153 / unit",
+    growthRate: "+12.0% projected",
+    aiRecommendations: [
+      "Run optimization algorithms on regional inventories to balance stock levels across North and West DCs.",
+      "Optimize trade promotion depth: enforce a 15% discount cap on cookies and chips to reclaim margin rates.",
+      "Accelerate phase-out timelines for low-value sunset candidates to reallocate production floor bandwidth."
+    ]
+  },
+  Jun: {
+    month: "Jun",
+    fullName: "June",
+    thisYearActual: "₹77.0 Cr",
+    thisYearTarget: "₹76.0 Cr",
+    lastYearActual: "₹68.8 Cr",
+    nextYearForecast: "₹86.2 Cr",
+    lastYearPriceIndex: "₹146 / unit",
+    thisYearPriceIndex: "₹154 / unit",
+    growthRate: "+11.9% projected",
+    aiRecommendations: [
+      "Implement direct-to-retailer distribution routes in high-density metro corridors to bypass regional depot margins.",
+      "Triage competitor pricing moves: match promotional discount frequency, but maintain base list prices.",
+      "Leverage summer volume gains by scaling distribution of single-serve mineral water and sports drinks."
+    ]
+  },
+  Jul: {
+    month: "Jul",
+    fullName: "July",
+    thisYearActual: "₹80.0 Cr",
+    thisYearTarget: "₹80.0 Cr",
+    lastYearActual: "₹71.4 Cr",
+    nextYearForecast: "₹89.6 Cr",
+    lastYearPriceIndex: "₹146 / unit",
+    thisYearPriceIndex: "₹154 / unit",
+    growthRate: "+12.0% projected",
+    aiRecommendations: [
+      "Conduct midpoint operational reviews of supply sourcing lead times; update DC replenishment schedules.",
+      "Consolidate raw material freight carriers to secure bulk shipping lane contract discounts.",
+      "Optimize portfolio mix: increase production volume for top-margin items while capping low-velocity lines."
+    ]
+  },
+  Aug: {
+    month: "Aug",
+    fullName: "August",
+    thisYearActual: "₹84.0 Cr",
+    thisYearTarget: "₹83.0 Cr",
+    lastYearActual: "₹75.0 Cr",
+    nextYearForecast: "₹94.1 Cr",
+    lastYearPriceIndex: "₹147 / unit",
+    thisYearPriceIndex: "₹155 / unit",
+    growthRate: "+12.0% projected",
+    aiRecommendations: [
+      "Initiate discussions with primary supermarkets for holiday shelf placement commitments.",
+      "Pre-position packaging inventory at regional warehouses to avoid shipping congestions.",
+      "Analyze customer NPS score feedback; prioritize delivery dispatch speed optimizations in Europe."
+    ]
+  },
+  Sep: {
+    month: "Sep",
+    fullName: "September",
+    thisYearActual: "₹88.0 Cr",
+    thisYearTarget: "₹86.0 Cr",
+    lastYearActual: "₹78.6 Cr",
+    nextYearForecast: "₹98.6 Cr",
+    lastYearPriceIndex: "₹148 / unit",
+    thisYearPriceIndex: "₹156 / unit",
+    growthRate: "+12.1% projected",
+    aiRecommendations: [
+      "Negotiate bulk warehouse space leases for Q4 inventory build-ups before spot rental rates spike.",
+      "Curb promotional discounts on high-erosion accounts to recover list price margins prior to holidays.",
+      "Audit supplier performance indexes; draft performance improvement plans for lagging partners."
+    ]
+  },
+  Oct: {
+    month: "Oct",
+    fullName: "October",
+    thisYearActual: "₹91.0 Cr",
+    thisYearTarget: "₹90.0 Cr",
+    lastYearActual: "₹81.3 Cr",
+    nextYearForecast: "₹101.9 Cr",
+    lastYearPriceIndex: "₹148 / unit",
+    thisYearPriceIndex: "₹157 / unit",
+    growthRate: "+12.0% projected",
+    aiRecommendations: [
+      "Execute phased rollouts for regional pricing adjustments on personal care portfolios.",
+      "Establish priority freight lanes with logistics providers to secure holiday delivery dispatch windows.",
+      "Monitor cannibalization alerts in Snacks; adjust shelf spacing to favor high-margin variants."
+    ]
+  },
+  Nov: {
+    month: "Nov",
+    fullName: "November",
+    thisYearActual: "₹92.4 Cr",
+    thisYearTarget: "₹93.0 Cr",
+    lastYearActual: "₹83.0 Cr",
+    nextYearForecast: "₹104.2 Cr",
+    lastYearPriceIndex: "₹149 / unit",
+    thisYearPriceIndex: "₹157 / unit",
+    growthRate: "+12.0% projected",
+    aiRecommendations: [
+      "Run final tests on the upcoming Q1 new product launches; check milestone pipeline readiness.",
+      "Maximize distributor shelf inventory depth on high-demand holiday SKU lines.",
+      "Ensure Continuous Close audit ledger records are updated; clear all intercompany variances."
+    ]
+  },
+  Dec: {
+    month: "Dec",
+    fullName: "December",
+    thisYearActual: "₹95.1 Cr",
+    thisYearTarget: "₹96.0 Cr",
+    lastYearActual: "₹85.7 Cr",
+    nextYearForecast: "₹107.5 Cr",
+    lastYearPriceIndex: "₹150 / unit",
+    thisYearPriceIndex: "₹158 / unit",
+    growthRate: "+12.0% projected",
+    aiRecommendations: [
+      "Review full-year margin and revenue targets; formulate Q1 operational goals and benchmarks.",
+      "Leverage year-end volume rebates with raw material suppliers to maximize gross margins.",
+      "Prepare portfolio rationalization lists for phase-out rollouts in the new fiscal year."
+    ]
+  }
+};
+
+// Month Forecast Modal Component
+const MonthForecastModal: React.FC<{ isOpen: boolean; month: string | null; onClose: () => void }> = ({ isOpen, month, onClose }) => {
+  if (!isOpen || !month) return null;
+  const data = MONTH_FORECAST_DETAILS[month];
+  if (!data) return null;
+  const isBelowTarget = data.thisYearActual !== "N/A (Pending)" && parseFloat(data.thisYearActual.replace(/[^\d.]/g, "")) < parseFloat(data.thisYearTarget.replace(/[^\d.]/g, ""));
+
+  return (
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[120] flex items-center justify-center p-4">
+      <div className="w-full max-w-xl bg-white dark:bg-zinc-900 border border-black/10 dark:border-white/15 p-6 rounded shadow-2xl flex flex-col gap-4 text-xs max-h-[90vh] overflow-y-auto">
+        <div className="flex justify-between items-start border-b border-black/10 dark:border-white/10 pb-3">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <Calendar size={16} className="text-purple-600 dark:text-purple-400" />
+              <h2 className="text-sm font-display font-extrabold text-zinc-900 dark:text-zinc-50">
+                Strategic Forecast & Pricing Review: {data.fullName}
+              </h2>
+            </div>
+            <p className="text-[10px] text-zinc-500 uppercase tracking-wider font-semibold">
+              Corporate Intelligence & Projections
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="p-1 hover:bg-black/5 dark:hover:bg-white/5 rounded text-zinc-400 hover:text-zinc-650 cursor-pointer border-none bg-transparent outline-none"
+          >
+            <X size={16} />
+          </button>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="space-y-2">
+            <p className="font-bold text-[9.5px] uppercase tracking-widest text-zinc-400">Revenue Analysis (₹ Cr)</p>
+            <div className="bg-zinc-50 dark:bg-white/5 p-3.5 rounded border border-black/5 dark:border-white/10 space-y-2.5">
+              <div className="flex justify-between items-center">
+                <span className="text-zinc-500 font-medium">Prior Year (Last Year) Sales:</span>
+                <span className="font-semibold text-zinc-700 dark:text-zinc-200">{data.lastYearActual}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-zinc-500 font-medium">This Year Target vs Actual:</span>
+                <span className="font-semibold text-zinc-850 dark:text-white">
+                  {data.thisYearTarget} / <span className={isBelowTarget ? "text-amber-500 font-bold" : "text-green-500 font-bold"}>{data.thisYearActual}</span>
+                </span>
+              </div>
+              <div className="border-t border-black/5 dark:border-white/5 pt-2.5 flex justify-between items-center">
+                <span className="text-purple-600 dark:text-purple-400 font-extrabold">Next Year Forecast (Proj):</span>
+                <div className="text-right">
+                  <span className="font-extrabold text-purple-600 dark:text-purple-400 text-sm block">{data.nextYearForecast}</span>
+                  <span className="text-[8px] text-green-500 uppercase tracking-wider font-extrabold">{data.growthRate}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <p className="font-bold text-[9.5px] uppercase tracking-widest text-zinc-400">Blended Price Index (Category unit)</p>
+            <div className="bg-zinc-50 dark:bg-white/5 p-3.5 rounded border border-black/5 dark:border-white/10 space-y-2.5 h-[116px] flex flex-col justify-between">
+              <div className="flex justify-between items-center">
+                <span className="text-zinc-500 font-medium">Last Year Blended Price:</span>
+                <span className="font-semibold text-zinc-700 dark:text-zinc-200">{data.lastYearPriceIndex}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-zinc-500 font-medium">This Year Blended Price:</span>
+                <span className="font-semibold text-zinc-850 dark:text-white">{data.thisYearPriceIndex}</span>
+              </div>
+              <div className="border-t border-black/5 dark:border-white/5 pt-2.5 flex justify-between items-center">
+                <span className="text-indigo-650 dark:text-indigo-400 font-bold">YoY Price Lift:</span>
+                <span className="text-[10px] font-extrabold text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">+4.2% Growth</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-1.5">
+          <div className="flex items-center gap-1.5">
+            <Zap size={13} className="text-purple-500 dark:text-purple-400 animate-pulse" />
+            <p className="font-bold text-[9.5px] uppercase tracking-widest text-purple-600 dark:text-purple-400">
+              AI Strategic Recommendations (VP Brief)
+            </p>
+          </div>
+          <div className="bg-gradient-to-r from-purple-50/50 to-indigo-50/50 dark:from-purple-950/10 dark:to-indigo-950/10 border border-purple-500/15 rounded p-4 space-y-3 shadow-inner">
+            {data.aiRecommendations.map((recommendation: string, idx: number) => (
+              <div key={idx} className="flex gap-2.5 text-zinc-650 dark:text-zinc-300 leading-relaxed font-medium">
+                <div className="w-5 h-5 rounded-full bg-purple-500/10 dark:bg-purple-400/10 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0 font-extrabold text-[9px] mt-0.5 border border-purple-500/20">
+                  {idx + 1}
+                </div>
+                <p className="text-zinc-700 dark:text-zinc-200">{recommendation}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex justify-end border-t border-black/10 dark:border-white/10 pt-3 mt-1">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-4 py-2 border border-black/10 dark:border-white/10 rounded-sm font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer bg-transparent outline-none"
+          >
+            Close Analysis
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const EVENT_TEMPLATES = [
   { sev: 'info', sevC: '#3b82f6', type: 'Demand', msgs: ['Mango Fizz 500ml — reorder triggered: 12,000 units', 'E-Commerce channel orders up 18% in last 2hrs', 'Oat Cookies demand spike detected — APAC region', 'Customer return rate dropped to 1.2% — all categories'] },
   { sev: 'warning', sevC: '#f59e0b', type: 'Supply', msgs: ['Fabric Softener stock level below safety threshold', 'Lead time breach — supplier notification sent', 'Cold chain temperature alert — Mumbai DC resolved', 'Freight cost increase 4% — Mumbai to Bangalore lane'] },
@@ -67,6 +530,12 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [eventFilter, setEventFilter] = useState('all');
   const [feedEvents, setFeedEvents] = useState(() => generateInitialEvents());
+
+  // Vercel UI states
+  const [revenueChartType, setRevenueChartType] = useState<'line' | 'combi' | 'bar'>('line');
+  const [categoryChartType, setCategoryChartType] = useState<'donut' | 'bar' | 'radar'>('donut');
+  const [selectedMonth, setSelectedMonth] = useState<string | null>(null);
+  const [activeCategoryInsights, setActiveCategoryInsights] = useState<string>('Beverages');
   
   // Toasts
   interface Toast {
@@ -188,7 +657,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
 
   // Recharts actual vs target data
   const revMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  const revActual = [58, 61, 65, 70, 74, 77, 80, 84, 88, 91];
+  const revActual = [58, 61, 65, 70, 74, 77, 80, 84, 88, 91, 92.4, 95.1];
   const revTarget = [60, 63, 66, 70, 74, 76, 80, 83, 86, 90, 93, 96];
 
   const revenueTrendData = revMonths.map((m, idx) => ({
@@ -201,6 +670,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
   const categoryPerfData = [
     { name: 'Beverages', value: 316, color: '#534AB7' },
     { name: 'Snacks', value: 253, color: '#0F6E56' },
+    { name: 'Dairy', value: 180, color: '#F59E0B' },
     { name: 'Personal Care', value: 225, color: '#185FA5' },
     { name: 'Household', value: 145, color: '#854F0B' }
   ];
@@ -358,50 +828,240 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
         
         {/* Revenue Trend actual vs target */}
         <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3.5 h-[320px] flex flex-col">
-          <div className="mb-2.5">
-            <h3 className="text-[11px] font-bold uppercase tracking-widest">Revenue Trend</h3>
-            <p className="text-[8.5px] text-zinc-500 uppercase tracking-widest mt-0.5">Monthly Actual vs Target (₹ Cr) — This Year</p>
+          <div className="mb-2.5 flex justify-between items-start">
+            <div>
+              <h3 className="text-[11px] font-bold uppercase tracking-widest">Revenue Trend</h3>
+              <p className="text-[8.5px] text-zinc-500 uppercase tracking-widest mt-0.5 leading-normal">
+                Monthly Actual vs Target (₹ Cr) — This Year
+                {role === 'VP Product Management' && (
+                  <>
+                    <br />
+                    <span className="text-purple-650 dark:text-purple-400 font-extrabold normal-case">
+                      Click any month to forecast next year & review price indexes
+                    </span>
+                  </>
+                )}
+              </p>
+            </div>
+            
+            {/* Chart Type Toggles */}
+            <div className="flex items-center border border-black/10 dark:border-white/10 rounded-md overflow-hidden bg-black/5 dark:bg-white/5 p-0.5 ml-1 shrink-0">
+              <button
+                type="button"
+                onClick={() => setRevenueChartType('line')}
+                className={`p-1.5 px-2.5 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm shrink-0 ${
+                  revenueChartType === 'line' 
+                    ? 'bg-blue-500 text-white shadow-sm' 
+                    : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 bg-transparent'
+                }`}
+                title="Line Chart"
+              >
+                <LucideLineChart size={18} />
+              </button>
+              <button
+                type="button"
+                onClick={() => setRevenueChartType('combi')}
+                className={`p-1.5 px-2.5 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm shrink-0 ${
+                  revenueChartType === 'combi' 
+                    ? 'bg-blue-500 text-white shadow-sm' 
+                    : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 bg-transparent'
+                }`}
+                title="Combi Chart (Bar + Line)"
+              >
+                <Activity size={18} />
+              </button>
+              <button
+                type="button"
+                onClick={() => setRevenueChartType('bar')}
+                className={`p-1.5 px-2.5 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm shrink-0 ${
+                  revenueChartType === 'bar' 
+                    ? 'bg-blue-500 text-white shadow-sm' 
+                    : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 bg-transparent'
+                }`}
+                title="Bar Chart"
+              >
+                <BarChart2 size={18} />
+              </button>
+            </div>
           </div>
           <div className="flex-1 min-h-0">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={revenueTrendData} margin={{ top: 5, right: 5, left: -25, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridStroke} />
-                <XAxis dataKey="month" tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, color: tooltipText }} 
-                  itemStyle={{ color: tooltipText, fontSize: 10 }}
-                  labelStyle={{ fontSize: 10, fontWeight: 'bold' }}
-                />
-                <Line type="monotone" dataKey="Actual" stroke={accentColor} strokeWidth={2} activeDot={{ r: 5 }} dot={{ r: 2.5 }} />
-                <Line type="monotone" dataKey="Target" stroke={isDarkMode ? '#facc15' : '#d97706'} strokeDasharray="4 4" dot={false} strokeWidth={1.8} />
-              </LineChart>
+              {revenueChartType === 'line' ? (
+                <LineChart 
+                  data={revenueTrendData} 
+                  margin={{ top: 15, right: 20, left: -25, bottom: 5 }}
+                  className="cursor-pointer"
+                  onClick={(data) => {
+                    if (role === 'VP Product Management' && data && data.activeLabel) {
+                      setSelectedMonth(data.activeLabel);
+                    }
+                  }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridStroke} />
+                  <XAxis dataKey="month" tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, color: tooltipText }} 
+                    itemStyle={{ color: tooltipText, fontSize: 10 }}
+                    labelStyle={{ fontSize: 10, fontWeight: 'bold' }}
+                  />
+                  <Line type="monotone" dataKey="Actual" stroke={accentColor} strokeWidth={2} activeDot={{ r: 5 }} dot={{ r: 2.5 }} />
+                  <Line type="monotone" dataKey="Target" stroke={isDarkMode ? '#facc15' : '#d97706'} strokeDasharray="4 4" dot={false} strokeWidth={1.8} />
+                </LineChart>
+              ) : revenueChartType === 'combi' ? (
+                <ComposedChart 
+                  data={revenueTrendData} 
+                  margin={{ top: 15, right: 20, left: -25, bottom: 5 }}
+                  className="cursor-pointer"
+                  onClick={(data) => {
+                    if (role === 'VP Product Management' && data && data.activeLabel) {
+                      setSelectedMonth(data.activeLabel);
+                    }
+                  }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridStroke} />
+                  <XAxis dataKey="month" tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, color: tooltipText }} 
+                    itemStyle={{ fontSize: 10 }}
+                    labelStyle={{ fontSize: 10, fontWeight: 'bold' }}
+                  />
+                  <Bar dataKey="Actual" fill={accentColor} radius={[2, 2, 0, 0]} barSize={14} />
+                  <Line type="monotone" dataKey="Target" stroke={isDarkMode ? '#facc15' : '#d97706'} strokeWidth={2} dot={{ r: 2 }} activeDot={{ r: 4 }} />
+                </ComposedChart>
+              ) : (
+                <BarChart 
+                  data={revenueTrendData} 
+                  margin={{ top: 15, right: 20, left: -25, bottom: 5 }}
+                  barGap={4}
+                  className="cursor-pointer"
+                  onClick={(data) => {
+                    if (role === 'VP Product Management' && data && data.activeLabel) {
+                      setSelectedMonth(data.activeLabel);
+                    }
+                  }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridStroke} />
+                  <XAxis dataKey="month" tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, color: tooltipText }} 
+                    itemStyle={{ fontSize: 10 }}
+                    labelStyle={{ fontSize: 10, fontWeight: 'bold' }}
+                  />
+                  <Bar dataKey="Actual" fill={accentColor} radius={[2, 2, 0, 0]} barSize={12} />
+                  <Bar dataKey="Target" fill={isDarkMode ? '#facc15' : '#d97706'} radius={[2, 2, 0, 0]} barSize={12} />
+                </BarChart>
+              )}
             </ResponsiveContainer>
           </div>
         </div>
 
         {/* Category Performance */}
         <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3.5 h-[320px] flex flex-col">
-          <div className="mb-2.5">
-            <h3 className="text-[11px] font-bold uppercase tracking-widest">Category Performance</h3>
-            <p className="text-[8.5px] text-zinc-550 dark:text-zinc-450 uppercase tracking-widest mt-0.5">Revenue ₹ Cr by Category — Current Month</p>
+          <div className="mb-2.5 flex justify-between items-start">
+            <div>
+              <h3 className="text-[11px] font-bold uppercase tracking-widest">Category Performance</h3>
+              <p className="text-[8.5px] text-zinc-550 dark:text-zinc-450 uppercase tracking-widest mt-0.5">Revenue ₹ Cr by Category — Current Month</p>
+            </div>
+            
+            {/* Chart Type Toggles */}
+            <div className="flex items-center border border-black/10 dark:border-white/10 rounded-md overflow-hidden bg-black/5 dark:bg-white/5 p-0.5 ml-1 shrink-0">
+              <button
+                type="button"
+                onClick={() => setCategoryChartType('donut')}
+                className={`p-1.5 px-2.5 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm shrink-0 ${
+                  categoryChartType === 'donut' 
+                    ? 'bg-blue-500 text-white shadow-sm' 
+                    : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 bg-transparent'
+                }`}
+                title="Donut Chart"
+              >
+                <PieChart size={18} />
+              </button>
+              <button
+                type="button"
+                onClick={() => setCategoryChartType('bar')}
+                className={`p-1.5 px-2.5 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm shrink-0 ${
+                  categoryChartType === 'bar' 
+                    ? 'bg-blue-500 text-white shadow-sm' 
+                    : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 bg-transparent'
+                }`}
+                title="Bar Chart"
+              >
+                <BarChart2 size={18} />
+              </button>
+              <button
+                type="button"
+                onClick={() => setCategoryChartType('radar')}
+                className={`p-1.5 px-2.5 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm shrink-0 ${
+                  categoryChartType === 'radar' 
+                    ? 'bg-blue-500 text-white shadow-sm' 
+                    : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 bg-transparent'
+                }`}
+                title="Radar Chart"
+              >
+                <LucideRadar size={18} />
+              </button>
+            </div>
           </div>
+          
           <div className="flex-1 min-h-0">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={categoryPerfData} layout="vertical" margin={{ top: 5, right: 5, left: 0, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke={gridStroke} />
-                <XAxis type="number" tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
-                <YAxis dataKey="name" type="category" tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, color: tooltipText }}
-                  itemStyle={{ fontSize: 10 }}
-                />
-                <Bar dataKey="value" barSize={11} radius={[0, 3, 3, 0]}>
-                  {categoryPerfData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Bar>
-              </BarChart>
+              {categoryChartType === 'donut' ? (
+                <RePieChart>
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, color: tooltipText }}
+                    itemStyle={{ fontSize: 10 }}
+                    formatter={(value) => [`₹${value}Cr`]}
+                  />
+                  <Pie
+                    data={categoryPerfData}
+                    cx="50%"
+                    cy="40%"
+                    innerRadius={55}
+                    outerRadius={75}
+                    paddingAngle={2}
+                    dataKey="value"
+                    nameKey="name"
+                  >
+                    {categoryPerfData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Legend 
+                    verticalAlign="bottom" 
+                    align="center" 
+                    iconType="circle" 
+                    iconSize={8}
+                    wrapperStyle={{ fontSize: 8.5, fontWeight: 'bold', bottom: 5 }}
+                  />
+                </RePieChart>
+              ) : categoryChartType === 'bar' ? (
+                <BarChart data={categoryPerfData} margin={{ top: 20, right: 20, left: -25, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridStroke} />
+                  <XAxis dataKey="name" tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, color: tooltipText }}
+                    itemStyle={{ fontSize: 10 }}
+                    formatter={(value) => [`₹${value}Cr`]}
+                  />
+                  <Bar dataKey="value" barSize={18} radius={[3, 3, 0, 0]}>
+                    {categoryPerfData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              ) : (
+                <RadarChart cx="50%" cy="50%" outerRadius="70%" data={categoryPerfData}>
+                  <PolarGrid stroke={gridStroke} />
+                  <PolarAngleAxis dataKey="name" tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)', fontSize: 8, fontWeight: 'bold' }} />
+                  <PolarRadiusAxis angle={30} domain={[0, 350]} tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 7 }} />
+                  <Radar name="Revenue" dataKey="value" stroke={accentColor} fill={accentColor} fillOpacity={0.6} />
+                </RadarChart>
+              )}
             </ResponsiveContainer>
           </div>
         </div>
@@ -536,6 +1196,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
                       const getSkuColor = (cat: string, idx: number) => {
                         if (cat === 'Beverages') return '#534AB7';
                         if (cat === 'Snacks') return '#0F6E56';
+                        if (cat === 'Dairy') return '#F59E0B';
                         if (cat === 'Personal Care') return '#185FA5';
                         if (cat === 'Household') return '#854F0B';
                         const fallbackColors = ['#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#ec4899'];
@@ -562,6 +1223,85 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
             </div>
           )}
         </div>
+
+        {/* Top Customer Insights List (VP Only) */}
+        {role === 'VP Product Management' && (
+          <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3.5 h-[360px] flex flex-col">
+            <h3 className="text-[11px] font-bold uppercase tracking-widest pb-2 border-b border-black/5 dark:border-white/5 mb-2 flex items-center justify-between gap-1.5">
+              <span>Top Customer Insights</span>
+              <span className="text-[7.5px] font-extrabold opacity-40 uppercase">Buying Intent</span>
+            </h3>
+
+            {/* Category Selector Buttons */}
+            <div className="flex flex-wrap gap-1 mb-2 border-b border-black/5 dark:border-white/5 pb-2">
+              {['Beverages', 'Snacks', 'Personal Care', 'Dairy', 'Household'].map(cat => (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => setActiveCategoryInsights(cat)}
+                  className={`px-2 py-0.5 text-[8.5px] font-bold uppercase tracking-wider rounded-sm transition-all border border-black/5 dark:border-white/10 cursor-pointer ${
+                    activeCategoryInsights === cat
+                      ? 'bg-acies-yellow text-acies-gray font-extrabold border-acies-yellow'
+                      : 'bg-black/5 dark:bg-white/5 text-zinc-650 dark:text-zinc-400 hover:bg-black/10 dark:hover:bg-white/10'
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+
+            {/* Customer Cards List */}
+            <div className="flex-1 overflow-y-auto pr-1 pb-1 space-y-2 min-h-0 no-scrollbar">
+              {(CUSTOMER_INSIGHTS_DATA[activeCategoryInsights] || []).map(cust => {
+                const growthColor = cust.growthDirection === 'up' ? 'text-green-500' : cust.growthDirection === 'down' ? 'text-red-500' : 'text-zinc-550';
+                return (
+                  <div 
+                    key={cust.name} 
+                    className="bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 p-2 rounded-sm space-y-1 hover:border-acies-yellow/30 transition-all text-left"
+                  >
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h4 className="text-[10px] font-extrabold text-zinc-800 dark:text-zinc-200 truncate max-w-[170px]">
+                          {cust.name}
+                        </h4>
+                        <p className="text-[8px] text-zinc-500 font-semibold tracking-wide truncate max-w-[170px]">
+                          {cust.segment}
+                        </p>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <span className="text-[9.5px] font-mono font-bold text-acies-yellow block">
+                          {cust.revContribution}
+                        </span>
+                        <span className={`text-[7.5px] font-bold ${growthColor}`}>
+                          {cust.growthTrend}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-1">
+                      <p className="text-[9px] text-zinc-650 dark:text-zinc-450 leading-normal">
+                        <span className="font-bold text-zinc-850 dark:text-zinc-300">Interest: </span>
+                        {cust.interestTrend}
+                      </p>
+                      <div className="flex flex-wrap gap-1 items-center">
+                        <span className="text-[7.5px] font-bold text-zinc-500 uppercase shrink-0">Focus:</span>
+                        {cust.buyingFocus.map(focus => (
+                          <span 
+                            key={focus} 
+                            className="bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 px-1 py-0.5 rounded-sm text-[7.5px] font-bold text-[#6d28d9] dark:text-[#a78bfa] truncate max-w-[110px]"
+                          >
+                            {focus}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {/* Forecast vs Actual by Region */}
         <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3.5 h-[360px] flex flex-col">
           <h3 className="text-[11px] font-bold uppercase tracking-widest pb-2 border-b border-black/5 dark:border-white/5 mb-2 flex items-center justify-between gap-1.5">
@@ -861,6 +1601,13 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
           setEmailData({ to: email, name, subject, body });
           setIsEmailOpen(true);
         }}
+      />
+
+      {/* Strategic Forecast & Pricing Review (Month Forecast) Modal */}
+      <MonthForecastModal
+        isOpen={!!selectedMonth}
+        month={selectedMonth}
+        onClose={() => setSelectedMonth(null)}
       />
 
       {/* Email Composer Modal */}
