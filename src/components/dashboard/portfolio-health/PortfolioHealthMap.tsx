@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
   Layers, Filter, RefreshCw, BarChart2, PieChart, Info, HelpCircle, Save, Plus, Trash2, ArrowRight, Zap,
-  Clock, Shield, Bell, Check, X, AlertTriangle, AlertCircle, TrendingUp, Globe, Activity as ActivityIcon,
+  Shield, Bell, Check, X, AlertTriangle, AlertCircle, TrendingUp, Globe, Activity as ActivityIcon,
   Mail, MapPin, Calendar, LayoutGrid, List
 } from 'lucide-react';
 import { 
@@ -70,28 +70,6 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
   const tooltipBorder = isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
   const tooltipText = isDarkMode ? '#fff' : '#000';
 
-  // Clock state
-  const [timeStr, setTimeStr] = useState('');
-  const [dateStr, setDateStr] = useState('');
-  useEffect(() => {
-    const tick = () => {
-      const n = new Date();
-      setTimeStr(n.toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' }));
-      setDateStr(n.toLocaleDateString('en-IN', { weekday: 'short', month: 'short', day: 'numeric' }));
-    };
-    tick();
-    const interval = setInterval(tick, 1000);
-    return () => clearInterval(interval);
-  }, []);
-
-  // WebSocket status
-  const [wsStatus, setWsStatus] = useState<'connecting' | 'connected'>('connecting');
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setWsStatus('connected');
-    }, 1800);
-    return () => clearTimeout(timer);
-  }, []);
 
   // Toasts
   interface Toast {
@@ -200,7 +178,6 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
   };
 
   const [feedEvents, setFeedEvents] = useState(() => generateInitialEvents());
-  const [eventCount, setEventCount] = useState(12);
   const [eventFilter, setEventFilter] = useState('all');
 
   // Timer for adding events
@@ -221,7 +198,6 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
         };
 
         setFeedEvents(prev => [newEv, ...prev.slice(0, 79)]);
-        setEventCount(c => c + 1);
 
         if (tmpl.sev === 'critical' && Math.random() > 0.6) {
           addToast('Critical alert', msg, '#ef4444');
@@ -567,28 +543,6 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
 
   return (
     <div className="space-y-6">
-      {/* VP Command Center Sub-Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 px-5 py-3.5 rounded-sm shadow-sm">
-        <div className="flex items-center gap-3">
-          <span className="relative flex h-2.5 w-2.5">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
-          </span>
-          <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
-            WebSocket {wsStatus === 'connected' ? 'Connected' : 'Connecting'}
-          </span>
-          <span className="h-4 w-px bg-black/10 dark:bg-white/15"></span>
-          <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
-            {eventCount} events streamed today
-          </span>
-        </div>
-        <div className="flex items-center gap-2">
-          <Clock size={12} className="text-[#6d28d9] dark:text-[#a78bfa]" />
-          <span className="text-[11px] font-semibold text-zinc-800 dark:text-zinc-200 font-mono">{timeStr}</span>
-          <span className="text-zinc-300 dark:text-zinc-650 text-[10px]">|</span>
-          <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">{dateStr}</span>
-        </div>
-      </div>
 
       {/* Live KPIs - Horizontal Format */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
