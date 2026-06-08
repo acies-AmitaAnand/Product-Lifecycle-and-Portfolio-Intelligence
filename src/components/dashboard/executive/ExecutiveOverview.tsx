@@ -618,6 +618,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
                     iconType="circle"
                     iconSize={8}
                     wrapperStyle={{ fontSize: 8.5, fontWeight: 'bold', bottom: 5 }}
+                    onClick={(data) => { if (data && data.value) setSelectedCategory(data.value); }}
                   />
                 </RePieChart>
               ) : categoryViewMode === 'bar' ? (
