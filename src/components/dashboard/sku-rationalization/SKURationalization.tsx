@@ -6,7 +6,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { 
   Scissors, Link as LinkIcon, Check, AlertTriangle, AlertCircle, BarChart2, TrendingDown,
-  Activity, Play, CheckCircle2, RefreshCw, Layers, Briefcase, Zap, HelpCircle, Cpu, TrendingUp, Sparkles
+  Activity, Play, CheckCircle2, RefreshCw, Layers, Briefcase, Zap, HelpCircle, Cpu, TrendingUp, Sparkles,
+  MapPin
 } from 'lucide-react';
 import { 
   ResponsiveContainer, ScatterChart, Scatter, XAxis, YAxis, ZAxis, Tooltip, CartesianGrid, Cell, LabelList,
@@ -541,7 +542,74 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
     <div className="space-y-6 pb-12 animate-fadeIn text-zinc-800 dark:text-white">
       
       {/* Consolidated Toolbar Header */}
-      {role !== 'VP Product Management' && (
+      {role === 'VP Product Management' ? (
+        <div className="bg-[#202022] border border-[#2c2c30] p-4 rounded-xl flex flex-col gap-4 w-full text-white shadow-lg">
+          {/* Top Row */}
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+              <h2 className="text-base font-display font-extrabold text-white leading-none">SKU Rationalization</h2>
+              <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider mt-1.5">Category assortment workspace · Tab 4 of 6</p>
+            </div>
+            
+            <div className="flex items-center gap-3 self-end sm:self-auto">
+              {/* Region Select */}
+              <div className="flex items-center gap-1.5 bg-transparent border border-zinc-700 rounded-lg px-2.5 py-1 text-zinc-300">
+                <MapPin size={11} className="text-zinc-450" />
+                <select
+                  value={selectedLocation}
+                  onChange={(e) => setSelectedLocation(e.target.value)}
+                  className="bg-transparent border-none text-[10px] font-bold text-zinc-300 outline-none cursor-pointer focus:ring-0 py-0 pr-8"
+                  style={{ background: 'transparent' }}
+                >
+                  <option value="ALL" className="bg-[#202022] text-white">All regions</option>
+                  <option value="APAC" className="bg-[#202022] text-white">APAC</option>
+                  <option value="EMEA" className="bg-[#202022] text-white">EMEA</option>
+                  <option value="Americas" className="bg-[#202022] text-white">Americas</option>
+                </select>
+              </div>
+
+              {/* Active Sync Badge */}
+              <div className="flex items-center gap-1.5 px-3 py-1 bg-[#e6fcf5] text-[#0ca678] border border-[#c3fae8] dark:bg-[#0ca678]/10 dark:text-[#20c997] dark:border-[#20c997]/20 text-[10px] font-bold rounded-lg shrink-0">
+                <Check size={11} className="stroke-[3]" />
+                <span>Active sync</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Separator line */}
+          <div className="h-px bg-[#2c2c30] w-full" />
+
+          {/* Bottom Row: Tab Navigation */}
+          <div className="flex gap-4 items-center">
+            <button
+              onClick={() => {
+                setActiveView('simulator');
+                setSelectedAiClass(null);
+              }}
+              className={`px-4 py-1.5 text-xs font-bold rounded-lg border-none cursor-pointer transition-all ${
+                activeView === 'simulator'
+                  ? 'bg-[#5850ec] text-white shadow-sm'
+                  : 'bg-transparent text-zinc-400 hover:text-zinc-200'
+              }`}
+            >
+              Portfolio simulator
+            </button>
+            <button
+              onClick={() => {
+                setActiveView('analyst');
+                setSelectedAiClass(null);
+              }}
+              className={`px-4 py-1.5 text-xs font-bold rounded-lg border-none cursor-pointer transition-all ${
+                activeView === 'analyst'
+                  ? 'bg-[#5850ec] text-white shadow-sm'
+                  : 'bg-transparent text-zinc-400 hover:text-zinc-200'
+              }`}
+            >
+              Cannibalization & promo
+            </button>
+          </div>
+        </div>
+      ) : (
         <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3 rounded shadow-sm flex flex-col lg:flex-row items-center justify-between gap-4 w-full">
           
           {/* Left Side: Title & Info Tooltip */}
