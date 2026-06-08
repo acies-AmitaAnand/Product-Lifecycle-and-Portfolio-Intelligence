@@ -15,6 +15,7 @@ import { SkuDetailsModal } from './SkuDetailsModal';
 import { RegionalForecastModal } from './RegionalForecastModal';
 import { EmailComposerModal } from '../portfolio-health/EmailComposerModal';
 import { TrendMonthForecastModal } from './TrendMonthForecastModal';
+import { CategoryPerformanceDetailsModal } from './CategoryPerformanceDetailsModal';
 
 interface CustomerInsight {
   name: string;
@@ -197,6 +198,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
   const [revenueViewMode, setRevenueViewMode] = useState<'line' | 'combi' | 'bar'>('line');
   const [categoryViewMode, setCategoryViewMode] = useState<'donut' | 'bar' | 'radar'>('donut');
   const [selectedTrendMonth, setSelectedTrendMonth] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
 
   // Dynamic accent color based on theme
@@ -538,7 +540,13 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
           <div className="mb-2.5 flex justify-between items-start">
             <div>
               <h3 className="text-[11px] font-bold uppercase tracking-widest">Category Performance</h3>
-              <p className="text-[8.5px] text-zinc-550 dark:text-zinc-450 uppercase tracking-widest mt-0.5">Revenue ₹ Cr by Category — Current Month</p>
+              <p className="text-[8.5px] text-zinc-550 dark:text-zinc-450 uppercase tracking-widest mt-0.5 leading-normal">
+                Revenue ₹ Cr by Category — Current Month
+                <br />
+                <span className="text-blue-500 font-extrabold normal-case">
+                  Click any category to view SKU performer, underperformer & booming trends
+                </span>
+              </p>
             </div>
             <div className="flex items-center border border-black/10 dark:border-white/10 rounded-md overflow-hidden bg-black/5 dark:bg-white/5 p-0.5 ml-1 shrink-0">
               <button
@@ -597,6 +605,8 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
                     paddingAngle={2}
                     dataKey="value"
                     nameKey="name"
+                    onClick={(data) => { if (data && data.name) setSelectedCategory(data.name); }}
+                    cursor="pointer"
                   >
                     {categoryPerfData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
@@ -611,7 +621,12 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
                   />
                 </RePieChart>
               ) : categoryViewMode === 'bar' ? (
-                <BarChart data={categoryPerfData} margin={{ top: 20, right: 20, left: -10, bottom: 5 }}>
+                <BarChart 
+                  data={categoryPerfData} 
+                  margin={{ top: 20, right: 20, left: -10, bottom: 5 }}
+                  onClick={(state) => { if (state && state.activeLabel) setSelectedCategory(state.activeLabel); }}
+                  className="cursor-pointer"
+                >
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridStroke} />
                   <XAxis dataKey="name" tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
@@ -627,7 +642,14 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
                   </Bar>
                 </BarChart>
               ) : (
-                <RadarChart cx="50%" cy="50%" outerRadius="70%" data={categoryPerfData}>
+                <RadarChart 
+                  cx="50%" 
+                  cy="50%" 
+                  outerRadius="70%" 
+                  data={categoryPerfData}
+                  onClick={(state) => { if (state && state.activeLabel) setSelectedCategory(state.activeLabel); }}
+                  className="cursor-pointer"
+                >
                   <PolarGrid stroke={gridStroke} />
                   <PolarAngleAxis dataKey="name" tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)', fontSize: 8, fontWeight: 'bold' }} />
                   <PolarRadiusAxis angle={30} domain={[0, 350]} tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 7 }} />
@@ -1031,6 +1053,13 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
         isOpen={!!selectedTrendMonth}
         month={selectedTrendMonth}
         onClose={() => setSelectedTrendMonth(null)}
+      />
+
+      {/* Category Performance Details Modal */}
+      <CategoryPerformanceDetailsModal 
+        isOpen={!!selectedCategory}
+        categoryName={selectedCategory}
+        onClose={() => setSelectedCategory(null)}
       />
 
       {/* Email Composer Modal */}
