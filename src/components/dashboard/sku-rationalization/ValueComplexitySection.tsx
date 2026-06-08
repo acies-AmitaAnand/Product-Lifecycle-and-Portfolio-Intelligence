@@ -41,11 +41,7 @@ export const ValueComplexitySection: React.FC<ValueComplexitySectionProps> = ({
 }) => {
   return (
     <div className="space-y-3" id="quadrant-matrix-section" style={{ scrollMarginTop: '100px' }}>
-      <div className="flex items-center gap-2 border-l-4 border-[#8b5cf6] pl-3 py-0.5">
-        <h3 className="text-xs font-bold uppercase tracking-widest text-[#8b5cf6] dark:text-purple-300">
-          ② Commercial Value vs Complexity Matrix
-        </h3>
-      </div>
+
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Horizontal Grouped Bar Chart */}
