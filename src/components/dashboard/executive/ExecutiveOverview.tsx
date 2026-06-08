@@ -265,7 +265,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
 
   // Category performance
   const categoryPerfData = [
-    { name: 'Beverages', value: 316, color: '#534AB7' },
+    { name: 'Beverages', value: 316, color: '#7C3AED' },
     { name: 'Snacks', value: 253, color: '#0F6E56' },
     { name: 'Personal Care', value: 225, color: '#185FA5' },
     { name: 'Household', value: 145, color: '#854F0B' }
@@ -794,7 +794,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
                   >
                     {topSkus.map((entry, index) => {
                       const getSkuColor = (cat: string, idx: number) => {
-                        if (cat === 'Beverages') return '#534AB7';
+                        if (cat === 'Beverages') return '#7C3AED';
                         if (cat === 'Snacks') return '#0F6E56';
                         if (cat === 'Personal Care') return '#185FA5';
                         if (cat === 'Household') return '#854F0B';
