@@ -127,12 +127,14 @@ interface SmartAlertDetailsModalProps {
   isOpen: boolean;
   alert: AlertData | null;
   onClose: () => void;
+  onApprove: (alertId: string, directiveText: string) => void;
 }
 
 export const SmartAlertDetailsModal: React.FC<SmartAlertDetailsModalProps> = ({
   isOpen,
   alert,
-  onClose
+  onClose,
+  onApprove
 }) => {
   if (!isOpen || !alert) return null;
 
@@ -246,8 +248,7 @@ export const SmartAlertDetailsModal: React.FC<SmartAlertDetailsModalProps> = ({
           <button 
             type="button"
             onClick={() => {
-              alert(`VP Strategic Directive Executed:\n"${data.directive}"`);
-              onClose();
+              onApprove(alert.id, data.directive);
             }}
             className="flex items-center gap-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white font-extrabold uppercase tracking-widest rounded transition-colors cursor-pointer border-none"
           >

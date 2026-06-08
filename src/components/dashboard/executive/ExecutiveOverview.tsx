@@ -201,6 +201,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
   const [selectedTrendMonth, setSelectedTrendMonth] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedAlert, setSelectedAlert] = useState<any>(null);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
 
   // Dynamic accent color based on theme
@@ -1060,6 +1061,12 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
         isOpen={!!selectedAlert}
         alert={selectedAlert}
         onClose={() => setSelectedAlert(null)}
+        onApprove={(alertId, directiveText) => {
+          setAlerts(prev => prev.filter(a => a.id !== alertId));
+          setToastMessage(`Directive authorized: "${directiveText}"`);
+          setTimeout(() => setToastMessage(null), 4000);
+          setSelectedAlert(null);
+        }}
       />
 
       {/* Email Composer Modal */}
@@ -1068,11 +1075,39 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
         onClose={() => setIsEmailOpen(false)}
         initialEmail={emailData}
         onSend={(recipientName, recipientEmail, subject, body) => {
-          // Simulate email sent message
-          alert(`Mitigation request email successfully sent to ${recipientName} (${recipientEmail})!`);
+          setToastMessage(`Mitigation request successfully sent to ${recipientName}!`);
+          setTimeout(() => setToastMessage(null), 4000);
           setIsEmailOpen(false);
         }}
       />
+
+      {/* Floating Premium Toast Notification */}
+      {toastMessage && (
+        <div className="fixed bottom-5 right-5 z-[200] animate-toast-slide-in flex items-center gap-3 bg-zinc-950/95 dark:bg-white/95 text-white dark:text-zinc-900 border border-white/10 dark:border-black/10 px-4 py-3 rounded shadow-2xl backdrop-blur-md max-w-sm">
+          <style>{`
+            @keyframes toastSlideIn {
+              0% { transform: translateY(100px); opacity: 0; }
+              100% { transform: translateY(0); opacity: 1; }
+            }
+            .animate-toast-slide-in {
+              animation: toastSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            }
+          `}</style>
+          <div className="bg-green-500 rounded-full p-1 text-white shrink-0">
+            <Check size={14} strokeWidth={3} />
+          </div>
+          <div className="flex-1">
+            <p className="text-[10px] font-bold uppercase tracking-wider opacity-60">System Notification</p>
+            <p className="text-[11px] font-bold leading-normal mt-0.5">{toastMessage}</p>
+          </div>
+          <button 
+            onClick={() => setToastMessage(null)} 
+            className="text-zinc-400 hover:text-white dark:text-zinc-500 dark:hover:text-zinc-900 cursor-pointer border-none bg-transparent"
+          >
+            <X size={14} />
+          </button>
+        </div>
+      )}
 
     </div>
   );
