@@ -545,7 +545,7 @@ export default function App() {
 
           {/* Main Content Area */}
           <main className="flex-1 min-w-0">
-            {activeTab !== 0 && !(activeTab === 3 && isProfitabilitySimulatorOpen) && (
+            {activeTab !== 0 && !(activeTab === 3 && isProfitabilitySimulatorOpen) && !(activeTab === 4 && role === 'VP Product Management') && (
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                 <div>
                   <h2 className="text-xl font-display leading-tight text-acies-gray dark:text-white">{tabs[activeTab]?.name || 'Unknown Module'}</h2>

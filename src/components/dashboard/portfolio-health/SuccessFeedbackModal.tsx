@@ -12,7 +12,7 @@ interface SuccessFeedbackModalProps {
   recipientName: string;
   recipientTitle: string;
   recipientEmail: string;
-  contextType: 'approval' | 'bottleneck';
+  contextType: 'approval' | 'bottleneck' | 'signal';
   contextTitle: string;
   isDarkMode: boolean;
   channel: 'email' | 'message';
@@ -41,7 +41,9 @@ export const SuccessFeedbackModal: React.FC<SuccessFeedbackModalProps> = ({
   // Create context-specific description text
   const descriptionText = contextType === 'approval'
     ? `The approval for "${contextTitle}" requires coordination with ${recipientName} (${recipientTitle}). You can request sign-off or align schedules by emailing or messaging them.`
-    : `The mitigation action plan for the "${contextTitle}" bottleneck is managed by ${recipientName} (${recipientTitle}). You can request operational support or status updates by emailing or messaging them.`;
+    : contextType === 'bottleneck'
+    ? `The mitigation action plan for the "${contextTitle}" bottleneck is managed by ${recipientName} (${recipientTitle}). You can request operational support or status updates by emailing or messaging them.`
+    : `The mitigation action plan for the "${contextTitle}" signal is managed by ${recipientName} (${recipientTitle}). You can coordinate resolution or align schedules by emailing or messaging them.`;
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[80] flex items-center justify-center p-4">

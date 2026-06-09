@@ -6,7 +6,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { 
   Scissors, Link as LinkIcon, Check, AlertTriangle, AlertCircle, BarChart2, TrendingDown,
-  Activity, Play, CheckCircle2, RefreshCw, Layers, Briefcase, Zap, HelpCircle, Cpu, TrendingUp, Sparkles
+  Activity, Play, CheckCircle2, RefreshCw, Layers, Briefcase, Zap, HelpCircle, Cpu, TrendingUp, Sparkles,
+  MapPin
 } from 'lucide-react';
 import { 
   ResponsiveContainer, ScatterChart, Scatter, XAxis, YAxis, ZAxis, Tooltip, CartesianGrid, Cell, LabelList,
@@ -420,6 +421,34 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
     });
   }, [selectedAiClass, locationFilteredSkus]);
 
+  // Grouped Bar Chart data (Commercial Value vs Complexity Score averages)
+  const groupedBarData = useMemo(() => {
+    const categories = [
+      { key: 'Retain/Grow', classes: ['retain', 'grow'], defaultVal: 0.74, defaultCx: 0.26 },
+      { key: 'Bundle', classes: ['bundle'], defaultVal: 0.64, defaultCx: 0.31 },
+      { key: 'Reposition', classes: ['reposition'], defaultVal: 0.57, defaultCx: 0.47 },
+      { key: 'Sunset', classes: ['sunset'], defaultVal: 0.29, defaultCx: 0.64 },
+    ];
+
+    return categories.map(cat => {
+      const filtered = locationFilteredSkus.filter(s => cat.classes.includes(srClassify(s)));
+      if (filtered.length === 0) {
+        return {
+          name: cat.key,
+          'Commercial value': cat.defaultVal,
+          'Complexity score': cat.defaultCx
+        };
+      }
+      const avgVal = filtered.reduce((sum, s) => sum + s.val, 0) / filtered.length;
+      const avgCx = filtered.reduce((sum, s) => sum + s.cx, 0) / filtered.length;
+      return {
+        name: cat.key,
+        'Commercial value': parseFloat(avgVal.toFixed(2)),
+        'Complexity score': parseFloat(avgCx.toFixed(2))
+      };
+    });
+  }, [locationFilteredSkus]);
+
   // ----------------------------------------------------
   // Cannibalization Analyst States (Standard view panel)
   // ----------------------------------------------------
@@ -428,7 +457,6 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
   const [correlation, setCorrelation] = useState(-0.62);
   const [category, setCategory] = useState('Beverages');
   const [hasScored, setHasScored] = useState(true);
-  const [guideOpen, setGuideOpen] = useState(false);
 
   // SKU Detail Modal State
   const [selectedSkuDetails, setSelectedSkuDetails] = useState<typeof SKUS[0] | null>(null);
@@ -541,88 +569,171 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
     <div className="space-y-6 pb-12 animate-fadeIn text-zinc-800 dark:text-white">
       
       {/* Consolidated Toolbar Header */}
-      <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3 rounded shadow-sm flex flex-col lg:flex-row items-center justify-between gap-4 w-full">
-        
-        {/* Left Side: Title & Info Tooltip */}
-        <div className="flex items-center gap-2.5 self-start lg:self-auto">
-          <div className="w-1.5 h-6 bg-acies-yellow rounded-full shrink-0 animate-pulse" />
-          <div>
-            <div className="flex items-center gap-1.5">
-              <h2 className="text-[12px] font-display font-extrabold uppercase tracking-wider text-acies-gray dark:text-white leading-none">
-                {activeView === 'simulator' 
-                  ? 'SKU Rationalization Command Desk' 
-                  : 'Cannibalization & Margin Audit'}
-              </h2>
-              {/* Info Icon Tooltip */}
-              <div className="relative group/help">
-                <HelpCircle size={12} className="text-zinc-400 hover:text-acies-yellow transition-colors cursor-help shrink-0" />
-                <div className="absolute left-0 top-5 w-64 bg-zinc-900 border border-white/10 text-white text-[9px] p-2.5 rounded shadow-2xl z-50 pointer-events-none opacity-0 group-hover/help:opacity-100 transition-opacity duration-200 leading-relaxed">
-                  <p className="font-bold mb-1 text-acies-yellow">
-                    {activeView === 'simulator' ? 'Simulation Workspace Guide:' : 'Audit Analyst Guide:'}
-                  </p>
-                  <p className="opacity-85">
-                    {activeView === 'simulator'
-                      ? 'Audit product assortments using AI segmentation, run multi-variable gross margin simulations, and analyze Pareto distributions to optimize tail-end catalog complexity.'
-                      : 'Model cross-product cannibalization coefficients, evaluate price-pack margin elasticity corridors, and identify high promotion dependency risks.'}
-                  </p>
-                </div>
+      {role === 'VP Product Management' ? (
+        <div className={`p-4 rounded-xl w-full border transition-colors duration-200 ${
+          isDarkMode 
+            ? 'bg-[#202022] border-[#2c2c30] text-white shadow-lg' 
+            : 'bg-white border-black/10 text-zinc-800 shadow-sm'
+        }`}>
+          {/* Main Row */}
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 w-full">
+            {/* Left side: Title */}
+            <div className="w-full md:flex-1 flex justify-start">
+              <h2 className={`text-base font-display font-extrabold transition-colors duration-200 ${isDarkMode ? 'text-white' : 'text-zinc-900'}`}>SKU Rationalization</h2>
+            </div>
+
+            {/* Center: View Switcher Buttons */}
+            <div className="w-full md:flex-1 flex justify-start md:justify-center">
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveView('simulator');
+                    setSelectedAiClass(null);
+                  }}
+                  className={`px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer text-center outline-none border ${
+                    activeView === 'simulator'
+                      ? 'bg-[#5850ec] text-white border-[#5850ec] shadow-sm shadow-[#5850ec]/20 font-extrabold'
+                      : `bg-transparent border-black/15 dark:border-white/15 text-zinc-555 dark:text-zinc-400 hover:border-black/25 dark:hover:border-white/25 hover:text-zinc-800 dark:hover:text-zinc-200 hover:bg-black/5 dark:hover:bg-white/5`
+                  }`}
+                >
+                  Portfolio Simulator
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveView('analyst');
+                    setSelectedAiClass(null);
+                  }}
+                  className={`px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all cursor-pointer text-center outline-none border ${
+                    activeView === 'analyst'
+                      ? 'bg-[#5850ec] text-white border-[#5850ec] shadow-sm shadow-[#5850ec]/20 font-extrabold'
+                      : `bg-transparent border-black/15 dark:border-white/15 text-zinc-555 dark:text-zinc-400 hover:border-black/25 dark:hover:border-white/25 hover:text-zinc-800 dark:hover:text-zinc-200 hover:bg-black/5 dark:hover:bg-white/5`
+                  }`}
+                >
+                  Cannibalisation Simulator
+                </button>
               </div>
             </div>
-            <p className="text-[8px] font-bold text-zinc-400 uppercase tracking-widest mt-1">Category Assortment Workspace · Tab 4 of 6</p>
+
+            {/* Right side: Region Select & Active Sync Badge */}
+            <div className="w-full md:flex-1 flex justify-start md:justify-end items-center gap-3">
+              {/* Region Select */}
+              <div className={`flex items-center gap-1.5 bg-transparent border rounded-lg px-2.5 py-1 transition-colors duration-200 ${
+                isDarkMode ? 'border-zinc-700 text-zinc-300' : 'border-zinc-300 text-zinc-700'
+              }`}>
+                <MapPin size={11} className={isDarkMode ? 'text-zinc-450' : 'text-zinc-500'} />
+                <select
+                  value={selectedLocation}
+                  onChange={(e) => setSelectedLocation(e.target.value)}
+                  className={`bg-transparent border-none text-[10px] font-bold outline-none cursor-pointer focus:ring-0 py-0 pr-8 transition-colors duration-200 ${
+                    isDarkMode ? 'text-zinc-300' : 'text-zinc-700'
+                  }`}
+                  style={{ background: 'transparent' }}
+                >
+                  <option value="ALL" className={isDarkMode ? 'bg-[#202022] text-white' : 'bg-white text-zinc-800'}>All regions</option>
+                  <option value="APAC" className={isDarkMode ? 'bg-[#202022] text-white' : 'bg-white text-zinc-800'}>APAC</option>
+                  <option value="EMEA" className={isDarkMode ? 'bg-[#202022] text-white' : 'bg-white text-zinc-800'}>EMEA</option>
+                  <option value="Americas" className={isDarkMode ? 'bg-[#202022] text-white' : 'bg-white text-zinc-800'}>Americas</option>
+                </select>
+              </div>
+
+              {/* Active Sync Badge */}
+              <div className={`flex items-center gap-1.5 px-3 py-1 text-[10px] font-bold rounded-lg shrink-0 border transition-colors duration-200 ${
+                isDarkMode 
+                  ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' 
+                  : 'bg-[#e6fcf5] text-[#0ca678] border-[#c3fae8]'
+              }`}>
+                <Check size={11} className="stroke-[3]" />
+                <span>Active sync</span>
+              </div>
+            </div>
           </div>
         </div>
-
-        {/* Center: View Switcher */}
-        <div className="flex bg-black/5 dark:bg-white/5 p-0.5 rounded border border-black/5 dark:border-white/10 min-w-[340px]">
-          {[
-            { id: 'simulator', label: 'Portfolio Simulator Command' },
-            { id: 'analyst', label: 'Cannibalization & Promo Analyst' }
-          ].map(tab => (
-            <button
-              key={tab.id}
-              onClick={() => {
-                setActiveView(tab.id as any);
-                setSelectedAiClass(null);
-              }}
-              className={`flex-1 py-1.5 text-[8.5px] font-bold uppercase tracking-wider rounded-sm transition-all border-none cursor-pointer text-center outline-none ${
-                activeView === tab.id
-                  ? 'bg-acies-yellow text-white dark:text-acies-gray font-extrabold shadow-sm shadow-black/10'
-                  : 'bg-transparent text-zinc-555 dark:text-zinc-400 hover:text-zinc-850 dark:hover:text-white'
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-
-        {/* Right Side: Ledger Sync State & Location Selector */}
-        <div className="flex items-center gap-4 self-end lg:self-auto flex-wrap justify-end">
-          {/* Location Selector */}
-          <div className="flex items-center gap-1.5 bg-black/5 dark:bg-white/5 px-2.5 py-1 rounded border border-black/5 dark:border-white/10 shrink-0">
-            <span className="text-[8px] font-bold uppercase tracking-wider text-zinc-400">Region:</span>
-            <select
-              value={selectedLocation}
-              onChange={(e) => setSelectedLocation(e.target.value)}
-              className="bg-transparent border-none text-[8.5px] font-extrabold uppercase tracking-wider text-zinc-700 dark:text-zinc-200 outline-none cursor-pointer focus:ring-0 py-0"
-              style={{ background: 'transparent' }}
-            >
-              <option value="ALL" className="bg-white dark:bg-zinc-800 text-black dark:text-white">All Regions</option>
-              <option value="APAC" className="bg-white dark:bg-zinc-800 text-black dark:text-white">APAC</option>
-              <option value="EMEA" className="bg-white dark:bg-zinc-800 text-black dark:text-white">EMEA</option>
-              <option value="Americas" className="bg-white dark:bg-zinc-800 text-black dark:text-white">Americas</option>
-            </select>
+      ) : (
+        <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3 rounded shadow-sm flex flex-col lg:flex-row items-center justify-between gap-4 w-full">
+          
+          {/* Left Side: Title & Info Tooltip */}
+          <div className="flex items-center gap-2.5 self-start lg:self-auto">
+            <div className="w-1.5 h-6 bg-acies-yellow rounded-full shrink-0 animate-pulse" />
+            <div>
+              <div className="flex items-center gap-1.5">
+                <h2 className="text-[12px] font-display font-extrabold uppercase tracking-wider text-acies-gray dark:text-white leading-none">
+                  {activeView === 'simulator' 
+                    ? 'SKU Rationalization Command Desk' 
+                    : 'Cannibalization & Margin Audit'}
+                </h2>
+                {/* Info Icon Tooltip */}
+                <div className="relative group/help">
+                  <HelpCircle size={12} className="text-zinc-400 hover:text-acies-yellow transition-colors cursor-help shrink-0" />
+                  <div className="absolute left-0 top-5 w-64 bg-zinc-900 border border-white/10 text-white text-[9px] p-2.5 rounded shadow-2xl z-50 pointer-events-none opacity-0 group-hover/help:opacity-100 transition-opacity duration-200 leading-relaxed">
+                    <p className="font-bold mb-1 text-acies-yellow">
+                      {activeView === 'simulator' ? 'Simulation Workspace Guide:' : 'Audit Analyst Guide:'}
+                    </p>
+                    <p className="opacity-85">
+                      {activeView === 'simulator'
+                        ? 'Audit product assortments using AI segmentation, run multi-variable gross margin simulations, and analyze Pareto distributions to optimize tail-end catalog complexity.'
+                        : 'Model cross-product cannibalization coefficients, evaluate price-pack margin elasticity corridors, and identify high promotion dependency risks.'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <p className="text-[8px] font-bold text-zinc-400 uppercase tracking-widest mt-1">Category Assortment Workspace · Tab 4 of 6</p>
+            </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            <span className="flex items-center gap-1 px-2 py-0.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[8px] font-black uppercase tracking-wider rounded-full">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
-              Active Ledger Sync
-            </span>
-            <span className="text-[9px] font-mono opacity-40 font-bold">Refreshed {refreshTime}</span>
+          {/* Center: View Switcher */}
+          <div className="flex bg-black/5 dark:bg-white/5 p-0.5 rounded border border-black/5 dark:border-white/10 min-w-[340px]">
+            {[
+              { id: 'simulator', label: 'Portfolio Simulator Command' },
+              { id: 'analyst', label: 'Cannibalisation Simulator' }
+            ].map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => {
+                  setActiveView(tab.id as any);
+                  setSelectedAiClass(null);
+                }}
+                className={`flex-1 py-1.5 text-[8.5px] font-bold uppercase tracking-wider rounded-sm transition-all border-none cursor-pointer text-center outline-none ${
+                  activeView === tab.id
+                    ? 'bg-acies-yellow text-white dark:text-acies-gray font-extrabold shadow-sm shadow-black/10'
+                    : 'bg-transparent text-zinc-555 dark:text-zinc-400 hover:text-zinc-850 dark:hover:text-white'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
           </div>
-        </div>
 
-      </div>
+          {/* Right Side: Ledger Sync State & Location Selector */}
+          <div className="flex items-center gap-4 self-end lg:self-auto flex-wrap justify-end">
+            {/* Location Selector */}
+            <div className="flex items-center gap-1.5 bg-black/5 dark:bg-white/5 px-2.5 py-1 rounded border border-black/5 dark:border-white/10 shrink-0">
+              <span className="text-[8px] font-bold uppercase tracking-wider text-zinc-400">Region:</span>
+              <select
+                value={selectedLocation}
+                onChange={(e) => setSelectedLocation(e.target.value)}
+                className="bg-transparent border-none text-[8.5px] font-extrabold uppercase tracking-wider text-zinc-700 dark:text-zinc-200 outline-none cursor-pointer focus:ring-0 py-0"
+                style={{ background: 'transparent' }}
+              >
+                <option value="ALL" className="bg-white dark:bg-zinc-800 text-black dark:text-white">All Regions</option>
+                <option value="APAC" className="bg-white dark:bg-zinc-800 text-black dark:text-white">APAC</option>
+                <option value="EMEA" className="bg-white dark:bg-zinc-800 text-black dark:text-white">EMEA</option>
+                <option value="Americas" className="bg-white dark:bg-zinc-800 text-black dark:text-white">Americas</option>
+              </select>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <span className="flex items-center gap-1 px-2 py-0.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[8px] font-black uppercase tracking-wider rounded-full">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+                Active Ledger Sync
+              </span>
+              <span className="text-[9px] font-mono opacity-40 font-bold">Refreshed {refreshTime}</span>
+            </div>
+          </div>
+
+        </div>
+      )}
 
       {/* KPI Cards Strip */}
       <div className={`grid grid-cols-1 sm:grid-cols-2 ${role === 'VP Product Management' ? 'lg:grid-cols-3' : 'lg:grid-cols-4'} gap-3`}>
@@ -649,7 +760,7 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
           />
 
           <ValueComplexitySection
-            matrixScatterData={matrixScatterData}
+            groupedBarData={groupedBarData}
             rankedPriorities={rankedPriorities}
             selectedAiClass={selectedAiClass}
             setSelectedSkuName={setSelectedSkuName}
@@ -714,38 +825,7 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
       {activeView === 'analyst' && (
         <div className="space-y-6">
           
-          {/* ① DIAGNOSTIC GUIDE PANEL */}
-          <div className="glass-card bg-white dark:bg-[#1a1a24] border border-black/5 dark:border-white/10 p-4 rounded-xl shadow-sm">
-            <button 
-              onClick={() => setGuideOpen(!guideOpen)}
-              className="w-full text-left font-bold text-xs uppercase tracking-widest text-[#8b5cf6] dark:text-purple-300 flex justify-between items-center cursor-pointer border-none bg-transparent outline-none"
-            >
-              <span className="flex items-center gap-2">
-                <HelpCircle size={14} />
-                Rationalization Diagnostic Guide
-              </span>
-              <span className="text-[10px]">{guideOpen ? '✕ Collapse Info' : '▲ Expand Info'}</span>
-            </button>
-
-            {guideOpen && (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t border-black/5 dark:border-white/5 mt-3 text-[11px] leading-relaxed text-zinc-555 dark:text-zinc-400 font-semibold">
-                <div className="space-y-1">
-                  <h4 className="font-bold text-acies-gray dark:text-white uppercase text-[9px] tracking-wider text-[#8b5cf6]">1. Cannibalization Scatter Map</h4>
-                  <p>Represents variant overlaps. Bubble size denotes revenue at risk. Click bubbles to auto-load pairs inside the scorer card.</p>
-                </div>
-                <div className="space-y-1">
-                  <h4 className="font-bold text-acies-gray dark:text-white uppercase text-[9px] tracking-wider text-[#8b5cf6]">2. Promotional Erosion Analysis</h4>
-                  <p>Lists SKUs with high promo dependencies. Products with &gt;40% discount dependency erode margin equity and represent rationalization priorities.</p>
-                </div>
-                <div className="space-y-1">
-                  <h4 className="font-bold text-acies-gray dark:text-white uppercase text-[9px] tracking-wider text-[#8b5cf6]">3. Score SKU Pairs Calculator</h4>
-                  <p>Evaluates correlation coefficients. Large negative numbers reflect substitution shifts where promo items cannibalize organic baselines.</p>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* ② INTERACTIVE PAIR SCORER CALCULATOR */}
+          {/* ① INTERACTIVE PAIR SCORER CALCULATOR */}
           <CalculatorScorer
             skuA={skuA}
             setSkuA={setSkuA}

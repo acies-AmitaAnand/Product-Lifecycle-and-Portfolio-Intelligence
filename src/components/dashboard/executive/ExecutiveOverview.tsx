@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  TrendingUp, TrendingDown, Check, X, AlertTriangle, RefreshCw, Zap, Clock, Home, List, PieChart, BarChart2,
+  TrendingUp, TrendingDown, Check, X, AlertTriangle, RefreshCw, Zap, Clock, Home, List, PieChart, BarChart2, Calendar, LayoutGrid,
   LineChart as LucideLineChart, AreaChart as LucideAreaChart, Radar as LucideRadar, Activity
 } from 'lucide-react';
 import { 
   ResponsiveContainer, AreaChart, Area, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, BarChart, Bar, Cell, PieChart as RePieChart, Pie, Legend,
-  RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ComposedChart
+  ComposedChart, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar
 } from 'recharts';
 import { Role } from '../../../types/dashboard';
 import { 
@@ -17,6 +17,7 @@ import { EmailComposerModal } from '../portfolio-health/EmailComposerModal';
 import { TrendMonthForecastModal } from './TrendMonthForecastModal';
 import { CategoryPerformanceDetailsModal } from './CategoryPerformanceDetailsModal';
 import { SmartAlertDetailsModal } from './SmartAlertDetailsModal';
+import { EventsCalendarModal } from '../portfolio-health/EventsCalendarModal';
 
 interface CustomerInsight {
   name: string;
@@ -174,6 +175,496 @@ interface ExecutiveOverviewProps {
   onAuditClick: (metric: string) => void;
 }
 
+// Top Customer Insights Dataset
+const CUSTOMER_INSIGHTS_DATA: Record<string, Array<{
+  name: string;
+  segment: string;
+  revContribution: string;
+  interestTrend: string;
+  buyingFocus: string[];
+  growthTrend: string;
+  growthDirection: 'up' | 'down';
+}>> = {
+  Beverages: [
+    {
+      name: "Apex Hypermarkets",
+      segment: "Enterprise Chain • 98% Retention",
+      revContribution: "₹24.8 Cr",
+      interestTrend: "Rising demand for eco-friendly packaging and natural mineral mixers.",
+      buyingFocus: ["BrandF Water Eco-Pack", "Coconut Water 1L"],
+      growthTrend: "+12.4% YoY",
+      growthDirection: "up"
+    },
+    {
+      name: "QuickCart Convenience",
+      segment: "Regional Chain • 94% Retention",
+      revContribution: "₹14.2 Cr",
+      interestTrend: "Shifting shelf preference toward high-energy single-serve options.",
+      buyingFocus: ["BrandC Energy Drink", "Mango Fizz 250ml"],
+      growthTrend: "+8.7% YoY",
+      growthDirection: "up"
+    },
+    {
+      name: "Zenith Distributors",
+      segment: "Wholesale Partner • 91% Retention",
+      revContribution: "₹18.5 Cr",
+      interestTrend: "Bulk purchasing of premium fruit-based beverage offerings.",
+      buyingFocus: ["Mango Fizz 500ml", "Aloe Vera Drink"],
+      growthTrend: "+4.2% YoY",
+      growthDirection: "up"
+    }
+  ],
+  Snacks: [
+    {
+      name: "MetroFoods Group",
+      segment: "Key Account • 97% Retention",
+      revContribution: "₹19.6 Cr",
+      interestTrend: "Spike in premium healthy baked items and baked grain products.",
+      buyingFocus: ["Oat Cookies", "Masala Puffs"],
+      growthTrend: "+15.3% YoY",
+      growthDirection: "up"
+    },
+    {
+      name: "Apex Hypermarkets",
+      segment: "Enterprise Chain • 98% Retention",
+      revContribution: "₹16.8 Cr",
+      interestTrend: "High volume restocking of classic snack portfolios.",
+      buyingFocus: ["BrandB Chips", "BrandD Chocolate 100g"],
+      growthTrend: "+3.4% YoY",
+      growthDirection: "up"
+    },
+    {
+      name: "Star Retailers",
+      segment: "Mid-Market Chain • 89% Retention",
+      revContribution: "₹8.4 Cr",
+      interestTrend: "Margin compression on chocolate products due to promotional shifts.",
+      buyingFocus: ["Choco Wafers", "BrandD Chocolate 250g"],
+      growthTrend: "-2.1% YoY",
+      growthDirection: "down"
+    }
+  ],
+  "Personal Care": [
+    {
+      name: "Luminate Boutique",
+      segment: "Specialty Retailer • 95% Retention",
+      revContribution: "₹11.2 Cr",
+      interestTrend: "Surging demand for organic ingredients and active-SPF hand care.",
+      buyingFocus: ["Hand Cream SPF", "Herbal Shampoo"],
+      growthTrend: "+22.4% YoY",
+      growthDirection: "up"
+    },
+    {
+      name: "GlobalMart Inc",
+      segment: "Enterprise Chain • 96% Retention",
+      revContribution: "₹14.5 Cr",
+      interestTrend: "Steady interest in family-pack cleansing and hygiene products.",
+      buyingFocus: ["BrandB Soap", "BrandD Toothpaste"],
+      growthTrend: "+6.1% YoY",
+      growthDirection: "up"
+    },
+    {
+      name: "EcoBeauty Distribs",
+      segment: "Niche Wholesaler • 92% Retention",
+      revContribution: "₹6.8 Cr",
+      interestTrend: "Stocking up on foaming cleansers; sensitive skin variants preferred.",
+      buyingFocus: ["Foam Face Wash", "Aloe Face Wash"],
+      growthTrend: "+8.2% YoY",
+      growthDirection: "up"
+    }
+  ],
+  Dairy: [
+    {
+      name: "MetroFoods Group",
+      segment: "Key Account • 97% Retention",
+      revContribution: "₹12.4 Cr",
+      interestTrend: "Expanding premium European cheese inventory across key metro centers.",
+      buyingFocus: ["BrandD Cheese Blocks", "BrandB Yogurt 500g"],
+      growthTrend: "+11.2% YoY",
+      growthDirection: "up"
+    },
+    {
+      name: "Apex Hypermarkets",
+      segment: "Enterprise Chain • 98% Retention",
+      revContribution: "₹10.5 Cr",
+      interestTrend: "Steady volume orders for organic and gut-health probiotic brands.",
+      buyingFocus: ["BrandB Yogurt 1kg", "BrandE Yogurt (Straw)"],
+      growthTrend: "+4.5% YoY",
+      growthDirection: "up"
+    }
+  ],
+  Household: [
+    {
+      name: "GlobalMart Inc",
+      segment: "Enterprise Chain • 96% Retention",
+      revContribution: "₹18.2 Cr",
+      interestTrend: "Substantial transition to premium concentrated cleaning capsules.",
+      buyingFocus: ["Laundry Pods Premium", "Dish Soap 1L"],
+      growthTrend: "+14.6% YoY",
+      growthDirection: "up"
+    },
+    {
+      name: "Apex Hypermarkets",
+      segment: "Enterprise Chain • 98% Retention",
+      revContribution: "₹12.6 Cr",
+      interestTrend: "Volume restocking of general dish soaps and standard detergents.",
+      buyingFocus: ["BrandF Detergent", "Dish Soap 1L"],
+      growthTrend: "+5.3% YoY",
+      growthDirection: "up"
+    },
+    {
+      name: "QuickCart Convenience",
+      segment: "Regional Chain • 94% Retention",
+      revContribution: "₹4.8 Cr",
+      interestTrend: "Decline in fabric softeners due to localized chemical regulatory flags.",
+      buyingFocus: ["Fabric Softener", "Floor Cleaner"],
+      growthTrend: "-8.4% YoY",
+      growthDirection: "down"
+    }
+  ]
+};
+
+// Strategic Forecast Details Dataset
+const MONTH_FORECAST_DETAILS: Record<string, {
+  month: string;
+  fullName: string;
+  thisYearActual: string;
+  thisYearTarget: string;
+  lastYearActual: string;
+  nextYearForecast: string;
+  lastYearPriceIndex: string;
+  thisYearPriceIndex: string;
+  growthRate: string;
+  aiRecommendations: string[];
+}> = {
+  Jan: {
+    month: "Jan",
+    fullName: "January",
+    thisYearActual: "₹58.0 Cr",
+    thisYearTarget: "₹60.0 Cr",
+    lastYearActual: "₹51.8 Cr",
+    nextYearForecast: "₹65.0 Cr",
+    lastYearPriceIndex: "₹142 / unit",
+    thisYearPriceIndex: "₹148 / unit",
+    growthRate: "+12.4% projected",
+    aiRecommendations: [
+      "Raw material prices are projected to ease in Q1. Pre-negotiate wholesale sugar and packaging contracts to lock in a 4% cost reduction.",
+      "Sustain higher marketing allocation for APAC Beverages to offset the slight winter seasonal slowdown.",
+      "Transition low-velocity Dairy variants to regional distributors to lower direct administrative complexity."
+    ]
+  },
+  Feb: {
+    month: "Feb",
+    fullName: "February",
+    thisYearActual: "₹61.0 Cr",
+    thisYearTarget: "₹63.0 Cr",
+    lastYearActual: "₹54.5 Cr",
+    nextYearForecast: "₹68.3 Cr",
+    lastYearPriceIndex: "₹143 / unit",
+    thisYearPriceIndex: "₹149 / unit",
+    growthRate: "+12.0% projected",
+    aiRecommendations: [
+      "Run cross-promotional campaigns linking Beverages and Snacks to capture post-holiday retail velocity.",
+      "Increase safety stock levels by 6% in hypermarkets for top 10 hero SKUs to avoid recurring stockout leakage.",
+      "Hold contract pricing corridors stable across Italy and Spain; resist discount pressure from enterprise accounts."
+    ]
+  },
+  Mar: {
+    month: "Mar",
+    fullName: "March",
+    thisYearActual: "₹65.0 Cr",
+    thisYearTarget: "₹66.0 Cr",
+    lastYearActual: "₹58.1 Cr",
+    nextYearForecast: "₹72.8 Cr",
+    lastYearPriceIndex: "₹144 / unit",
+    thisYearPriceIndex: "₹151 / unit",
+    growthRate: "+12.0% projected",
+    aiRecommendations: [
+      "Lock in procurement logistics for Q2 peak shipping lanes to hedge against freight rates volatility.",
+      "Introduce secondary vendor options for primary flavor concentrates to hedge supply chain lead-time risks.",
+      "Prepare shelf layouts for upcoming BrandA Premium Energy launches; secure endcap space with retailers."
+    ]
+  },
+  Apr: {
+    month: "Apr",
+    fullName: "April",
+    thisYearActual: "₹70.0 Cr",
+    thisYearTarget: "₹70.0 Cr",
+    lastYearActual: "₹62.5 Cr",
+    nextYearForecast: "₹78.4 Cr",
+    lastYearPriceIndex: "₹144 / unit",
+    thisYearPriceIndex: "₹152 / unit",
+    growthRate: "+12.0% projected",
+    aiRecommendations: [
+      "Monitor raw milk supplier capacity; pre-arrange backup supply agreements to secure gross margin parameters.",
+      "Deploy regional price increases of 3.5% on snacks where demand elasticity is low to counter inflation.",
+      "Standardize currency hedging contracts to insulate EMEA sales margins from currency fluctuations."
+    ]
+  },
+  May: {
+    month: "May",
+    fullName: "May",
+    thisYearActual: "₹74.0 Cr",
+    thisYearTarget: "₹74.0 Cr",
+    lastYearActual: "₹66.1 Cr",
+    nextYearForecast: "₹82.9 Cr",
+    lastYearPriceIndex: "₹145 / unit",
+    thisYearPriceIndex: "₹153 / unit",
+    growthRate: "+12.0% projected",
+    aiRecommendations: [
+      "Run optimization algorithms on regional inventories to balance stock levels across North and West DCs.",
+      "Optimize trade promotion depth: enforce a 15% discount cap on cookies and chips to reclaim margin rates.",
+      "Accelerate phase-out timelines for low-value sunset candidates to reallocate production floor bandwidth."
+    ]
+  },
+  Jun: {
+    month: "Jun",
+    fullName: "June",
+    thisYearActual: "₹77.0 Cr",
+    thisYearTarget: "₹76.0 Cr",
+    lastYearActual: "₹68.8 Cr",
+    nextYearForecast: "₹86.2 Cr",
+    lastYearPriceIndex: "₹146 / unit",
+    thisYearPriceIndex: "₹154 / unit",
+    growthRate: "+11.9% projected",
+    aiRecommendations: [
+      "Implement direct-to-retailer distribution routes in high-density metro corridors to bypass regional depot margins.",
+      "Triage competitor pricing moves: match promotional discount frequency, but maintain base list prices.",
+      "Leverage summer volume gains by scaling distribution of single-serve mineral water and sports drinks."
+    ]
+  },
+  Jul: {
+    month: "Jul",
+    fullName: "July",
+    thisYearActual: "₹80.0 Cr",
+    thisYearTarget: "₹80.0 Cr",
+    lastYearActual: "₹71.4 Cr",
+    nextYearForecast: "₹89.6 Cr",
+    lastYearPriceIndex: "₹146 / unit",
+    thisYearPriceIndex: "₹154 / unit",
+    growthRate: "+12.0% projected",
+    aiRecommendations: [
+      "Conduct midpoint operational reviews of supply sourcing lead times; update DC replenishment schedules.",
+      "Consolidate raw material freight carriers to secure bulk shipping lane contract discounts.",
+      "Optimize portfolio mix: increase production volume for top-margin items while capping low-velocity lines."
+    ]
+  },
+  Aug: {
+    month: "Aug",
+    fullName: "August",
+    thisYearActual: "₹84.0 Cr",
+    thisYearTarget: "₹83.0 Cr",
+    lastYearActual: "₹75.0 Cr",
+    nextYearForecast: "₹94.1 Cr",
+    lastYearPriceIndex: "₹147 / unit",
+    thisYearPriceIndex: "₹155 / unit",
+    growthRate: "+12.0% projected",
+    aiRecommendations: [
+      "Initiate discussions with primary supermarkets for holiday shelf placement commitments.",
+      "Pre-position packaging inventory at regional warehouses to avoid shipping congestions.",
+      "Analyze customer NPS score feedback; prioritize delivery dispatch speed optimizations in Europe."
+    ]
+  },
+  Sep: {
+    month: "Sep",
+    fullName: "September",
+    thisYearActual: "₹88.0 Cr",
+    thisYearTarget: "₹86.0 Cr",
+    lastYearActual: "₹78.6 Cr",
+    nextYearForecast: "₹98.6 Cr",
+    lastYearPriceIndex: "₹148 / unit",
+    thisYearPriceIndex: "₹156 / unit",
+    growthRate: "+12.1% projected",
+    aiRecommendations: [
+      "Negotiate bulk warehouse space leases for Q4 inventory build-ups before spot rental rates spike.",
+      "Curb promotional discounts on high-erosion accounts to recover list price margins prior to holidays.",
+      "Audit supplier performance indexes; draft performance improvement plans for lagging partners."
+    ]
+  },
+  Oct: {
+    month: "Oct",
+    fullName: "October",
+    thisYearActual: "₹91.0 Cr",
+    thisYearTarget: "₹90.0 Cr",
+    lastYearActual: "₹81.3 Cr",
+    nextYearForecast: "₹101.9 Cr",
+    lastYearPriceIndex: "₹148 / unit",
+    thisYearPriceIndex: "₹157 / unit",
+    growthRate: "+12.0% projected",
+    aiRecommendations: [
+      "Execute phased rollouts for regional pricing adjustments on personal care portfolios.",
+      "Establish priority freight lanes with logistics providers to secure holiday delivery dispatch windows.",
+      "Monitor cannibalization alerts in Snacks; adjust shelf spacing to favor high-margin variants."
+    ]
+  },
+  Nov: {
+    month: "Nov",
+    fullName: "November",
+    thisYearActual: "₹92.4 Cr",
+    thisYearTarget: "₹93.0 Cr",
+    lastYearActual: "₹83.0 Cr",
+    nextYearForecast: "₹104.2 Cr",
+    lastYearPriceIndex: "₹149 / unit",
+    thisYearPriceIndex: "₹157 / unit",
+    growthRate: "+12.0% projected",
+    aiRecommendations: [
+      "Run final tests on the upcoming Q1 new product launches; check milestone pipeline readiness.",
+      "Maximize distributor shelf inventory depth on high-demand holiday SKU lines.",
+      "Ensure Continuous Close audit ledger records are updated; clear all intercompany variances."
+    ]
+  },
+  Dec: {
+    month: "Dec",
+    fullName: "December",
+    thisYearActual: "₹95.1 Cr",
+    thisYearTarget: "₹96.0 Cr",
+    lastYearActual: "₹85.7 Cr",
+    nextYearForecast: "₹107.5 Cr",
+    lastYearPriceIndex: "₹150 / unit",
+    thisYearPriceIndex: "₹158 / unit",
+    growthRate: "+12.0% projected",
+    aiRecommendations: [
+      "Review full-year margin and revenue targets; formulate Q1 operational goals and benchmarks.",
+      "Leverage year-end volume rebates with raw material suppliers to maximize gross margins.",
+      "Prepare portfolio rationalization lists for phase-out rollouts in the new fiscal year."
+    ]
+  }
+};
+
+// Month Forecast Modal Component
+const MonthForecastModal: React.FC<{ isOpen: boolean; month: string | null; onClose: () => void }> = ({ isOpen, month, onClose }) => {
+  if (!isOpen || !month) return null;
+  const data = MONTH_FORECAST_DETAILS[month];
+  if (!data) return null;
+  const isBelowTarget = data.thisYearActual !== "N/A (Pending)" && parseFloat(data.thisYearActual.replace(/[^\d.]/g, "")) < parseFloat(data.thisYearTarget.replace(/[^\d.]/g, ""));
+
+  return (
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[120] flex items-center justify-center p-4">
+      <div className="w-full max-w-xl bg-white dark:bg-zinc-900 border border-black/10 dark:border-white/15 p-6 rounded shadow-2xl flex flex-col gap-4 text-xs max-h-[90vh] overflow-y-auto">
+        <div className="flex justify-between items-start border-b border-black/10 dark:border-white/10 pb-3">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <Calendar size={16} className="text-purple-600 dark:text-purple-400" />
+              <h2 className="text-sm font-display font-extrabold text-zinc-900 dark:text-zinc-50">
+                Strategic Forecast & Pricing Review: {data.fullName}
+              </h2>
+            </div>
+            <p className="text-[10px] text-zinc-500 uppercase tracking-wider font-semibold">
+              Corporate Intelligence & Projections
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="p-1 hover:bg-black/5 dark:hover:bg-white/5 rounded text-zinc-400 hover:text-zinc-650 cursor-pointer border-none bg-transparent outline-none"
+          >
+            <X size={16} />
+          </button>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="space-y-2">
+            <p className="font-bold text-[9.5px] uppercase tracking-widest text-zinc-400">Revenue Analysis (₹ Cr)</p>
+            <div className="bg-zinc-50 dark:bg-white/5 p-3.5 rounded border border-black/5 dark:border-white/10 space-y-2.5">
+              <div className="flex justify-between items-center">
+                <span className="text-zinc-500 font-medium">Prior Year (Last Year) Sales:</span>
+                <span className="font-semibold text-zinc-700 dark:text-zinc-200">{data.lastYearActual}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-zinc-500 font-medium">This Year Target vs Actual:</span>
+                <span className="font-semibold text-zinc-855 dark:text-white">
+                  {data.thisYearTarget} / <span className={isBelowTarget ? "text-amber-500 font-bold" : "text-green-500 font-bold"}>{data.thisYearActual}</span>
+                </span>
+              </div>
+              <div className="border-t border-black/5 dark:border-white/5 pt-2.5 flex justify-between items-center">
+                <span className="text-purple-600 dark:text-purple-400 font-extrabold">Next Year Forecast (Proj):</span>
+                <div className="text-right">
+                  <span className="font-extrabold text-purple-600 dark:text-purple-400 text-sm block">{data.nextYearForecast}</span>
+                  <span className="text-[8px] text-green-500 uppercase tracking-wider font-extrabold">{data.growthRate}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <p className="font-bold text-[9.5px] uppercase tracking-widest text-zinc-400">Blended Price Index (Category unit)</p>
+            <div className="bg-zinc-50 dark:bg-white/5 p-3.5 rounded border border-black/5 dark:border-white/10 space-y-2.5 h-[116px] flex flex-col justify-between">
+              <div className="flex justify-between items-center">
+                <span className="text-zinc-500 font-medium">Last Year Blended Price:</span>
+                <span className="font-semibold text-zinc-700 dark:text-zinc-200">{data.lastYearPriceIndex}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-zinc-500 font-medium">This Year Blended Price:</span>
+                <span className="font-semibold text-zinc-855 dark:text-white">{data.thisYearPriceIndex}</span>
+              </div>
+              <div className="border-t border-black/5 dark:border-white/5 pt-2.5 flex justify-between items-center">
+                <span className="text-indigo-655 dark:text-indigo-400 font-bold">YoY Price Lift:</span>
+                <span className="text-[10px] font-extrabold text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">+4.2% Growth</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-1.5">
+          <div className="flex items-center gap-1.5">
+            <Zap size={13} className="text-purple-500 dark:text-purple-400 animate-pulse" />
+            <p className="font-bold text-[9.5px] uppercase tracking-widest text-purple-600 dark:text-purple-400">
+              AI Strategic Recommendations (VP Brief)
+            </p>
+          </div>
+          <div className="bg-gradient-to-r from-purple-50/50 to-indigo-50/50 dark:from-purple-950/10 dark:to-indigo-950/10 border border-purple-500/15 rounded p-4 space-y-3 shadow-inner">
+            {data.aiRecommendations.map((recommendation, idx) => (
+              <div key={idx} className="flex gap-2.5 text-zinc-650 dark:text-zinc-300 leading-relaxed font-medium">
+                <div className="w-5 h-5 rounded-full bg-purple-500/10 dark:bg-purple-400/10 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0 font-extrabold text-[9px] mt-0.5 border border-purple-500/20">
+                  {idx + 1}
+                </div>
+                <p className="text-zinc-700 dark:text-zinc-200">{recommendation}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex justify-end border-t border-black/10 dark:border-white/10 pt-3 mt-1">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-4 py-2 border border-black/10 dark:border-white/10 rounded-sm font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer bg-transparent outline-none"
+          >
+            Close Analysis
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const EVENT_TEMPLATES = [
+  { sev: 'info', sevC: '#3b82f6', type: 'Demand', msgs: ['Mango Fizz 500ml — reorder triggered: 12,000 units', 'E-Commerce channel orders up 18% in last 2hrs', 'Oat Cookies demand spike detected — APAC region', 'Customer return rate dropped to 1.2% — all categories'] },
+  { sev: 'warning', sevC: '#f59e0b', type: 'Supply', msgs: ['Fabric Softener stock level below safety threshold', 'Lead time breach — supplier notification sent', 'Cold chain temperature alert — Mumbai DC resolved', 'Freight cost increase 4% — Mumbai to Bangalore lane'] },
+  { sev: 'critical', sevC: '#ef4444', type: 'Margin', msgs: ['Margin erosion detected: Green Tea RTD promo overlap', 'Price floor breach on Choco Wafers — auto-flagged', 'Promotional budget 83% consumed — 14 days remaining', 'Cost variance alert: packaging +7% vs budget'] },
+  { sev: 'info', sevC: '#10b981', type: 'Finance', msgs: ['Invoice cleared: Supplier ID #4821 — ₹2.3 Cr', 'Revenue milestone: ₹850 Cr MTD achieved', 'GST reconciliation complete — no discrepancies', 'Quarterly audit trail generated and archived'] },
+  { sev: 'info', sevC: '#8b5cf6', type: 'Launch', msgs: ['Mango Fizz 750ml — shelf placement confirmed: 240 stores', 'Launch readiness score updated: 82/100', 'Market test: Herbal Shampoo new variant — positive signal', 'NPD gate review scheduled: Thursday 10:00 AM'] },
+];
+
+const generateInitialEvents = () => {
+  const list = [];
+  const now = new Date();
+  for (let i = 0; i < 12; i++) {
+    const tmpl = EVENT_TEMPLATES[Math.floor(Math.random() * EVENT_TEMPLATES.length)];
+    const msg = tmpl.msgs[Math.floor(Math.random() * tmpl.msgs.length)];
+    const timeObj = new Date(now.getTime() - i * 60000);
+    const timeStr = timeObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    list.push({
+      id: 'init-' + i + '-' + Date.now(),
+      sev: tmpl.sev,
+      sevC: tmpl.sevC,
+      type: tmpl.type,
+      msg,
+      time: timeStr
+    });
+  }
+  return list;
+};
+
 export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setActiveTab, isDarkMode, onAuditClick }) => {
   const [alerts, setAlerts] = useState(() => VP_ALERTS.map(a => ({ ...a })));
   const [approvals, setApprovals] = useState(() => VP_APPROVALS.map(a => ({ ...a })));
@@ -185,6 +676,74 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
     return baseKpis.map(k => ({ ...k, sparkPoints: k.spark.map((v, i) => ({ index: i, value: v })) }));
   });
   const [lastRefreshed, setLastRefreshed] = useState<string>('Refreshed just now');
+
+  // Live Industry Updates states
+  const [viewFormat, setViewFormat] = useState<'grid' | 'table'>('grid');
+  const [calendarOpen, setCalendarOpen] = useState(false);
+  const [eventFilter, setEventFilter] = useState('all');
+  const [feedEvents, setFeedEvents] = useState(() => generateInitialEvents());
+
+  // Vercel UI states
+  const [revenueChartType, setRevenueChartType] = useState<'line' | 'combi' | 'bar'>('line');
+  const [categoryChartType, setCategoryChartType] = useState<'donut' | 'bar' | 'radar'>('donut');
+  const [selectedMonth, setSelectedMonth] = useState<string | null>(null);
+  const [activeCategoryInsights, setActiveCategoryInsights] = useState<string>('Beverages');
+  
+  // Toasts
+  interface Toast {
+    id: string;
+    title: string;
+    body: string;
+    color: string;
+  }
+  const [toasts, setToasts] = useState<Toast[]>([]);
+  const addToast = (title: string, body: string, color: string) => {
+    const id = Math.random().toString();
+    setToasts(prev => [{ id, title, body, color }, ...prev]);
+    setTimeout(() => {
+      setToasts(prev => prev.filter(t => t.id !== id));
+    }, 5000);
+  };
+
+  // Timer for adding live events
+  useEffect(() => {
+    const scheduleNextEvent = () => {
+      const delay = 1800 + Math.random() * 4200;
+      return setTimeout(() => {
+        const tmpl = EVENT_TEMPLATES[Math.floor(Math.random() * EVENT_TEMPLATES.length)];
+        const msg = tmpl.msgs[Math.floor(Math.random() * tmpl.msgs.length)];
+        const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        const newEv = {
+          id: 'dyn-' + Date.now(),
+          sev: tmpl.sev,
+          sevC: tmpl.sevC,
+          type: tmpl.type,
+          msg,
+          time: timeStr
+        };
+
+        setFeedEvents(prev => [newEv, ...prev.slice(0, 79)]);
+
+        if (tmpl.sev === 'critical' && Math.random() > 0.6) {
+          addToast('Critical alert', msg, '#ef4444');
+          setAlerts(prevAlerts => {
+            if (prevAlerts.some(a => a.title === msg)) return prevAlerts;
+            const newAlert = {
+              id: 'dyn-al-' + Date.now(),
+              sev: 'critical',
+              title: msg,
+              detail: tmpl.type + ' · Auto-detected'
+            };
+            return [newAlert, ...prevAlerts.slice(0, 11)];
+          });
+        }
+        timerId = scheduleNextEvent();
+      }, delay);
+    };
+
+    let timerId = scheduleNextEvent();
+    return () => clearTimeout(timerId);
+  }, []);
 
   // Category filter and modal states for Top SKU Performance card
   const [activeCategory, setActiveCategory] = useState<string>('All');
@@ -270,6 +829,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
   const categoryPerfData = [
     { name: 'Beverages', value: 316, color: '#7C3AED' },
     { name: 'Snacks', value: 253, color: '#0F6E56' },
+    { name: 'Dairy', value: 180, color: '#F59E0B' },
     { name: 'Personal Care', value: 225, color: '#185FA5' },
     { name: 'Household', value: 145, color: '#854F0B' }
   ];
@@ -280,6 +840,9 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
     : SKUS.filter(s => s.cat === activeCategory);
   const topSkus = [...filteredSkus].sort((a, b) => b.rev - a.rev).slice(0, 5);
   const maxSkuRev = topSkus[0]?.rev || 1;
+  
+  const filteredEvents = eventFilter === 'all' ? feedEvents : feedEvents.filter(e => e.type === eventFilter);
+
   const alertsBlock = (
     <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3.5">
       <div className="flex justify-between items-center pb-2.5 border-b border-black/5 dark:border-white/5 mb-2.5">
@@ -432,11 +995,13 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
               <p className="text-[8.5px] text-zinc-500 uppercase tracking-widest mt-0.5 leading-normal">
                 Monthly Actual vs Target (₹ Cr) — This Year
                 <br />
-                <span className="text-purple-600 dark:text-purple-400 font-extrabold normal-case">
+                <span className="text-purple-650 dark:text-purple-400 font-extrabold normal-case">
                   Click any month to forecast next year & review price indexes
                 </span>
               </p>
             </div>
+            
+            {/* Chart Type Toggles */}
             <div className="flex items-center border border-black/10 dark:border-white/10 rounded-md overflow-hidden bg-black/5 dark:bg-white/5 p-0.5 ml-1 shrink-0">
               <button
                 type="button"
@@ -551,6 +1116,8 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
                 </span>
               </p>
             </div>
+            
+            {/* Chart Type Toggles */}
             <div className="flex items-center border border-black/10 dark:border-white/10 rounded-md overflow-hidden bg-black/5 dark:bg-white/5 p-0.5 ml-1 shrink-0">
               <button
                 type="button"
@@ -590,6 +1157,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
               </button>
             </div>
           </div>
+          
           <div className="flex-1 min-h-0">
             <ResponsiveContainer width="100%" height="100%">
               {categoryViewMode === 'donut' ? (
@@ -1015,8 +1583,159 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
       </div>
 
       {role === 'VP Product Management' && (
-        <div className="mt-4">
-          {alertsBlock}
+        <div className="space-y-4 mt-4">
+          <div>
+            {alertsBlock}
+          </div>
+
+          {/* FULL WIDTH: LIVE INDUSTRY UPDATES */}
+          <div className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm flex flex-col gap-4 w-full">
+            <div className="flex justify-between items-center pb-2 border-b border-black/5 dark:border-white/5">
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Live Industry Updates</span>
+                <span className="flex h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              </div>
+              <div className="flex items-center gap-3">
+                <select 
+                  value={eventFilter}
+                  onChange={(e) => setEventFilter(e.target.value)}
+                  className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-sm p-1 text-[9px] font-bold text-zinc-600 dark:text-zinc-400 outline-none cursor-pointer"
+                >
+                  <option value="all">All Events</option>
+                  <option value="Supply">Supply</option>
+                  <option value="Demand">Demand</option>
+                  <option value="Margin">Margin</option>
+                  <option value="Launch">Launch</option>
+                  <option value="Finance">Finance</option>
+                </select>
+
+                {/* Layout Toggle Buttons */}
+                <div className="flex items-center border border-black/10 dark:border-white/10 rounded-sm overflow-hidden bg-black/5 dark:bg-white/5 p-0.5">
+                  <button
+                    type="button"
+                    onClick={() => setViewFormat('grid')}
+                    className={`p-1 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm ${
+                      viewFormat === 'grid' 
+                        ? 'bg-blue-500 text-white shadow-sm' 
+                        : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 bg-transparent'
+                    }`}
+                    title="Grid View"
+                  >
+                    <LayoutGrid size={11} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setViewFormat('table')}
+                    className={`p-1 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm ${
+                      viewFormat === 'table' 
+                        ? 'bg-blue-500 text-white shadow-sm' 
+                        : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 bg-transparent'
+                    }`}
+                    title="Table View"
+                  >
+                    <List size={11} />
+                  </button>
+                </div>
+
+                {/* Calendar Button */}
+                <button
+                  type="button"
+                  onClick={() => setCalendarOpen(true)}
+                  className="px-2 py-0.5 transition-all cursor-pointer border border-black/10 dark:border-white/10 rounded-sm flex items-center justify-center gap-1.5 bg-black/5 dark:bg-white/5 text-zinc-600 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-100 hover:bg-black/10 dark:hover:bg-white/10 h-[21px] text-[9px] font-bold"
+                  title="Open Calendar"
+                >
+                  <Calendar size={11} />
+                  <span>Calendar</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Scrollable event lists in a horizontal multi-column grid or table */}
+            <div className="overflow-y-auto space-y-2 max-h-[300px] pr-1">
+              {viewFormat === 'grid' ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                  {filteredEvents.map((ev, i) => (
+                    <div 
+                      key={ev.id} 
+                      className={`flex items-start justify-between gap-3 p-3.5 rounded-sm border border-black/5 dark:border-white/5 transition-all text-xs h-full ${
+                        i === 0 ? 'bg-black/[0.02] dark:bg-white/5 animate-pulse border-emerald-500/35 shadow-sm' : 'bg-transparent'
+                      }`}
+                    >
+                      <div className="flex gap-2 min-w-0">
+                        <span 
+                          className="w-1.5 h-1.5 rounded-full shrink-0 mt-1.5" 
+                          style={{ backgroundColor: ev.sevC }} 
+                        />
+                        <div className="min-w-0">
+                          <p className="text-zinc-800 dark:text-zinc-200 leading-snug font-semibold break-words">{ev.msg}</p>
+                          <div className="flex items-center gap-1.5 mt-2">
+                            <span 
+                              className="text-[8px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-sm"
+                              style={{ backgroundColor: `${ev.sevC}15`, color: ev.sevC }}
+                            >
+                              {ev.type}
+                            </span>
+                            <span className="text-[8px] opacity-40 font-bold uppercase">{ev.sev}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <span className="text-[9px] font-semibold text-zinc-400 dark:text-zinc-550 font-mono whitespace-nowrap">{ev.time}</span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="w-full overflow-x-auto border border-black/5 dark:border-white/10 rounded-sm">
+                  <table className="w-full border-collapse text-left text-xs">
+                    <thead>
+                      <tr className="bg-black/5 dark:bg-white/5 border-b border-black/10 dark:border-white/10 text-[9px] uppercase tracking-wider font-bold text-zinc-400">
+                        <th className="py-2.5 px-4 w-[60px]">Status</th>
+                        <th className="py-2.5 px-4 min-w-[200px]">Description</th>
+                        <th className="py-2.5 px-4 w-[100px]">Category</th>
+                        <th className="py-2.5 px-4 w-[100px]">Priority</th>
+                        <th className="py-2.5 px-4 w-[100px] text-right">Timestamp</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-black/[0.03] dark:divide-white/[0.03]">
+                      {filteredEvents.map((ev, i) => (
+                        <tr 
+                          key={ev.id} 
+                          className={`hover:bg-black/[0.01] dark:hover:bg-white/[0.02] transition-colors ${
+                            i === 0 ? 'bg-black/[0.02] dark:bg-white/5 animate-pulse' : 'bg-transparent'
+                          }`}
+                        >
+                          <td className="py-2.5 px-4">
+                            <div className="flex items-center justify-center">
+                              <span 
+                                className="w-2 h-2 rounded-full" 
+                                style={{ backgroundColor: ev.sevC, boxShadow: `0 0 6px ${ev.sevC}66` }} 
+                              />
+                            </div>
+                          </td>
+                          <td className="py-2.5 px-4 font-semibold text-zinc-800 dark:text-zinc-200 leading-snug break-words">
+                            {ev.msg}
+                          </td>
+                          <td className="py-2.5 px-4 font-bold">
+                            <span 
+                              className="text-[8px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-sm"
+                              style={{ backgroundColor: `${ev.sevC}15`, color: ev.sevC }}
+                            >
+                              {ev.type}
+                            </span>
+                          </td>
+                          <td className="py-2.5 px-4 uppercase text-[9px] font-bold text-zinc-400">
+                            {ev.sev}
+                          </td>
+                          <td className="py-2.5 px-4 text-right font-mono text-[9.5px] text-zinc-500 dark:text-zinc-400 font-semibold whitespace-nowrap">
+                            {ev.time}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       )}
 
@@ -1063,10 +1782,16 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
         onClose={() => setSelectedAlert(null)}
         onApprove={(alertId, directiveText) => {
           setAlerts(prev => prev.filter(a => a.id !== alertId));
-          setToastMessage(`Directive authorized: "${directiveText}"`);
-          setTimeout(() => setToastMessage(null), 4000);
+          addToast("Directive authorized", `Directive authorized: "${directiveText}"`, "#10b981");
           setSelectedAlert(null);
         }}
+      />
+
+      {/* Strategic Forecast & Pricing Review (Month Forecast) Modal */}
+      <MonthForecastModal
+        isOpen={!!selectedMonth}
+        month={selectedMonth}
+        onClose={() => setSelectedMonth(null)}
       />
 
       {/* Email Composer Modal */}
@@ -1079,6 +1804,13 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
           setTimeout(() => setToastMessage(null), 4000);
           setIsEmailOpen(false);
         }}
+      />
+
+      {/* Events Calendar Modal */}
+      <EventsCalendarModal 
+        isOpen={calendarOpen}
+        onClose={() => setCalendarOpen(false)}
+        isDarkMode={isDarkMode}
       />
 
       {/* Floating Premium Toast Notification */}
@@ -1108,6 +1840,23 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
           </button>
         </div>
       )}
+
+      {/* Floating Corner Toasts Container */}
+      <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none max-w-sm">
+        {toasts.map(t => (
+          <div 
+            key={t.id} 
+            onClick={() => setToasts(prev => prev.filter(x => x.id !== t.id))}
+            className="pointer-events-auto bg-white dark:bg-zinc-900 border border-black/10 dark:border-white/15 p-3.5 rounded shadow-lg flex items-start gap-2.5 cursor-pointer hover:opacity-90 transition-opacity"
+          >
+            <span className="w-2.5 h-2.5 rounded-full shrink-0 mt-1" style={{ backgroundColor: t.color }} />
+            <div>
+              <h5 className="text-[11px] font-bold text-zinc-850 dark:text-zinc-150 leading-none">{t.title}</h5>
+              <p className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-1 leading-snug">{t.body}</p>
+            </div>
+          </div>
+        ))}
+      </div>
 
     </div>
   );

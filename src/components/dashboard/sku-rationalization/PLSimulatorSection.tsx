@@ -99,16 +99,9 @@ export const PLSimulatorSection: React.FC<PLSimulatorSectionProps> = ({
     <>
       {/* ③ DYNAMIC P&L SIMULATOR COMMAND DESK */}
       <div className="space-y-3" id="simulation-desk-section" style={{ scrollMarginTop: '100px' }}>
-        <div className="flex items-center gap-2 border-l-4 border-[#8b5cf6] pl-3 py-0.5">
-          <h3 className="text-xs font-bold uppercase tracking-widest text-[#8b5cf6] dark:text-purple-300">
-            ③ Real-time P&L Simulation Desk
-          </h3>
-        </div>
-
         <div className="glass-card bg-white dark:bg-[#1a1a24] border border-black/10 dark:border-white/10 overflow-hidden shadow-sm rounded-xl">
           <div className="flex items-center justify-between border-b border-black/5 dark:border-white/5 py-3.5 px-5 bg-black/[0.01]">
             <h4 className="text-xs font-bold uppercase tracking-widest text-acies-gray dark:text-white">Active Scenarios Console</h4>
-            <span className="text-[8.5px] text-zinc-555 font-bold uppercase tracking-widest">Adjust sliders to model dynamic ledger updates</span>
           </div>
 
           <div className="p-5 grid grid-cols-1 lg:grid-cols-2 gap-8">

@@ -8,6 +8,19 @@ import {
   LineChart, Line, BarChart, Bar, Cell
 } from 'recharts';
 import { Role } from '../../../types/dashboard';
+import { EmailComposerModal } from '../portfolio-health/EmailComposerModal';
+import { SuccessFeedbackModal } from '../portfolio-health/SuccessFeedbackModal';
+import { ResolveSignalModal } from './ResolveSignalModal';
+
+const RECIPIENT_TITLES: Record<string, string> = {
+  'ananya.sen@aciesglobal.com': 'VP Finance',
+  'vikram.solanki@aciesglobal.com': 'QC Manager & Logistics Lead',
+  'priya.sharma@aciesglobal.com': 'Product Manager',
+  'rajendra.patel@aciesglobal.com': 'Vapi Hub Director',
+  'amit.verma@aciesglobal.com': 'NPD Lead',
+  'karan.johar@aciesglobal.com': 'Retail Relations Director'
+};
+
 
 interface SignalsBoardProps {
   role: Role;
@@ -477,6 +490,20 @@ const VPSignalsBoardView: React.FC<{ isDarkMode: boolean; setActiveTab: (tab: nu
   const [lastRefreshed, setLastRefreshed] = useState('');
   const [toasts, setToasts] = useState<{ id: string; title: string; body: string; color: string }[]>([]);
 
+  const [activeResolveSignal, setActiveResolveSignal] = useState<string | null>(null);
+  const [composerOpen, setComposerOpen] = useState(false);
+  const [composerEmail, setComposerEmail] = useState({ to: '', name: '', subject: '', body: '', action: '' });
+  const [successFeedback, setSuccessFeedback] = useState<{
+    isOpen: boolean;
+    recipientName: string;
+    recipientTitle: string;
+    recipientEmail: string;
+    contextType: 'signal';
+    contextTitle: string;
+    channel: 'email' | 'message';
+  } | null>(null);
+  const [trendsTimeframe, setTrendsTimeframe] = useState<'weekly' | 'monthly'>('weekly');
+
   useEffect(() => {
     const updateTime = () => {
       const now = new Date();
@@ -548,12 +575,23 @@ const VPSignalsBoardView: React.FC<{ isDarkMode: boolean; setActiveTab: (tab: nu
     : 91;
 
   // Recharts Trends Line Data
-  const categoryTrendsData = [
+  const categoryTrendsWeeklyData = [
     { name: 'W1', Beverages: 62, Snacks: 55, PersonalCare: 45, Household: 35 },
     { name: 'W2', Beverages: 68, Snacks: 53, PersonalCare: 48, Household: 34 },
     { name: 'W3', Beverages: 72, Snacks: 58, PersonalCare: 46, Household: 38 },
     { name: 'W4', Beverages: 78, Snacks: 54, PersonalCare: 44, Household: 42 },
   ];
+
+  const categoryTrendsMonthlyData = [
+    { name: 'Jan', Beverages: 58, Snacks: 50, PersonalCare: 40, Household: 30 },
+    { name: 'Feb', Beverages: 64, Snacks: 52, PersonalCare: 42, Household: 32 },
+    { name: 'Mar', Beverages: 70, Snacks: 56, PersonalCare: 45, Household: 36 },
+    { name: 'Apr', Beverages: 76, Snacks: 54, PersonalCare: 43, Household: 40 },
+    { name: 'May', Beverages: 80, Snacks: 58, PersonalCare: 47, Household: 42 },
+    { name: 'Jun', Beverages: 83, Snacks: 60, PersonalCare: 49, Household: 44 }
+  ];
+
+  const categoryTrendsData = trendsTimeframe === 'weekly' ? categoryTrendsWeeklyData : categoryTrendsMonthlyData;
 
   // NPS Trends Data
   const npsTrendsData = [
@@ -561,6 +599,8 @@ const VPSignalsBoardView: React.FC<{ isDarkMode: boolean; setActiveTab: (tab: nu
     { name: 'Feb', Beverages: 73, Snacks: 70, PersonalCare: 71, Household: 66 },
     { name: 'Mar', Beverages: 75, Snacks: 72, PersonalCare: 70, Household: 68 },
     { name: 'Apr', Beverages: 76, Snacks: 71, PersonalCare: 68, Household: 72 },
+    { name: 'May', Beverages: 78, Snacks: 73, PersonalCare: 69, Household: 74 },
+    { name: 'Jun', Beverages: 79, Snacks: 74, PersonalCare: 71, Household: 75 }
   ];
 
   // Heatmap metrics
@@ -764,12 +804,7 @@ const VPSignalsBoardView: React.FC<{ isDarkMode: boolean; setActiveTab: (tab: nu
                       </button>
                       <button 
                         onClick={() => {
-                          let msg = '';
-                          if (sig.type === 'Opportunity') msg = 'Dispatched inventory allocation increase.';
-                          else if (sig.type === 'Risk') msg = 'Onboarded alternative logistics co-packer.';
-                          else if (sig.type === 'Competitor') msg = 'Adjusted strategic price thresholds.';
-                          else msg = 'Logged operational action ticket.';
-                          handleResolveSignal(sig.id, sig.title, msg);
+                          setActiveResolveSignal(sig.id);
                         }}
                         className="px-2.5 py-1 bg-acies-gray hover:bg-acies-yellow hover:text-acies-gray text-white rounded-sm text-[8.5px] font-bold uppercase tracking-wider transition-all cursor-pointer border-none flex items-center gap-1"
                       >
@@ -788,8 +823,37 @@ const VPSignalsBoardView: React.FC<{ isDarkMode: boolean; setActiveTab: (tab: nu
         {/* Category & Brand Momentum Trend Chart */}
         <div className="xl:col-span-5 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm space-y-4">
           <div className="flex justify-between items-center pb-2 border-b border-black/5 dark:border-white/5">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Category & Brand Momentum</span>
-            <span className="text-[8px] font-bold uppercase tracking-wider text-zinc-400">Weekly sales index</span>
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Category & Brand Momentum</span>
+              <p className="text-[8px] font-bold uppercase tracking-wider text-zinc-400 mt-0.5">
+                {trendsTimeframe === 'weekly' ? 'Weekly sales index' : 'Monthly sales index'}
+              </p>
+            </div>
+            
+            <div className="flex bg-black/5 dark:bg-white/5 p-0.5 rounded border border-black/5 dark:border-white/10 shrink-0">
+              <button
+                type="button"
+                onClick={() => setTrendsTimeframe('weekly')}
+                className={`px-2 py-0.5 text-[8.5px] font-bold uppercase tracking-wider rounded-sm transition-all border-none cursor-pointer outline-none ${
+                  trendsTimeframe === 'weekly'
+                    ? 'bg-[#5850ec] text-white shadow-sm'
+                    : `bg-transparent text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white`
+                }`}
+              >
+                Weekly
+              </button>
+              <button
+                type="button"
+                onClick={() => setTrendsTimeframe('monthly')}
+                className={`px-2 py-0.5 text-[8.5px] font-bold uppercase tracking-wider rounded-sm transition-all border-none cursor-pointer outline-none ${
+                  trendsTimeframe === 'monthly'
+                    ? 'bg-[#5850ec] text-white shadow-sm'
+                    : `bg-transparent text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white`
+                }`}
+              >
+                Monthly
+              </button>
+            </div>
           </div>
 
           <div className="h-64">
@@ -1066,6 +1130,71 @@ const VPSignalsBoardView: React.FC<{ isDarkMode: boolean; setActiveTab: (tab: nu
           </div>
         ))}
       </div>
+
+      {/* Resolve Sync Meeting Modal */}
+      <ResolveSignalModal
+        isOpen={!!activeResolveSignal}
+        signal={signals.find(x => x.id === activeResolveSignal) || null}
+        onClose={() => setActiveResolveSignal(null)}
+        onRequestAction={(email, name, subject, body) => {
+          setComposerEmail({
+            to: email,
+            name,
+            subject,
+            body,
+            action: activeResolveSignal || ''
+          });
+          setComposerOpen(true);
+        }}
+      />
+
+      {/* Email Composer Modal */}
+      <EmailComposerModal 
+        isOpen={composerOpen}
+        onClose={() => setComposerOpen(false)}
+        initialEmail={composerEmail}
+        onSend={(name, email, subject, body, channel) => {
+          setComposerOpen(false);
+          const resolvedTitle = RECIPIENT_TITLES[email.toLowerCase()] || 'Product Manager';
+          const signal = signals.find(x => x.id === composerEmail.action);
+          const title = signal ? signal.title : '';
+          
+          setSuccessFeedback({
+            isOpen: true,
+            recipientName: name,
+            recipientTitle: resolvedTitle,
+            recipientEmail: email,
+            contextType: 'signal',
+            contextTitle: title,
+            channel
+          });
+          
+          addToast(
+            'Sync Meeting Invitation Sent', 
+            `Meeting invite ${channel === 'email' ? 'email' : 'message'} sent successfully to ${name} (${email}).`, 
+            '#10b981'
+          );
+          
+          // Resolve signal
+          setSignals(prev => prev.filter(s => s.id !== composerEmail.action));
+          setActiveResolveSignal(null);
+        }}
+      />
+
+      {/* Success Feedback Modal */}
+      {successFeedback && (
+        <SuccessFeedbackModal
+          isOpen={successFeedback.isOpen}
+          onClose={() => setSuccessFeedback(null)}
+          recipientName={successFeedback.recipientName}
+          recipientTitle={successFeedback.recipientTitle}
+          recipientEmail={successFeedback.recipientEmail}
+          contextType={successFeedback.contextType}
+          contextTitle={successFeedback.contextTitle}
+          isDarkMode={isDarkMode}
+          channel={successFeedback.channel}
+        />
+      )}
 
     </div>
   );

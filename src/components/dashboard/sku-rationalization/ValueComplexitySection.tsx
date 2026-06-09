@@ -5,13 +5,13 @@
 
 import React from 'react';
 import { 
-  ResponsiveContainer, ScatterChart, Scatter, XAxis, YAxis, ZAxis, Tooltip, CartesianGrid, Cell, LabelList 
+  ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid
 } from 'recharts';
 import { Sparkles } from 'lucide-react';
 import { srClassify, SR_CLASSES } from './SKURationalization';
 
 interface ValueComplexitySectionProps {
-  matrixScatterData: any[];
+  groupedBarData: any[];
   rankedPriorities: any[];
   selectedAiClass: string | null;
   setSelectedSkuName: (name: string) => void;
@@ -26,7 +26,7 @@ interface ValueComplexitySectionProps {
 }
 
 export const ValueComplexitySection: React.FC<ValueComplexitySectionProps> = ({
-  matrixScatterData,
+  groupedBarData,
   rankedPriorities,
   selectedAiClass,
   setSelectedSkuName,
@@ -41,76 +41,71 @@ export const ValueComplexitySection: React.FC<ValueComplexitySectionProps> = ({
 }) => {
   return (
     <div className="space-y-3" id="quadrant-matrix-section" style={{ scrollMarginTop: '100px' }}>
-      <div className="flex items-center gap-2 border-l-4 border-[#8b5cf6] pl-3 py-0.5">
-        <h3 className="text-xs font-bold uppercase tracking-widest text-[#8b5cf6] dark:text-purple-300">
-          ② Commercial Value vs Complexity Matrix
-        </h3>
-      </div>
+
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Scatter Map */}
+        {/* Horizontal Grouped Bar Chart */}
         <div id="complexity-matrix-section" style={{ scrollMarginTop: '100px' }} className="lg:col-span-2 glass-card bg-white dark:bg-[#1a1a24] border border-black/10 dark:border-white/10 p-5 shadow-sm rounded-xl">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
             <div>
-              <h4 className="text-xs font-bold uppercase tracking-widest text-acies-gray dark:text-white">Commercial Value & Complexity Quadrants</h4>
-              <p className="text-[9px] text-zinc-500 font-bold uppercase tracking-wider mt-0.5">Bottom-Right represents sunset priorities · Bubble radius equals revenue scale</p>
+              <h4 className="text-xs font-bold uppercase tracking-widest text-acies-gray dark:text-white">Commercial Value & Complexity Segment Analysis</h4>
+              <p className="text-[9px] text-zinc-555 font-bold uppercase tracking-wider mt-0.5">Horizontal Grouped Bars · Comparison of segment averages</p>
             </div>
-            <div className="flex flex-wrap gap-2 text-[8px] font-bold uppercase tracking-wider">
-              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-emerald-500" /> Retain/Grow</span>
-              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-purple-500" /> Bundle</span>
-              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-amber-500" /> Reposition</span>
-              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-500" /> Sunset</span>
+            {/* Custom Legend */}
+            <div className="flex items-center gap-4 text-[9px] font-extrabold uppercase tracking-wider">
+              <span className="flex items-center gap-1.5 text-zinc-700 dark:text-zinc-300">
+                <span className="w-2.5 h-2 rounded-sm bg-[#12b886]" /> Commercial value
+              </span>
+              <span className="flex items-center gap-1.5 text-zinc-700 dark:text-zinc-300">
+                <span className="w-2.5 h-2 rounded-sm bg-[#c5c2b5] dark:bg-zinc-400" /> Complexity score
+              </span>
             </div>
           </div>
 
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
-              <ScatterChart margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} />
+              <BarChart
+                layout="vertical"
+                data={groupedBarData}
+                margin={{ top: 10, right: 20, left: 10, bottom: 10 }}
+                barGap={3}
+              >
+                <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} horizontal={false} vertical={true} />
                 <XAxis 
                   type="number" 
-                  dataKey="x" 
-                  name="Complexity" 
-                  domain={[0, 1]} 
+                  domain={[0.0, 1.0]} 
+                  ticks={[0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]}
                   tick={{ fill: tickColor, fontSize: 8 }} 
-                  label={{ value: 'Complexity Score →', position: 'bottom', fill: tickColor, fontSize: 9, offset: -5 }} 
+                  axisLine={{ stroke: gridStroke }}
+                  tickLine={false}
                 />
                 <YAxis 
-                  type="number" 
-                  dataKey="y" 
-                  name="Value" 
-                  domain={[0, 1]} 
-                  tick={{ fill: tickColor, fontSize: 8 }} 
-                  label={{ value: 'Commercial Value →', angle: -90, position: 'insideLeft', fill: tickColor, fontSize: 9 }} 
+                  type="category" 
+                  dataKey="name" 
+                  tick={{ fill: tickColor, fontSize: 8, fontWeight: 'bold' }} 
+                  width={75}
+                  axisLine={false}
+                  tickLine={false}
                 />
-                <ZAxis type="number" dataKey="z" range={[50, 400]} />
                 <Tooltip 
                   contentStyle={{ backgroundColor: tooltipBg, borderColor: tooltipBorder, color: tooltipText, fontSize: '9px' }}
-                  formatter={(value: any, name: any) => {
-                    if (name === 'Complexity') return [value.toFixed(2), 'Complexity'];
-                    if (name === 'Value') return [value.toFixed(2), 'Commercial Value'];
-                    return [value, name];
-                  }}
+                  itemStyle={{ fontSize: 10 }}
+                  cursor={{ fill: 'rgba(0,0,0,0.02)' }}
+                  formatter={(value: any, name: any) => [value.toFixed(2), name]}
                 />
-                <Scatter name="SKUs" data={matrixScatterData}>
-                  {matrixScatterData.map((entry, index) => {
-                    const opacity = entry.isDimmed ? 0.15 : 1;
-                    return (
-                      <Cell key={`cell-${index}`} fill={entry.fill} fillOpacity={opacity} strokeOpacity={opacity} />
-                    );
-                  })}
-                  <LabelList 
-                    dataKey="name" 
-                    position="right" 
-                    style={{ 
-                      fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.5)', 
-                      fontSize: 7.5, 
-                      pointerEvents: 'none', 
-                      fontWeight: 600 
-                    }} 
-                  />
-                </Scatter>
-              </ScatterChart>
+                <Bar 
+                  dataKey="Commercial value" 
+                  fill="#12b886" 
+                  radius={[0, 4, 4, 0]} 
+                  barSize={12} 
+                />
+                <Bar 
+                  dataKey="Complexity score" 
+                  fill={isDarkMode ? '#a1a1aa' : '#c5c2b5'} 
+                  radius={[0, 4, 4, 0]} 
+                  barSize={12} 
+                />
+              </BarChart>
             </ResponsiveContainer>
           </div>
         </div>

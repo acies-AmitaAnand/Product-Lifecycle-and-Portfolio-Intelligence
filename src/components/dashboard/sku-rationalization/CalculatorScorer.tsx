@@ -3,8 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React from 'react';
-import { Link as LinkIcon } from 'lucide-react';
+import React, { useState } from 'react';
+import { Link as LinkIcon, HelpCircle } from 'lucide-react';
 import { SKUS } from '../../../constants/data';
 
 interface CalculatorScorerProps {
@@ -44,11 +44,48 @@ export const CalculatorScorer: React.FC<CalculatorScorerProps> = ({
   verdictColor,
   onInspectSku
 }) => {
+  const [guideOpen, setGuideOpen] = useState(false);
+
   return (
-    <div className="space-y-6">
-      {/* INTERACTIVE PAIR SCORER CALCULATOR */}
-      <div className="glass-card bg-white dark:bg-[#1a1a24] border border-black/10 dark:border-white/10 p-5 rounded-xl shadow-sm">
-        <h3 className="text-xs font-bold uppercase tracking-widest mb-4 flex items-center gap-1.5 text-acies-gray dark:text-white">
+    <div className="glass-card bg-white dark:bg-[#1a1a24] border border-black/10 dark:border-white/10 p-5 rounded-xl shadow-sm space-y-5">
+      
+      {/* ① RATIONALIZATION DIAGNOSTIC GUIDE SECTION */}
+      <div>
+        <button 
+          type="button"
+          onClick={() => setGuideOpen(!guideOpen)}
+          className="w-full text-left font-bold text-xs uppercase tracking-widest text-[#8b5cf6] dark:text-purple-300 flex justify-between items-center cursor-pointer border-none bg-transparent outline-none"
+        >
+          <span className="flex items-center gap-2">
+            <HelpCircle size={14} className="text-acies-yellow" />
+            Rationalization Diagnostic Guide
+          </span>
+          <span className="text-[10px]">{guideOpen ? '✕ Collapse Info' : '▲ Expand Info'}</span>
+        </button>
+
+        {guideOpen && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t border-black/5 dark:border-white/5 mt-3 text-[11px] leading-relaxed text-zinc-555 dark:text-zinc-400 font-semibold animate-fadeIn">
+            <div className="space-y-1">
+              <h4 className="font-bold text-acies-gray dark:text-white uppercase text-[9px] tracking-wider text-[#8b5cf6]">1. Cannibalization Scatter Map</h4>
+              <p>Represents variant overlaps. Bubble size denotes revenue at risk. Click bubbles to auto-load pairs inside the scorer card.</p>
+            </div>
+            <div className="space-y-1">
+              <h4 className="font-bold text-acies-gray dark:text-white uppercase text-[9px] tracking-wider text-[#8b5cf6]">2. Promotional Erosion Analysis</h4>
+              <p>Lists SKUs with high promo dependencies. Products with &gt;40% discount dependency erode margin equity and represent rationalization priorities.</p>
+            </div>
+            <div className="space-y-1">
+              <h4 className="font-bold text-acies-gray dark:text-white uppercase text-[9px] tracking-wider text-[#8b5cf6]">3. Score SKU Pairs Calculator</h4>
+              <p>Evaluates correlation coefficients. Large negative numbers reflect substitution shifts where promo items cannibalize organic baselines.</p>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="h-px bg-black/5 dark:bg-white/5" />
+
+      {/* ② INTERACTIVE PAIR SCORER CALCULATOR SECTION */}
+      <div className="space-y-4">
+        <h3 className="text-xs font-bold uppercase tracking-widest flex items-center gap-1.5 text-acies-gray dark:text-white">
           <LinkIcon size={12} className="text-acies-yellow" />
           Score a Variant SKU Pair
         </h3>
@@ -58,6 +95,7 @@ export const CalculatorScorer: React.FC<CalculatorScorerProps> = ({
             <div className="flex items-center justify-between">
               <label className="text-[8px] font-bold uppercase tracking-widest opacity-40">SKU A (Base Variant)</label>
               <button 
+                type="button"
                 onClick={() => onInspectSku(skuA)}
                 className="text-[8px] text-[#8b5cf6] dark:text-purple-300 font-bold uppercase tracking-widest hover:underline cursor-pointer border-none bg-transparent outline-none"
               >
@@ -82,6 +120,7 @@ export const CalculatorScorer: React.FC<CalculatorScorerProps> = ({
             <div className="flex items-center justify-between">
               <label className="text-[8px] font-bold uppercase tracking-widest opacity-40">SKU B (Compare Variant)</label>
               <button 
+                type="button"
                 onClick={() => onInspectSku(skuB)}
                 className="text-[8px] text-[#8b5cf6] dark:text-purple-300 font-bold uppercase tracking-widest hover:underline cursor-pointer border-none bg-transparent outline-none"
               >
@@ -128,6 +167,7 @@ export const CalculatorScorer: React.FC<CalculatorScorerProps> = ({
             Tip: Adjust correlation values to see calculated risk shift
           </span>
           <button 
+            type="button"
             onClick={() => setHasScored(true)}
             className="px-5 py-2 bg-acies-gray text-white dark:bg-white dark:text-acies-gray text-[9px] font-bold uppercase tracking-widest hover:bg-acies-yellow hover:text-acies-gray hover:dark:text-white transition-all cursor-pointer border-none rounded"
           >
@@ -136,35 +176,40 @@ export const CalculatorScorer: React.FC<CalculatorScorerProps> = ({
         </div>
       </div>
 
-      {/* Verdict Output Card */}
+      {/* ③ DISPLACEMENT ASSESSMENT VERDICT SECTION */}
       {hasScored && (
-        <div className="glass-card bg-white dark:bg-[#1a1a24] border border-black/10 dark:border-white/10 p-5 rounded-xl shadow-sm">
-          <h4 className="text-xs font-bold uppercase tracking-widest pb-3 border-b border-black/5 dark:border-white/5 mb-4 flex items-center gap-2 text-acies-gray dark:text-white">
-            Displacement Assessment Verdict:
-            <span className={`text-[9px] font-black uppercase tracking-widest px-3 py-0.5 rounded ${verdictColor}`}>
-              {riskVerdict}
-            </span>
-          </h4>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="p-3 bg-black/5 dark:bg-[#121214] rounded text-center">
-              <p className="text-[8px] font-bold uppercase tracking-widest opacity-45 mb-1">Variant A</p>
-              <h5 className="text-[11px] font-bold truncate text-acies-gray dark:text-white" title={skuA}>{skuA}</h5>
-            </div>
-            <div className="p-3 bg-black/5 dark:bg-[#121214] rounded text-center">
-              <p className="text-[8px] font-bold uppercase tracking-widest opacity-45 mb-1">Variant B</p>
-              <h5 className="text-[11px] font-bold truncate text-acies-gray dark:text-white" title={skuB}>{skuB}</h5>
-            </div>
-            <div className="p-3 bg-black/5 dark:bg-[#121214] rounded text-center">
-              <p className="text-[8px] font-bold uppercase tracking-widest opacity-45 mb-1">Cross Correlation</p>
-              <h5 className="text-base font-display font-extrabold text-[#8b5cf6] dark:text-purple-300">{correlation.toFixed(2)}</h5>
-            </div>
-            <div className="p-3 bg-black/5 dark:bg-[#121214] rounded text-center">
-              <p className="text-[8px] font-bold uppercase tracking-widest opacity-45 mb-1">Substitution Threat</p>
-              <h5 className="text-base font-display font-extrabold text-acies-gray dark:text-white">{(pairRisk * 100).toFixed(0)}%</h5>
+        <>
+          <div className="h-px bg-black/5 dark:bg-white/5" />
+          
+          <div className="space-y-4 animate-fadeIn">
+            <h4 className="text-xs font-bold uppercase tracking-widest flex items-center gap-2 text-acies-gray dark:text-white">
+              Displacement Assessment Verdict:
+              <span className={`text-[9px] font-black uppercase tracking-widest px-3 py-0.5 rounded ${verdictColor}`}>
+                {riskVerdict}
+              </span>
+            </h4>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="p-3 bg-black/5 dark:bg-[#121214] rounded text-center">
+                <p className="text-[8px] font-bold uppercase tracking-widest opacity-45 mb-1">Variant A</p>
+                <h5 className="text-[11px] font-bold truncate text-acies-gray dark:text-white" title={skuA}>{skuA}</h5>
+              </div>
+              <div className="p-3 bg-black/5 dark:bg-[#121214] rounded text-center">
+                <p className="text-[8px] font-bold uppercase tracking-widest opacity-45 mb-1">Variant B</p>
+                <h5 className="text-[11px] font-bold truncate text-acies-gray dark:text-white" title={skuB}>{skuB}</h5>
+              </div>
+              <div className="p-3 bg-black/5 dark:bg-[#121214] rounded text-center">
+                <p className="text-[8px] font-bold uppercase tracking-widest opacity-45 mb-1">Cross Correlation</p>
+                <h5 className="text-base font-display font-extrabold text-[#8b5cf6] dark:text-purple-300">{correlation.toFixed(2)}</h5>
+              </div>
+              <div className="p-3 bg-black/5 dark:bg-[#121214] rounded text-center">
+                <p className="text-[8px] font-bold uppercase tracking-widest opacity-45 mb-1">Substitution Threat</p>
+                <h5 className="text-base font-display font-extrabold text-acies-gray dark:text-white">{(pairRisk * 100).toFixed(0)}%</h5>
+              </div>
             </div>
           </div>
-        </div>
+        </>
       )}
+
     </div>
   );
 };
