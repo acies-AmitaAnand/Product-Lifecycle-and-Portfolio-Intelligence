@@ -15,12 +15,12 @@ interface DrilldownFiltersProps {
 
 const getDateRangeLabel = (horizon: '1M' | '3M' | '6M' | 'YTD' | '12M' | '3Y') => {
   switch (horizon) {
-    case '1M': return 'May 01, 2026 - May 31, 2026 (30 Days)';
-    case '3M': return 'Mar 01, 2026 - May 31, 2026 (92 Days)';
-    case '6M': return 'Dec 01, 2025 - May 31, 2026 (182 Days)';
-    case 'YTD': return 'Jan 01, 2026 - May 31, 2026 (151 Days)';
-    case '12M': return 'Jun 01, 2025 - May 31, 2026 (365 Days)';
-    case '3Y': return 'Jun 01, 2023 - May 31, 2026 (1096 Days)';
+    case '1M': return 'May 09, 2026 - Jun 08, 2026 (30 Days)';
+    case '3M': return 'Mar 09, 2026 - Jun 08, 2026 (91 Days)';
+    case '6M': return 'Dec 09, 2025 - Jun 08, 2026 (182 Days)';
+    case 'YTD': return 'Jan 01, 2026 - Jun 08, 2026 (159 Days)';
+    case '12M': return 'Jun 09, 2025 - Jun 08, 2026 (365 Days)';
+    case '3Y': return 'Jun 09, 2023 - Jun 08, 2026 (1096 Days)';
     default: return '';
   }
 };
