@@ -587,6 +587,8 @@ const VPSignalsBoardView: React.FC<{ isDarkMode: boolean; setActiveTab: (tab: nu
     { name: 'Feb', Beverages: 64, Snacks: 52, PersonalCare: 42, Household: 32 },
     { name: 'Mar', Beverages: 70, Snacks: 56, PersonalCare: 45, Household: 36 },
     { name: 'Apr', Beverages: 76, Snacks: 54, PersonalCare: 43, Household: 40 },
+    { name: 'May', Beverages: 80, Snacks: 58, PersonalCare: 47, Household: 42 },
+    { name: 'Jun', Beverages: 83, Snacks: 60, PersonalCare: 49, Household: 44 }
   ];
 
   const categoryTrendsData = trendsTimeframe === 'weekly' ? categoryTrendsWeeklyData : categoryTrendsMonthlyData;
@@ -597,6 +599,8 @@ const VPSignalsBoardView: React.FC<{ isDarkMode: boolean; setActiveTab: (tab: nu
     { name: 'Feb', Beverages: 73, Snacks: 70, PersonalCare: 71, Household: 66 },
     { name: 'Mar', Beverages: 75, Snacks: 72, PersonalCare: 70, Household: 68 },
     { name: 'Apr', Beverages: 76, Snacks: 71, PersonalCare: 68, Household: 72 },
+    { name: 'May', Beverages: 78, Snacks: 73, PersonalCare: 69, Household: 74 },
+    { name: 'Jun', Beverages: 79, Snacks: 74, PersonalCare: 71, Household: 75 }
   ];
 
   // Heatmap metrics
