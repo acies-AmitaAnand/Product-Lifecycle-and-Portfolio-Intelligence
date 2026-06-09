@@ -623,6 +623,129 @@ const AUDIT_DATA: Record<string, AuditContent> = {
       ['Personal Care', '73 NPS', 'Flat YoY', 'Strong'],
       ['Dairy', '69 NPS', '+1 YoY', 'Stable']
     ]
+  },
+  'Portfolio Revenue': {
+    title: 'Portfolio Revenue',
+    value: '₹851.4 Cr',
+    soWhat: 'Month-to-date total portfolio revenue is ₹851.4 Cr, tracking slightly behind the target of ₹900 Cr. Top-line velocity remains heavily supported by the Beverages segment (37.1%), while minor supply chain bottlenecks in Personal Care introduce slight margin exposure.',
+    action: 'Accelerate high-growth SKU allocations in APAC/EMEA hubs and run price-elasticity models for key volumetric drivers.',
+    columns: [
+      { name: 'net_sales', type: 'float [DIRECT]', desc: 'Revenue per transaction row (units sold × price after discounts).' },
+      { name: 'promo_discounts', type: 'float [DIRECT]', desc: 'Promotional markdown deductions per product line.' }
+    ],
+    formula: 'R_{portfolio} = \\sum_{i=1}^{M} S_i',
+    formulaDescription: 'Portfolio revenue is the arithmetic sum of the net sales column across all transaction records matching the active month-to-date filter.',
+    assumptions: [
+      'Target baseline: The target of ₹900 Cr is set based on historical seasonal runs and Q2 category forecasts.',
+      'Active items: Includes all revenue-generating SKUs across all regions (APAC, EMEA, Americas).'
+    ],
+    trendTitle: 'Portfolio Revenue Performance vs. Target',
+    trendHeaders: ['Month', 'Actual Revenue', 'Growth MoM', 'Target'],
+    trendRows: [
+      ['Jan', '₹780 Cr', '+5.2%', '₹800 Cr'],
+      ['Feb', '₹795 Cr', '+1.9%', '₹812 Cr'],
+      ['Mar', '₹808 Cr', '+1.6%', '₹824 Cr'],
+      ['Apr', '₹821 Cr', '+1.6%', '₹836 Cr'],
+      ['May', '₹833 Cr', '+1.5%', '₹848 Cr'],
+      ['Jun', '₹843 Cr', '+1.2%', '₹860 Cr'],
+      ['Jul MTD', '₹851.4 Cr', '+1.0%', '₹900 Cr']
+    ]
+  },
+  'Portfolio SKU Count': {
+    title: 'Portfolio SKU Count',
+    value: '102',
+    soWhat: 'The active SKU count stands at 102 items, which is slightly above the target catalog size of 100. Over-proliferation of low-volume variants drives up supply chain friction, raising average inventory carrying costs and straining manufacturing shift schedules.',
+    action: 'Phase out the 35 identified "Rationalize" candidates in low-margin, high-complexity segments (such as Floor Cleaner) to optimize catalog efficiency.',
+    columns: [
+      { name: 'sku_id', type: 'string [DIRECT]', desc: 'Unique SKU identifier in the product master database.' },
+      { name: 'is_active', type: 'boolean [DIRECT]', desc: 'State flag indicating if the product is actively listed for trade.' }
+    ],
+    formula: 'N_{SKU} = \\sum_{j=1}^{K} [SKU_j \\text{ is Active}]',
+    formulaDescription: 'Calculated as the total number of unique product listing records where the is_active status is true.',
+    assumptions: [
+      'Active status: Assumes SKUs with zero sales MTD but marked active in ERP are counted.',
+      'Excludes sunsetted listings: SKUs flagged as rationalized and officially phased out are excluded.'
+    ],
+    trendTitle: 'SKU Catalog Volume by Category',
+    trendHeaders: ['Category', 'Active SKUs', 'Rationalized MTD', 'Target'],
+    trendRows: [
+      ['Beverages', '32', '-1 SKU', '30'],
+      ['Snacks', '28', '-1 SKU', '25'],
+      ['Personal Care', '25', '-1 SKU', '25'],
+      ['Household', '17', '0 SKUs', '20']
+    ]
+  },
+  'Growth Rate': {
+    title: 'Growth Rate',
+    value: '8.4%',
+    soWhat: 'The aggregate growth rate sits at 8.4%, slightly below the target threshold of 10.0%. Regional demand shifts in the Americas (-5.0%) drag overall progress, despite strong growth support from APAC (+7.6%) and EMEA (+2.0%).',
+    action: 'Deploy targeted promotional support in the Americas and accelerate high-velocity launches to raise the velocity index.',
+    columns: [
+      { name: 'net_sales', type: 'float [DIRECT]', desc: 'Daily transaction revenue.' },
+      { name: 'fiscal_period', type: 'string [DERIVED]', desc: 'Derived period mapping for growth comparisons.' }
+    ],
+    formula: 'Growth = \\frac{R_{current} - R_{prior}}{R_{prior}} \\times 100',
+    formulaDescription: 'Growth rate is computed by taking the revenue difference between the current period and the prior matching period, divided by prior period revenue.',
+    assumptions: [
+      'Prior period alignment: Current month-to-date is compared with the exact matching days of the prior fiscal month.',
+      'Symmetric parameters: New regional launches with no historical baselines are handled as starting from zero.'
+    ],
+    trendTitle: 'Portfolio Growth Volatility vs. Target',
+    trendHeaders: ['Quarter', 'Actual Growth', 'Variance', 'Target'],
+    trendRows: [
+      ['Q1 25', '7.2%', '-1.8pp', '9.0%'],
+      ['Q2 25', '7.8%', '-1.2pp', '9.0%'],
+      ['Q3 25', '8.1%', '-0.9pp', '9.0%'],
+      ['Q4 25 MTD', '8.4%', '-1.6pp', '10.0%']
+    ]
+  },
+  'Orders — Today': {
+    title: 'Orders — Today',
+    value: '4,232',
+    soWhat: 'Real-time order volume reached 4,232 today, showing a positive +12.3% increase compared to yesterday. A target of 5,000 orders is set to ensure peak distribution center processing optimization and courier lane efficiency.',
+    action: 'Scale distribution center pick-and-pack server capacity during peak hours and coordinate with regional freight carriers.',
+    columns: [
+      { name: 'order_id', type: 'string [DIRECT]', desc: 'Unique transaction token from the order management system.' },
+      { name: 'order_timestamp', type: 'datetime [DIRECT]', desc: 'Fulfillment creation time index.' }
+    ],
+    formula: 'Orders_{today} = \\sum_{k=1}^{L} [Order_k \\text{ created on Today}]',
+    formulaDescription: 'The sum of all sales orders captured by the order management system within the active 24-hour cycle.',
+    assumptions: [
+      'Time zone alignment: Standardized to regional distribution center operating hours.',
+      'Cancelled transactions: Orders cancelled within the same day are filtered out from the final sum.'
+    ],
+    trendTitle: 'Hourly Order Velocity vs. Target',
+    trendHeaders: ['Time Window', 'Actual Orders', 'Growth vs. Yesterday', 'Target'],
+    trendRows: [
+      ['00:00 - 06:00', '650', '+10.2%', '800'],
+      ['06:00 - 12:00', '1,850', '+12.4%', '2,000'],
+      ['12:00 - 18:00', '1,250', '+15.1%', '1,500'],
+      ['18:00 - 00:00', '482', '+8.0%', '700']
+    ]
+  },
+  'Forecast Attainment': {
+    title: 'Forecast Attainment',
+    value: '94.6%',
+    soWhat: 'Forecast attainment is 94.6% (target: 97.0%), representing a -2.1pp deviation. The shortfall is primarily driven by cannibalization in Mango Fizz beverage variants and supply bottlenecks for Fabric Softener in Penang.',
+    action: 'Retrain ML demand forecasting models with real-time promotion calendars, competitor activities, and regional supplier constraint logs.',
+    columns: [
+      { name: 'forecast_units', type: 'int [DIRECT]', desc: 'Expected demand units configured by the supply planning engine.' },
+      { name: 'actual_units', type: 'int [DIRECT]', desc: 'Actual units shipped and invoiced.' }
+    ],
+    formula: 'Attainment = \\left(1 - \\frac{|Actual - Forecast|}{Forecast}\\right) \\times 100',
+    formulaDescription: 'Computed as 1 minus the absolute difference between actual and forecast volumes, divided by forecast volumes, represented as a percentage.',
+    assumptions: [
+      'Unsatisfied orders: Excludes backorders that have not been filled or shipped yet.',
+      'Promotion calendar alignment: Assumes forecast models adjusted for standard promotional runs.'
+    ],
+    trendTitle: 'Forecast Attainment by Category',
+    trendHeaders: ['Category', 'Actual Attainment', 'Variance', 'Target'],
+    trendRows: [
+      ['Beverages', '96.2%', '-0.8pp', '97.0%'],
+      ['Snacks', '95.4%', '-1.6pp', '97.0%'],
+      ['Personal Care', '94.6%', '-2.4pp', '97.0%'],
+      ['Household', '91.8%', '-5.2pp', '97.0%']
+    ]
   }
 };
 
@@ -693,7 +816,8 @@ const getMetricTrend = (metricName: string) => {
   switch (metricName) {
     case 'Total Revenue':
     case 'Revenue MTD':
-      return { value: '+8.4% MoM', isUp: true };
+    case 'Portfolio Revenue':
+      return { value: '+8.4% vs last month', isUp: true };
     case 'Gross Margin':
     case 'Gross margin %':
     case 'Avg Gross Margin':
@@ -701,6 +825,14 @@ const getMetricTrend = (metricName: string) => {
     case 'Active SKUs':
     case 'Portfolio SKUs':
       return { value: '-3 SKUs MoM', isUp: false };
+    case 'Portfolio SKU Count':
+      return { value: '-3 SKUs rationalized', isUp: true };
+    case 'Growth Rate':
+      return { value: '-1.6pp vs target', isUp: false };
+    case 'Orders — Today':
+      return { value: '+12.3% vs yesterday', isUp: true };
+    case 'Forecast Attainment':
+      return { value: '-2.1pp vs target', isUp: false };
     case 'Critical Alerts':
     case 'Total Active Signals':
       return { value: '+2 Active Alerts', isUp: true };
@@ -813,6 +945,15 @@ export const AuditDrawer: React.FC<AuditDrawerProps> = ({ activeMetric, close, i
       case 'Active SKUs': return 'Portfolio SKUs';
       case 'Critical Alerts': return 'Total Active Signals';
       case 'Gross Margin': return 'Gross margin %';
+      case 'Portfolio SKU Count':
+      case 'Portfolio SKU Counts':
+      case 'portfolio sku counts':
+      case 'Portfolio SKUs Count':
+        return 'Portfolio SKU Count';
+      case 'Orders — Today':
+      case 'Orders - Today':
+      case 'orders-today':
+        return 'Orders — Today';
       default: return metric;
     }
   };

@@ -276,7 +276,12 @@ export default function App() {
       { label: 'Total Active Signals', value: '6' },
       { label: 'Competitor Alerts', value: '2' },
       { label: 'Market Demand Change', value: '+18.4%' },
-      { label: 'Customer Sentiment Score', value: '72' }
+      { label: 'Customer Sentiment Score', value: '72' },
+      { label: 'Portfolio Revenue', value: '₹851.4 Cr' },
+      { label: 'Portfolio SKU Count', value: '102' },
+      { label: 'Growth Rate', value: '8.4%' },
+      { label: 'Orders — Today', value: '4232' },
+      { label: 'Forecast Attainment', value: '94.6%' }
     ];
 
     uniqueMetrics.forEach(m => {
@@ -755,7 +760,7 @@ export default function App() {
                     onAuditClick={setActiveAuditMetric} 
                   />
                 )}
-                {activeTab === 1 && <PortfolioHealthMap role={role} isDarkMode={isDarkMode} />}
+                {activeTab === 1 && <PortfolioHealthMap role={role} isDarkMode={isDarkMode} onAuditClick={setActiveAuditMetric} />}
                 {activeTab === 2 && (
                   <LaunchReadinessDashboard 
                     role={role} 

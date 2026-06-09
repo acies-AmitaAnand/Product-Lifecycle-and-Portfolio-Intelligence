@@ -19,6 +19,7 @@ import { SuccessFeedbackModal } from './SuccessFeedbackModal';
 interface PortfolioHealthMapProps {
   role: Role;
   isDarkMode: boolean;
+  onAuditClick?: (metricName: string) => void;
 }
 
 interface CustomSKUType {
@@ -61,7 +62,7 @@ const RECIPIENT_TITLES: Record<string, string> = {
 // ══════════════════════════════════════════════════════════════════════════════
 // VP COMMAND CENTER SUB-COMPONENT
 // ══════════════════════════════════════════════════════════════════════════════
-const VPCommandCenter: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
+const VPCommandCenter: React.FC<{ isDarkMode: boolean; onAuditClick?: (metricName: string) => void }> = ({ isDarkMode, onAuditClick }) => {
   const accentColor = isDarkMode ? '#a78bfa' : '#6d28d9';
   const gridStroke = isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
   const tickColor = isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)';
@@ -493,7 +494,11 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
           }
 
           return (
-            <div key={key} className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm flex flex-col justify-between h-36 group cursor-pointer hover:bg-black/[0.01] dark:hover:bg-white/[0.01] transition-all">
+            <div 
+              key={key} 
+              onClick={() => onAuditClick?.(kpi.label)}
+              className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm flex flex-col justify-between h-36 group cursor-pointer hover:bg-black/[0.01] dark:hover:bg-white/[0.01] transition-all"
+            >
               <div className="flex justify-between items-start mb-1">
                 <div className="min-w-0">
                   <p className="text-[9px] font-bold uppercase tracking-wider text-zinc-400 truncate">{kpi.label}</p>
@@ -829,9 +834,9 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
   );
 };
 
-export const PortfolioHealthMap: React.FC<PortfolioHealthMapProps> = ({ role, isDarkMode }) => {
+export const PortfolioHealthMap: React.FC<PortfolioHealthMapProps> = ({ role, isDarkMode, onAuditClick }) => {
   if (role === 'VP Product Management') {
-    return <VPCommandCenter isDarkMode={isDarkMode} />;
+    return <VPCommandCenter isDarkMode={isDarkMode} onAuditClick={onAuditClick} />;
   }
 
   const [activeSubTab, setActiveSubTab] = useState<string>('ph-kpi');
