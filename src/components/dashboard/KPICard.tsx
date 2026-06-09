@@ -158,30 +158,30 @@ export const KPICard: React.FC<KPICardProps> = ({ kpi, role, onAuditClick }) => 
       onClick={onAuditClick}
       onMouseEnter={() => setIsCardHovered(true)}
       onMouseLeave={() => setIsCardHovered(false)}
-      className={`glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm flex flex-col justify-between h-36 group cursor-pointer hover:bg-black/[0.01] dark:hover:bg-white/[0.01] transition-all relative select-none pb-4 ${
+      className={`glass-card bg-white dark:bg-white/5 border p-4 rounded-sm shadow-sm flex flex-col justify-between h-36 group cursor-pointer hover:bg-black/[0.01] dark:hover:bg-white/[0.01] transition-all relative select-none ${
         isHighlighted
-          ? 'ring-1 ring-acies-yellow ring-offset-2 dark:ring-offset-acies-gray bg-white/90 dark:bg-white/10'
-          : ''
+          ? 'border-acies-yellow bg-white/90 dark:bg-white/10'
+          : 'border-black/10 dark:border-white/10'
       }`}
     >
       {/* Highlighted pulse bar */}
       {isHighlighted && (
-        <div className="absolute top-0 left-0 right-0 h-0.5 bg-acies-yellow animate-pulse" />
+        <div className="absolute top-[1.5px] left-[1.5px] right-[1.5px] h-[2px] rounded-t-sm bg-acies-yellow animate-pulse" />
       )}
 
       <div className="flex justify-between items-start mb-1">
         <div className="min-w-0 pr-1">
-          <p className="text-[8.5px] font-bold uppercase tracking-wider text-zinc-400 truncate flex items-center gap-1">
+          <p className="text-[9px] font-bold uppercase tracking-wider text-zinc-400 truncate flex items-center gap-1">
             {kpi.label}
             {isHighlighted && <Zap size={8} className="text-acies-yellow fill-acies-yellow shrink-0" />}
           </p>
-          <h3 className="text-xl font-display font-extrabold text-zinc-850 dark:text-zinc-150 mt-1">
+          <h3 className="text-xl font-display font-extrabold text-zinc-850 dark:text-zinc-150 mt-0.5">
             {kpi.value}
           </h3>
         </div>
         
-        <div className="text-right shrink-0 flex flex-col items-end">
-          <div className="flex items-center gap-1.5">
+        <div className="text-right shrink-0">
+          <div className="flex items-center justify-end gap-1">
             <span className="text-[8px] uppercase font-bold text-zinc-400">Target</span>
             <div
               className="relative shrink-0 z-40"
@@ -190,7 +190,7 @@ export const KPICard: React.FC<KPICardProps> = ({ kpi, role, onAuditClick }) => 
             >
               <Info size={9} className="opacity-35 hover:opacity-100 transition-opacity cursor-help" />
               {showTooltip && (
-                <div className="absolute right-0 top-4 w-56 bg-acies-gray text-white text-[9px] p-2.5 shadow-2xl border border-white/10 z-50 leading-relaxed pointer-events-none rounded-sm">
+                <div className="absolute right-0 top-4 w-56 bg-acies-gray text-white text-[9px] p-2.5 shadow-2xl border border-white/10 z-50 leading-relaxed pointer-events-none rounded-sm font-sans normal-case text-left">
                   <p className="opacity-70 mb-1.5">{kpi.info}</p>
                   {auditDetails && (
                     <div className="space-y-1 border-t border-white/10 pt-1.5">
@@ -215,7 +215,7 @@ export const KPICard: React.FC<KPICardProps> = ({ kpi, role, onAuditClick }) => 
       </div>
 
       {/* Sparkline chart */}
-      <div className="h-[28px] my-1 opacity-85 group-hover:opacity-100 transition-opacity">
+      <div className="h-[28px] my-1.5 opacity-85 group-hover:opacity-100 transition-opacity">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={config.hist.map((val, idx) => ({ idx, val }))} margin={{ top: 0, bottom: 0, left: 0, right: 0 }}>
             <YAxis domain={['auto', 'auto']} hide />

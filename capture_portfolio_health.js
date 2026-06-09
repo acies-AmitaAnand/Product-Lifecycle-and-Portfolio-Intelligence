@@ -9,7 +9,7 @@ async function run() {
   const page = await browser.newPage();
   await page.setViewport({ width: 1280, height: 1024 });
   
-  await page.goto('http://localhost:5173/#tab=1&role=VP+Product+Management', { waitUntil: 'networkidle2' });
+  await page.goto('http://localhost:3000/#tab=1&role=VP+Product+Management', { waitUntil: 'networkidle2' });
 
   try {
     const roleSelector = 'div.group';

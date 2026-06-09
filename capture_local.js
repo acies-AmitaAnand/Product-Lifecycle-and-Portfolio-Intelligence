@@ -10,8 +10,8 @@ async function run() {
   const page = await browser.newPage();
   await page.setViewport({ width: 1280, height: 1024 });
   
-  console.log("Navigating to http://localhost:5173...");
-  await page.goto('http://localhost:5173/#tab=2&role=VP+Product+Management', { waitUntil: 'networkidle2' });
+  console.log("Navigating to http://localhost:3000...");
+  await page.goto('http://localhost:3000/#tab=2&role=VP+Product+Management', { waitUntil: 'networkidle2' });
 
   // Wait for role card click if onboarding page is shown
   try {
