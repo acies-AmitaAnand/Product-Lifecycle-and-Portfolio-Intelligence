@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   X, Mail, Tag, TrendingUp, TrendingDown, BarChart3, Clock, ShieldAlert, Zap, Activity 
 } from 'lucide-react';
@@ -43,6 +43,18 @@ export const DrilldownSkuModal: React.FC<DrilldownSkuModalProps> = ({
   const [isEmailOpen, setIsEmailOpen] = useState(false);
   const [emailData, setEmailData] = useState({ to: '', name: '', subject: '', body: '' });
 
+  // Simulator range slider states
+  const [sliderLogistics, setSliderLogistics] = useState(0);
+  const [sliderPromo, setSliderPromo] = useState(0);
+  const [sliderCOGS, setSliderCOGS] = useState(0);
+
+  // Reset sliders when SKU or Region changes
+  useEffect(() => {
+    setSliderLogistics(0);
+    setSliderPromo(0);
+    setSliderCOGS(0);
+  }, [skuName, selectedRegion]);
+
   if (!isOpen) return null;
 
   const rawSku = SKUS.find(s => s.name === skuName) || SKUS[0];
@@ -68,19 +80,25 @@ export const DrilldownSkuModal: React.FC<DrilldownSkuModalProps> = ({
   };
   const skuStockouts = Math.max(1, Math.round(rawSku.stockouts * getStockoutsMultiplier()));
 
-  // Waterfall financials
+  // Base Waterfall financials
   const wRevenue = skuRev;
   const wTradePromo = +(skuRev * skuPromo * 0.18).toFixed(1);
   const wCOGS = +(skuRev * (1 - skuMargin / 100) * 0.65).toFixed(1);
   const wLogistics = +(skuRev * 0.08 + (skuLead * 0.08)).toFixed(1);
   const wNetProfit = +(wRevenue - wTradePromo - wCOGS - wLogistics).toFixed(1);
 
+  // Simulated financials based on slider percentage reductions
+  const simTradePromo = +(wTradePromo * (1 - sliderPromo / 100)).toFixed(1);
+  const simCOGS = +(wCOGS * (1 - sliderCOGS / 100)).toFixed(1);
+  const simLogistics = +(wLogistics * (1 - sliderLogistics / 100)).toFixed(1);
+  const simNetProfit = +(wRevenue - simTradePromo - simCOGS - simLogistics).toFixed(1);
+
   const waterfallData = [
     { name: 'Revenue', bottom: 0, value: wRevenue, displayVal: wRevenue, color: isDarkMode ? '#a78bfa' : '#6d28d9' },
-    { name: 'Trade Promo', bottom: +(wRevenue - wTradePromo).toFixed(1), value: wTradePromo, displayVal: -wTradePromo, color: '#f87171' },
-    { name: 'COGS', bottom: +(wRevenue - wTradePromo - wCOGS).toFixed(1), value: wCOGS, displayVal: -wCOGS, color: '#fb923c' },
-    { name: 'Logistics', bottom: +wNetProfit.toFixed(1), value: wLogistics, displayVal: -wLogistics, color: '#60a5fa' },
-    { name: 'Net Profit', bottom: 0, value: wNetProfit, displayVal: wNetProfit, color: '#34d399' }
+    { name: 'Trade Promo', bottom: +(wRevenue - simTradePromo).toFixed(1), value: simTradePromo, displayVal: -simTradePromo, color: '#f87171' },
+    { name: 'COGS', bottom: +(wRevenue - simTradePromo - simCOGS).toFixed(1), value: simCOGS, displayVal: -simCOGS, color: '#fb923c' },
+    { name: 'Logistics', bottom: +simNetProfit.toFixed(1), value: simLogistics, displayVal: -simLogistics, color: '#60a5fa' },
+    { name: 'Net Profit', bottom: 0, value: simNetProfit, displayVal: simNetProfit, color: '#34d399' }
   ];
 
   // Dynamic recommendations
@@ -273,71 +291,170 @@ export const DrilldownSkuModal: React.FC<DrilldownSkuModalProps> = ({
                   </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
-                  {/* Waterfall Chart */}
-                  <div className="md:col-span-7 h-56">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={waterfallData} margin={{ top: 15, right: 5, left: -25, bottom: 5 }}>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridStroke} />
-                        <XAxis dataKey="name" tick={{ fill: tickColor, fontSize: 8 }} axisLine={false} tickLine={false} />
-                        <YAxis tick={{ fill: tickColor, fontSize: 8 }} label={{ value: '₹ Crore', angle: -90, position: 'insideLeft', fill: tickColor, fontSize: 8 }} axisLine={false} tickLine={false} />
-                        <Tooltip 
-                          contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, color: tooltipText }}
-                          itemStyle={{ fontSize: 10 }}
-                          formatter={(value: any, name: any, props: any) => {
-                            return [`₹${props.payload.displayVal} Cr`, 'Value'];
-                          }}
-                        />
-                        <Bar dataKey="bottom" stackId="topdown-wfall" fill="transparent" />
-                        <Bar dataKey="value" stackId="topdown-wfall" radius={1}>
-                          {waterfallData.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={entry.color} />
-                          ))}
-                        </Bar>
-                      </BarChart>
-                    </ResponsiveContainer>
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+                  {/* Left Side: Waterfall Chart + Simulator Sliders */}
+                  <div className="md:col-span-7 space-y-4">
+                    <div className="h-56">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={waterfallData} margin={{ top: 15, right: 5, left: -25, bottom: 5 }}>
+                          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridStroke} />
+                          <XAxis dataKey="name" tick={{ fill: tickColor, fontSize: 8 }} axisLine={false} tickLine={false} />
+                          <YAxis tick={{ fill: tickColor, fontSize: 8 }} label={{ value: '₹ Crore', angle: -90, position: 'insideLeft', fill: tickColor, fontSize: 8 }} axisLine={false} tickLine={false} />
+                          <Tooltip 
+                            contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, color: tooltipText }}
+                            itemStyle={{ fontSize: 10 }}
+                            formatter={(value: any, name: any, props: any) => {
+                              return [`₹${props.payload.displayVal} Cr`, 'Value'];
+                            }}
+                          />
+                          <Bar dataKey="bottom" stackId="topdown-wfall" fill="transparent" />
+                          <Bar dataKey="value" stackId="topdown-wfall" radius={1}>
+                            {waterfallData.map((entry, index) => (
+                              <Cell key={`cell-${index}`} fill={entry.color} />
+                            ))}
+                          </Bar>
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+
+                    {/* Simulator Sliders */}
+                    <div className="p-4 bg-zinc-50 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded space-y-3.5 shadow-sm">
+                      <div className="flex items-center justify-between border-b border-black/5 dark:border-white/5 pb-1.5">
+                        <h4 className="text-[9.5px] font-black uppercase tracking-wider text-zinc-700 dark:text-zinc-300 font-display flex items-center gap-1.5">
+                          <span>🔧 Interactive Margin Optimization Levers</span>
+                        </h4>
+                        <button 
+                          onClick={() => { setSliderLogistics(0); setSliderPromo(0); setSliderCOGS(0); }}
+                          className="text-[7.5px] font-extrabold uppercase text-purple-600 dark:text-purple-400 hover:underline bg-transparent border-none cursor-pointer p-0"
+                          title="Reset all optimization levers to original values"
+                        >
+                          Reset Levers
+                        </button>
+                      </div>
+                      
+                      <div className="grid grid-cols-3 gap-4">
+                        {/* Slider 1 */}
+                        <div className="space-y-1.5">
+                          <div className="flex justify-between items-baseline text-[7.5px] font-bold uppercase tracking-wider text-zinc-450">
+                            <span>Logistics Opt.</span>
+                            <span className="text-[#f59e0b] font-black font-mono text-[8.5px]">{sliderLogistics}%</span>
+                          </div>
+                          <input 
+                            type="range" 
+                            min="0" 
+                            max="50" 
+                            value={sliderLogistics} 
+                            onChange={(e) => setSliderLogistics(parseInt(e.target.value))} 
+                            className="w-full h-1 bg-zinc-200 dark:bg-zinc-750 rounded-lg appearance-none cursor-pointer accent-[#f59e0b] outline-none"
+                          />
+                          <p className="text-[6.5px] text-zinc-400 leading-tight">Reduces logistics leak (0-50%)</p>
+                        </div>
+
+                        {/* Slider 2 */}
+                        <div className="space-y-1.5">
+                          <div className="flex justify-between items-baseline text-[7.5px] font-bold uppercase tracking-wider text-zinc-450">
+                            <span>Promo Cap</span>
+                            <span className="text-[#f59e0b] font-black font-mono text-[8.5px]">{sliderPromo}%</span>
+                          </div>
+                          <input 
+                            type="range" 
+                            min="0" 
+                            max="60" 
+                            value={sliderPromo} 
+                            onChange={(e) => setSliderPromo(parseInt(e.target.value))} 
+                            className="w-full h-1 bg-zinc-200 dark:bg-zinc-750 rounded-lg appearance-none cursor-pointer accent-[#f59e0b] outline-none"
+                          />
+                          <p className="text-[6.5px] text-zinc-400 leading-tight">Limits trade discounts (0-60%)</p>
+                        </div>
+
+                        {/* Slider 3 */}
+                        <div className="space-y-1.5">
+                          <div className="flex justify-between items-baseline text-[7.5px] font-bold uppercase tracking-wider text-zinc-450">
+                            <span>COGS Efficiency</span>
+                            <span className="text-[#f59e0b] font-black font-mono text-[8.5px]">{sliderCOGS}%</span>
+                          </div>
+                          <input 
+                            type="range" 
+                            min="0" 
+                            max="30" 
+                            value={sliderCOGS} 
+                            onChange={(e) => setSliderCOGS(parseInt(e.target.value))} 
+                            className="w-full h-1 bg-zinc-200 dark:bg-zinc-750 rounded-lg appearance-none cursor-pointer accent-[#f59e0b] outline-none"
+                          />
+                          <p className="text-[6.5px] text-zinc-400 leading-tight">Boosts production yield (0-30%)</p>
+                        </div>
+                      </div>
+                    </div>
                   </div>
 
-                  {/* Reconciliation Table */}
-                  <div className="md:col-span-5 border border-black/5 dark:border-white/10 rounded overflow-hidden">
-                    <table className="w-full text-left border-collapse text-[9.5px]">
+                  {/* Right Side: Reconciliation Table */}
+                  <div className="md:col-span-5 border border-black/5 dark:border-white/10 rounded overflow-hidden self-start">
+                    <table className="w-full text-left border-collapse text-[9px]">
                       <thead>
                         <tr className="bg-black/5 dark:bg-white/5 border-b border-black/5 dark:border-white/10 font-bold uppercase tracking-wider text-zinc-500">
-                          <th className="py-2 px-3">Financial Stage</th>
-                          <th className="py-2 px-3 text-right">Value (₹)</th>
+                          <th className="py-2 px-2.5">Financial Stage</th>
+                          <th className="py-2 px-2 text-right">Original</th>
+                          <th className="py-2 px-2 text-right">Simulated</th>
+                          <th className="py-2 px-2.5 text-right text-green-500">Recovery</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-black/5 dark:divide-white/10 font-medium">
                         <tr>
-                          <td className="py-1.5 px-3 text-zinc-700 dark:text-zinc-300">Gross Sales Revenue</td>
-                          <td className="py-1.5 px-3 text-right text-acies-yellow font-bold">₹{wRevenue.toFixed(1)} Cr</td>
+                          <td className="py-2 px-2.5 text-zinc-700 dark:text-zinc-300">Gross Sales Revenue</td>
+                          <td className="py-2 px-2 text-right text-zinc-500 dark:text-zinc-450">₹{wRevenue.toFixed(1)} Cr</td>
+                          <td className="py-2 px-2 text-right text-acies-yellow font-bold">₹{wRevenue.toFixed(1)} Cr</td>
+                          <td className="py-2 px-2.5 text-right text-zinc-400 font-mono">—</td>
                         </tr>
                         <tr>
-                          <td className="py-1.5 px-3 text-zinc-700 dark:text-zinc-300 flex items-center gap-1.5">
-                            <span className="text-red-505 text-[8px] bg-red-500/10 px-1 rounded font-extrabold leading-none">−</span>
+                          <td className="py-2 px-2.5 text-zinc-700 dark:text-zinc-300 flex items-center gap-1">
+                            <span className="text-red-500 text-[8px] bg-red-500/10 px-1 rounded font-extrabold leading-none">−</span>
                             Trade Promotions
                           </td>
-                          <td className="py-1.5 px-3 text-right text-red-500 font-semibold">-₹{wTradePromo.toFixed(1)} Cr</td>
+                          <td className="py-2 px-2 text-right text-zinc-500 dark:text-zinc-450">-₹{wTradePromo.toFixed(1)} Cr</td>
+                          <td className="py-2 px-2 text-right text-red-500 font-semibold">-₹{simTradePromo.toFixed(1)} Cr</td>
+                          <td className="py-2 px-2.5 text-right text-green-500 font-bold font-mono">
+                            {wTradePromo - simTradePromo > 0 ? `+₹${(wTradePromo - simTradePromo).toFixed(1)} Cr` : '—'}
+                          </td>
                         </tr>
                         <tr>
-                          <td className="py-1.5 px-3 text-zinc-700 dark:text-zinc-300 flex items-center gap-1.5">
-                            <span className="text-red-505 text-[8px] bg-red-500/10 px-1 rounded font-extrabold leading-none">−</span>
+                          <td className="py-2 px-2.5 text-zinc-700 dark:text-zinc-300 flex items-center gap-1">
+                            <span className="text-orange-500 text-[8px] bg-orange-500/10 px-1 rounded font-extrabold leading-none">−</span>
                             Manufacturing COGS
                           </td>
-                          <td className="py-1.5 px-3 text-right text-orange-500 font-semibold">-₹{wCOGS.toFixed(1)} Cr</td>
+                          <td className="py-2 px-2 text-right text-zinc-500 dark:text-zinc-450">-₹{wCOGS.toFixed(1)} Cr</td>
+                          <td className="py-2 px-2 text-right text-orange-500 font-semibold">-₹{simCOGS.toFixed(1)} Cr</td>
+                          <td className="py-2 px-2.5 text-right text-green-500 font-bold font-mono">
+                            {wCOGS - simCOGS > 0 ? `+₹${(wCOGS - simCOGS).toFixed(1)} Cr` : '—'}
+                          </td>
                         </tr>
                         <tr>
-                          <td className="py-1.5 px-3 text-zinc-700 dark:text-zinc-300 flex items-center gap-1.5">
-                            <span className="text-red-505 text-[8px] bg-red-500/10 px-1 rounded font-extrabold leading-none">−</span>
+                          <td className="py-2 px-2.5 text-zinc-700 dark:text-zinc-300 flex items-center gap-1">
+                            <span className="text-blue-500 text-[8px] bg-blue-500/10 px-1 rounded font-extrabold leading-none">−</span>
                             Logistics & Dist.
                           </td>
-                          <td className="py-1.5 px-3 text-right text-blue-500 font-semibold">-₹{wLogistics.toFixed(1)} Cr</td>
+                          <td className="py-2 px-2 text-right text-zinc-500 dark:text-zinc-450">-₹{wLogistics.toFixed(1)} Cr</td>
+                          <td className="py-2 px-2 text-right text-blue-500 font-semibold">-₹{simLogistics.toFixed(1)} Cr</td>
+                          <td className="py-2 px-2.5 text-right text-green-500 font-bold font-mono">
+                            {wLogistics - simLogistics > 0 ? `+₹${(wLogistics - simLogistics).toFixed(1)} Cr` : '—'}
+                          </td>
                         </tr>
-                        <tr className="bg-black/[0.02] dark:bg-white/[0.02] font-bold text-zinc-808 dark:text-white border-t border-black/10 dark:border-white/15">
-                          <td className="py-2 px-3">Net Operating Profit</td>
-                          <td className="py-2 px-3 text-right text-emerald-500">
+                        <tr className="bg-black/[0.02] dark:bg-white/[0.02] font-bold text-zinc-805 dark:text-white border-t border-black/10 dark:border-white/15">
+                          <td className="py-2.5 px-2.5">Net Oper. Profit</td>
+                          <td className="py-2.5 px-2 text-right text-zinc-450 dark:text-zinc-500 font-medium">
                             ₹{wNetProfit.toFixed(1)} Cr
-                            <span className="text-[8px] text-zinc-500 font-normal ml-1">({((wNetProfit / wRevenue) * 100).toFixed(1)}%)</span>
+                            <span className="text-[7.5px] block font-normal text-zinc-450">({((wNetProfit / wRevenue) * 100).toFixed(1)}%)</span>
+                          </td>
+                          <td className="py-2.5 px-2 text-right text-emerald-500">
+                            ₹{simNetProfit.toFixed(1)} Cr
+                            <span className="text-[7.5px] block font-extrabold text-emerald-500">({((simNetProfit / wRevenue) * 100).toFixed(1)}%)</span>
+                          </td>
+                          <td className="py-2.5 px-2.5 text-right text-green-500 font-black text-[10px] font-mono leading-tight">
+                            {simNetProfit - wNetProfit > 0 ? (
+                              <>
+                                <span className="block font-black">+₹{(simNetProfit - wNetProfit).toFixed(1)} Cr</span>
+                                <span className="text-[7.5px] font-extrabold block">+{(((simNetProfit - wNetProfit) / wRevenue) * 100).toFixed(1)}pp</span>
+                              </>
+                            ) : '—'}
                           </td>
                         </tr>
                       </tbody>

@@ -159,6 +159,138 @@ export const DrilldownRegionGrid: React.FC<DrilldownRegionGridProps> = ({
           </p>
         </div>
       </div>
+
+      {/* SVG Supply Chain Network Canvas */}
+      <div className="w-full bg-zinc-50/50 dark:bg-zinc-950/20 border border-black/5 dark:border-white/5 rounded-xl p-4 flex items-center justify-center overflow-hidden">
+        <svg width="100%" height="180" viewBox="0 0 800 180" className="w-full max-w-[800px] overflow-visible">
+          <defs>
+            <linearGradient id="hq-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#8b5cf6" />
+              <stop offset="100%" stopColor="#f59e0b" />
+            </linearGradient>
+            <linearGradient id="node-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#4f46e5" />
+              <stop offset="100%" stopColor="#6d28d9" />
+            </linearGradient>
+            <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+              <dropShadow dx="0" dy="0" stdDeviation="4" floodColor="#8b5cf6" floodOpacity="0.5" />
+            </filter>
+            <filter id="gold-glow" x="-20%" y="-20%" width="140%" height="140%">
+              <dropShadow dx="0" dy="0" stdDeviation="4" floodColor="#f59e0b" floodOpacity="0.6" />
+            </filter>
+          </defs>
+          <style>{`
+            @keyframes dash {
+              to {
+                stroke-dashoffset: -20;
+              }
+            }
+            .active-flow {
+              stroke-dasharray: 6, 4;
+              animation: dash 1.5s linear infinite;
+            }
+            .node-hover {
+              transition: all 0.3s ease;
+            }
+            .node-hover:hover {
+              transform: scale(1.08);
+              cursor: pointer;
+            }
+          `}</style>
+
+          {/* Connection Lines (Paths) */}
+          {[
+            { key: 'APAC', x: 620, y: 50, qx: 510, qy: 50 },
+            { key: 'EMEA', x: 180, y: 50, qx: 290, qy: 50 },
+            { key: 'Americas', x: 180, y: 130, qx: 290, qy: 130 },
+            { key: 'LATAM', x: 620, y: 130, qx: 510, qy: 130 },
+          ].map(node => {
+            const isSelected = selectedRegion === node.key;
+            return (
+              <g key={`path-${node.key}`}>
+                {/* Background base path */}
+                <path
+                  d={`M 400 90 Q ${node.qx} ${node.qy} ${node.x} ${node.y}`}
+                  fill="none"
+                  stroke={isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}
+                  strokeWidth="4"
+                  strokeLinecap="round"
+                />
+                {/* Selected glow path */}
+                {isSelected && (
+                  <path
+                    d={`M 400 90 Q ${node.qx} ${node.qy} ${node.x} ${node.y}`}
+                    fill="none"
+                    stroke="#8b5cf6"
+                    strokeWidth="3.5"
+                    filter="url(#glow)"
+                    opacity="0.8"
+                    strokeLinecap="round"
+                  />
+                )}
+                {/* Animated active flow dash path */}
+                {isSelected && (
+                  <path
+                    d={`M 400 90 Q ${node.qx} ${node.qy} ${node.x} ${node.y}`}
+                    fill="none"
+                    stroke="#f59e0b"
+                    strokeWidth="2"
+                    className="active-flow"
+                    strokeLinecap="round"
+                  />
+                )}
+              </g>
+            );
+          })}
+
+          {/* Center Hub: Acies Global HQ */}
+          <g transform="translate(400, 90)" className="node-hover">
+            <circle r="36" fill="#8b5cf6" opacity="0.08" className="animate-pulse" />
+            <circle r="26" fill="url(#hq-grad)" opacity="0.2" />
+            <circle r="16" fill="url(#hq-grad)" filter="url(#glow)" />
+            <circle r="6" fill="#fff" />
+            <text y="42" textAnchor="middle" className="text-[8px] font-black uppercase tracking-widest fill-zinc-400 dark:fill-zinc-500 font-body">Global HQ</text>
+          </g>
+
+          {/* Regional Hub Nodes */}
+          {[
+            { key: 'EMEA', name: 'EMEA Node', x: 180, y: 50 },
+            { key: 'APAC', name: 'APAC Node', x: 620, y: 50 },
+            { key: 'Americas', name: 'Americas Node', x: 180, y: 130 },
+            { key: 'LATAM', name: 'LATAM Node', x: 620, y: 130 },
+          ].map(node => {
+            const isSelected = selectedRegion === node.key;
+            return (
+              <g 
+                key={`node-${node.key}`} 
+                transform={`translate(${node.x}, ${node.y})`}
+                className="node-hover"
+                onClick={() => onRegionSelect(node.key)}
+              >
+                {/* Selector ring */}
+                {isSelected ? (
+                  <circle r="22" fill="none" stroke="#f59e0b" strokeWidth="2" filter="url(#gold-glow)" />
+                ) : (
+                  <circle r="22" fill="none" stroke="transparent" />
+                )}
+                
+                <circle r="14" fill={isSelected ? '#f59e0b' : 'url(#node-grad)'} opacity={isSelected ? '1' : '0.8'} />
+                <circle r="6" fill="#fff" opacity="0.9" />
+                
+                {/* Node Text labels */}
+                <text y="-20" textAnchor="middle" className={`text-[9.5px] font-black uppercase tracking-wider font-body ${
+                  isSelected ? 'fill-acies-yellow font-extrabold animate-pulse' : 'fill-zinc-700 dark:fill-zinc-300'
+                }`}>
+                  {node.key}
+                </text>
+                <text y="24" textAnchor="middle" className="text-[7px] font-bold fill-zinc-400 uppercase tracking-widest">
+                  {REGIONS_CONFIG[node.key]?.plant.split(' ')[0]} Hub
+                </text>
+              </g>
+            );
+          })}
+        </svg>
+      </div>
       
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {Object.entries(REGIONS_CONFIG).map(([key, config]) => {
@@ -207,7 +339,7 @@ export const DrilldownRegionGrid: React.FC<DrilldownRegionGridProps> = ({
                 </p>
 
                 <div className="flex items-baseline gap-1 mt-2.5">
-                  <span className="text-base font-display font-extrabold text-zinc-805 dark:text-white leading-none">
+                  <span className="text-base font-display font-extrabold text-zinc-855 dark:text-white leading-none">
                     {activeM.actual.toFixed(selectedMetric === 'rev' ? 0 : 1)}
                   </span>
                   <span className="text-[8px] font-bold text-zinc-500">{activeM.unit}</span>

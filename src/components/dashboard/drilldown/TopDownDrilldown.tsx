@@ -72,6 +72,36 @@ export const TopDownDrilldown: React.FC<TopDownDrilldownProps> = ({ isDarkMode }
   return (
     <div className="space-y-6 animate-fadeIn w-full">
 
+      {/* Hierarchical Stepper Breadcrumb Header */}
+      <div className="flex items-center gap-2.5 px-4.5 py-2.5 bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-lg text-[10px] font-bold uppercase tracking-wider text-zinc-505 dark:text-zinc-400 w-full shadow-sm shrink-0">
+        <span className="text-[#8b5cf6] dark:text-[#a78bfa] flex items-center gap-1">
+          🏢 Global HQ
+        </span>
+        <span className="opacity-30 text-[12px] font-light">&rarr;</span>
+        {selectedRegion ? (
+          <button 
+            onClick={() => {
+              setSelectedRegion(null);
+              setSelectedSkuName('');
+            }}
+            className="text-[#8b5cf6] dark:text-[#a78bfa] hover:underline hover:text-indigo-500 dark:hover:text-indigo-300 bg-transparent border-none cursor-pointer p-0 font-extrabold flex items-center gap-1 uppercase text-[10px]"
+            title="Reset Region Selection"
+          >
+            🌎 Hub: {selectedRegion} ({REGIONS_CONFIG[selectedRegion]?.plant.split(' ')[0]})
+          </button>
+        ) : (
+          <span className="opacity-55 italic text-zinc-400">(Select Region Node below)</span>
+        )}
+        <span className="opacity-30 text-[12px] font-light">&rarr;</span>
+        {selectedSkuName ? (
+          <span className="text-[#f59e0b] font-black">
+            📦 SKU: {selectedSkuName}
+          </span>
+        ) : (
+          <span className="opacity-55 italic text-zinc-400">(Select SKU variant)</span>
+        )}
+      </div>
+
       {/* Selector Options Horizontally Stacked (Full Width) */}
       <div className="space-y-6">
         
