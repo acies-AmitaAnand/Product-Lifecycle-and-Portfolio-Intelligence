@@ -746,6 +746,52 @@ const AUDIT_DATA: Record<string, AuditContent> = {
       ['Personal Care', '94.6%', '-2.4pp', '97.0%'],
       ['Household', '91.8%', '-5.2pp', '97.0%']
     ]
+  },
+  'Avg Lead Time': {
+    title: 'Avg Lead Time',
+    value: '21 days',
+    soWhat: 'Average lead time across active suppliers sits at 21 days compared to a corporate benchmark target of 15 days. Prolonged supplier cycles require higher safety stock holdings, tying up valuable operational capital.',
+    action: 'Negotiate lead-time reduction SLAs with APAC suppliers and scale regional warehouse pre-positioning agreements.',
+    columns: [
+      { name: 'lead_time', type: 'int [DIRECT]', desc: 'Supplier order-to-delivery fulfillment duration in days.' }
+    ],
+    formula: 'L_{avg} = \\frac{1}{K} \\sum_{j=1}^{K} LeadTime_j',
+    formulaDescription: 'Calculated as the arithmetic mean of fulfillment durations across all active product contracts in the system.',
+    assumptions: [
+      'Standard transport conditions: Assumes freight routes are operating under standard seasonal capacities.',
+      'Active listings: Includes all SKUs currently listed as active in the catalog directory.'
+    ],
+    trendTitle: 'Sourcing Lead Times by Category',
+    trendHeaders: ['Category', 'Actual Lead Time', 'Variance', 'Target'],
+    trendRows: [
+      ['Beverages', '14 days', '-1 day', '15 days'],
+      ['Snacks', '18 days', '+3 days', '15 days'],
+      ['Personal Care', '28 days', '+13 days', '15 days'],
+      ['Household', '22 days', '+7 days', '15 days']
+    ]
+  },
+  'High-Value SKUs': {
+    title: 'High-Value SKUs',
+    value: '42/102',
+    soWhat: 'High-value SKUs (items with Value Score >= 0.6) make up 41.2% of the active catalog (42 of 102 items). These items generate over 75% of net profit, meaning service levels for these SKUs must be heavily protected.',
+    action: 'Establish priority warehouse picking lanes and logistics lanes to protect core high-value SKU service levels.',
+    columns: [
+      { name: 'value_score', type: 'float [DERIVED]', desc: 'Composite SKU value rating based on margin and revenue contribution.' }
+    ],
+    formula: 'Ratio = \\frac{\\sum [ValueScore_j \\geq 0.6]}{N_{total}} \\times 100',
+    formulaDescription: 'The percentage of the active product catalog that satisfies the high-value parameter threshold.',
+    assumptions: [
+      'Value score metrics: Value score comprises 60% gross margin contribution and 40% sales share contribution.',
+      'Catalog directory: Assumes zero sunsetted product items are active in the divisor.'
+    ],
+    trendTitle: 'High-Value Product Density by Category',
+    trendHeaders: ['Category', 'High-Value SKUs', 'Total SKUs', 'Target Ratio'],
+    trendRows: [
+      ['Beverages', '15', '32', '45%'],
+      ['Snacks', '12', '28', '40%'],
+      ['Personal Care', '10', '25', '40%'],
+      ['Household', '5', '17', '30%']
+    ]
   }
 };
 
@@ -833,6 +879,10 @@ const getMetricTrend = (metricName: string) => {
       return { value: '+12.3% vs yesterday', isUp: true };
     case 'Forecast Attainment':
       return { value: '-2.1pp vs target', isUp: false };
+    case 'Avg Lead Time':
+      return { value: '+2 days vs target', isUp: false };
+    case 'High-Value SKUs':
+      return { value: '+4 SKUs YoY', isUp: true };
     case 'Critical Alerts':
     case 'Total Active Signals':
       return { value: '+2 Active Alerts', isUp: true };
@@ -954,6 +1004,14 @@ export const AuditDrawer: React.FC<AuditDrawerProps> = ({ activeMetric, close, i
       case 'Orders - Today':
       case 'orders-today':
         return 'Orders — Today';
+      case 'Revenue Growth':
+        return 'Growth Rate';
+      case 'Portfolio Complexity':
+        return 'Portfolio Complexity Index (PCI)';
+      case 'Promo Dependency':
+        return 'Promo Erosion vs. Dependency';
+      case 'Total Stockouts':
+        return 'Peak Stockout Freq.';
       default: return metric;
     }
   };

@@ -1231,7 +1231,11 @@ export const PortfolioHealthMap: React.FC<PortfolioHealthMapProps> = ({ role, is
               const roleHighlight = role === 'VP Product Management' && (i === 0 || i === 3);
               const highlightBorder = roleHighlight ? 'border-2 border-acies-yellow shadow-lg shadow-acies-yellow/5' : 'border-black/5 dark:border-white/10';
               return (
-                <div key={k.label} className={`glass-card bg-white dark:bg-white/5 border ${highlightBorder} p-4 flex flex-col justify-between h-28`}>
+                <div 
+                  key={k.label} 
+                  onClick={() => onAuditClick?.(k.label)}
+                  className={`glass-card bg-white dark:bg-white/5 border ${highlightBorder} p-4 flex flex-col justify-between h-28 cursor-pointer hover:bg-black/[0.01] dark:hover:bg-white/[0.01] transition-all`}
+                >
                   <div>
                     <p className="text-[8px] font-bold uppercase tracking-widest opacity-40 flex items-center justify-between">
                       {k.label}
