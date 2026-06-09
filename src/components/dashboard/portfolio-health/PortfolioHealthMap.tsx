@@ -59,6 +59,256 @@ const RECIPIENT_TITLES: Record<string, string> = {
   'dieter.maes@aciesglobal.com': 'Production Scheduler'
 };
 
+// Helper to calculate lifecycle stage dynamically
+const getLifecycleStage = (growth: number, margin: number, rev: number) => {
+  if (growth < 0) return 'Decline';
+  if (growth >= 0.15 && rev < 100) return 'Introduction';
+  if (growth >= 0.10) return 'Growth';
+  return 'Margin';
+};
+
+// Calculate Portfolio Health Score dynamically
+const calculatePortfolioHealth = (skusList: any[]) => {
+  if (skusList.length === 0) {
+    return { 
+      score: 0, 
+      intro: 0, 
+      growth: 0, 
+      margin: 0, 
+      decline: 0, 
+      list: { intro: [], growth: [], margin: [], decline: [] } 
+    };
+  }
+  
+  let introCount = 0;
+  let growthCount = 0;
+  let marginCount = 0;
+  let declineCount = 0;
+  
+  const introSKUs: string[] = [];
+  const growthSKUs: string[] = [];
+  const marginSKUs: string[] = [];
+  const declineSKUs: string[] = [];
+  
+  let totalMargin = 0;
+  let totalStockouts = 0;
+  let totalComplexity = 0;
+  
+  skusList.forEach(s => {
+    const stage = getLifecycleStage(s.growth, s.margin, s.rev);
+    if (stage === 'Introduction') {
+      introCount++;
+      introSKUs.push(s.name);
+    } else if (stage === 'Growth') {
+      growthCount++;
+      growthSKUs.push(s.name);
+    } else if (stage === 'Margin') {
+      marginCount++;
+      marginSKUs.push(s.name);
+    } else {
+      declineCount++;
+      declineSKUs.push(s.name);
+    }
+    totalMargin += s.margin;
+    totalStockouts += s.stockouts;
+    totalComplexity += s.cx;
+  });
+  
+  const avgMargin = totalMargin / skusList.length;
+  const avgComplexity = totalComplexity / skusList.length;
+  
+  // Complexity penalty (0 to 1 score)
+  const pciScore = (avgComplexity * 0.8 + (avgMargin >= 35 ? 0.2 : 0.4)) / 1.2;
+  const complexityPenalty = pciScore * 25;
+  
+  // Stockouts penalty
+  const avgStockouts = totalStockouts / skusList.length;
+  const stockoutPenalty = Math.min(15, avgStockouts * 3);
+  
+  const positiveTrendPct = ((introCount + growthCount + marginCount) / skusList.length) * 100;
+  const marginFactor = Math.min(100, (avgMargin / 40) * 100);
+  
+  const score = Math.round(
+    positiveTrendPct * 0.45 + 
+    marginFactor * 0.35 + 
+    (100 - complexityPenalty) * 0.10 + 
+    (100 - stockoutPenalty) * 0.10
+  );
+  
+  const finalScore = Math.max(0, Math.min(100, score));
+  
+  return {
+    score: finalScore,
+    intro: introCount,
+    growth: growthCount,
+    margin: marginCount,
+    decline: declineCount,
+    list: {
+      intro: introSKUs,
+      growth: growthSKUs,
+      margin: marginSKUs,
+      decline: declineSKUs
+    }
+  };
+};
+
+interface LifecycleHealthPanelProps {
+  skusList: any[];
+  isDarkMode: boolean;
+}
+
+const LifecycleHealthPanel: React.FC<LifecycleHealthPanelProps> = ({ skusList, isDarkMode }) => {
+  const data = calculatePortfolioHealth(skusList);
+  
+  // Circular progress ring setup
+  const radius = 40;
+  const strokeWidth = 6;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDashoffset = circumference - (data.score / 100) * circumference;
+  
+  // Health level attributes
+  let ratingLabel = 'ELEVATED RISK';
+  let ratingColorClass = 'bg-red-500/10 text-red-500 border-red-500/20';
+  let ratingStroke = '#ef4444';
+  let insightText = '';
+  
+  if (data.score >= 85) {
+    ratingLabel = 'OPTIMAL / ON-TRACK';
+    ratingColorClass = 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20';
+    ratingStroke = '#10b981';
+    insightText = 'Portfolio health is optimal. Excellent balance of high-margin cash cows and growing products.';
+  } else if (data.score >= 70) {
+    ratingLabel = 'STABLE / ON-TRACK';
+    ratingColorClass = 'bg-amber-500/10 text-amber-500 border-amber-500/20';
+    ratingStroke = '#f59e0b';
+    insightText = `${data.decline} Decline products (${Math.round((data.decline / skusList.length) * 100)}%) are dragging the health score. Consider sunsetting candidates.`;
+  } else {
+    ratingLabel = 'CRITICAL DRAG';
+    ratingColorClass = 'bg-red-500/10 text-red-500 border-red-500/20';
+    ratingStroke = '#ef4444';
+    insightText = 'Critical complexity and declining volumes. Immediate SKU rationalization is highly recommended.';
+  }
+
+  const [hoveredStage, setHoveredStage] = useState<string | null>(null);
+
+  const stages = [
+    { key: 'intro', label: 'Introduction', count: data.intro, pct: Math.round((data.intro / skusList.length) * 100), color: '#8b5cf6', list: data.list.intro, desc: 'New launches and pipeline concepts' },
+    { key: 'growth', label: 'Growth', count: data.growth, pct: Math.round((data.growth / skusList.length) * 100), color: '#10b981', list: data.list.growth, desc: 'High growth and expanding volume' },
+    { key: 'margin', label: 'Margin', count: data.margin, pct: Math.round((data.margin / skusList.length) * 100), color: '#f59e0b', list: data.list.margin, desc: 'Mature cash cows with solid margins' },
+    { key: 'decline', label: 'Decline', count: data.decline, pct: Math.round((data.decline / skusList.length) * 100), color: '#ef4444', list: data.list.decline, desc: 'Dwindling volumes and low margins' },
+  ];
+
+  return (
+    <div className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+      {/* LEFT COLUMN: GAUGE & HEALTH */}
+      <div className="lg:col-span-4 flex items-center gap-5 border-r border-black/5 dark:border-white/5 pr-4 h-full">
+        <div className="relative flex items-center justify-center shrink-0">
+          <svg className="w-24 h-24 transform -rotate-90">
+            <circle cx="48" cy="48" r={radius} stroke={isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'} strokeWidth={strokeWidth} fill="transparent" />
+            <circle 
+              cx="48" 
+              cy="48" 
+              r={radius} 
+              stroke={ratingStroke} 
+              strokeWidth={strokeWidth} 
+              fill="transparent" 
+              strokeDasharray={circumference}
+              strokeDashoffset={strokeDashoffset}
+              strokeLinecap="round"
+              className="transition-all duration-1000 ease-out"
+            />
+          </svg>
+          <div className="absolute flex flex-col items-center justify-center">
+            <span className="text-xl font-display font-extrabold text-acies-gray dark:text-white leading-none">{data.score}%</span>
+            <span className="text-[7px] text-zinc-400 font-extrabold tracking-wider leading-none mt-1">HEALTH</span>
+          </div>
+        </div>
+        <div className="space-y-2">
+          <div>
+            <span className="text-[9px] font-bold uppercase tracking-widest text-zinc-400 block mb-1">Portfolio Health Score</span>
+            <span className={`text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-sm border ${ratingColorClass}`}>
+              {ratingLabel}
+            </span>
+          </div>
+          <p className="text-[10px] text-zinc-500 leading-relaxed font-medium">
+            {insightText}
+          </p>
+        </div>
+      </div>
+
+      {/* RIGHT COLUMN: DISTRIBUTION BAR AND STAGE DETAILS */}
+      <div className="lg:col-span-8 space-y-4">
+        <div>
+          <span className="text-[9px] font-bold uppercase tracking-widest text-zinc-400 block mb-2">Product Lifecycle Distribution</span>
+          
+          {/* Stacked Proportions Bar */}
+          <div className="w-full h-5 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-sm overflow-hidden flex gap-0.5">
+            {stages.map(st => {
+              if (st.count === 0) return null;
+              return (
+                <div 
+                  key={st.key}
+                  style={{ width: `${st.pct}%`, backgroundColor: st.color }}
+                  onMouseEnter={() => setHoveredStage(st.key)}
+                  onMouseLeave={() => setHoveredStage(null)}
+                  className="h-full relative cursor-pointer opacity-90 hover:opacity-100 transition-opacity flex items-center justify-center"
+                  title={`${st.label}: ${st.count} SKUs (${st.pct}%)`}
+                >
+                  {st.pct >= 8 && (
+                    <span className="text-[8px] font-bold text-white leading-none select-none">{st.pct}%</span>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Stages list */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {stages.map(st => {
+            const isHoveredOrActive = hoveredStage === st.key;
+            return (
+              <div 
+                key={st.key}
+                onMouseEnter={() => setHoveredStage(st.key)}
+                onMouseLeave={() => setHoveredStage(null)}
+                className={`p-2.5 border rounded-sm transition-all duration-200 cursor-pointer relative select-none ${
+                  isHoveredOrActive 
+                    ? 'border-black/20 dark:border-white/25 bg-black/[0.02] dark:bg-white/5 shadow-sm' 
+                    : 'border-black/5 dark:border-white/10 bg-transparent'
+                }`}
+              >
+                <div className="flex items-center gap-1.5 mb-1">
+                  <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: st.color }} />
+                  <span className="text-[9px] font-extrabold uppercase tracking-wider text-zinc-400 truncate">{st.label}</span>
+                </div>
+                <div className="flex items-baseline gap-1.5">
+                  <span className="text-base font-display font-extrabold text-acies-gray dark:text-white leading-none">{st.count}</span>
+                  <span className="text-[9px] text-zinc-400 leading-none">SKUs</span>
+                </div>
+                
+                {/* Micro SKU list popover on hover */}
+                {isHoveredOrActive && st.list.length > 0 && (
+                  <div className="absolute left-0 right-0 top-full mt-1.5 bg-white dark:bg-zinc-900 border border-black/10 dark:border-white/15 p-2 rounded-sm shadow-xl z-30 space-y-1.5 pointer-events-none max-h-48 overflow-y-auto no-scrollbar">
+                    <p className="text-[7.5px] font-bold uppercase tracking-widest text-zinc-400 mb-1 leading-none">{st.label} SKUs ({st.count})</p>
+                    <div className="flex flex-wrap gap-1">
+                      {st.list.map(name => (
+                        <span key={name} className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 px-1 py-0.5 rounded-sm text-[8px] font-medium text-acies-gray dark:text-zinc-200">
+                          {name}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // ══════════════════════════════════════════════════════════════════════════════
 // VP COMMAND CENTER SUB-COMPONENT
 // ══════════════════════════════════════════════════════════════════════════════
@@ -536,6 +786,9 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean; onAuditClick?: (metricNam
           );
         })}
       </div>
+
+      {/* Portfolio Health & Lifecycle Distribution */}
+      <LifecycleHealthPanel skusList={SKUS} isDarkMode={isDarkMode} />
 
       {/* Main Command Center Grid */}
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
@@ -1253,6 +1506,9 @@ export const PortfolioHealthMap: React.FC<PortfolioHealthMapProps> = ({ role, is
               );
             })}
           </div>
+
+          {/* Portfolio Health & Lifecycle Distribution */}
+          <LifecycleHealthPanel skusList={filteredSKUs} isDarkMode={isDarkMode} />
 
           {/* Revenue vs Complexity Scatter chart */}
           <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-5">
