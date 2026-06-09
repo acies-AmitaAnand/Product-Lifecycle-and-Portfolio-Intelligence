@@ -141,7 +141,7 @@ export const LaunchReadinessDashboard: React.FC<LaunchReadinessDashboardProps> =
           <Rocket size={100} />
         </div>
         <div>
-          <p className="text-[9px] uppercase font-bold tracking-widest opacity-40 mb-2">Portfolio Launch Readiness · Tab 2 of 6</p>
+          <p className="text-[9px] uppercase font-bold tracking-widest opacity-40 mb-2">Portfolio Launch Readiness</p>
           <h2 className="text-xl font-display font-medium text-white mb-2">Launch Readiness Tracker</h2>
           <p className="text-xs text-zinc-300 font-medium max-w-xl leading-relaxed">
             Score new SKU launches across 5 critical operational dimensions: market fit, supply readiness, margin health, channel coverage, and risk profile. Keep track of upcoming launch milestones.

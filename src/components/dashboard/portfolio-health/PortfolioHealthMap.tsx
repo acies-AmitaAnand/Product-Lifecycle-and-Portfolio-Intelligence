@@ -516,6 +516,7 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean; onAuditClick?: (metricNam
               <div className="h-[28px] my-1.5 opacity-85 group-hover:opacity-100 transition-opacity">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={kpi.hist.map((val, idx) => ({ idx, val }))} margin={{ top: 0, bottom: 0, left: 0, right: 0 }}>
+                    <YAxis domain={['auto', 'auto']} hide />
                     <Area 
                       type="monotone" 
                       dataKey="val" 
@@ -1087,7 +1088,7 @@ export const PortfolioHealthMap: React.FC<PortfolioHealthMapProps> = ({ role, is
         </div>
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
           <div className="flex-1 pr-4">
-            <p className="text-[9px] uppercase font-bold tracking-widest opacity-40 mb-2">Interactive Explorer · Tab 1 of 6</p>
+            <p className="text-[9px] uppercase font-bold tracking-widest opacity-40 mb-2">Interactive Explorer</p>
             <h2 className="text-xl font-display font-medium text-white mb-2">Portfolio Health Map</h2>
             <p className="text-xs text-zinc-300 font-medium max-w-xl leading-relaxed">
               Analyze SKU value, complexity, and operational fragility. Click the sub-tabs below to explore quadrant matrices, pareto analysis, channel mixes, and Sunset simulations.

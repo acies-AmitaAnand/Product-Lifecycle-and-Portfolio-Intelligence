@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { TrendingUp, TrendingDown, Minus, Zap, Info, FileSearch } from 'lucide-react';
 import { Role, KPI } from '../../types/dashboard';
+import { ResponsiveContainer, AreaChart, Area, YAxis } from 'recharts';
 
 interface KPICardProps {
   kpi: KPI;
@@ -107,34 +108,60 @@ const KPI_TOOLTIPS: Record<string, { soWhat: string; action: string }> = {
   }
 };
 
+const KPI_METRIC_CONFIGS: Record<string, { target: string; color: string; hist: number[] }> = {
+  // Launch Readiness
+  'Overall Readiness %': { target: '85%', color: '#8b5cf6', hist: [78, 80, 81, 81, 82, 82, 82, 82] },
+  'Revenue Tail Risk': { target: '30%', color: '#ef4444', hist: [25, 26, 26, 27, 27, 27, 27.08, 27.08] },
+  'Peak Stockout Freq.': { target: '350', color: '#ef4444', hist: [400, 420, 430, 435, 438, 440, 440, 440] },
+  'Rationalize Candidates': { target: '40 SKUs', color: '#8b5cf6', hist: [30, 32, 33, 34, 35, 35, 35, 35] },
+  
+  // Profitability
+  'Net Profit': { target: '₹100 Cr', color: '#10b981', hist: [85, 88, 90, 92, 93, 94, 94.8, 95.2] },
+  'Gross margin %': { target: '38%', color: '#3b82f6', hist: [35.1, 35.4, 35.6, 35.8, 36.0, 36.1, 36.2, 36.2] },
+  'Gross Profit': { target: '₹320 Cr', color: '#10b981', hist: [290, 295, 300, 302, 304, 306, 307.5, 308.1] },
+  'Revenue MTD': { target: '₹900 Cr', color: '#3b82f6', hist: [780, 795, 808, 821, 833, 843, 850, 851.2] },
+  'Launch ROI': { target: '1.50x', color: '#f59e0b', hist: [1.2, 1.3, 1.5, 1.6, 1.7, 1.8, 1.83, 1.85] },
+  
+  // Signals Board
+  'Total Active Signals': { target: '3', color: '#3b82f6', hist: [4, 5, 5, 6, 6, 6, 6, 6] },
+  'Competitor Alerts': { target: '1', color: '#ef4444', hist: [1, 2, 2, 2, 2, 2, 2, 2] },
+  'Active Stockouts': { target: '3', color: '#ef4444', hist: [5, 6, 6, 7, 7, 7, 7, 7] },
+  'Market Demand Change': { target: '+15%', color: '#10b981', hist: [12, 14, 15, 16, 17, 18, 18.2, 18.4] },
+  'Customer Sentiment Score': { target: '80', color: '#f59e0b', hist: [75, 74, 73, 73, 72, 72, 72, 72] }
+};
+
+const getMetricConfig = (label: string) => {
+  return KPI_METRIC_CONFIGS[label] || {
+    target: '—',
+    color: '#8b5cf6',
+    hist: [50, 52, 54, 53, 55, 57, 58, 60]
+  };
+};
+
 export const KPICard: React.FC<KPICardProps> = ({ kpi, role, onAuditClick }) => {
   const [showTooltip, setShowTooltip] = useState(false);
   const [isCardHovered, setIsCardHovered] = useState(false);
   const isHighlighted = kpi.highlight?.includes(role) ?? false;
   const auditDetails = KPI_TOOLTIPS[kpi.label];
+  const config = getMetricConfig(kpi.label);
 
-  // Semantic coloring: isRisk inverts what "up" means
   const getTrendColor = () => {
-    if (kpi.trend === 'neutral') return 'text-gray-400 dark:text-gray-500';
-    if (kpi.trend === 'up') return kpi.isRisk ? 'text-red-500' : 'text-green-500';
-    // trend === 'down'
-    return kpi.isRisk ? 'text-green-500' : 'text-red-500';
+    if (kpi.trend === 'neutral') return 'text-zinc-500 dark:text-zinc-400';
+    if (kpi.trend === 'up') return kpi.isRisk ? 'text-red-500' : 'text-emerald-500';
+    return kpi.isRisk ? 'text-emerald-500' : 'text-red-500';
   };
 
-  const TrendIcon =
-    kpi.trend === 'up' ? TrendingUp :
-    kpi.trend === 'down' ? TrendingDown :
-    Minus;
+  const deltaText = `${kpi.trend === 'up' ? '▲' : kpi.trend === 'down' ? '▼' : '•'} ${kpi.trendValue}`;
 
   return (
     <div
       onClick={onAuditClick}
       onMouseEnter={() => setIsCardHovered(true)}
       onMouseLeave={() => setIsCardHovered(false)}
-      className={`glass-card flex flex-col justify-between transition-all cursor-pointer relative select-none pb-5 ${
+      className={`glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm flex flex-col justify-between h-36 group cursor-pointer hover:bg-black/[0.01] dark:hover:bg-white/[0.01] transition-all relative select-none pb-4 ${
         isHighlighted
           ? 'ring-1 ring-acies-yellow ring-offset-2 dark:ring-offset-acies-gray bg-white/90 dark:bg-white/10'
-          : 'hover:border-acies-yellow/40 hover:bg-white/80 dark:hover:bg-white/8'
+          : ''
       }`}
     >
       {/* Highlighted pulse bar */}
@@ -142,55 +169,80 @@ export const KPICard: React.FC<KPICardProps> = ({ kpi, role, onAuditClick }) => 
         <div className="absolute top-0 left-0 right-0 h-0.5 bg-acies-yellow animate-pulse" />
       )}
 
-      <div className="flex justify-between items-start mb-3">
-        <span className="text-[8px] uppercase font-bold tracking-wider opacity-50 group-hover:opacity-100 transition-opacity leading-snug pr-1">
-          {kpi.label}
-        </span>
-        <div className="flex items-center gap-1 shrink-0">
-          {isHighlighted && <Zap size={8} className="text-acies-yellow fill-acies-yellow" />}
-          <div
-            className="relative"
-            onMouseEnter={() => setShowTooltip(true)}
-            onMouseLeave={() => setShowTooltip(false)}
-          >
-            <Info size={9} className="opacity-35 hover:opacity-100 transition-opacity cursor-help" />
-            {showTooltip && (
-              <div className="absolute right-0 top-5 w-60 bg-acies-gray text-white text-[9px] p-3 shadow-2xl border border-white/10 z-50 leading-relaxed pointer-events-none rounded-sm">
-                <p className="opacity-70 mb-2">{kpi.info}</p>
-                {auditDetails && (
-                  <div className="space-y-1.5 border-t border-white/10 pt-2">
-                    <div>
-                      <span className="text-red-400 font-bold uppercase tracking-wider block text-[7px]">So What?</span>
-                      <p className="opacity-95">{auditDetails.soWhat}</p>
+      <div className="flex justify-between items-start mb-1">
+        <div className="min-w-0 pr-1">
+          <p className="text-[8.5px] font-bold uppercase tracking-wider text-zinc-400 truncate flex items-center gap-1">
+            {kpi.label}
+            {isHighlighted && <Zap size={8} className="text-acies-yellow fill-acies-yellow shrink-0" />}
+          </p>
+          <h3 className="text-xl font-display font-extrabold text-zinc-850 dark:text-zinc-150 mt-1">
+            {kpi.value}
+          </h3>
+        </div>
+        
+        <div className="text-right shrink-0 flex flex-col items-end">
+          <div className="flex items-center gap-1.5">
+            <span className="text-[8px] uppercase font-bold text-zinc-400">Target</span>
+            <div
+              className="relative shrink-0 z-40"
+              onMouseEnter={() => setShowTooltip(true)}
+              onMouseLeave={() => setShowTooltip(false)}
+            >
+              <Info size={9} className="opacity-35 hover:opacity-100 transition-opacity cursor-help" />
+              {showTooltip && (
+                <div className="absolute right-0 top-4 w-56 bg-acies-gray text-white text-[9px] p-2.5 shadow-2xl border border-white/10 z-50 leading-relaxed pointer-events-none rounded-sm">
+                  <p className="opacity-70 mb-1.5">{kpi.info}</p>
+                  {auditDetails && (
+                    <div className="space-y-1 border-t border-white/10 pt-1.5">
+                      <div>
+                        <span className="text-red-400 font-bold uppercase tracking-wider block text-[6.5px]">So What?</span>
+                        <p className="opacity-95">{auditDetails.soWhat}</p>
+                      </div>
+                      <div>
+                        <span className="text-green-400 font-bold uppercase tracking-wider block text-[6.5px]">Action Plan</span>
+                        <p className="opacity-95 text-acies-yellow">{auditDetails.action}</p>
+                      </div>
                     </div>
-                    <div>
-                      <span className="text-green-400 font-bold uppercase tracking-wider block text-[7px]">Action Plan</span>
-                      <p className="opacity-95 text-acies-yellow">{auditDetails.action}</p>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
+                  )}
+                </div>
+              )}
+            </div>
           </div>
+          <p className="text-[10px] font-bold font-mono text-zinc-550 dark:text-zinc-350 leading-none mt-0.5">
+            {config.target}
+          </p>
         </div>
       </div>
 
-      <div>
-        <div className="text-base font-display leading-tight mb-1">{kpi.value}</div>
-        <div className={`text-[8px] flex items-center gap-1 font-bold ${getTrendColor()}`}>
-          <TrendIcon size={9} />
-          {kpi.trendValue}
-        </div>
+      {/* Sparkline chart */}
+      <div className="h-[28px] my-1 opacity-85 group-hover:opacity-100 transition-opacity">
+        <ResponsiveContainer width="100%" height="100%">
+          <AreaChart data={config.hist.map((val, idx) => ({ idx, val }))} margin={{ top: 0, bottom: 0, left: 0, right: 0 }}>
+            <YAxis domain={['auto', 'auto']} hide />
+            <Area 
+              type="monotone" 
+              dataKey="val" 
+              stroke={config.color} 
+              fill={`${config.color}15`} 
+              strokeWidth={1.5} 
+              dot={false} 
+            />
+          </AreaChart>
+        </ResponsiveContainer>
       </div>
 
-      {/* Slide-up Inspect indicator */}
-      <div 
-        className={`absolute bottom-1 right-3 flex items-center gap-1 text-[7px] font-bold uppercase tracking-widest text-acies-yellow transition-opacity duration-200 ${
-          isCardHovered ? 'opacity-100' : 'opacity-0'
-        }`}
-      >
-        <FileSearch size={8} />
-        Audit Trace
+      <div className="text-[9px] font-bold uppercase tracking-wider mt-1 flex justify-between items-center">
+        <span className={getTrendColor()}>{deltaText}</span>
+        
+        {/* Slide-up Audit indicator */}
+        <span 
+          className={`flex items-center gap-1 text-[7px] font-bold uppercase tracking-widest text-acies-yellow transition-opacity duration-200 ${
+            isCardHovered ? 'opacity-100' : 'opacity-0'
+          }`}
+        >
+          <FileSearch size={8} />
+          Audit Trace
+        </span>
       </div>
     </div>
   );

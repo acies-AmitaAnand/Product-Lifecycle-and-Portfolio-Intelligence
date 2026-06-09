@@ -1473,7 +1473,7 @@ export const ProfitabilityTree: React.FC<ProfitabilityTreeProps> = ({
           <Layers size={100} />
         </div>
         <div>
-          <p className="text-[9px] uppercase font-bold tracking-widest opacity-40 mb-2">Scenario Analysis Module · Tab 3 of 6</p>
+          <p className="text-[9px] uppercase font-bold tracking-widest opacity-40 mb-2">Scenario Analysis Module</p>
           <h2 className="text-xl font-display font-medium text-white mb-2">Profitability Tree</h2>
           <p className="text-xs text-zinc-300 font-medium max-w-xl leading-relaxed">
             Decompose SKU profitability into core financial drivers. Adjust units, pricing, purchase costs, and overhead below, and instantly model P&L waterfall scenarios.

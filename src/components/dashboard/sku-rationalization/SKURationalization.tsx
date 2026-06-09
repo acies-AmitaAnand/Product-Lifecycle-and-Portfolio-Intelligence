@@ -678,7 +678,7 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
                   </div>
                 </div>
               </div>
-              <p className="text-[8px] font-bold text-zinc-400 uppercase tracking-widest mt-1">Category Assortment Workspace · Tab 4 of 6</p>
+              <p className="text-[8px] font-bold text-zinc-400 uppercase tracking-widest mt-1">Category Assortment Workspace</p>
             </div>
           </div>
 

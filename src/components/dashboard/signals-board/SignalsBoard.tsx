@@ -171,7 +171,7 @@ export const SignalsBoard: React.FC<SignalsBoardProps> = ({ role, setActiveTab, 
           <MessageSquare size={100} />
         </div>
         <div>
-          <p className="text-[9px] uppercase font-bold tracking-widest opacity-40 mb-2">Automated Risk Alerts · Tab 5 of 6</p>
+          <p className="text-[9px] uppercase font-bold tracking-widest opacity-40 mb-2">Automated Risk Alerts</p>
           <h2 className="text-xl font-display font-medium text-white mb-2">Signals Board</h2>
           <p className="text-xs text-zinc-300 font-medium max-w-xl leading-relaxed">
             AI-surfaced operational and financial alerts ranked by severity. Acknowledge completed investigations, add manual field alerts, or jump straight to optimization modules.
