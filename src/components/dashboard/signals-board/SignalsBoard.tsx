@@ -505,7 +505,7 @@ const VPSignalsBoardView: React.FC<{ isDarkMode: boolean; setActiveTab: (tab: nu
   } | null>(null);
   const [trendsTimeframe, setTrendsTimeframe] = useState<'weekly' | 'monthly'>('weekly');
   const [aiPredictionOpen, setAiPredictionOpen] = useState(false);
-  const [activePredictionType, setActivePredictionType] = useState<'stockout' | 'elasticity' | null>(null);
+  const [activePredictionType, setActivePredictionType] = useState<'stockout' | 'elasticity' | 'margin' | 'demand' | null>(null);
 
   useEffect(() => {
     const updateTime = () => {
@@ -928,7 +928,7 @@ const VPSignalsBoardView: React.FC<{ isDarkMode: boolean; setActiveTab: (tab: nu
                 setActivePredictionType('stockout');
                 setAiPredictionOpen(true);
               }}
-              className="p-3 border border-black/5 dark:border-white/10 rounded-sm bg-zinc-50/50 dark:bg-white/5 flex flex-col justify-between cursor-pointer hover:border-purple-500/35 hover:bg-black/[0.08] dark:hover:bg-white/[0.08] transition-all"
+              className="p-3 border border-black/5 dark:border-white/10 rounded-sm bg-zinc-50/50 dark:bg-white/5 cursor-pointer hover:border-purple-500/35 hover:bg-black/[0.08] dark:hover:bg-white/[0.08] transition-all"
             >
               <div>
                 <div className="flex justify-between items-center text-[9px] font-bold uppercase text-zinc-450 dark:text-zinc-550">
@@ -940,15 +940,6 @@ const VPSignalsBoardView: React.FC<{ isDarkMode: boolean; setActiveTab: (tab: nu
                   Stock exhaustion likely in <span className="font-bold text-red-500">12 days</span> due to surge in Q2 APAC demand.
                 </p>
               </div>
-              <button 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  addToast('Stock Routed', 'Safety stock allocation diverted to APAC hubs.', '#10b981');
-                }}
-                className="mt-3.5 py-1.5 text-center text-[9px] font-bold uppercase tracking-wider bg-black/5 hover:bg-black/10 dark:bg-white/5 dark:hover:bg-white/10 text-zinc-650 dark:text-zinc-350 rounded-sm border-none cursor-pointer"
-              >
-                Route Safety Stock
-              </button>
             </div>
 
             {/* Prediction 2 */}
@@ -957,7 +948,7 @@ const VPSignalsBoardView: React.FC<{ isDarkMode: boolean; setActiveTab: (tab: nu
                 setActivePredictionType('elasticity');
                 setAiPredictionOpen(true);
               }}
-              className="p-3 border border-black/5 dark:border-white/10 rounded-sm bg-zinc-50/50 dark:bg-white/5 flex flex-col justify-between cursor-pointer hover:border-purple-500/35 hover:bg-black/[0.08] dark:hover:bg-white/[0.08] transition-all"
+              className="p-3 border border-black/5 dark:border-white/10 rounded-sm bg-zinc-50/50 dark:bg-white/5 cursor-pointer hover:border-purple-500/35 hover:bg-black/[0.08] dark:hover:bg-white/[0.08] transition-all"
             >
               <div>
                 <div className="flex justify-between items-center text-[9px] font-bold uppercase text-zinc-450 dark:text-zinc-550">
@@ -969,15 +960,46 @@ const VPSignalsBoardView: React.FC<{ isDarkMode: boolean; setActiveTab: (tab: nu
                   Competitor wafers price cuts will trigger a <span className="font-bold text-amber-500">14% volume drop</span> in EU.
                 </p>
               </div>
-              <button 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  addToast('Pricing Shifted', 'Promotional price points queued for activation.', '#10b981');
-                }}
-                className="mt-3.5 py-1.5 text-center text-[9px] font-bold uppercase tracking-wider bg-black/5 hover:bg-black/10 dark:bg-white/5 dark:hover:bg-white/10 text-zinc-650 dark:text-zinc-350 rounded-sm border-none cursor-pointer"
-              >
-                Trigger Dynamic Promo
-              </button>
+            </div>
+
+            {/* Prediction 3 */}
+            <div 
+              onClick={() => {
+                setActivePredictionType('margin');
+                setAiPredictionOpen(true);
+              }}
+              className="p-3 border border-black/5 dark:border-white/10 rounded-sm bg-zinc-50/50 dark:bg-white/5 cursor-pointer hover:border-purple-500/35 hover:bg-black/[0.08] dark:hover:bg-white/[0.08] transition-all"
+            >
+              <div>
+                <div className="flex justify-between items-center text-[9px] font-bold uppercase text-zinc-450 dark:text-zinc-550">
+                  <span>Margin Compression</span>
+                  <span className="text-red-500">81% Prob.</span>
+                </div>
+                <h5 className="text-xs font-bold text-zinc-800 dark:text-zinc-200 mt-1">BrandC Biscuits</h5>
+                <p className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-1 leading-snug">
+                  Gross margins likely to breach the <span className="font-bold text-red-500">30% hurdle</span> due to promo dependency in EU.
+                </p>
+              </div>
+            </div>
+
+            {/* Prediction 4 */}
+            <div 
+              onClick={() => {
+                setActivePredictionType('demand');
+                setAiPredictionOpen(true);
+              }}
+              className="p-3 border border-black/5 dark:border-white/10 rounded-sm bg-zinc-50/50 dark:bg-white/5 cursor-pointer hover:border-purple-500/35 hover:bg-black/[0.08] dark:hover:bg-white/[0.08] transition-all"
+            >
+              <div>
+                <div className="flex justify-between items-center text-[9px] font-bold uppercase text-zinc-450 dark:text-zinc-550">
+                  <span>Demand Bottleneck</span>
+                  <span className="text-indigo-500">88% Prob.</span>
+                </div>
+                <h5 className="text-xs font-bold text-zinc-800 dark:text-zinc-200 mt-1">BrandF Eco-Pack Water</h5>
+                <p className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-1 leading-snug">
+                  Sourcing capacity constraint will trigger a <span className="font-bold text-indigo-500">stockout in APAC</span> by Q3.
+                </p>
+              </div>
             </div>
 
           </div>
