@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   TrendingUp, TrendingDown, Check, X, AlertTriangle, RefreshCw, Zap, Clock, Home, List, PieChart, BarChart2, Calendar, LayoutGrid,
-  LineChart as LucideLineChart, Activity, Radar as LucideRadar
+  LineChart as LucideLineChart, AreaChart as LucideAreaChart, Radar as LucideRadar, Activity
 } from 'lucide-react';
 import { 
   ResponsiveContainer, AreaChart, Area, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, BarChart, Bar, Cell, PieChart as RePieChart, Pie, Legend,
@@ -14,13 +14,165 @@ import {
 import { SkuDetailsModal } from './SkuDetailsModal';
 import { RegionalForecastModal } from './RegionalForecastModal';
 import { EmailComposerModal } from '../portfolio-health/EmailComposerModal';
+import { TrendMonthForecastModal } from './TrendMonthForecastModal';
+import { CategoryPerformanceDetailsModal } from './CategoryPerformanceDetailsModal';
+import { SmartAlertDetailsModal } from './SmartAlertDetailsModal';
 import { EventsCalendarModal } from '../portfolio-health/EventsCalendarModal';
 
+interface CustomerInsight {
+  name: string;
+  segment: string;
+  revContribution: string;
+  interestTrend: string;
+  buyingFocus: string[];
+  growthTrend: string;
+  growthDirection: 'up' | 'down' | 'neutral';
+}
+
+const CUSTOMER_INSIGHTS: Record<string, CustomerInsight[]> = {
+  Beverages: [
+    {
+      name: 'Apex Hypermarkets',
+      segment: 'Enterprise Chain • 98% Retention',
+      revContribution: '₹24.8 Cr',
+      interestTrend: 'Rising demand for eco-friendly packaging and natural mineral mixers.',
+      buyingFocus: ['BrandF Water Eco-Pack', 'Coconut Water 1L'],
+      growthTrend: '+12.4% YoY',
+      growthDirection: 'up'
+    },
+    {
+      name: 'QuickCart Convenience',
+      segment: 'Regional Chain • 94% Retention',
+      revContribution: '₹14.2 Cr',
+      interestTrend: 'Shifting shelf preference toward high-energy single-serve options.',
+      buyingFocus: ['BrandC Energy Drink', 'Mango Fizz 250ml'],
+      growthTrend: '+8.7% YoY',
+      growthDirection: 'up'
+    },
+    {
+      name: 'Zenith Distributors',
+      segment: 'Wholesale Partner • 91% Retention',
+      revContribution: '₹18.5 Cr',
+      interestTrend: 'Bulk purchasing of premium fruit-based beverage offerings.',
+      buyingFocus: ['Mango Fizz 500ml', 'Aloe Vera Drink'],
+      growthTrend: '+4.2% YoY',
+      growthDirection: 'up'
+    }
+  ],
+  Snacks: [
+    {
+      name: 'MetroFoods Group',
+      segment: 'Key Account • 97% Retention',
+      revContribution: '₹19.6 Cr',
+      interestTrend: 'Spike in premium healthy baked items and baked grain products.',
+      buyingFocus: ['Oat Cookies', 'Masala Puffs'],
+      growthTrend: '+15.3% YoY',
+      growthDirection: 'up'
+    },
+    {
+      name: 'Apex Hypermarkets',
+      segment: 'Enterprise Chain • 98% Retention',
+      revContribution: '₹16.8 Cr',
+      interestTrend: 'High volume restocking of classic snack portfolios.',
+      buyingFocus: ['BrandB Chips', 'BrandD Chocolate 100g'],
+      growthTrend: '+3.4% YoY',
+      growthDirection: 'up'
+    },
+    {
+      name: 'Star Retailers',
+      segment: 'Mid-Market Chain • 89% Retention',
+      revContribution: '₹8.4 Cr',
+      interestTrend: 'Margin compression on chocolate products due to promotional shifts.',
+      buyingFocus: ['Choco Wafers', 'BrandD Chocolate 250g'],
+      growthTrend: '-2.1% YoY',
+      growthDirection: 'down'
+    }
+  ],
+  'Personal Care': [
+    {
+      name: 'Luminate Boutique',
+      segment: 'Specialty Retailer • 95% Retention',
+      revContribution: '₹11.2 Cr',
+      interestTrend: 'Surging demand for organic ingredients and active-SPF hand care.',
+      buyingFocus: ['Hand Cream SPF', 'Herbal Shampoo'],
+      growthTrend: '+22.4% YoY',
+      growthDirection: 'up'
+    },
+    {
+      name: 'GlobalMart Inc',
+      segment: 'Enterprise Chain • 96% Retention',
+      revContribution: '₹14.5 Cr',
+      interestTrend: 'Steady interest in family-pack cleansing and hygiene products.',
+      buyingFocus: ['BrandB Soap', 'BrandD Toothpaste'],
+      growthTrend: '+6.1% YoY',
+      growthDirection: 'up'
+    },
+    {
+      name: 'EcoBeauty Distribs',
+      segment: 'Niche Wholesaler • 92% Retention',
+      revContribution: '₹6.8 Cr',
+      interestTrend: 'Stocking up on foaming cleansers; sensitive skin variants preferred.',
+      buyingFocus: ['Foam Face Wash', 'Aloe Face Wash'],
+      growthTrend: '+8.2% YoY',
+      growthDirection: 'up'
+    }
+  ],
+  Dairy: [
+    {
+      name: 'MetroFoods Group',
+      segment: 'Key Account • 97% Retention',
+      revContribution: '₹12.4 Cr',
+      interestTrend: 'Expanding premium European cheese inventory across key metro centers.',
+      buyingFocus: ['BrandD Cheese Blocks', 'BrandB Yogurt 500g'],
+      growthTrend: '+11.2% YoY',
+      growthDirection: 'up'
+    },
+    {
+      name: 'Apex Hypermarkets',
+      segment: 'Enterprise Chain • 98% Retention',
+      revContribution: '₹10.5 Cr',
+      interestTrend: 'Steady volume orders for organic and gut-health probiotic brands.',
+      buyingFocus: ['BrandB Yogurt 1kg', 'BrandE Yogurt (Straw)'],
+      growthTrend: '+4.5% YoY',
+      growthDirection: 'up'
+    }
+  ],
+  Household: [
+    {
+      name: 'GlobalMart Inc',
+      segment: 'Enterprise Chain • 96% Retention',
+      revContribution: '₹18.2 Cr',
+      interestTrend: 'Substantial transition to premium concentrated cleaning capsules.',
+      buyingFocus: ['Laundry Pods Premium', 'Dish Soap 1L'],
+      growthTrend: '+14.6% YoY',
+      growthDirection: 'up'
+    },
+    {
+      name: 'Apex Hypermarkets',
+      segment: 'Enterprise Chain • 98% Retention',
+      revContribution: '₹12.6 Cr',
+      interestTrend: 'Volume restocking of general dish soaps and standard detergents.',
+      buyingFocus: ['BrandF Detergent', 'Dish Soap 1L'],
+      growthTrend: '+5.3% YoY',
+      growthDirection: 'up'
+    },
+    {
+      name: 'QuickCart Convenience',
+      segment: 'Regional Chain • 94% Retention',
+      revContribution: '₹4.8 Cr',
+      interestTrend: 'Decline in fabric softeners due to localized chemical regulatory flags.',
+      buyingFocus: ['Fabric Softener', 'Floor Cleaner'],
+      growthTrend: '-8.4% YoY',
+      growthDirection: 'down'
+    }
+  ]
+};
 
 interface ExecutiveOverviewProps {
   role: Role;
   setActiveTab: (tab: number) => void;
   isDarkMode: boolean;
+  onAuditClick: (metric: string) => void;
 }
 
 // Top Customer Insights Dataset
@@ -419,7 +571,7 @@ const MonthForecastModal: React.FC<{ isOpen: boolean; month: string | null; onCl
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-zinc-500 font-medium">This Year Target vs Actual:</span>
-                <span className="font-semibold text-zinc-850 dark:text-white">
+                <span className="font-semibold text-zinc-855 dark:text-white">
                   {data.thisYearTarget} / <span className={isBelowTarget ? "text-amber-500 font-bold" : "text-green-500 font-bold"}>{data.thisYearActual}</span>
                 </span>
               </div>
@@ -442,10 +594,10 @@ const MonthForecastModal: React.FC<{ isOpen: boolean; month: string | null; onCl
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-zinc-500 font-medium">This Year Blended Price:</span>
-                <span className="font-semibold text-zinc-850 dark:text-white">{data.thisYearPriceIndex}</span>
+                <span className="font-semibold text-zinc-855 dark:text-white">{data.thisYearPriceIndex}</span>
               </div>
               <div className="border-t border-black/5 dark:border-white/5 pt-2.5 flex justify-between items-center">
-                <span className="text-indigo-650 dark:text-indigo-400 font-bold">YoY Price Lift:</span>
+                <span className="text-indigo-655 dark:text-indigo-400 font-bold">YoY Price Lift:</span>
                 <span className="text-[10px] font-extrabold text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">+4.2% Growth</span>
               </div>
             </div>
@@ -460,7 +612,7 @@ const MonthForecastModal: React.FC<{ isOpen: boolean; month: string | null; onCl
             </p>
           </div>
           <div className="bg-gradient-to-r from-purple-50/50 to-indigo-50/50 dark:from-purple-950/10 dark:to-indigo-950/10 border border-purple-500/15 rounded p-4 space-y-3 shadow-inner">
-            {data.aiRecommendations.map((recommendation: string, idx: number) => (
+            {data.aiRecommendations.map((recommendation, idx) => (
               <div key={idx} className="flex gap-2.5 text-zinc-650 dark:text-zinc-300 leading-relaxed font-medium">
                 <div className="w-5 h-5 rounded-full bg-purple-500/10 dark:bg-purple-400/10 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0 font-extrabold text-[9px] mt-0.5 border border-purple-500/20">
                   {idx + 1}
@@ -513,7 +665,7 @@ const generateInitialEvents = () => {
   return list;
 };
 
-export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setActiveTab, isDarkMode }) => {
+export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setActiveTab, isDarkMode, onAuditClick }) => {
   const [alerts, setAlerts] = useState(() => VP_ALERTS.map(a => ({ ...a })));
   const [approvals, setApprovals] = useState(() => VP_APPROVALS.map(a => ({ ...a })));
   const [kpis, setKpis] = useState(() => {
@@ -595,6 +747,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
 
   // Category filter and modal states for Top SKU Performance card
   const [activeCategory, setActiveCategory] = useState<string>('All');
+  const [activeCustomerCategory, setActiveCustomerCategory] = useState<string>('Beverages');
   const [selectedSku, setSelectedSku] = useState<any>(null);
   const [selectedRegion, setSelectedRegion] = useState<any>(null);
   const [isEmailOpen, setIsEmailOpen] = useState<boolean>(false);
@@ -602,6 +755,12 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
   const [skuViewMode, setSkuViewMode] = useState<'list' | 'chart'>('list');
   const [hoveredSku, setHoveredSku] = useState<any>(null);
   const [regionViewMode, setRegionViewMode] = useState<'list' | 'chart'>('chart');
+  const [revenueViewMode, setRevenueViewMode] = useState<'line' | 'combi' | 'bar'>('line');
+  const [categoryViewMode, setCategoryViewMode] = useState<'donut' | 'bar' | 'radar'>('donut');
+  const [selectedTrendMonth, setSelectedTrendMonth] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedAlert, setSelectedAlert] = useState<any>(null);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
 
   // Dynamic accent color based on theme
@@ -668,7 +827,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
 
   // Category performance
   const categoryPerfData = [
-    { name: 'Beverages', value: 316, color: '#534AB7' },
+    { name: 'Beverages', value: 316, color: '#7C3AED' },
     { name: 'Snacks', value: 253, color: '#0F6E56' },
     { name: 'Dairy', value: 180, color: '#F59E0B' },
     { name: 'Personal Care', value: 225, color: '#185FA5' },
@@ -726,8 +885,8 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
                 <div className="flex items-center gap-1.5 shrink-0">
                   <button 
                     type="button"
-                    onClick={() => setActiveTab(a.sev === 'critical' ? 4 : 5)} // jumps to relevant Tab
-                    className="text-[8px] font-bold uppercase tracking-widest text-acies-yellow hover:underline cursor-pointer border-none bg-transparent"
+                    onClick={() => setSelectedAlert(a)}
+                    className="text-[8px] font-extrabold uppercase tracking-widest bg-acies-yellow text-acies-gray px-2 py-0.5 rounded-sm hover:bg-yellow-400 transition-all cursor-pointer border-none"
                   >
                     Investigate
                   </button>
@@ -746,7 +905,6 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
       )}
     </div>
   );
-
   return (
     <div className="space-y-4">
       
@@ -765,8 +923,11 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
               key={k.label} 
               className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3.5 relative overflow-hidden transition-all hover:border-acies-yellow/50 cursor-pointer"
               onClick={() => {
-                if (k.label === 'Gross Margin') setActiveTab(1); // Portfolio Map
-                if (k.label === 'Critical Alerts') setActiveTab(5); // Signals Board
+                console.log("KPI card clicked on Home:", k.label);
+                if (k.label === 'Total Revenue') onAuditClick('Total Revenue');
+                else if (k.label === 'Active SKUs') onAuditClick('Active SKUs');
+                else if (k.label === 'Critical Alerts') onAuditClick('Critical Alerts');
+                else if (k.label === 'Gross Margin') onAuditClick('Gross Margin');
               }}
             >
               <div className="absolute top-0 left-0 w-full h-1" style={{ backgroundColor: k.color }} />
@@ -827,20 +988,16 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         
         {/* Revenue Trend actual vs target */}
-        <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3.5 h-[320px] flex flex-col">
+        <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3.5 h-[400px] flex flex-col">
           <div className="mb-2.5 flex justify-between items-start">
             <div>
               <h3 className="text-[11px] font-bold uppercase tracking-widest">Revenue Trend</h3>
               <p className="text-[8.5px] text-zinc-500 uppercase tracking-widest mt-0.5 leading-normal">
                 Monthly Actual vs Target (₹ Cr) — This Year
-                {role === 'VP Product Management' && (
-                  <>
-                    <br />
-                    <span className="text-purple-650 dark:text-purple-400 font-extrabold normal-case">
-                      Click any month to forecast next year & review price indexes
-                    </span>
-                  </>
-                )}
+                <br />
+                <span className="text-purple-650 dark:text-purple-400 font-extrabold normal-case">
+                  Click any month to forecast next year & review price indexes
+                </span>
               </p>
             </div>
             
@@ -848,9 +1005,9 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
             <div className="flex items-center border border-black/10 dark:border-white/10 rounded-md overflow-hidden bg-black/5 dark:bg-white/5 p-0.5 ml-1 shrink-0">
               <button
                 type="button"
-                onClick={() => setRevenueChartType('line')}
+                onClick={() => setRevenueViewMode('line')}
                 className={`p-1.5 px-2.5 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm shrink-0 ${
-                  revenueChartType === 'line' 
+                  revenueViewMode === 'line' 
                     ? 'bg-blue-500 text-white shadow-sm' 
                     : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 bg-transparent'
                 }`}
@@ -860,9 +1017,9 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
               </button>
               <button
                 type="button"
-                onClick={() => setRevenueChartType('combi')}
+                onClick={() => setRevenueViewMode('combi')}
                 className={`p-1.5 px-2.5 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm shrink-0 ${
-                  revenueChartType === 'combi' 
+                  revenueViewMode === 'combi' 
                     ? 'bg-blue-500 text-white shadow-sm' 
                     : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 bg-transparent'
                 }`}
@@ -872,9 +1029,9 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
               </button>
               <button
                 type="button"
-                onClick={() => setRevenueChartType('bar')}
+                onClick={() => setRevenueViewMode('bar')}
                 className={`p-1.5 px-2.5 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm shrink-0 ${
-                  revenueChartType === 'bar' 
+                  revenueViewMode === 'bar' 
                     ? 'bg-blue-500 text-white shadow-sm' 
                     : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 bg-transparent'
                 }`}
@@ -886,16 +1043,12 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
           </div>
           <div className="flex-1 min-h-0">
             <ResponsiveContainer width="100%" height="100%">
-              {revenueChartType === 'line' ? (
+              {revenueViewMode === 'line' ? (
                 <LineChart 
-                  data={revenueTrendData} 
-                  margin={{ top: 15, right: 20, left: -25, bottom: 5 }}
                   className="cursor-pointer"
-                  onClick={(data) => {
-                    if (role === 'VP Product Management' && data && data.activeLabel) {
-                      setSelectedMonth(data.activeLabel);
-                    }
-                  }}
+                  data={revenueTrendData} 
+                  margin={{ top: 15, right: 20, left: -10, bottom: 5 }}
+                  onClick={(state) => { if (state && state.activeLabel) setSelectedTrendMonth(state.activeLabel); }}
                 >
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridStroke} />
                   <XAxis dataKey="month" tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
@@ -908,16 +1061,12 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
                   <Line type="monotone" dataKey="Actual" stroke={accentColor} strokeWidth={2} activeDot={{ r: 5 }} dot={{ r: 2.5 }} />
                   <Line type="monotone" dataKey="Target" stroke={isDarkMode ? '#facc15' : '#d97706'} strokeDasharray="4 4" dot={false} strokeWidth={1.8} />
                 </LineChart>
-              ) : revenueChartType === 'combi' ? (
+              ) : revenueViewMode === 'combi' ? (
                 <ComposedChart 
-                  data={revenueTrendData} 
-                  margin={{ top: 15, right: 20, left: -25, bottom: 5 }}
                   className="cursor-pointer"
-                  onClick={(data) => {
-                    if (role === 'VP Product Management' && data && data.activeLabel) {
-                      setSelectedMonth(data.activeLabel);
-                    }
-                  }}
+                  data={revenueTrendData} 
+                  margin={{ top: 15, right: 20, left: -10, bottom: 5 }}
+                  onClick={(state) => { if (state && state.activeLabel) setSelectedTrendMonth(state.activeLabel); }}
                 >
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridStroke} />
                   <XAxis dataKey="month" tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
@@ -932,15 +1081,11 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
                 </ComposedChart>
               ) : (
                 <BarChart 
-                  data={revenueTrendData} 
-                  margin={{ top: 15, right: 20, left: -25, bottom: 5 }}
-                  barGap={4}
                   className="cursor-pointer"
-                  onClick={(data) => {
-                    if (role === 'VP Product Management' && data && data.activeLabel) {
-                      setSelectedMonth(data.activeLabel);
-                    }
-                  }}
+                  data={revenueTrendData} 
+                  margin={{ top: 15, right: 20, left: -10, bottom: 5 }} 
+                  barGap={4}
+                  onClick={(state) => { if (state && state.activeLabel) setSelectedTrendMonth(state.activeLabel); }}
                 >
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridStroke} />
                   <XAxis dataKey="month" tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
@@ -959,20 +1104,26 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
         </div>
 
         {/* Category Performance */}
-        <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3.5 h-[320px] flex flex-col">
+        <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3.5 h-[400px] flex flex-col">
           <div className="mb-2.5 flex justify-between items-start">
             <div>
               <h3 className="text-[11px] font-bold uppercase tracking-widest">Category Performance</h3>
-              <p className="text-[8.5px] text-zinc-550 dark:text-zinc-450 uppercase tracking-widest mt-0.5">Revenue ₹ Cr by Category — Current Month</p>
+              <p className="text-[8.5px] text-zinc-550 dark:text-zinc-450 uppercase tracking-widest mt-0.5 leading-normal">
+                Revenue ₹ Cr by Category — Current Month
+                <br />
+                <span className="text-blue-500 font-extrabold normal-case">
+                  Click any category to view SKU performer, underperformer & booming trends
+                </span>
+              </p>
             </div>
             
             {/* Chart Type Toggles */}
             <div className="flex items-center border border-black/10 dark:border-white/10 rounded-md overflow-hidden bg-black/5 dark:bg-white/5 p-0.5 ml-1 shrink-0">
               <button
                 type="button"
-                onClick={() => setCategoryChartType('donut')}
+                onClick={() => setCategoryViewMode('donut')}
                 className={`p-1.5 px-2.5 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm shrink-0 ${
-                  categoryChartType === 'donut' 
+                  categoryViewMode === 'donut' 
                     ? 'bg-blue-500 text-white shadow-sm' 
                     : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 bg-transparent'
                 }`}
@@ -982,9 +1133,9 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
               </button>
               <button
                 type="button"
-                onClick={() => setCategoryChartType('bar')}
+                onClick={() => setCategoryViewMode('bar')}
                 className={`p-1.5 px-2.5 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm shrink-0 ${
-                  categoryChartType === 'bar' 
+                  categoryViewMode === 'bar' 
                     ? 'bg-blue-500 text-white shadow-sm' 
                     : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 bg-transparent'
                 }`}
@@ -994,9 +1145,9 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
               </button>
               <button
                 type="button"
-                onClick={() => setCategoryChartType('radar')}
+                onClick={() => setCategoryViewMode('radar')}
                 className={`p-1.5 px-2.5 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm shrink-0 ${
-                  categoryChartType === 'radar' 
+                  categoryViewMode === 'radar' 
                     ? 'bg-blue-500 text-white shadow-sm' 
                     : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 bg-transparent'
                 }`}
@@ -1009,12 +1160,12 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
           
           <div className="flex-1 min-h-0">
             <ResponsiveContainer width="100%" height="100%">
-              {categoryChartType === 'donut' ? (
+              {categoryViewMode === 'donut' ? (
                 <RePieChart>
                   <Tooltip 
                     contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, color: tooltipText }}
                     itemStyle={{ fontSize: 10 }}
-                    formatter={(value) => [`₹${value}Cr`]}
+                    formatter={(value: any) => [`₹${value}Cr`]}
                   />
                   <Pie
                     data={categoryPerfData}
@@ -1025,6 +1176,8 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
                     paddingAngle={2}
                     dataKey="value"
                     nameKey="name"
+                    onClick={(data) => { if (data && data.name) setSelectedCategory(data.name); }}
+                    cursor="pointer"
                   >
                     {categoryPerfData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
@@ -1032,21 +1185,27 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
                   </Pie>
                   <Legend 
                     verticalAlign="bottom" 
-                    align="center" 
-                    iconType="circle" 
+                    align="center"
+                    iconType="circle"
                     iconSize={8}
                     wrapperStyle={{ fontSize: 8.5, fontWeight: 'bold', bottom: 5 }}
+                    onClick={(data) => { if (data && data.value) setSelectedCategory(data.value); }}
                   />
                 </RePieChart>
-              ) : categoryChartType === 'bar' ? (
-                <BarChart data={categoryPerfData} margin={{ top: 20, right: 20, left: -25, bottom: 5 }}>
+              ) : categoryViewMode === 'bar' ? (
+                <BarChart 
+                  data={categoryPerfData} 
+                  margin={{ top: 20, right: 20, left: -10, bottom: 5 }}
+                  onClick={(state) => { if (state && state.activeLabel) setSelectedCategory(state.activeLabel); }}
+                  className="cursor-pointer"
+                >
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridStroke} />
                   <XAxis dataKey="name" tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
                   <Tooltip 
                     contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, color: tooltipText }}
                     itemStyle={{ fontSize: 10 }}
-                    formatter={(value) => [`₹${value}Cr`]}
+                    formatter={(value: any) => [`₹${value}Cr`]}
                   />
                   <Bar dataKey="value" barSize={18} radius={[3, 3, 0, 0]}>
                     {categoryPerfData.map((entry, index) => (
@@ -1055,11 +1214,23 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
                   </Bar>
                 </BarChart>
               ) : (
-                <RadarChart cx="50%" cy="50%" outerRadius="70%" data={categoryPerfData}>
+                <RadarChart 
+                  cx="50%" 
+                  cy="50%" 
+                  outerRadius="70%" 
+                  data={categoryPerfData}
+                  onClick={(state) => { if (state && state.activeLabel) setSelectedCategory(state.activeLabel); }}
+                  className="cursor-pointer"
+                >
                   <PolarGrid stroke={gridStroke} />
                   <PolarAngleAxis dataKey="name" tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)', fontSize: 8, fontWeight: 'bold' }} />
                   <PolarRadiusAxis angle={30} domain={[0, 350]} tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 7 }} />
-                  <Radar name="Revenue" dataKey="value" stroke={accentColor} fill={accentColor} fillOpacity={0.6} />
+                  <Radar name="Revenue" dataKey="value" stroke={accentColor} fill={accentColor} fillOpacity={0.3} />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, color: tooltipText }}
+                    itemStyle={{ fontSize: 10 }}
+                    formatter={(value: any) => [`₹${value}Cr`]}
+                  />
                 </RadarChart>
               )}
             </ResponsiveContainer>
@@ -1069,10 +1240,10 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
       </div>
 
       {/* Bottom Row grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         
         {/* Top SKU Performance List */}
-        <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3.5 h-[360px] flex flex-col">
+        <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3.5 h-[400px] flex flex-col">
           <h3 className="text-[11px] font-bold uppercase tracking-widest pb-2 border-b border-black/5 dark:border-white/5 mb-2 flex items-center justify-between gap-1.5">
             <div className="flex items-center gap-2">
               <span>Top SKU Performance</span>
@@ -1090,28 +1261,28 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
             </div>
             <div className="flex items-center gap-2">
               <span className="text-[7.5px] font-extrabold opacity-40 uppercase">By Revenue</span>
-              <div className="flex items-center border border-black/10 dark:border-white/10 rounded-sm overflow-hidden bg-black/5 dark:bg-white/5 p-0.5 ml-1 normal-case">
+              <div className="flex items-center border border-black/10 dark:border-white/10 rounded-md overflow-hidden bg-black/5 dark:bg-white/5 p-0.5 ml-1 normal-case shrink-0">
                 <button
                   onClick={() => setSkuViewMode('list')}
-                  className={`p-1 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm ${
+                  className={`p-1.5 px-2.5 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm shrink-0 ${
                     skuViewMode === 'list' 
                       ? 'bg-blue-500 text-white shadow-sm' 
                       : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 bg-transparent'
                   }`}
                   title="List View"
                 >
-                  <List size={15} />
+                  <List size={18} />
                 </button>
                 <button
                   onClick={() => setSkuViewMode('chart')}
-                  className={`p-1 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm ${
+                  className={`p-1.5 px-2.5 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm shrink-0 ${
                     skuViewMode === 'chart' 
                       ? 'bg-blue-500 text-white shadow-sm' 
                       : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 bg-transparent'
                   }`}
                   title="Pie Chart View"
                 >
-                  <PieChart size={15} />
+                  <PieChart size={18} />
                 </button>
               </div>
             </div>
@@ -1158,16 +1329,6 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
                   );
                 })}
               </div>
-              <button
-                onClick={() => {
-                  (window as any).__scrollToDirectory = true;
-                  window.location.hash = 'product-directory-section';
-                  setActiveTab(4);
-                }}
-                className="mt-2 w-full py-1.5 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border border-black/10 dark:border-white/10 text-center text-[8px] font-bold uppercase tracking-widest text-[#6d28d9] dark:text-[#a78bfa] transition-all cursor-pointer rounded-sm shrink-0"
-              >
-                View Full SKU Rationalization Directory &rarr;
-              </button>
             </div>
           ) : (
             <div className="flex-1 min-h-0 flex items-center justify-center relative pb-4">
@@ -1181,10 +1342,10 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
                   <Pie
                     data={topSkus}
                     cx="50%"
-                    cy="50%"
-                    innerRadius={0}
-                    outerRadius={100}
-                    paddingAngle={1}
+                    cy="42%"
+                    innerRadius={55}
+                    outerRadius={80}
+                    paddingAngle={2}
                     dataKey="rev"
                     nameKey="name"
                     onClick={(data) => setSelectedSku(data)}
@@ -1193,18 +1354,17 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
                     cursor="pointer"
                   >
                     {topSkus.map((entry, index) => {
-                      const getSkuColor = (cat: string, idx: number) => {
-                        if (cat === 'Beverages') return '#534AB7';
-                        if (cat === 'Snacks') return '#0F6E56';
-                        if (cat === 'Dairy') return '#F59E0B';
-                        if (cat === 'Personal Care') return '#185FA5';
-                        if (cat === 'Household') return '#854F0B';
-                        const fallbackColors = ['#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#ec4899'];
-                        return fallbackColors[idx % fallbackColors.length];
-                      };
-                      return <Cell key={`cell-${index}`} fill={getSkuColor(entry.cat, index)} />;
+                      const skuColors = ['#6366F1', '#8B5CF6', '#10B981', '#F43F5E', '#EAB308'];
+                      return <Cell key={`cell-${index}`} fill={skuColors[index % skuColors.length]} />;
                     })}
                   </Pie>
+                  <Legend 
+                    verticalAlign="bottom" 
+                    align="center"
+                    iconType="circle"
+                    iconSize={6}
+                    wrapperStyle={{ fontSize: 8.5, fontWeight: 'bold', bottom: 18 }}
+                  />
                 </RePieChart>
               </ResponsiveContainer>
               
@@ -1224,112 +1384,110 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
           )}
         </div>
 
-        {/* Top Customer Insights List (VP Only) */}
-        {role === 'VP Product Management' && (
-          <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3.5 h-[360px] flex flex-col">
-            <h3 className="text-[11px] font-bold uppercase tracking-widest pb-2 border-b border-black/5 dark:border-white/5 mb-2 flex items-center justify-between gap-1.5">
-              <span>Top Customer Insights</span>
-              <span className="text-[7.5px] font-extrabold opacity-40 uppercase">Buying Intent</span>
-            </h3>
+        {/* Top Customer Insights List */}
+        <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3.5 h-[400px] flex flex-col">
+          <h3 className="text-[11px] font-bold uppercase tracking-widest pb-2 border-b border-black/5 dark:border-white/5 mb-2 flex items-center justify-between gap-1.5">
+            <span>Top Customer Insights</span>
+            <span className="text-[7.5px] font-extrabold opacity-40 uppercase">Buying Intent</span>
+          </h3>
 
-            {/* Category Selector Buttons */}
-            <div className="flex flex-wrap gap-1 mb-2 border-b border-black/5 dark:border-white/5 pb-2">
-              {['Beverages', 'Snacks', 'Personal Care', 'Dairy', 'Household'].map(cat => (
-                <button
-                  key={cat}
-                  type="button"
-                  onClick={() => setActiveCategoryInsights(cat)}
-                  className={`px-2 py-0.5 text-[8.5px] font-bold uppercase tracking-wider rounded-sm transition-all border border-black/5 dark:border-white/10 cursor-pointer ${
-                    activeCategoryInsights === cat
-                      ? 'bg-acies-yellow text-acies-gray font-extrabold border-acies-yellow'
-                      : 'bg-black/5 dark:bg-white/5 text-zinc-650 dark:text-zinc-400 hover:bg-black/10 dark:hover:bg-white/10'
-                  }`}
+          {/* Customer Category Filter Pills */}
+          <div className="flex flex-wrap gap-1 mb-2 border-b border-black/5 dark:border-white/5 pb-2">
+            {['Beverages', 'Snacks', 'Personal Care', 'Dairy', 'Household'].map(cat => (
+              <button
+                key={cat}
+                type="button"
+                onClick={() => setActiveCustomerCategory(cat)}
+                className={`px-2 py-0.5 text-[8.5px] font-bold uppercase tracking-wider rounded-sm transition-all border border-black/5 dark:border-white/10 cursor-pointer ${
+                  activeCustomerCategory === cat
+                    ? 'bg-acies-yellow text-acies-gray font-extrabold border-acies-yellow'
+                    : 'bg-black/5 dark:bg-white/5 text-zinc-650 dark:text-zinc-400 hover:bg-black/10 dark:hover:bg-white/10'
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+
+          {/* Customer List */}
+          <div className="flex-1 overflow-y-auto pr-1 pb-1 space-y-2 min-h-0 no-scrollbar">
+            {(CUSTOMER_INSIGHTS[activeCustomerCategory] || []).map((c) => {
+              const trendCol = c.growthDirection === 'up' ? 'text-green-500' : c.growthDirection === 'down' ? 'text-red-500' : 'text-zinc-550';
+              return (
+                <div
+                  key={c.name}
+                  className="bg-black/2 dark:bg-white/2 border border-black/5 dark:border-white/5 p-2 rounded-sm space-y-1 hover:border-acies-yellow/30 transition-all"
                 >
-                  {cat}
-                </button>
-              ))}
-            </div>
-
-            {/* Customer Cards List */}
-            <div className="flex-1 overflow-y-auto pr-1 pb-1 space-y-2 min-h-0 no-scrollbar">
-              {(CUSTOMER_INSIGHTS_DATA[activeCategoryInsights] || []).map(cust => {
-                const growthColor = cust.growthDirection === 'up' ? 'text-green-500' : cust.growthDirection === 'down' ? 'text-red-500' : 'text-zinc-550';
-                return (
-                  <div 
-                    key={cust.name} 
-                    className="bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 p-2 rounded-sm space-y-1 hover:border-acies-yellow/30 transition-all text-left"
-                  >
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h4 className="text-[10px] font-extrabold text-zinc-800 dark:text-zinc-200 truncate max-w-[170px]">
-                          {cust.name}
-                        </h4>
-                        <p className="text-[8px] text-zinc-500 font-semibold tracking-wide truncate max-w-[170px]">
-                          {cust.segment}
-                        </p>
-                      </div>
-                      <div className="text-right shrink-0">
-                        <span className="text-[9.5px] font-mono font-bold text-acies-yellow block">
-                          {cust.revContribution}
-                        </span>
-                        <span className={`text-[7.5px] font-bold ${growthColor}`}>
-                          {cust.growthTrend}
-                        </span>
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-1">
-                      <p className="text-[9px] text-zinc-650 dark:text-zinc-450 leading-normal">
-                        <span className="font-bold text-zinc-850 dark:text-zinc-300">Interest: </span>
-                        {cust.interestTrend}
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h4 className="text-[10px] font-extrabold text-zinc-800 dark:text-zinc-200 truncate max-w-[170px]">
+                        {c.name}
+                      </h4>
+                      <p className="text-[8px] text-zinc-500 font-semibold tracking-wide truncate max-w-[170px]">
+                        {c.segment}
                       </p>
-                      <div className="flex flex-wrap gap-1 items-center">
-                        <span className="text-[7.5px] font-bold text-zinc-500 uppercase shrink-0">Focus:</span>
-                        {cust.buyingFocus.map(focus => (
-                          <span 
-                            key={focus} 
-                            className="bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 px-1 py-0.5 rounded-sm text-[7.5px] font-bold text-[#6d28d9] dark:text-[#a78bfa] truncate max-w-[110px]"
-                          >
-                            {focus}
-                          </span>
-                        ))}
-                      </div>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <span className="text-[9.5px] font-mono font-bold text-acies-yellow block">
+                        {c.revContribution}
+                      </span>
+                      <span className={`text-[7.5px] font-bold ${trendCol}`}>
+                        {c.growthTrend}
+                      </span>
                     </div>
                   </div>
-                );
-              })}
-            </div>
+
+                  <div className="space-y-1">
+                    <p className="text-[9px] text-zinc-650 dark:text-zinc-400 leading-normal">
+                      <span className="font-bold text-zinc-850 dark:text-zinc-300">Interest: </span>
+                      {c.interestTrend}
+                    </p>
+                    <div className="flex flex-wrap gap-1 items-center">
+                      <span className="text-[7.5px] font-bold text-zinc-500 uppercase shrink-0">Focus:</span>
+                      {c.buyingFocus.map(focusItem => (
+                        <span
+                          key={focusItem}
+                          className="bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 px-1 py-0.5 rounded-sm text-[7.5px] font-bold text-[#6d28d9] dark:text-[#a78bfa] truncate max-w-[110px]"
+                        >
+                          {focusItem}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
-        )}
+        </div>
 
         {/* Forecast vs Actual by Region */}
-        <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3.5 h-[360px] flex flex-col">
+        <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3.5 h-[400px] flex flex-col">
           <h3 className="text-[11px] font-bold uppercase tracking-widest pb-2 border-b border-black/5 dark:border-white/5 mb-2 flex items-center justify-between gap-1.5">
             <span>Regional Forecast</span>
             <div className="flex items-center gap-2">
               <span className="text-[7.5px] font-extrabold opacity-40 uppercase">Actual vs Target</span>
-              <div className="flex items-center border border-black/10 dark:border-white/10 rounded-sm overflow-hidden bg-black/5 dark:bg-white/5 p-0.5 ml-1 normal-case">
+              <div className="flex items-center border border-black/10 dark:border-white/10 rounded-md overflow-hidden bg-black/5 dark:bg-white/5 p-0.5 ml-1 normal-case shrink-0">
                 <button
                   onClick={() => setRegionViewMode('list')}
-                  className={`p-1 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm ${
+                  className={`p-1.5 px-2.5 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm shrink-0 ${
                     regionViewMode === 'list' 
                       ? 'bg-blue-500 text-white shadow-sm' 
                       : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 bg-transparent'
                   }`}
                   title="List View"
                 >
-                  <List size={15} />
+                  <List size={18} />
                 </button>
                 <button
                   onClick={() => setRegionViewMode('chart')}
-                  className={`p-1 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm ${
+                  className={`p-1.5 px-2.5 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm shrink-0 ${
                     regionViewMode === 'chart' 
                       ? 'bg-blue-500 text-white shadow-sm' 
                       : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 bg-transparent'
                   }`}
                   title="Grouped Bar Chart"
                 >
-                  <BarChart2 size={15} />
+                  <BarChart2 size={18} />
                 </button>
               </div>
             </div>
@@ -1603,6 +1761,32 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
         }}
       />
 
+      {/* Trend Month Forecast Modal */}
+      <TrendMonthForecastModal 
+        isOpen={!!selectedTrendMonth}
+        month={selectedTrendMonth}
+        onClose={() => setSelectedTrendMonth(null)}
+      />
+
+      {/* Category Performance Details Modal */}
+      <CategoryPerformanceDetailsModal 
+        isOpen={!!selectedCategory}
+        categoryName={selectedCategory}
+        onClose={() => setSelectedCategory(null)}
+      />
+
+      {/* Smart Alert Details Modal */}
+      <SmartAlertDetailsModal 
+        isOpen={!!selectedAlert}
+        alert={selectedAlert}
+        onClose={() => setSelectedAlert(null)}
+        onApprove={(alertId, directiveText) => {
+          setAlerts(prev => prev.filter(a => a.id !== alertId));
+          addToast("Directive authorized", `Directive authorized: "${directiveText}"`, "#10b981");
+          setSelectedAlert(null);
+        }}
+      />
+
       {/* Strategic Forecast & Pricing Review (Month Forecast) Modal */}
       <MonthForecastModal
         isOpen={!!selectedMonth}
@@ -1616,8 +1800,8 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
         onClose={() => setIsEmailOpen(false)}
         initialEmail={emailData}
         onSend={(recipientName, recipientEmail, subject, body) => {
-          // Simulate email sent message
-          alert(`Mitigation request email successfully sent to ${recipientName} (${recipientEmail})!`);
+          setToastMessage(`Mitigation request successfully sent to ${recipientName}!`);
+          setTimeout(() => setToastMessage(null), 4000);
           setIsEmailOpen(false);
         }}
       />
@@ -1628,6 +1812,34 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
         onClose={() => setCalendarOpen(false)}
         isDarkMode={isDarkMode}
       />
+
+      {/* Floating Premium Toast Notification */}
+      {toastMessage && (
+        <div className="fixed bottom-5 right-5 z-[200] animate-toast-slide-in flex items-center gap-3 bg-zinc-950/95 dark:bg-white/95 text-white dark:text-zinc-900 border border-white/10 dark:border-black/10 px-4 py-3 rounded shadow-2xl backdrop-blur-md max-w-sm">
+          <style>{`
+            @keyframes toastSlideIn {
+              0% { transform: translateY(100px); opacity: 0; }
+              100% { transform: translateY(0); opacity: 1; }
+            }
+            .animate-toast-slide-in {
+              animation: toastSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            }
+          `}</style>
+          <div className="bg-green-500 rounded-full p-1 text-white shrink-0">
+            <Check size={14} strokeWidth={3} />
+          </div>
+          <div className="flex-1">
+            <p className="text-[10px] font-bold uppercase tracking-wider opacity-60">System Notification</p>
+            <p className="text-[11px] font-bold leading-normal mt-0.5">{toastMessage}</p>
+          </div>
+          <button 
+            onClick={() => setToastMessage(null)} 
+            className="text-zinc-400 hover:text-white dark:text-zinc-500 dark:hover:text-zinc-900 cursor-pointer border-none bg-transparent"
+          >
+            <X size={14} />
+          </button>
+        </div>
+      )}
 
       {/* Floating Corner Toasts Container */}
       <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none max-w-sm">
