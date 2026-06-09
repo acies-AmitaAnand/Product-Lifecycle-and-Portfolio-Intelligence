@@ -554,7 +554,6 @@ export default function App() {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                 <div>
                   <h2 className="text-xl font-display leading-tight text-acies-gray dark:text-white">{tabs[activeTab]?.name || 'Unknown Module'}</h2>
-                  <p className="text-[9px] font-bold opacity-45 uppercase tracking-widest mt-1">Domain Module {activeTab} of 6</p>
                 </div>
                 <div className="flex items-center gap-4 self-end sm:self-auto">
                    <button 
