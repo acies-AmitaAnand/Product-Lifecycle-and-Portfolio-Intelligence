@@ -90,10 +90,10 @@ export const TopDownDrilldown: React.FC<TopDownDrilldownProps> = ({ isDarkMode }
       </div>
 
       {/* ── Main two-column layout ── */}
-      <div className="flex flex-col xl:flex-row gap-3 w-full">
+      <div className="flex flex-col lg:flex-row gap-3 w-full">
 
         {/* LEFT: Filters + Network graph */}
-        <div className="flex flex-col gap-3 xl:w-[380px] shrink-0">
+        <div className="flex flex-col gap-3 lg:w-[380px] shrink-0">
           <DrilldownFilters
             timeHorizon={timeHorizon}
             setTimeHorizon={setTimeHorizon}
