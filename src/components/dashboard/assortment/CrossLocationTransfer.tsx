@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { REGIONAL_DATA, SKUS } from '../../../constants/data';
-import { ArrowRight, Truck, Clock, ShieldCheck, AlertTriangle, Play, HelpCircle, Layers, Percent, ChevronDown } from 'lucide-react';
+import { ArrowRight, Truck, Clock, ShieldCheck, AlertTriangle, Layers, Percent, ChevronDown } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { StagedAction } from './types';
 
 // Geographic coordinate proxies for dynamic distance/leadtime/freight calculations
 // Realistic geographical relative SVG coordinates (spread to fit the 100x80 viewBox)
@@ -18,7 +19,21 @@ const COUNTRY_COORDS: Record<string, { x: number; y: number }> = {
 const mapX = (x: number) => x;
 const mapY = (y: number) => y;
 
-export const CrossLocationTransfer: React.FC = () => {
+interface CrossLocationTransferProps {
+  onStageAction?: (action: StagedAction) => void;
+}
+
+const REGIONAL_CAPACITIES: Record<string, number> = {
+  'Netherlands': 42,
+  'Germany':     88,
+  'Poland':      76,
+  'Austria':     54,
+  'Italy':       95, // Peak Overload
+  'France':      68,
+  'Spain':       62
+};
+
+export const CrossLocationTransfer: React.FC<CrossLocationTransferProps> = ({ onStageAction }) => {
   const [selectedSku, setSelectedSku] = useState<string>('Mango Fizz 500ml');
   const [sourceCountry, setSourceCountry] = useState<string>('Netherlands');
   const [targetCountry, setTargetCountry] = useState<string>('Austria');
@@ -103,7 +118,10 @@ export const CrossLocationTransfer: React.FC = () => {
   const sourceSkuMargin = getSkuRegionalMargin(skuDetails, sourceCountry);
   const targetSkuMargin = getSkuRegionalMargin(skuDetails, targetCountry);
 
-  // Dynamic Freight Margin Penalty (farther, heavier categories, and higher sourcing complexity = higher freight drag)
+  const targetCapacity = REGIONAL_CAPACITIES[targetCountry] || 50;
+  const isTargetOverloaded = targetCapacity > 90;
+
+  // Dynamic Freight Margin Penalty (farther, heavier categories, sourcing complexity, and target capacity surcharge = higher freight drag)
   const categoryFreightMultipliers: Record<string, number> = {
     'Dairy': 1.35,      // cold chain handling
     'Beverages': 1.15,  // heavy liquid weight
@@ -114,7 +132,7 @@ export const CrossLocationTransfer: React.FC = () => {
   const categoryMultiplier = categoryFreightMultipliers[skuDetails.cat] || 1.0;
   const complexityModifier = 1 + (skuDetails.cx * 0.25);
   
-  const freightDrag = distance === 0 ? 0 : parseFloat((distance * 0.38 * categoryMultiplier * complexityModifier + 0.2).toFixed(2));
+  const freightDrag = distance === 0 ? 0 : parseFloat((distance * 0.38 * categoryMultiplier * complexityModifier + 0.2 + (isTargetOverloaded ? 1.5 : 0)).toFixed(2));
   
   // Dynamic Transit Lead Time addition (farther, longer replenishment lead, and higher complexity = longer delay)
   const transitLeadTime = distance === 0 ? 0 : parseFloat((distance * 0.85 + (skuDetails.lead * 0.08) + (skuDetails.cx * 0.5)).toFixed(1));
@@ -132,7 +150,7 @@ export const CrossLocationTransfer: React.FC = () => {
   // Route Risk Classification
   const getRiskLevel = () => {
     if (distance === 0) return { label: 'Invalid Route', class: 'text-zinc-400 bg-zinc-400/10 border-zinc-400/20' };
-    if (feasibilityScore >= 75) return { label: 'Low Risk / High Feasibility', class: 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20' };
+    if (feasibilityScore >= 75) return { label: 'Low Risk / High Feasibility', class: 'text-emerald-500 bg-emerald-500/10 border-emerald-555/20' };
     if (feasibilityScore >= 45) return { label: 'Medium Risk / Feasible', class: 'text-amber-500 bg-amber-500/10 border-amber-500/20' };
     return { label: 'High Risk / Severe Friction', class: 'text-rose-500 bg-rose-500/10 border-rose-500/20' };
   };
@@ -151,6 +169,28 @@ export const CrossLocationTransfer: React.FC = () => {
     setTimeout(() => {
       setIsTransferred(false);
     }, 4000);
+  };
+
+  const handleStageReallocation = () => {
+    if (!onStageAction) return;
+    
+    // Net complexity change is -0.1 points saved
+    const complexityChange = parseFloat((0.5 * complexityModifier).toFixed(1));
+    
+    // Net space impact: frees up 20 pallets at the source depot!
+    const spaceFreed = 20;
+
+    onStageAction({
+      id: `reallocation-${sourceCountry}-${targetCountry}-${Date.now()}`,
+      type: 'reallocation',
+      title: `Reallocate SKU: ${sourceCountry.substring(0,3).toUpperCase()} → ${targetCountry.substring(0,3).toUpperCase()}`,
+      details: `Shift ${selectedSku} listing. Margin Lift: ${netMarginLift}%, Delay: +${transitLeadTime} days.`,
+      revenueImpact: 0, // shifting listings doesn't add gross revenue
+      marginImpact: parseFloat((netMarginLift * 0.15).toFixed(2)), // profit lift scaled
+      complexityImpact: complexityChange,
+      spaceImpact: spaceFreed
+    });
+    alert(`Reallocation action for ${selectedSku} successfully staged to the Assortment Plan!`);
   };
 
   return (
@@ -318,6 +358,13 @@ export const CrossLocationTransfer: React.FC = () => {
 
             {/* Dynamic SVG Map (Always Visible) */}
             <div className="relative w-full h-[125px] bg-slate-950/40 dark:bg-black/45 rounded-sm border border-black/10 dark:border-white/10 overflow-hidden select-none">
+              {/* Capacity Surcharge Warning */}
+              {sourceCountry !== targetCountry && isTargetOverloaded && (
+                <div className="absolute top-2 left-2 bg-rose-500/95 text-white text-[6px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded animate-pulse z-20">
+                  ⚠️ Depot Overflow Alert: Target is {targetCapacity}% utilized (+1.5% surcharge applied)
+                </div>
+              )}
+              
               {/* Distance & CO2 labels (visible if active route) */}
               {sourceCountry !== targetCountry && (
                 <div className="absolute top-2 right-2 bg-black/60 text-[6.5px] font-mono px-1.5 py-0.5 rounded text-zinc-450 flex gap-2">
@@ -490,7 +537,7 @@ export const CrossLocationTransfer: React.FC = () => {
                         fontWeight="bold"
                         className="font-sans select-none pointer-events-none"
                       >
-                        {country.substring(0, 2).toUpperCase()}
+                        {country.substring(0, 2).toUpperCase()} ({REGIONAL_CAPACITIES[country]}%)
                       </text>
                     </g>
                   );
@@ -541,7 +588,7 @@ export const CrossLocationTransfer: React.FC = () => {
               </>
             ) : (
               <div className="p-3.5 bg-black/[0.01] dark:bg-white/[0.01] border border-dashed border-black/10 dark:border-white/10 rounded-sm text-center text-[8.5px] text-zinc-500 font-semibold leading-relaxed">
-                <AlertTriangle size={12} className="inline mr-1 text-acies-yellow animate-bounce" />
+                <AlertTriangle size={12} className="inline mr-1 text-rose-550 animate-bounce" />
                 Click and drag between warehouse nodes (dots) or click two different nodes to configure route.
               </div>
             )}
@@ -606,25 +653,33 @@ export const CrossLocationTransfer: React.FC = () => {
           </div>
 
           {sourceCountry !== targetCountry && (
-            <button 
-              onClick={handleApplyTransfer}
-              disabled={isTransferred}
-              className={`w-full py-1.5 rounded text-[8px] font-extrabold uppercase tracking-widest text-center transition-all border-none outline-none mt-4 ${
-                isTransferred
-                  ? 'bg-emerald-600 text-white cursor-wait'
-                  : netMarginLift >= 0
-                    ? 'bg-blue-500 text-white hover:brightness-105 active:scale-95 cursor-pointer'
-                    : 'bg-zinc-200 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-600 hover:bg-rose-500 hover:text-white hover:brightness-105 active:scale-95 cursor-pointer'
-              }`}
-            >
-              {isTransferred ? 'Transfer Request Sent!' : netMarginLift >= 0 ? 'Apply Listing Reallocation' : 'Force Listing Transfer (Dilutive)'}
-            </button>
+            <div className="grid grid-cols-2 gap-2 mt-4">
+              <button 
+                onClick={handleApplyTransfer}
+                disabled={isTransferred}
+                className={`py-1.5 rounded text-[8px] font-extrabold uppercase tracking-widest text-center transition-all border-none outline-none w-full ${
+                  isTransferred
+                    ? 'bg-emerald-600 text-white cursor-wait'
+                    : netMarginLift >= 0
+                      ? 'bg-blue-500 text-white hover:brightness-105 active:scale-95 cursor-pointer'
+                      : 'bg-zinc-200 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-600 hover:bg-rose-500 hover:text-white hover:brightness-105 active:scale-95 cursor-pointer'
+                }`}
+              >
+                {isTransferred ? 'Transfer Sent!' : netMarginLift >= 0 ? 'Apply Reallocation' : 'Force Reallocation'}
+              </button>
+
+              <button 
+                onClick={handleStageReallocation}
+                className="py-1.5 rounded text-[8px] font-extrabold uppercase tracking-widest text-center transition-all border-none bg-purple-600 hover:bg-purple-700 hover:brightness-105 text-white active:scale-95 cursor-pointer outline-none w-full"
+              >
+                Stage Reallocation
+              </button>
+            </div>
           )}
         </div>
-
       </div>
-
     </div>
   );
 };
+
 export default CrossLocationTransfer;

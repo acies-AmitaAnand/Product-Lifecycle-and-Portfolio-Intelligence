@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { RefreshCw, Percent, ArrowRight, ShieldCheck, TrendingDown, HelpCircle, Layers, Scissors, Check, Play } from 'lucide-react';
+import { StagedAction } from './types';
 
 interface CategoryVariant {
   name: string;
@@ -40,7 +41,11 @@ const HERO_SUBSTITUTES: Record<string, { name: string; margin: number }> = {
   Snacks: { name: 'BrandB Chips', margin: 39.8 }
 };
 
-export const TransferenceSimulator: React.FC = () => {
+interface TransferenceSimulatorProps {
+  onStageAction?: (action: StagedAction) => void;
+}
+
+export const TransferenceSimulator: React.FC<TransferenceSimulatorProps> = ({ onStageAction }) => {
   const [selectedCategory, setSelectedCategory] = useState<'Beverages' | 'Dairy' | 'Snacks'>('Dairy');
   const [prunedSkus, setPrunedSkus] = useState<Record<string, boolean>>({});
   const [transferencePct, setTransferencePct] = useState<number>(55); // default CPG standard transfer rate
@@ -82,6 +87,27 @@ export const TransferenceSimulator: React.FC = () => {
 
   // Complexity reduction points saved
   const complexityScoreSaved = activePrunedItems.reduce((sum, s) => sum + (s.lead * 0.5), 0).toFixed(1);
+
+  const handleStageDelisting = () => {
+    if (!onStageAction) return;
+    const revenueImpactValue = -revenueLostToCompetitors;
+    const marginImpactValue = netMarginDeltaLift;
+    const complexityImpactValue = parseFloat(complexityScoreSaved);
+    const spaceImpactValue = activePrunedItems.length * 8;
+
+    onStageAction({
+      id: `delisting-${selectedCategory}-${Date.now()}`,
+      type: 'delisting',
+      title: `Prune ${selectedCategory} Shelf`,
+      details: `Delisted ${activePrunedItems.map(s => s.name).join(', ')}.`,
+      revenueImpact: parseFloat(revenueImpactValue.toFixed(2)),
+      marginImpact: parseFloat(marginImpactValue.toFixed(2)),
+      complexityImpact: complexityImpactValue,
+      spaceImpact: spaceImpactValue
+    });
+    alert(`Category delisting action for ${selectedCategory} staged to the Assortment Plan!`);
+    setPrunedSkus({});
+  };
 
   return (
     <div className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-sm p-5 flex flex-col mb-6">
@@ -310,15 +336,23 @@ export const TransferenceSimulator: React.FC = () => {
           </div>
 
           {activePrunedItems.length > 0 && (
-            <button 
-              onClick={() => {
-                alert(`Assortment delisting simulation logged! Category delisting plan for ${activePrunedItems.length} SKUs sent to FP&A and Procurement teams.`);
-                setPrunedSkus({});
-              }}
-              className="mt-4 w-full bg-rose-500 text-white hover:brightness-105 active:scale-95 transition-all py-1.5 rounded text-[8px] font-extrabold uppercase tracking-widest text-center cursor-pointer border-none outline-none"
-            >
-              Commit Delisting Plan
-            </button>
+            <div className="flex flex-col sm:flex-row gap-2 mt-4">
+              <button 
+                onClick={() => {
+                  alert(`Assortment delisting simulation logged! Category delisting plan for ${activePrunedItems.length} SKUs sent to FP&A and Procurement teams.`);
+                  setPrunedSkus({});
+                }}
+                className="w-full bg-rose-500 text-white hover:brightness-105 active:scale-95 transition-all py-1.5 rounded text-[8px] font-extrabold uppercase tracking-widest text-center cursor-pointer border-none outline-none"
+              >
+                Commit Delisting Plan
+              </button>
+              <button 
+                onClick={handleStageDelisting}
+                className="w-full bg-purple-600 text-white hover:brightness-105 active:scale-95 transition-all py-1.5 rounded text-[8px] font-extrabold uppercase tracking-widest text-center cursor-pointer border-none outline-none"
+              >
+                Stage Delisting Plan
+              </button>
+            </div>
           )}
         </div>
 

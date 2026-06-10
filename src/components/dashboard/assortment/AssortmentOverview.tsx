@@ -5,6 +5,9 @@ import { RegionalAssortmentGrid } from './RegionalAssortmentGrid';
 import { ParetoConcentration } from './ParetoConcentration';
 import { TransferenceSimulator } from './TransferenceSimulator';
 import { CrossLocationTransfer } from './CrossLocationTransfer';
+import { LaunchEvaluator } from './LaunchEvaluator';
+import { ExecutiveCart } from './ExecutiveCart';
+import { StagedAction } from './types';
 
 interface AssortmentOverviewProps {
   role: Role;
@@ -26,6 +29,16 @@ export const AssortmentOverview: React.FC<AssortmentOverviewProps> = ({ role, is
     cannibalization: '0.62'
   });
 
+  const [stagedActions, setStagedActions] = useState<StagedAction[]>([]);
+
+  const handleStageAction = (action: StagedAction) => {
+    setStagedActions(prev => [...prev, action]);
+  };
+
+  const handleRemoveAction = (id: string) => {
+    setStagedActions(prev => prev.filter(a => a.id !== id));
+  };
+
   const handleSliderChange = (simValues: {
     densityVal: string;
     burdenVal: string;
@@ -41,7 +54,7 @@ export const AssortmentOverview: React.FC<AssortmentOverviewProps> = ({ role, is
   };
 
   return (
-    <div className="space-y-6 animate-fadeIn">
+    <div className="space-y-6 animate-fadeIn pb-24">
       {/* Assortment Header KPI Strip */}
       <AssortmentKPICards 
         role={role} 
@@ -50,16 +63,29 @@ export const AssortmentOverview: React.FC<AssortmentOverviewProps> = ({ role, is
       />
 
       {/* Regional Footprints & Optimizer Grid */}
-      <RegionalAssortmentGrid onSliderChange={handleSliderChange} />
+      <RegionalAssortmentGrid 
+        onSliderChange={handleSliderChange} 
+        onStageAction={handleStageAction} 
+      />
 
       {/* Pareto Curve & Concentration Analysis */}
       <ParetoConcentration />
 
       {/* Demand Transference & Substitution Simulator */}
-      <TransferenceSimulator />
+      <TransferenceSimulator onStageAction={handleStageAction} />
+
+      {/* SKU Launch Accretion & Cannibalization Evaluator */}
+      <LaunchEvaluator onStageAction={handleStageAction} />
 
       {/* Cross-Location Assortment Reallocation */}
-      <CrossLocationTransfer />
+      <CrossLocationTransfer onStageAction={handleStageAction} />
+
+      {/* Executive Decision Cart */}
+      <ExecutiveCart 
+        stagedActions={stagedActions} 
+        onRemoveAction={handleRemoveAction} 
+        onClearCart={() => setStagedActions([])} 
+      />
     </div>
   );
 };
