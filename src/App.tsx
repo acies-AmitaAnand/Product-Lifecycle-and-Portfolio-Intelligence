@@ -13,7 +13,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Role } from './types/dashboard';
 
 // Constants
-import { KPIS, TABS, SKUS } from './constants/data';
+import { KPIS, TABS, SKUS, PORTFOLIO_DATA } from './constants/data';
 
 // Components
 import { Header } from './components/common/Header';
@@ -231,20 +231,41 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [selectedSkuForSearch, setSelectedSkuForSearch] = useState<any>(null);
+  const [activeSearchIndex, setActiveSearchIndex] = useState(-1);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const searchContainerRef = useRef<HTMLDivElement>(null);
 
-  // Ctrl+K / Meta+K shortcut listener to focus search
+  // Focus search on Ctrl+K / Meta+K globally, or / when not typing
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+      const isInputActive = document.activeElement && (
+        document.activeElement.tagName === 'INPUT' || 
+        document.activeElement.tagName === 'TEXTAREA' || 
+        document.activeElement.getAttribute('contenteditable') === 'true'
+      );
+
+      const isCtrlK = (e.ctrlKey || e.metaKey) && (e.key?.toLowerCase() === 'k' || e.code === 'KeyK');
+      const isSlash = e.key === '/' && !isInputActive;
+
+      if (isCtrlK || isSlash) {
         e.preventDefault();
         searchInputRef.current?.focus();
+        searchInputRef.current?.select(); // Highlight existing text for quick typing
       }
     };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener('keydown', handleKeyDown, true);
+    return () => window.removeEventListener('keydown', handleKeyDown, true);
   }, []);
+
+  // Scroll highlighted search item into view
+  useEffect(() => {
+    if (activeSearchIndex >= 0) {
+      const element = document.getElementById(`search-item-${activeSearchIndex}`);
+      if (element) {
+        element.scrollIntoView({ block: 'nearest' });
+      }
+    }
+  }, [activeSearchIndex]);
 
   // Click outside to close search dropdown
   useEffect(() => {
@@ -257,17 +278,41 @@ export default function App() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // List of search items (metrics + SKUs)
+  // List of search items (navigation tabs + metrics + SKUs)
   const searchItems = (() => {
     const items: Array<{
       name: string;
       categoryName: string;
-      type: 'metric' | 'sku';
+      type: 'metric' | 'sku' | 'tab';
       subtitle?: string;
       valueText?: string;
       rawKpiLabel?: string;
       skuData?: any;
+      tabId?: number;
     }> = [];
+
+    // Add all tabs/navigation views
+    TABS.forEach(tab => {
+      let description = '';
+      if (tab.id === 0) description = 'Dashboard home, overview metrics, executive command center';
+      else if (tab.id === 1) description = 'Portfolio health map, 2x2 matrix, revenue vs performance, quadrants';
+      else if (tab.id === 2) description = 'New product launch, readiness gates, risk tracker';
+      else if (tab.id === 3) description = 'Net profit calculation, margin simulator, value driver tree';
+      else if (tab.id === 4) description = 'Sunset candidates, cannibalization, complexity reduction';
+      else if (tab.id === 5) description = 'AI agent signals, stockout alerts, market demand';
+      else if (tab.id === 6) description = 'Root cause analysis, SKU-level drilldown details';
+      else if (tab.id === 7) description = 'AI agent team, simulation settings, macro scenarios';
+      else if (tab.id === 8) description = 'Regional density, long-tail burden, cross-location transfer, assortment overview';
+
+      items.push({
+        name: tab.name,
+        categoryName: 'Navigation Tabs',
+        type: 'tab',
+        subtitle: description || `Jump to ${tab.name} view`,
+        valueText: `Tab ${tab.id + 1}`,
+        tabId: tab.id
+      });
+    });
 
     // Add all unique KPI metrics across the application
     const uniqueMetrics = [
@@ -313,11 +358,15 @@ export default function App() {
 
     // Add SKUs
     SKUS.forEach(s => {
+      const pData = PORTFOLIO_DATA.find(p => p.name === s.name);
+      const segmentStr = pData ? ` • Segment: ${pData.segment}` : '';
+      const stageStr = pData ? ` • Stage: ${pData.stage}` : '';
+
       items.push({
         name: s.name,
         categoryName: 'SKU Products',
         type: 'sku',
-        subtitle: `Category: ${s.cat} • Margin: ${s.margin}%`,
+        subtitle: `Category: ${s.cat}${segmentStr}${stageStr} • Margin: ${s.margin}%`,
         valueText: `₹${s.rev}Cr`,
         skuData: s
       });
@@ -326,14 +375,16 @@ export default function App() {
     return items;
   })();
 
-  // Filter items based on user search query
+  // Filter items based on user search query using keyword matching (flexible search)
   const filteredSearchItems = searchQuery.trim() === ''
     ? []
-    : searchItems.filter(item => 
-        item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.categoryName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (item.subtitle && item.subtitle.toLowerCase().includes(searchQuery.toLowerCase()))
-      );
+    : (() => {
+        const keywords = searchQuery.toLowerCase().split(/\s+/).filter(Boolean);
+        return searchItems.filter(item => {
+          const searchText = `${item.name} ${item.categoryName} ${item.subtitle || ''}`.toLowerCase();
+          return keywords.every(kw => searchText.includes(kw));
+        });
+      })();
 
   // Group search items for presentation
   const groupedSearchResults = filteredSearchItems.reduce<Record<string, typeof filteredSearchItems>>((acc, item) => {
@@ -345,7 +396,11 @@ export default function App() {
   const handleSelectSearchItem = (item: typeof searchItems[0]) => {
     setSearchQuery('');
     setIsSearchFocused(false);
-    if (item.type === 'metric' && item.rawKpiLabel) {
+    setActiveSearchIndex(-1);
+    searchInputRef.current?.blur();
+    if (item.type === 'tab' && item.tabId !== undefined) {
+      setActiveTab(item.tabId);
+    } else if (item.type === 'metric' && item.rawKpiLabel) {
       setActiveAuditMetric(item.rawKpiLabel);
     } else if (item.type === 'sku' && item.skuData) {
       setSelectedSkuForSearch(item.skuData);
@@ -362,9 +417,36 @@ export default function App() {
           ref={searchInputRef}
           type="text"
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={(e) => {
+            setSearchQuery(e.target.value);
+            setActiveSearchIndex(-1);
+          }}
           onFocus={() => setIsSearchFocused(true)}
-          placeholder="Search metrics or SKUs... (Ctrl+K)"
+          onKeyDown={(e) => {
+            if (e.key === 'ArrowDown') {
+              e.preventDefault();
+              setActiveSearchIndex(prev => 
+                filteredSearchItems.length ? (prev + 1) % filteredSearchItems.length : -1
+              );
+            } else if (e.key === 'ArrowUp') {
+              e.preventDefault();
+              setActiveSearchIndex(prev => 
+                filteredSearchItems.length ? (prev - 1 + filteredSearchItems.length) % filteredSearchItems.length : -1
+              );
+            } else if (e.key === 'Enter') {
+              e.preventDefault();
+              if (activeSearchIndex >= 0 && activeSearchIndex < filteredSearchItems.length) {
+                handleSelectSearchItem(filteredSearchItems[activeSearchIndex]);
+              } else if (filteredSearchItems.length > 0) {
+                handleSelectSearchItem(filteredSearchItems[0]);
+              }
+            } else if (e.key === 'Escape') {
+              e.preventDefault();
+              setIsSearchFocused(false);
+              searchInputRef.current?.blur();
+            }
+          }}
+          placeholder="Search metrics or SKUs... (Ctrl+K or /)"
           className="w-full bg-black/5 dark:bg-white/5 border border-purple-500/60 dark:border-purple-400/50 rounded-full px-3 py-1 pl-8.5 pr-12 text-[10px] font-semibold text-zinc-800 dark:text-zinc-150 placeholder-zinc-400 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20 transition-all animate-fadeIn"
         />
         <div className="absolute inset-y-0 right-0 pr-2.5 flex items-center pointer-events-none">
@@ -395,28 +477,43 @@ export default function App() {
                     <div className="px-3.5 py-1 text-[7.5px] font-extrabold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 bg-black/[0.02] dark:bg-white/[0.01] border-b border-black/5 dark:border-white/5">
                       {category}
                     </div>
-                    {items.map((item) => (
-                      <button
-                        key={item.name}
-                        type="button"
-                        onClick={() => handleSelectSearchItem(item)}
-                        className="w-full text-left px-3.5 py-1.5 hover:bg-acies-yellow/10 dark:hover:bg-white/5 transition-all flex items-center justify-between cursor-pointer border-none bg-transparent outline-none group"
-                      >
-                        <div className="min-w-0 pr-2">
-                          <p className="text-[11px] font-bold text-zinc-700 dark:text-zinc-200 group-hover:text-acies-yellow transition-colors truncate">
-                            {item.name}
-                          </p>
-                          {item.subtitle && (
-                            <p className="text-[9px] text-zinc-400 mt-0.5 truncate font-medium">
-                              {item.subtitle}
+                    {items.map((item) => {
+                      const itemIndex = filteredSearchItems.indexOf(item);
+                      const isHighlighted = itemIndex === activeSearchIndex;
+                      return (
+                        <button
+                          key={item.name}
+                          id={`search-item-${itemIndex}`}
+                          type="button"
+                          onClick={() => handleSelectSearchItem(item)}
+                          className={`w-full text-left px-3.5 py-1.5 transition-all flex items-center justify-between cursor-pointer border-none bg-transparent outline-none group ${
+                            isHighlighted 
+                              ? 'bg-acies-yellow/20 dark:bg-white/10 text-acies-yellow font-extrabold shadow-inner' 
+                              : 'hover:bg-acies-yellow/10 dark:hover:bg-white/5'
+                          }`}
+                        >
+                          <div className="min-w-0 pr-2">
+                            <p className={`text-[11px] font-bold transition-colors truncate ${
+                              isHighlighted 
+                                ? 'text-acies-yellow' 
+                                : 'text-zinc-700 dark:text-zinc-200 group-hover:text-acies-yellow'
+                            }`}>
+                              {item.name}
                             </p>
-                          )}
-                        </div>
-                        <span className="text-[9px] font-mono font-bold text-acies-yellow shrink-0 group-hover:underline">
-                          {item.valueText}
-                        </span>
-                      </button>
-                    ))}
+                            {item.subtitle && (
+                              <p className={`text-[9px] mt-0.5 truncate font-medium ${
+                                isHighlighted ? 'text-zinc-300' : 'text-zinc-450 dark:text-zinc-400'
+                              }`}>
+                                {item.subtitle}
+                              </p>
+                            )}
+                          </div>
+                          <span className="text-[9px] font-mono font-bold text-acies-yellow shrink-0 group-hover:underline">
+                            {item.valueText}
+                          </span>
+                        </button>
+                      );
+                    })}
                   </div>
                 ))}
               </div>
