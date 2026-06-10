@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { REGIONAL_DATA } from '../../../constants/data';
 import { Percent, Landmark, ShieldAlert, Check, Globe } from 'lucide-react';
+import { StagedAction } from './types';
 
 interface RegionalAssortmentGridProps {
+  onStageAction?: (action: StagedAction) => void;
   onSliderChange: (values: {
     densityVal: string;
     burdenVal: string;
@@ -15,7 +17,7 @@ interface RegionalAssortmentGridProps {
   }) => void;
 }
 
-export const RegionalAssortmentGrid: React.FC<RegionalAssortmentGridProps> = ({ onSliderChange }) => {
+export const RegionalAssortmentGrid: React.FC<RegionalAssortmentGridProps> = ({ onStageAction, onSliderChange }) => {
   const [selectedCountry, setSelectedCountry] = useState<string>('Netherlands');
   const [skusDelisted, setSkusDelisted] = useState<number>(0);
   const [flippedCountries, setFlippedCountries] = useState<Record<string, boolean>>({});
@@ -68,6 +70,56 @@ export const RegionalAssortmentGrid: React.FC<RegionalAssortmentGridProps> = ({ 
       capitalFreed,
       revenueAtRisk
     });
+  };
+
+  const handleStagePricing = (countryName: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onStageAction) {
+      onStageAction({
+        id: `pricing-${countryName}-${Date.now()}`,
+        type: 'pricing',
+        title: `Optimize Pricing - ${countryName}`,
+        details: `Realign channel margins & address leakage for ${countryName}.`,
+        revenueImpact: 0.85,
+        marginImpact: 0.45,
+        complexityImpact: 0.5,
+        spaceImpact: 0
+      });
+      alert(`Channel Pricing Optimization for ${countryName} staged successfully!`);
+    }
+  };
+
+  const handleStageRealign = () => {
+    if (onStageAction && skusDelisted > 0) {
+      const absoluteRevenueImpact = -(baseRevenue * (revenueAtRisk / 100)) * 0.15;
+      const absoluteMarginImpact = marginLift * baseRevenue * 0.15;
+      const complexitySaved = skusDelisted * 0.4;
+      const spaceFreed = skusDelisted * 12;
+
+      onStageAction({
+        id: `realign-${selectedCountry}-${Date.now()}`,
+        type: 'delisting',
+        title: `Prune Catalog - ${selectedCountry}`,
+        details: `Delist ${skusDelisted} low-velocity SKUs to reclaim safety stock.`,
+        revenueImpact: parseFloat(absoluteRevenueImpact.toFixed(2)),
+        marginImpact: parseFloat(absoluteMarginImpact.toFixed(2)),
+        complexityImpact: parseFloat(complexitySaved.toFixed(1)),
+        spaceImpact: spaceFreed
+      });
+      
+      alert(`Assortment Pruning Plan for ${selectedCountry} staged successfully!`);
+      setSkusDelisted(0);
+      onSliderChange({
+        densityVal: '102 SKUs',
+        burdenVal: '66.7%',
+        yieldVal: '₹3.02 Cr',
+        cannibalizationVal: '0.62',
+        skusDelisted: 0,
+        marginLift: 0,
+        capitalFreed: 0,
+        revenueAtRisk: 0
+      });
+    }
   };
 
   // Get dynamic description for the optimizer panel
@@ -268,11 +320,20 @@ export const RegionalAssortmentGrid: React.FC<RegionalAssortmentGridProps> = ({ 
                           </div>
                         </div>
 
-                        <div className="mt-2 border-t border-black/5 dark:border-white/5 pt-1.5 flex justify-between items-center text-[7.5px] font-bold text-zinc-550 dark:text-zinc-450 font-mono">
+                        <div className="mt-2 border-t border-black/5 dark:border-white/5 pt-1.5 flex justify-between items-center text-[7.5px] font-bold text-zinc-555 dark:text-zinc-450 font-mono">
                           <span>Comp Index: {row.country === 'Netherlands' ? '104.2' : row.country === 'Austria' ? '98.5' : '100.8'}</span>
-                          <span className={row.country === 'Netherlands' ? 'text-rose-500' : 'text-emerald-500'}>
-                            {row.country === 'Netherlands' ? 'Freight Drag' : 'Route Clear'}
-                          </span>
+                          {onStageAction ? (
+                            <button
+                              onClick={(e) => handleStagePricing(row.country, e)}
+                              className="text-[7px] bg-purple-600 hover:bg-purple-755 text-white px-2 py-0.5 rounded uppercase font-extrabold tracking-wider cursor-pointer border-none outline-none z-20"
+                            >
+                              Stage Price Opt
+                            </button>
+                          ) : (
+                            <span className={row.country === 'Netherlands' ? 'text-rose-500' : 'text-emerald-500'}>
+                              {row.country === 'Netherlands' ? 'Freight Drag' : 'Route Clear'}
+                            </span>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -387,6 +448,19 @@ export const RegionalAssortmentGrid: React.FC<RegionalAssortmentGridProps> = ({ 
           >
             Push Realign Plan
           </button>
+          {onStageAction && (
+            <button 
+              onClick={handleStageRealign}
+              disabled={skusDelisted === 0}
+              className={`w-full py-1.5 rounded text-[8px] font-extrabold uppercase tracking-widest text-center transition-all border-none outline-none ${
+                skusDelisted > 0 
+                  ? 'bg-purple-600 text-white hover:brightness-105 active:scale-95 cursor-pointer' 
+                  : 'bg-zinc-200 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-600 cursor-not-allowed'
+              }`}
+            >
+              Stage Realign Plan
+            </button>
+          )}
         </div>
       </div>
 

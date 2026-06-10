@@ -792,6 +792,100 @@ const AUDIT_DATA: Record<string, AuditContent> = {
       ['Personal Care', '10', '25', '40%'],
       ['Household', '5', '17', '30%']
     ]
+  },
+  'Assortment Density': {
+    title: 'Assortment Density',
+    value: '102 SKUs',
+    soWhat: 'Catalog breadth is at 102 active items (target: 80 SKUs), causing elevated storage density pressure and long picking times in regional depots.',
+    action: 'Execute SKU rationalization plan, deleting the bottom 20% low-velocity items to streamline logistics capacity.',
+    columns: [
+      { name: 'sku_id', type: 'string [DIRECT]', desc: 'Unique identifier for each SKU listed in regional catalogs.' },
+      { name: 'status', type: 'string [DIRECT]', desc: 'Flag indicating if the SKU is currently listed and active.' }
+    ],
+    formula: 'D_{assort} = \\sum \\text{sku\\_id}_{active}',
+    formulaDescription: 'Total count of unique, active stock-keeping units across all catalog classifications.',
+    assumptions: [
+      'Active listings: Includes all SKUs listed in active catalog sheets, regardless of short-term out-of-stock statuses.'
+    ],
+    trendTitle: 'Assortment Density by Category',
+    trendHeaders: ['Category', 'Active Count', 'Target Count', 'Status'],
+    trendRows: [
+      ['Beverages', '24', '18', 'High Density'],
+      ['Snacks', '24', '18', 'High Density'],
+      ['Dairy', '18', '14', 'Elevated'],
+      ['Personal Care', '18', '14', 'Elevated'],
+      ['Home Care', '18', '14', 'Elevated']
+    ]
+  },
+  'Long-Tail Burden Ratio': {
+    title: 'Long-Tail Burden Ratio',
+    value: '66.7%',
+    soWhat: '68 SKUs (66.7% of the catalog) generate less than 1% of revenue each, yet occupy 100% of vendor management overhead and shelf-space cycles.',
+    action: 'Consolidate low-value vendor networks and transition tail variants to category distributor models.',
+    columns: [
+      { name: 'net_sales', type: 'float [DIRECT]', desc: 'Determines SKU revenue velocity.' },
+      { name: 'sku_id', type: 'string [DIRECT]', desc: 'Primary key used to identify portfolio items.' }
+    ],
+    formula: 'B_{ratio} = \\frac{\\text{Count}(S_{sku} < 0.01 \\times S_{total})}{\\text{Total SKU Count}}',
+    formulaDescription: 'Percentage of active SKUs whose individual sales contribution falls below 1% of total sales.',
+    assumptions: [
+      'Overhead parity: Assumes standard warehouse carrying overhead is identical per SKU regardless of sales velocity.'
+    ],
+    trendTitle: 'Long-Tail Density by Region',
+    trendHeaders: ['Region', 'Total SKUs', 'Long-Tail SKUs', 'Burden %'],
+    trendRows: [
+      ['Netherlands', '102', '68', '66.7%'],
+      ['Germany', '98', '62', '63.3%'],
+      ['Poland', '95', '60', '63.2%'],
+      ['Austria', '85', '42', '49.4%'],
+      ['Italy', '102', '68', '66.7%']
+    ]
+  },
+  'Assortment Gross Yield': {
+    title: 'Assortment Gross Yield',
+    value: '₹3.02 Cr',
+    soWhat: 'Average gross profit contribution per active listing is ₹3.02 Cr, lagging behind the ₹3.50 Cr corporate benchmark by -1.1% due to promo dependency.',
+    action: 'Apply pricing floors to low-yield categories and eliminate redundant duplicate sizes.',
+    columns: [
+      { name: 'net_sales', type: 'float [DIRECT]', desc: 'Total sales revenue per item.' },
+      { name: 'purchase_cost', type: 'float [DIRECT]', desc: 'Per-unit manufacturer COGS.' }
+    ],
+    formula: 'Y_{gross} = \\frac{\\sum (\\text{net\\_sales} - \\text{cogs})}{N_{active}}',
+    formulaDescription: 'Average gross profit contribution generated across all active listings in the category catalog.',
+    assumptions: [
+      'Gross calculation: Measures gross product yield before regional shipping and logistics chargebacks.'
+    ],
+    trendTitle: 'Gross Yield by Retail Channel',
+    trendHeaders: ['Retail Channel', 'Average Gross Yield', 'YoY Growth', 'Performance'],
+    trendRows: [
+      ['Supermarkets', '₹3.12 Cr', '+1.2%', 'On Target'],
+      ['Hypermarkets', '₹3.05 Cr', '-0.5%', 'Borderline'],
+      ['E-commerce', '₹2.98 Cr', '-2.4%', 'Underperforming'],
+      ['Convenience', '₹2.88 Cr', '-3.1%', 'Critical']
+    ]
+  },
+  'Cannibalization Risk Index': {
+    title: 'Cannibalization Risk Index',
+    value: '0.62',
+    soWhat: 'Beverage categories exhibit a high Cannibalization Index of 0.62, showing that brand flavor expansions (like Mango Fizz 500ml vs 750ml) substitute each other.',
+    action: 'Synchronize promo calendars and bundle competing lines to capture incremental sales rather than substitution.',
+    columns: [
+      { name: 'units_sold', type: 'int [DIRECT]', desc: 'Daily unit sales volume for each variant.' },
+      { name: 'promo_flag', type: 'int [DIRECT]', desc: 'Indicates active promotional discount.' }
+    ],
+    formula: 'C_{index} = \\text{Mean}(\\text{Corr}(V_A, V_B)) \\quad \\forall A, B \\in \\text{Category}',
+    formulaDescription: 'Average negative Pearson correlation coefficient of daily volumes calculated between variants within a category.',
+    assumptions: [
+      'Substitution proxy: High negative correlation coefficients during promotion periods represent brand substitution rather than organic market volume expansion.'
+    ],
+    trendTitle: 'Cannibalization Risk by Category',
+    trendHeaders: ['Category', 'Risk Index', 'Key Driver SKU', 'Action Urgency'],
+    trendRows: [
+      ['Beverages', '0.74', 'Mango Fizz line', 'Critical'],
+      ['Snacks', '0.65', 'BrandC Chips line', 'High'],
+      ['Dairy', '0.55', 'Organic Yogurt line', 'Medium'],
+      ['Personal Care', '0.40', 'Body Wash sizes', 'Low']
+    ]
   }
 };
 
@@ -850,7 +944,7 @@ const getConfidenceScore = (metric: string): number => {
 };
 
 const getMetricStatus = (metric: string) => {
-  const riskMetrics = ['Critical Alerts', 'Long-Tail SKU Burden', 'Rationalize Candidates', 'Revenue Tail Risk', 'Peak Stockout Freq', 'Total Active Signals'];
+  const riskMetrics = ['Critical Alerts', 'Long-Tail SKU Burden', 'Rationalize Candidates', 'Revenue Tail Risk', 'Peak Stockout Freq', 'Total Active Signals', 'Long-Tail Burden Ratio', 'Cannibalization Risk Index'];
   const isRisk = riskMetrics.includes(metric);
   return {
     label: isRisk ? 'ELEVATED RISK' : 'OPTIMAL / ON-TRACK',
@@ -886,6 +980,14 @@ const getMetricTrend = (metricName: string) => {
     case 'Critical Alerts':
     case 'Total Active Signals':
       return { value: '+2 Active Alerts', isUp: true };
+    case 'Assortment Density':
+      return { value: 'Max in Italy (102)', isUp: true };
+    case 'Long-Tail Burden Ratio':
+      return { value: '68 SKUs <1% rev', isUp: true };
+    case 'Assortment Gross Yield':
+      return { value: '-1.1% vs target', isUp: false };
+    case 'Cannibalization Risk Index':
+      return { value: 'High in Beverages', isUp: true };
     default:
       return { value: '+0.5% MoM', isUp: true };
   }
@@ -1012,6 +1114,10 @@ export const AuditDrawer: React.FC<AuditDrawerProps> = ({ activeMetric, close, i
         return 'Promo Erosion vs. Dependency';
       case 'Total Stockouts':
         return 'Peak Stockout Freq.';
+      case 'Assortment Density': return 'Assortment Density';
+      case 'Long-Tail Burden Ratio': return 'Long-Tail Burden Ratio';
+      case 'Assortment Gross Yield': return 'Assortment Gross Yield';
+      case 'Cannibalization Risk Index': return 'Cannibalization Risk Index';
       default: return metric;
     }
   };
