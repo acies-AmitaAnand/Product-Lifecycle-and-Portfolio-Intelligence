@@ -501,22 +501,39 @@ const getInvestmentMarginData = (skusList: any[]): InvestmentMarginSku[] => {
 
 const InvestmentMarginMap: React.FC<InvestmentMarginMapProps> = ({ skusList, isDarkMode, onSelectSku, addToast }) => {
   const [activeQuad, setActiveQuad] = useState<'quickwin' | 'strategic' | 'niche' | 'avoid'>('quickwin');
+  const [viewMode, setViewMode] = useState<'quadrant' | 'category'>('quadrant');
+  const [activeCat, setActiveCat] = useState<string>('Beverages');
   
   const oppData = getInvestmentMarginData(skusList);
-  const filteredOppData = oppData.filter(x => x.quadrant === activeQuad);
+  const filteredOppData = viewMode === 'quadrant'
+    ? oppData.filter(x => x.quadrant === activeQuad)
+    : oppData.filter(x => x.cat === activeCat);
   
   const accentColor = isDarkMode ? '#a78bfa' : '#6d28d9';
   const gridStroke = isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
   const tickColor = isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)';
-  const tooltipBg = isDarkMode ? '#1f1f1f' : '#fff';
-  const tooltipBorder = isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
-  const tooltipText = isDarkMode ? '#fff' : '#000';
+
+  const categoryColors: Record<string, string> = {
+    'Beverages': '#7C3AED',
+    'Snacks': '#10b981',
+    'Personal Care': '#185FA5',
+    'Dairy': '#854F0B',
+    'Household': '#ED93B1'
+  };
 
   const counts = {
     quickwin: oppData.filter(x => x.quadrant === 'quickwin').length,
     strategic: oppData.filter(x => x.quadrant === 'strategic').length,
     niche: oppData.filter(x => x.quadrant === 'niche').length,
     avoid: oppData.filter(x => x.quadrant === 'avoid').length,
+  };
+
+  const catCounts = {
+    'Beverages': oppData.filter(x => x.cat === 'Beverages').length,
+    'Snacks': oppData.filter(x => x.cat === 'Snacks').length,
+    'Personal Care': oppData.filter(x => x.cat === 'Personal Care').length,
+    'Dairy': oppData.filter(x => x.cat === 'Dairy').length,
+    'Household': oppData.filter(x => x.cat === 'Household').length,
   };
 
   const handleApproveInvestment = (skuName: string, potential: number) => {
@@ -539,36 +556,102 @@ const InvestmentMarginMap: React.FC<InvestmentMarginMapProps> = ({ skusList, isD
     }
   };
 
+  const CustomTooltip = ({ active, payload }: any) => {
+    if (active && payload && payload.length) {
+      const data = payload[0].payload;
+      return (
+        <div className="bg-white dark:bg-zinc-950 border border-black/15 dark:border-zinc-800/80 p-3 rounded-md shadow-lg text-[10px] space-y-1">
+          <p className="font-extrabold text-zinc-900 dark:text-zinc-50">{data.name}</p>
+          <p className="text-zinc-550 dark:text-zinc-400 font-bold uppercase tracking-wider text-[8px]">{data.cat}</p>
+          <div className="border-t border-black/5 dark:border-white/5 pt-1 mt-1 space-y-0.5 font-medium">
+            <div className="flex justify-between gap-4">
+              <span className="text-zinc-400">Investment:</span>
+              <span className="font-bold text-zinc-800 dark:text-zinc-200">₹{data.investment} Cr</span>
+            </div>
+            <div className="flex justify-between gap-4">
+              <span className="text-zinc-400">Return Margin:</span>
+              <span className="font-bold text-zinc-800 dark:text-zinc-200">{data.returnMargin}%</span>
+            </div>
+            <div className="flex justify-between gap-4">
+              <span className="text-zinc-450">SKU Revenue:</span>
+              <span className="font-bold text-emerald-600 dark:text-emerald-450">₹{data.rev} Cr</span>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    return null;
+  };
+
   return (
     <div className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm space-y-4">
-      <div className="flex justify-between items-start pb-2 border-b border-black/5 dark:border-white/5 mb-3">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-2 border-b border-black/5 dark:border-white/5 mb-3 gap-3">
         <div>
           <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Investment vs. Return Margin Map</span>
           <p className="text-[9px] text-zinc-550 dark:text-zinc-400 uppercase tracking-widest mt-0.5">
             Optimize fund allocation: High Return & Low Investment (Quick Wins) represent top priority candidates.
           </p>
         </div>
-        <span className="text-[8px] font-bold uppercase tracking-wider text-[#10b981] bg-[#10b981]/10 px-2 py-0.5 rounded-full animate-pulse">
-          Capital Allocation Active
-        </span>
+        <div className="flex items-center gap-3 self-end sm:self-auto">
+          <div className="flex items-center bg-black/5 dark:bg-white/5 p-0.5 rounded-sm border border-black/10 dark:border-white/10">
+            <button
+              onClick={() => setViewMode('quadrant')}
+              className={`px-3 py-1 text-[8.5px] font-extrabold uppercase tracking-widest rounded-sm border-none cursor-pointer transition-colors ${
+                viewMode === 'quadrant'
+                  ? 'bg-white dark:bg-zinc-800 shadow-sm text-acies-gray dark:text-white'
+                  : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 bg-transparent'
+              }`}
+            >
+              Quadrant
+            </button>
+            <button
+              onClick={() => setViewMode('category')}
+              className={`px-3 py-1 text-[8.5px] font-extrabold uppercase tracking-widest rounded-sm border-none cursor-pointer transition-colors ${
+                viewMode === 'category'
+                  ? 'bg-white dark:bg-zinc-800 shadow-sm text-acies-gray dark:text-white'
+                  : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 bg-transparent'
+              }`}
+            >
+              Category
+            </button>
+          </div>
+          <span className="text-[8px] font-bold uppercase tracking-wider text-[#10b981] bg-[#10b981]/10 px-2 py-0.5 rounded-full animate-pulse">
+            Capital Allocation Active
+          </span>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* LEFT COLUMN: SCATTER MAP */}
         <div className="lg:col-span-7 space-y-2 relative">
+          {viewMode === 'category' && (
+            <div className="flex flex-wrap items-center justify-center gap-4 py-2 px-3 text-[8.5px] font-bold uppercase tracking-widest bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 rounded-sm mb-3">
+              {Object.entries(categoryColors).map(([cat, color]) => (
+                <div key={cat} className="flex items-center gap-1.5 animate-fadeIn">
+                  <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: color }} />
+                  <span className="text-zinc-650 dark:text-zinc-350">{cat}</span>
+                </div>
+              ))}
+            </div>
+          )}
+
           <div className="h-80 relative">
-            <div className="absolute top-6 left-16 pointer-events-none text-[8px] font-bold uppercase tracking-wider text-emerald-500/80 bg-emerald-500/5 px-2 py-0.5 border border-emerald-500/10 rounded-sm">
-              Quick Wins (High Priority)
-            </div>
-            <div className="absolute top-6 right-6 pointer-events-none text-[8px] font-bold uppercase tracking-wider text-purple-500/80 bg-purple-500/5 px-2 py-0.5 border border-purple-500/10 rounded-sm">
-              Strategic Bets (Scale)
-            </div>
-            <div className="absolute top-[200px] left-16 pointer-events-none text-[8px] font-bold uppercase tracking-wider text-amber-500/80 bg-amber-500/5 px-2 py-0.5 border border-amber-500/10 rounded-sm">
-              Niche / Tactical
-            </div>
-            <div className="absolute top-[200px] right-6 pointer-events-none text-[8px] font-bold uppercase tracking-wider text-red-500/80 bg-red-500/5 px-2 py-0.5 border border-red-500/10 rounded-sm">
-              Avoid / High Risk
-            </div>
+            {viewMode === 'quadrant' && (
+              <>
+                <div className="absolute top-6 left-16 pointer-events-none text-[8px] font-bold uppercase tracking-wider text-emerald-500/80 bg-emerald-500/5 px-2 py-0.5 border border-emerald-500/10 rounded-sm">
+                  Quick Wins (High Priority)
+                </div>
+                <div className="absolute top-6 right-6 pointer-events-none text-[8px] font-bold uppercase tracking-wider text-purple-500/80 bg-purple-500/5 px-2 py-0.5 border border-purple-500/10 rounded-sm">
+                  Strategic Bets (Scale)
+                </div>
+                <div className="absolute top-[200px] left-16 pointer-events-none text-[8px] font-bold uppercase tracking-wider text-amber-500/80 bg-amber-500/5 px-2 py-0.5 border border-amber-500/10 rounded-sm">
+                  Niche / Tactical
+                </div>
+                <div className="absolute top-[200px] right-6 pointer-events-none text-[8px] font-bold uppercase tracking-wider text-red-500/80 bg-red-500/5 px-2 py-0.5 border border-red-500/10 rounded-sm">
+                  Avoid / High Risk
+                </div>
+              </>
+            )}
 
             <ResponsiveContainer width="100%" height="100%">
               <ScatterChart margin={{ top: 20, right: 20, bottom: 40, left: 45 }}>
@@ -594,21 +677,13 @@ const InvestmentMarginMap: React.FC<InvestmentMarginMapProps> = ({ skusList, isD
                 <ZAxis type="number" dataKey="rev" range={[100, 600]} />
                 <Tooltip 
                   cursor={{ strokeDasharray: '3 3' }} 
-                  contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, color: tooltipText }}
-                  itemStyle={{ fontSize: 11 }}
-                  labelStyle={{ fontSize: 11, fontWeight: 'bold' }}
-                  formatter={(value: any, name: any, props: any) => {
-                    if (name === 'Investment') return [`₹${value} Cr`, 'Required Investment'];
-                    if (name === 'Return Margin') return [`${value}%`, 'Return Margin'];
-                    if (name === 'SKU Revenue') return [`₹${value} Cr`, 'SKU Revenue'];
-                    return [value, name];
-                  }}
+                  content={<CustomTooltip />}
                 />
                 <Scatter data={oppData}>
                   {oppData.map((entry, index) => (
                     <Cell 
                       key={`cell-${index}`} 
-                      fill={getBubbleColor(entry.quadrant)} 
+                      fill={viewMode === 'category' ? (categoryColors[entry.cat] || '#6b7280') : getBubbleColor(entry.quadrant)} 
                       className="cursor-pointer hover:opacity-85 transition-opacity"
                       onClick={() => {
                         const originalSku = SKUS.find(s => s.name === entry.name);
@@ -636,32 +711,59 @@ const InvestmentMarginMap: React.FC<InvestmentMarginMapProps> = ({ skusList, isD
         {/* RIGHT COLUMN: SIDEBAR LIST */}
         <div className="lg:col-span-5 space-y-4">
           <div className="flex border-b border-black/10 dark:border-white/10 p-0.5 bg-black/5 dark:bg-white/5 rounded-sm">
-            {[
-              { id: 'quickwin', label: 'Quick Wins', count: counts.quickwin, color: '#10b981' },
-              { id: 'strategic', label: 'Strategic', count: counts.strategic, color: '#8b5cf6' },
-              { id: 'niche', label: 'Niche', count: counts.niche, color: '#f59e0b' },
-              { id: 'avoid', label: 'Avoid', count: counts.avoid, color: '#ef4444' }
-            ].map(t => (
-              <button
-                key={t.id}
-                type="button"
-                onClick={() => setActiveQuad(t.id as any)}
-                className={`flex-1 py-1.5 text-[8.5px] font-extrabold uppercase tracking-wider text-center rounded-sm transition-all cursor-pointer border-none flex items-center justify-center gap-1 ${
-                  activeQuad === t.id
-                    ? 'bg-white dark:bg-zinc-800 shadow-sm font-black text-acies-gray dark:text-white'
-                    : 'text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-350 bg-transparent'
-                }`}
-                style={{ borderTop: activeQuad === t.id ? `2px solid ${t.color}` : 'none' }}
-              >
-                <span>{t.label}</span>
-                <span className="text-[7.5px] opacity-60 px-1 py-0.2 rounded-full bg-black/5 dark:bg-white/10">
-                  {t.count}
-                </span>
-              </button>
-            ))}
+            {viewMode === 'quadrant' ? (
+              [
+                { id: 'quickwin', label: 'Quick Wins', count: counts.quickwin, color: '#10b981' },
+                { id: 'strategic', label: 'Strategic', count: counts.strategic, color: '#8b5cf6' },
+                { id: 'niche', label: 'Niche', count: counts.niche, color: '#f59e0b' },
+                { id: 'avoid', label: 'Avoid', count: counts.avoid, color: '#ef4444' }
+              ].map(t => (
+                <button
+                  key={t.id}
+                  type="button"
+                  onClick={() => setActiveQuad(t.id as any)}
+                  className={`flex-1 py-1.5 text-[8.5px] font-extrabold uppercase tracking-wider text-center rounded-sm transition-all cursor-pointer border-none flex items-center justify-center gap-1 ${
+                    activeQuad === t.id
+                      ? 'bg-white dark:bg-zinc-800 shadow-sm font-black text-acies-gray dark:text-white'
+                      : 'text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-350 bg-transparent'
+                  }`}
+                  style={{ borderTop: activeQuad === t.id ? `2px solid ${t.color}` : 'none' }}
+                >
+                  <span>{t.label}</span>
+                  <span className="text-[7.5px] opacity-60 px-1 py-0.2 rounded-full bg-black/5 dark:bg-white/10">
+                    {t.count}
+                  </span>
+                </button>
+              ))
+            ) : (
+              [
+                { id: 'Beverages', label: 'Bev.', count: catCounts['Beverages'], color: '#7C3AED' },
+                { id: 'Snacks', label: 'Snack', count: catCounts['Snacks'], color: '#10b981' },
+                { id: 'Personal Care', label: 'Pers.', count: catCounts['Personal Care'], color: '#185FA5' },
+                { id: 'Dairy', label: 'Dairy', count: catCounts['Dairy'], color: '#854F0B' },
+                { id: 'Household', label: 'House.', count: catCounts['Household'], color: '#ED93B1' }
+              ].map(t => (
+                <button
+                  key={t.id}
+                  type="button"
+                  onClick={() => setActiveCat(t.id)}
+                  className={`flex-1 py-1.5 text-[8px] font-extrabold uppercase tracking-wider text-center rounded-sm transition-all cursor-pointer border-none flex items-center justify-center gap-0.5 ${
+                    activeCat === t.id
+                      ? 'bg-white dark:bg-zinc-800 shadow-sm font-black text-acies-gray dark:text-white'
+                      : 'text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-350 bg-transparent'
+                  }`}
+                  style={{ borderTop: activeCat === t.id ? `2px solid ${t.color}` : 'none' }}
+                >
+                  <span>{t.label}</span>
+                  <span className="text-[7px] opacity-60 px-1 py-0.2 rounded-full bg-black/5 dark:bg-white/10">
+                    {t.count}
+                  </span>
+                </button>
+              ))
+            )}
           </div>
 
-          <div className="space-y-2.5 max-h-[265px] overflow-y-auto pr-1 no-scrollbar">
+          <div className="space-y-2.5 max-h-[265px] overflow-y-auto pr-1 no-scrollbar animate-fadeIn">
             {filteredOppData.map(item => (
               <div 
                 key={item.name}
@@ -680,7 +782,7 @@ const InvestmentMarginMap: React.FC<InvestmentMarginMapProps> = ({ skusList, isD
                     <h4 className="text-[11.5px] font-extrabold text-zinc-850 dark:text-zinc-150 group-hover:text-emerald-500 transition-colors font-display">
                       {item.name}
                     </h4>
-                    <p className="text-[8.5px] text-zinc-400 dark:text-zinc-500 uppercase font-bold tracking-wider mt-0.5">
+                    <p className="text-[8.5px] text-zinc-400 dark:text-zinc-505 uppercase font-bold tracking-wider mt-0.5">
                       {item.cat} • Rev: ₹{item.rev} Cr • Margin: {item.margin}%
                     </p>
                   </div>
@@ -724,6 +826,11 @@ const InvestmentMarginMap: React.FC<InvestmentMarginMapProps> = ({ skusList, isD
                 </div>
               </div>
             ))}
+            {filteredOppData.length === 0 && (
+              <div className="p-8 text-center text-zinc-450 text-[10px] font-bold uppercase tracking-wider">
+                No SKUs found for this active filter.
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -786,22 +893,39 @@ const getRevPerfData = (skusList: any[]): RevPerfSku[] => {
 
 const RevenuePerformanceMatrix: React.FC<RevenuePerformanceMatrixProps> = ({ skusList, isDarkMode, onSelectSku, addToast }) => {
   const [activeQuad, setActiveQuad] = useState<'high_performer' | 'underperformer' | 'hidden_growth' | 'attention'>('high_performer');
+  const [viewMode, setViewMode] = useState<'quadrant' | 'category'>('quadrant');
+  const [activeCat, setActiveCat] = useState<string>('Beverages');
   
   const oppData = getRevPerfData(skusList);
-  const filteredOppData = oppData.filter(x => x.quadrant === activeQuad);
+  const filteredOppData = viewMode === 'quadrant'
+    ? oppData.filter(x => x.quadrant === activeQuad)
+    : oppData.filter(x => x.cat === activeCat);
   
   const accentColor = isDarkMode ? '#a78bfa' : '#6d28d9';
   const gridStroke = isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
   const tickColor = isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)';
-  const tooltipBg = isDarkMode ? '#1f1f1f' : '#fff';
-  const tooltipBorder = isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
-  const tooltipText = isDarkMode ? '#fff' : '#000';
+
+  const categoryColors: Record<string, string> = {
+    'Beverages': '#7C3AED',
+    'Snacks': '#10b981',
+    'Personal Care': '#185FA5',
+    'Dairy': '#854F0B',
+    'Household': '#ED93B1'
+  };
 
   const counts = {
     high_performer: oppData.filter(x => x.quadrant === 'high_performer').length,
     underperformer: oppData.filter(x => x.quadrant === 'underperformer').length,
     hidden_growth: oppData.filter(x => x.quadrant === 'hidden_growth').length,
     attention: oppData.filter(x => x.quadrant === 'attention').length,
+  };
+
+  const catCounts = {
+    'Beverages': oppData.filter(x => x.cat === 'Beverages').length,
+    'Snacks': oppData.filter(x => x.cat === 'Snacks').length,
+    'Personal Care': oppData.filter(x => x.cat === 'Personal Care').length,
+    'Dairy': oppData.filter(x => x.cat === 'Dairy').length,
+    'Household': oppData.filter(x => x.cat === 'Household').length,
   };
 
   const handleAuthorizeStrategy = (skuName: string, quadrant: string) => {
@@ -842,36 +966,102 @@ const RevenuePerformanceMatrix: React.FC<RevenuePerformanceMatrixProps> = ({ sku
     }
   };
 
+  const CustomTooltip = ({ active, payload }: any) => {
+    if (active && payload && payload.length) {
+      const data = payload[0].payload;
+      return (
+        <div className="bg-white dark:bg-zinc-950 border border-black/15 dark:border-zinc-800/80 p-3 rounded-md shadow-lg text-[10px] space-y-1">
+          <p className="font-extrabold text-zinc-900 dark:text-zinc-50">{data.name}</p>
+          <p className="text-zinc-550 dark:text-zinc-400 font-bold uppercase tracking-wider text-[8px]">{data.cat}</p>
+          <div className="border-t border-black/5 dark:border-white/5 pt-1 mt-1 space-y-0.5 font-medium">
+            <div className="flex justify-between gap-4">
+              <span className="text-zinc-400">Revenue:</span>
+              <span className="font-bold text-zinc-800 dark:text-zinc-200">₹{data.rev} Cr</span>
+            </div>
+            <div className="flex justify-between gap-4">
+              <span className="text-zinc-400">Performance:</span>
+              <span className="font-bold text-zinc-800 dark:text-zinc-200">{data.performance}%</span>
+            </div>
+            <div className="flex justify-between gap-4">
+              <span className="text-zinc-400">Gross Margin:</span>
+              <span className="font-bold text-zinc-800 dark:text-zinc-200">{data.margin}%</span>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    return null;
+  };
+
   return (
     <div className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm space-y-4">
-      <div className="flex justify-between items-start pb-2 border-b border-black/5 dark:border-white/5 mb-3">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-2 border-b border-black/5 dark:border-white/5 mb-3 gap-3">
         <div>
           <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Revenue vs. Performance Matrix</span>
           <p className="text-[9px] text-zinc-550 dark:text-zinc-400 uppercase tracking-widest mt-0.5">
             Segment catalog SKUs by size (Revenue) and health (Performance Score based on gross margins and growth velocity).
           </p>
         </div>
-        <span className="text-[8px] font-bold uppercase tracking-wider text-[#8b5cf6] bg-[#8b5cf6]/10 px-2 py-0.5 rounded-full animate-pulse">
-          Portfolio Segmentation Active
-        </span>
+        <div className="flex items-center gap-3 self-end sm:self-auto">
+          <div className="flex items-center bg-black/5 dark:bg-white/5 p-0.5 rounded-sm border border-black/10 dark:border-white/10">
+            <button
+              onClick={() => setViewMode('quadrant')}
+              className={`px-3 py-1 text-[8.5px] font-extrabold uppercase tracking-widest rounded-sm border-none cursor-pointer transition-colors ${
+                viewMode === 'quadrant'
+                  ? 'bg-white dark:bg-zinc-800 shadow-sm text-acies-gray dark:text-white'
+                  : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 bg-transparent'
+              }`}
+            >
+              Quadrant
+            </button>
+            <button
+              onClick={() => setViewMode('category')}
+              className={`px-3 py-1 text-[8.5px] font-extrabold uppercase tracking-widest rounded-sm border-none cursor-pointer transition-colors ${
+                viewMode === 'category'
+                  ? 'bg-white dark:bg-zinc-800 shadow-sm text-acies-gray dark:text-white'
+                  : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 bg-transparent'
+              }`}
+            >
+              Category
+            </button>
+          </div>
+          <span className="text-[8px] font-bold uppercase tracking-wider text-[#8b5cf6] bg-[#8b5cf6]/10 px-2 py-0.5 rounded-full animate-pulse">
+            Portfolio Segmentation Active
+          </span>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* LEFT COLUMN: SCATTER MAP */}
         <div className="lg:col-span-7 space-y-2 relative">
+          {viewMode === 'category' && (
+            <div className="flex flex-wrap items-center justify-center gap-4 py-2 px-3 text-[8.5px] font-bold uppercase tracking-widest bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 rounded-sm mb-3">
+              {Object.entries(categoryColors).map(([cat, color]) => (
+                <div key={cat} className="flex items-center gap-1.5 animate-fadeIn">
+                  <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: color }} />
+                  <span className="text-zinc-650 dark:text-zinc-350">{cat}</span>
+                </div>
+              ))}
+            </div>
+          )}
+
           <div className="h-80 relative">
-            <div className="absolute top-6 left-16 pointer-events-none text-[8px] font-bold uppercase tracking-wider text-purple-500/80 bg-purple-500/5 px-2 py-0.5 border border-purple-500/10 rounded-sm">
-              Hidden Growth (Top-Left)
-            </div>
-            <div className="absolute top-6 right-6 pointer-events-none text-[8px] font-bold uppercase tracking-wider text-emerald-500/80 bg-emerald-500/5 px-2 py-0.5 border border-emerald-500/10 rounded-sm">
-              High Performers (Top-Right)
-            </div>
-            <div className="absolute top-[200px] left-16 pointer-events-none text-[8px] font-bold uppercase tracking-wider text-red-500/80 bg-red-500/5 px-2 py-0.5 border border-red-500/10 rounded-sm">
-              Attention Required (Bottom-Left)
-            </div>
-            <div className="absolute top-[200px] right-6 pointer-events-none text-[8px] font-bold uppercase tracking-wider text-amber-500/80 bg-amber-500/5 px-2 py-0.5 border border-amber-500/10 rounded-sm">
-              Underperformers (Bottom-Right)
-            </div>
+            {viewMode === 'quadrant' && (
+              <>
+                <div className="absolute top-6 left-16 pointer-events-none text-[8px] font-bold uppercase tracking-wider text-purple-500/80 bg-purple-500/5 px-2 py-0.5 border border-purple-500/10 rounded-sm">
+                  Hidden Growth (Top-Left)
+                </div>
+                <div className="absolute top-6 right-6 pointer-events-none text-[8px] font-bold uppercase tracking-wider text-emerald-500/80 bg-emerald-500/5 px-2 py-0.5 border border-emerald-500/10 rounded-sm">
+                  High Performers (Top-Right)
+                </div>
+                <div className="absolute top-[200px] left-16 pointer-events-none text-[8px] font-bold uppercase tracking-wider text-red-500/80 bg-red-500/5 px-2 py-0.5 border border-red-500/10 rounded-sm">
+                  Attention Required (Bottom-Left)
+                </div>
+                <div className="absolute top-[200px] right-6 pointer-events-none text-[8px] font-bold uppercase tracking-wider text-amber-500/80 bg-amber-500/5 px-2 py-0.5 border border-amber-500/10 rounded-sm">
+                  Underperformers (Bottom-Right)
+                </div>
+              </>
+            )}
 
             <ResponsiveContainer width="100%" height="100%">
               <ScatterChart margin={{ top: 20, right: 20, bottom: 40, left: 45 }}>
@@ -897,20 +1087,13 @@ const RevenuePerformanceMatrix: React.FC<RevenuePerformanceMatrixProps> = ({ sku
                 <ZAxis type="number" dataKey="margin" range={[100, 400]} />
                 <Tooltip 
                   cursor={{ strokeDasharray: '3 3' }} 
-                  contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, color: tooltipText }}
-                  itemStyle={{ fontSize: 11 }}
-                  labelStyle={{ fontSize: 11, fontWeight: 'bold' }}
-                  formatter={(value: any, name: any) => {
-                    if (name === 'Revenue') return [`₹${value} Cr`, 'SKU Revenue'];
-                    if (name === 'Performance') return [`${value}%`, 'Performance Score'];
-                    return [value, name];
-                  }}
+                  content={<CustomTooltip />}
                 />
                 <Scatter data={oppData}>
                   {oppData.map((entry, index) => (
                     <Cell 
                       key={`cell-${index}`} 
-                      fill={getBubbleColor(entry.quadrant)} 
+                      fill={viewMode === 'category' ? (categoryColors[entry.cat] || '#6b7280') : getBubbleColor(entry.quadrant)} 
                       className="cursor-pointer hover:opacity-85 transition-opacity"
                       onClick={() => {
                         const originalSku = SKUS.find(s => s.name === entry.name);
@@ -938,32 +1121,59 @@ const RevenuePerformanceMatrix: React.FC<RevenuePerformanceMatrixProps> = ({ sku
         {/* RIGHT COLUMN: SIDEBAR LIST */}
         <div className="lg:col-span-5 space-y-4">
           <div className="flex border-b border-black/10 dark:border-white/10 p-0.5 bg-black/5 dark:bg-white/5 rounded-sm">
-            {[
-              { id: 'high_performer', label: 'High Perf.', count: counts.high_performer, color: '#10b981' },
-              { id: 'underperformer', label: 'Underperf.', count: counts.underperformer, color: '#f59e0b' },
-              { id: 'hidden_growth', label: 'Hidden Gr.', count: counts.hidden_growth, color: '#8b5cf6' },
-              { id: 'attention', label: 'Attention', count: counts.attention, color: '#ef4444' }
-            ].map(t => (
-              <button
-                key={t.id}
-                type="button"
-                onClick={() => setActiveQuad(t.id as any)}
-                className={`flex-1 py-1.5 text-[8px] font-extrabold uppercase tracking-wider text-center rounded-sm transition-all cursor-pointer border-none flex items-center justify-center gap-0.5 ${
-                  activeQuad === t.id
-                    ? 'bg-white dark:bg-zinc-800 shadow-sm font-black text-acies-gray dark:text-white'
-                    : 'text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-350 bg-transparent'
-                }`}
-                style={{ borderTop: activeQuad === t.id ? `2px solid ${t.color}` : 'none' }}
-              >
-                <span>{t.label}</span>
-                <span className="text-[7px] opacity-60 px-1 py-0.2 rounded-full bg-black/5 dark:bg-white/10">
-                  {t.count}
-                </span>
-              </button>
-            ))}
+            {viewMode === 'quadrant' ? (
+              [
+                { id: 'high_performer', label: 'High Perf.', count: counts.high_performer, color: '#10b981' },
+                { id: 'underperformer', label: 'Underperf.', count: counts.underperformer, color: '#f59e0b' },
+                { id: 'hidden_growth', label: 'Hidden Gr.', count: counts.hidden_growth, color: '#8b5cf6' },
+                { id: 'attention', label: 'Attention', count: counts.attention, color: '#ef4444' }
+              ].map(t => (
+                <button
+                  key={t.id}
+                  type="button"
+                  onClick={() => setActiveQuad(t.id as any)}
+                  className={`flex-1 py-1.5 text-[8px] font-extrabold uppercase tracking-wider text-center rounded-sm transition-all cursor-pointer border-none flex items-center justify-center gap-0.5 ${
+                    activeQuad === t.id
+                      ? 'bg-white dark:bg-zinc-800 shadow-sm font-black text-acies-gray dark:text-white'
+                      : 'text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-350 bg-transparent'
+                  }`}
+                  style={{ borderTop: activeQuad === t.id ? `2px solid ${t.color}` : 'none' }}
+                >
+                  <span>{t.label}</span>
+                  <span className="text-[7px] opacity-60 px-1 py-0.2 rounded-full bg-black/5 dark:bg-white/10">
+                    {t.count}
+                  </span>
+                </button>
+              ))
+            ) : (
+              [
+                { id: 'Beverages', label: 'Bev.', count: catCounts['Beverages'], color: '#7C3AED' },
+                { id: 'Snacks', label: 'Snack', count: catCounts['Snacks'], color: '#10b981' },
+                { id: 'Personal Care', label: 'Pers.', count: catCounts['Personal Care'], color: '#185FA5' },
+                { id: 'Dairy', label: 'Dairy', count: catCounts['Dairy'], color: '#854F0B' },
+                { id: 'Household', label: 'House.', count: catCounts['Household'], color: '#ED93B1' }
+              ].map(t => (
+                <button
+                  key={t.id}
+                  type="button"
+                  onClick={() => setActiveCat(t.id)}
+                  className={`flex-1 py-1.5 text-[8px] font-extrabold uppercase tracking-wider text-center rounded-sm transition-all cursor-pointer border-none flex items-center justify-center gap-0.5 ${
+                    activeCat === t.id
+                      ? 'bg-white dark:bg-zinc-800 shadow-sm font-black text-acies-gray dark:text-white'
+                      : 'text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-350 bg-transparent'
+                  }`}
+                  style={{ borderTop: activeCat === t.id ? `2px solid ${t.color}` : 'none' }}
+                >
+                  <span>{t.label}</span>
+                  <span className="text-[7px] opacity-60 px-1 py-0.2 rounded-full bg-black/5 dark:bg-white/10">
+                    {t.count}
+                  </span>
+                </button>
+              ))
+            )}
           </div>
 
-          <div className="space-y-2.5 max-h-[265px] overflow-y-auto pr-1 no-scrollbar">
+          <div className="space-y-2.5 max-h-[265px] overflow-y-auto pr-1 no-scrollbar animate-fadeIn">
             {filteredOppData.map(item => (
               <div 
                 key={item.name}
@@ -982,7 +1192,7 @@ const RevenuePerformanceMatrix: React.FC<RevenuePerformanceMatrixProps> = ({ sku
                     <h4 className="text-[11.5px] font-extrabold text-zinc-850 dark:text-zinc-150 group-hover:text-purple-500 transition-colors font-display">
                       {item.name}
                     </h4>
-                    <p className="text-[8.5px] text-zinc-400 dark:text-zinc-500 uppercase font-bold tracking-wider mt-0.5">
+                    <p className="text-[8.5px] text-zinc-400 dark:text-zinc-505 uppercase font-bold tracking-wider mt-0.5">
                       {item.cat} • Rev: ₹{item.rev} Cr • Perf: {item.performance}%
                     </p>
                   </div>
@@ -996,7 +1206,7 @@ const RevenuePerformanceMatrix: React.FC<RevenuePerformanceMatrixProps> = ({ sku
                   </div>
                 </div>
 
-                <p className="text-[9.5px] text-zinc-500 dark:text-zinc-400 leading-relaxed font-medium">
+                <p className="text-[9.5px] text-zinc-505 dark:text-zinc-400 leading-relaxed font-medium">
                   {item.rec}
                 </p>
 
@@ -1009,7 +1219,7 @@ const RevenuePerformanceMatrix: React.FC<RevenuePerformanceMatrixProps> = ({ sku
                         onSelectSku(originalSku);
                       }
                     }}
-                    className="px-2 py-1 border border-black/10 dark:border-white/10 text-zinc-505 dark:text-zinc-400 hover:bg-black/5 dark:hover:bg-white/5 rounded-sm text-[8.5px] font-bold uppercase tracking-wider cursor-pointer bg-transparent outline-none"
+                    className="px-2 py-1 border border-black/10 dark:border-white/10 text-zinc-500 dark:text-zinc-400 hover:bg-black/5 dark:hover:bg-white/5 rounded-sm text-[8.5px] font-bold uppercase tracking-wider cursor-pointer bg-transparent outline-none"
                   >
                     Review Metrics
                   </button>
@@ -1023,6 +1233,11 @@ const RevenuePerformanceMatrix: React.FC<RevenuePerformanceMatrixProps> = ({ sku
                 </div>
               </div>
             ))}
+            {filteredOppData.length === 0 && (
+              <div className="p-8 text-center text-zinc-450 text-[10px] font-bold uppercase tracking-wider">
+                No SKUs found for this active filter.
+              </div>
+            )}
           </div>
         </div>
       </div>
