@@ -135,6 +135,36 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
   return (
     <div className="space-y-6 pb-12 animate-fadeIn text-zinc-800 dark:text-white">
       
+      {/* Role Access Indicator Banner */}
+      <div className={`p-3 rounded-xl border flex items-center justify-between text-[11px] font-semibold transition-all ${
+        role === 'VP Product Management'
+          ? 'bg-purple-500/10 border-purple-500/20 text-purple-700 dark:text-purple-400'
+          : role === 'Product Manager'
+            ? 'bg-amber-500/10 border-amber-500/20 text-amber-700 dark:text-amber-400'
+            : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-700 dark:text-emerald-400'
+      }`}>
+        <div className="flex items-center gap-2">
+          <span className="relative flex h-2 w-2">
+            <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
+              role === 'VP Product Management' ? 'bg-purple-450' : role === 'Product Manager' ? 'bg-amber-450' : 'bg-emerald-450'
+            }`}></span>
+            <span className={`relative inline-flex rounded-full h-2 w-2 ${
+              role === 'VP Product Management' ? 'bg-purple-500' : role === 'Product Manager' ? 'bg-amber-500' : 'bg-emerald-500'
+            }`}></span>
+          </span>
+          <span>
+            Current View Profile: <span className="font-black uppercase tracking-wider">{role}</span>
+          </span>
+        </div>
+        <div className="text-[10px] font-bold uppercase tracking-wider opacity-90">
+          {role === 'VP Product Management'
+            ? '👑 Read-Only Workflow Checklists & Executive Authorization Sign-Off'
+            : role === 'Product Manager'
+              ? '⚙️ Authorized: Product Management & Supply Chain Operational Steps'
+              : '📊 Authorized: Pricing & Commercial Margin Customization Steps'}
+        </div>
+      </div>
+
       {/* Consolidated Toolbar Header */}
       <SkuToolbar
         role={role}
@@ -474,6 +504,8 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
             {/* Scrollable routing panel */}
             <div className="flex-1 overflow-y-auto p-6 bg-black/[0.01] dark:bg-acies-gray/50">
               <ActionRoutingPanel
+                role={role}
+                auditLog={state.auditLog}
                 hasScored={state.hasScored}
                 pairRisk={state.pairRisk}
                 riskVerdict={state.riskVerdict}

@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Filter, RefreshCw, Download, Zap
+  Filter, RefreshCw, Download, Zap, BarChart2, PieChart as PieIcon
 } from 'lucide-react';
 import { 
   ResponsiveContainer, BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip,
-  RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend
+  RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend,
+  PieChart, Pie
 } from 'recharts';
 import { ResolveEscalationModal, VPEscalation } from './ResolveEscalationModal';
 import { EmailComposerModal } from '../portfolio-health/EmailComposerModal';
@@ -78,6 +79,7 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
   const [filterCategory, setFilterCategory] = useState('All');
   const [filterRisk, setFilterRisk] = useState('All');
   const [filterQuarter, setFilterQuarter] = useState('All');
+  const [pipelineView, setPipelineView] = useState<'bar' | 'pie'>('bar');
   const [localSimulateDelay, setLocalSimulateDelay] = useState(false);
   const simulateDelay = propSimulateDelay !== undefined ? propSimulateDelay : localSimulateDelay;
   const setSimulateDelay = propSetSimulateDelay !== undefined ? propSetSimulateDelay : setLocalSimulateDelay;
@@ -343,9 +345,35 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
         <div className="xl:col-span-7 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm space-y-4">
           <div className="flex justify-between items-center pb-2 border-b border-black/5 dark:border-white/5">
             <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Launch Pipeline Overview</span>
-            <span className="text-[8px] font-bold uppercase tracking-wider text-blue-500 bg-blue-500/10 px-2 py-0.5 rounded-full">
-              {activePipelineSKUs} active pipeline SKUs
-            </span>
+            <div className="flex items-center gap-3">
+              <span className="text-[8px] font-bold uppercase tracking-wider text-blue-500 bg-blue-500/10 px-2 py-0.5 rounded-full">
+                {activePipelineSKUs} active pipeline SKUs
+              </span>
+              <div className="flex bg-black/5 dark:bg-white/5 rounded-full p-0.5 border border-black/10 dark:border-white/10 items-center">
+                <button
+                  onClick={() => setPipelineView('bar')}
+                  className={`p-1 rounded-full transition-all cursor-pointer ${
+                    pipelineView === 'bar'
+                      ? 'bg-acies-yellow text-white dark:text-acies-gray shadow-sm'
+                      : 'text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200'
+                  }`}
+                  title="Bar Chart"
+                >
+                  <BarChart2 size={13} strokeWidth={2.5} />
+                </button>
+                <button
+                  onClick={() => setPipelineView('pie')}
+                  className={`p-1 rounded-full transition-all cursor-pointer ${
+                    pipelineView === 'pie'
+                      ? 'bg-acies-yellow text-white dark:text-acies-gray shadow-sm'
+                      : 'text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200'
+                  }`}
+                  title="Pie Chart"
+                >
+                  <PieIcon size={13} strokeWidth={2.5} />
+                </button>
+              </div>
+            </div>
           </div>
 
           {/* 4 KPI Cards */}
@@ -371,34 +399,85 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
             </div>
           </div>
 
-          {/* Bar Chart */}
-          <div className="h-56 mt-4">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={pipelineChartData} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke={isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'} vertical={false} />
-                <XAxis dataKey="name" tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 9 }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 9 }} axisLine={false} tickLine={false} domain={[0, 8]} ticks={[0, 2, 4, 6, 8]} />
-                <Tooltip contentStyle={{ backgroundColor: isDarkMode ? '#1f1f1f' : '#fff', border: isDarkMode ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.1)', color: isDarkMode ? '#fff' : '#000' }} />
-                <Bar dataKey="count" radius={[2, 2, 0, 0]} barSize={36}>
-                  {pipelineChartData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.fill} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+          {pipelineView === 'bar' ? (
+            <>
+              {/* Bar Chart */}
+              <div className="h-56 mt-4">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={pipelineChartData} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke={isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'} vertical={false} />
+                    <XAxis dataKey="name" tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 9 }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 9 }} axisLine={false} tickLine={false} domain={[0, 8]} ticks={[0, 2, 4, 6, 8]} />
+                    <Tooltip contentStyle={{ backgroundColor: isDarkMode ? '#1f1f1f' : '#fff', border: isDarkMode ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.1)', color: isDarkMode ? '#fff' : '#000' }} />
+                    <Bar dataKey="count" radius={[2, 2, 0, 0]} barSize={46}>
+                      {pipelineChartData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.fill} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
 
-          {/* Legend */}
-          <div className="flex flex-wrap items-center gap-4 text-[10px] text-zinc-550 dark:text-zinc-400 mt-3 pl-4">
-            <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-sm bg-[#634bf6]" />
-              <span className="font-semibold text-zinc-650 dark:text-zinc-300">Early stage (Ideation - Testing)</span>
+              {/* Legend */}
+              <div className="flex flex-wrap items-center gap-4 text-[10px] text-zinc-550 dark:text-zinc-400 mt-3 pl-4">
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-sm bg-[#634bf6]" />
+                  <span className="font-semibold text-zinc-650 dark:text-zinc-300">Early stage (Ideation - Testing)</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-sm bg-[#2563eb]" />
+                  <span className="font-semibold text-zinc-650 dark:text-zinc-300">Late stage (Regulatory - Launched)</span>
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-8 py-4 h-56 mt-4">
+              {/* Donut Chart Container */}
+              <div className="relative w-48 h-48 flex items-center justify-center shrink-0">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={pipelineChartData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={80}
+                      paddingAngle={2}
+                      dataKey="count"
+                    >
+                      {pipelineChartData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.fill} />
+                      ))}
+                    </Pie>
+                    <Tooltip 
+                      contentStyle={{ backgroundColor: isDarkMode ? '#1f1f1f' : '#fff', border: isDarkMode ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.1)', color: isDarkMode ? '#fff' : '#000' }}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+                <div className="absolute flex flex-col items-center justify-center text-center">
+                  <span className="text-3xl font-display font-extrabold text-zinc-850 dark:text-white leading-none">
+                    {activePipelineSKUs}
+                  </span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 mt-1">
+                    SKUs
+                  </span>
+                </div>
+              </div>
+
+              {/* Custom Legend */}
+              <div className="flex-1 w-full max-w-xs space-y-1.5">
+                {pipelineChartData.map((entry) => (
+                  <div key={entry.name} className="flex items-center justify-between text-[10px]">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-sm shrink-0" style={{ backgroundColor: entry.fill }} />
+                      <span className="font-semibold text-zinc-650 dark:text-zinc-350">{entry.name}</span>
+                    </div>
+                    <span className="font-mono font-bold text-zinc-800 dark:text-zinc-200">{entry.count}</span>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-sm bg-[#2563eb]" />
-              <span className="font-semibold text-zinc-650 dark:text-zinc-300">Late stage (Regulatory - Launched)</span>
-            </div>
-          </div>
+          )}
         </div>
 
         {/* Risk & Escalation Center */}
