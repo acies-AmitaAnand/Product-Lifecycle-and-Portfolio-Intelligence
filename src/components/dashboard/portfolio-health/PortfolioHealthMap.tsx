@@ -7,7 +7,7 @@ import {
 import { 
   ResponsiveContainer, ScatterChart, Scatter, XAxis, YAxis, ZAxis, Tooltip, CartesianGrid, LabelList,
   ComposedChart, BarChart, Bar, Line, Cell, Legend, PieChart as RePieChart, Pie, AreaChart, Area,
-  LineChart
+  LineChart, ReferenceLine
 } from 'recharts';
 import { Role } from '../../../types/dashboard';
 import { SKUS } from '../../../constants/data';
@@ -380,109 +380,109 @@ const LifecycleHealthPanel: React.FC<LifecycleHealthPanelProps> = ({ skusList, i
   );
 };
 
-interface OpportunitySku {
+interface InvestmentMarginSku {
   name: string;
   cat: string;
   rev: number;
   margin: number;
   growth: number;
-  penetration: number;
-  demand: number;
-  expansionPotential: number;
-  quadrant: 'investment' | 'leader' | 'speculative' | 'saturated';
+  investment: number;
+  returnMargin: number;
+  quadrant: 'quickwin' | 'strategic' | 'niche' | 'avoid';
   rec: string;
 }
 
-interface GrowthOpportunityMapProps {
+interface InvestmentMarginMapProps {
   skusList: any[];
   isDarkMode: boolean;
   onSelectSku?: (sku: any) => void;
   addToast?: (title: string, body: string, color: string) => void;
 }
 
-const getOpportunityData = (skusList: any[]): OpportunitySku[] => {
+const getInvestmentMarginData = (skusList: any[]): InvestmentMarginSku[] => {
   return skusList.map(s => {
-    let penetration = 50;
-    let demand = 50;
-    let expansionPotential = Math.round(s.rev * 0.35);
+    let investment = 50;
+    let returnMargin = s.margin;
     let rec = '';
 
-    if (s.name === 'BrandC Energy Drink') {
-      demand = 88; penetration = 24; expansionPotential = 42;
-      rec = 'High demand growth in APAC region with minimal retail penetration. Increase marketing spend +15% and expand distribution.';
-    } else if (s.name === 'BrandC Chips (Spicy)') {
-      demand = 82; penetration = 18; expansionPotential = 28;
-      rec = 'Strong local demand pull; low supermarket shelf placement. Accelerate wholesale distribution deals.';
-    } else if (s.name === 'BrandD Chocolate 100g') {
-      demand = 76; penetration = 32; expansionPotential = 22;
-      rec = 'High margins and rapid sales velocity; low penetration in Tier-2 cities. Boost localized promotions.';
-    } else if (s.name === 'Masala Puffs') {
-      demand = 79; penetration = 29; expansionPotential = 31;
-      rec = 'Snack trend indicator showing low penetration in Southern region. Scale distributor incentives.';
-    } else if (s.name === 'Coconut Water 330ml') {
-      demand = 81; penetration = 42; expansionPotential = 38;
-      rec = 'Organic health beverage segment showing low penetration in standard channels. Secure premium supermarket placements.';
-    } else if (s.name === 'Herbal Shampoo') {
-      demand = 92; penetration = 45; expansionPotential = 48;
-      rec = 'Category booming. Low general trade shelf penetration. Increase production allocation and scale store footprint.';
-    } else if (s.name === 'Laundry Pods Premium') {
-      demand = 85; penetration = 38; expansionPotential = 44;
-      rec = 'Eco-consumers driving high premium demand; low penetration in convenience stores. Pilot small-pack placements.';
-    } else if (s.name === 'Fabric Softener') {
-      demand = 22; penetration = 15; expansionPotential = 8;
-      rec = 'Low volume and poor category penetration. Rationalize or bundle as a freebie.';
-    } else if (s.name === 'Floor Cleaner') {
-      demand = 18; penetration = 20; expansionPotential = 6;
-      rec = 'Low margin, low penetration. Flagged as primary sunset candidate.';
-    } else if (s.name === 'Aloe Face Wash') {
-      demand = 28; penetration = 18; expansionPotential = 10;
-      rec = 'Underperforming skin care product. Re-evaluate formulation or phase out.';
-    } else if (s.name === 'BrandE Yogurt (Straw)') {
-      demand = 32; penetration = 25; expansionPotential = 9;
-      rec = 'Dairy complexity drag. Defer marketing spend and transition safety capital.';
-    } else if (s.name === 'Choco Wafers') {
-      demand = 38; penetration = 72; expansionPotential = 12;
-      rec = 'Mature product in saturated market with high promotional dependency (72%). Review pricing and promo caps.';
-    } else if (s.name === 'BrandB Yogurt 1kg') {
-      demand = 42; penetration = 65; expansionPotential = 14;
-      rec = 'Saturated dairy item. Shift production focus to higher-margin fresh cheese.';
-    } else if (s.name === 'Foam Face Wash') {
-      demand = 40; penetration = 60; expansionPotential = 11;
-      rec = 'High volume but low margins. Maintain baseline sales without additional promos.';
-    } else if (s.name === 'Mango Fizz 500ml') {
-      demand = 78; penetration = 82; expansionPotential = 15;
-      rec = 'Established leader. Protect shelf space and run seasonal bundle promotions.';
-    } else if (s.name === 'Dish Soap 1L') {
-      demand = 64; penetration = 68; expansionPotential = 18;
-      rec = 'Steady household demand. Keep production schedules synchronized.';
+    if (s.name === 'Herbal Shampoo') {
+      investment = 14; returnMargin = 85;
+      rec = 'Booming demand requires low capital layout of ₹14 Cr; yields a high return margin of 85%. Primary focus for budget boost.';
+    } else if (s.name === 'BrandD Toothpaste') {
+      investment = 22; returnMargin = 72;
+      rec = 'Stable personal care SKU. Low marketing investment needed; returns steady 72% margins. Increase store penetration.';
     } else if (s.name === 'Oat Cookies') {
-      demand = 75; penetration = 72; expansionPotential = 22;
-      rec = 'Popular product with high penetration. Optimize packaging for freight efficiency.';
+      investment = 18; returnMargin = 78;
+      rec = 'Snack leader with low freight overhead. Low investment of ₹18 Cr yields 78% returns. Increase promotional layout.';
+    } else if (s.name === 'BrandC Chips (Spicy)') {
+      investment = 28; returnMargin = 68;
+      rec = 'High local demand pull; low capital required (₹28 Cr) to yield 68% returns. Optimize distributor placement.';
+    } else if (s.name === 'Coconut Water 330ml') {
+      investment = 35; returnMargin = 81;
+      rec = 'Organic category with high profit return of 81% against moderate ₹35 Cr capital expansion. Secure convenience store placement.';
+    } else if (s.name === 'Mango Fizz 500ml') {
+      investment = 75; returnMargin = 70;
+      rec = 'Market leader requires substantial launch budget (₹75 Cr) for regional campaigns. Returns a strong 70% margin.';
+    } else if (s.name === 'Laundry Pods Premium') {
+      investment = 82; returnMargin = 74;
+      rec = 'Premium category needs automated line upgrades (₹82 Cr) but offers excellent 74% margins once scaled.';
+    } else if (s.name === 'Dish Soap 1L') {
+      investment = 60; returnMargin = 62;
+      rec = 'Steady household demand. Scaling production requires ₹60 Cr with solid 62% margins.';
+    } else if (s.name === 'Choco Wafers') {
+      investment = 70; returnMargin = 22;
+      rec = 'High promotional dependency (72%) and heavy capital layout. Margin returns only 22%. Avoid additional investment.';
+    } else if (s.name === 'Fabric Softener') {
+      investment = 85; returnMargin = 15;
+      rec = 'Severe logistics bottleneck (35d lead time). Requires ₹85 Cr for warehouse overrides with poor 15% margin yields.';
+    } else if (s.name === 'BrandB Yogurt 1kg') {
+      investment = 65; returnMargin = 24;
+      rec = 'Saturated dairy item. Shift production focus to higher-margin fresh cheese.';
+    } else if (s.name === 'Floor Cleaner') {
+      investment = 32; returnMargin = 19;
+      rec = 'Low margin (19%) and low capital layout. Maintain baseline trading without active expansion.';
+    } else if (s.name === 'Aloe Face Wash') {
+      investment = 25; returnMargin = 18;
+      rec = 'Underperforming skin care item. Low capital cost but returns only 18%. Defer expansion.';
+    } else if (s.name === 'BrandE Yogurt (Straw)') {
+      investment = 40; returnMargin = 21;
+      rec = 'Minor dairy segment. Defer promotional budgets to release safety stock capital.';
+    } else if (s.name === 'Foam Face Wash') {
+      investment = 45; returnMargin = 26;
+      rec = 'High volume but low margins (26%). Limit capital layout to baseline maintenance.';
     } else {
-      if (s.growth >= 0.10) {
-        demand = Math.round(55 + (s.growth * 100) % 35);
-        penetration = Math.round(15 + (s.rev) % 35);
-        rec = `Expanding category presence. Increase sales force focus to drive low penetration.`;
-      } else if (s.growth >= 0.0) {
-        demand = Math.round(45 + (s.growth * 100) % 25);
-        penetration = Math.round(50 + (s.rev) % 45);
-        rec = `Steady category performer. Protect margins and optimize production costs.`;
+      if (s.margin >= 35) {
+        if (s.rev >= 80) {
+          investment = Math.round(55 + (s.rev % 35));
+          returnMargin = Math.round(s.margin);
+          rec = `High-value product. Requires ₹${investment} Cr capital to yield ${returnMargin}% margins.`;
+        } else {
+          investment = Math.round(15 + (s.rev % 30));
+          returnMargin = Math.round(s.margin);
+          rec = `Attractive margin profile. Low investment of ₹${investment} Cr delivers ${returnMargin}% returns.`;
+        }
       } else {
-        demand = Math.round(10 + (s.margin) % 35);
-        penetration = Math.round(55 + (s.rev) % 40);
-        rec = `Low growth or declining product. Limit marketing budget support.`;
+        if (s.rev >= 80) {
+          investment = Math.round(60 + (s.rev % 30));
+          returnMargin = Math.round(s.margin);
+          rec = `Capital heavy and low yield. Investment of ₹${investment} Cr delivers only ${returnMargin}% margin.`;
+        } else {
+          investment = Math.round(10 + (s.rev % 35));
+          returnMargin = Math.round(s.margin);
+          rec = `Minor tactical SKU. Low investment of ₹${investment} Cr yields minor ${returnMargin}% margins.`;
+        }
       }
     }
 
-    let quadrant: 'investment' | 'leader' | 'speculative' | 'saturated' = 'speculative';
-    if (demand >= 50 && penetration < 50) {
-      quadrant = 'investment';
-    } else if (demand >= 50 && penetration >= 50) {
-      quadrant = 'leader';
-    } else if (demand < 50 && penetration < 50) {
-      quadrant = 'speculative';
+    let quadrant: 'quickwin' | 'strategic' | 'niche' | 'avoid' = 'niche';
+    if (returnMargin >= 50 && investment < 50) {
+      quadrant = 'quickwin';
+    } else if (returnMargin >= 50 && investment >= 50) {
+      quadrant = 'strategic';
+    } else if (returnMargin < 50 && investment < 50) {
+      quadrant = 'niche';
     } else {
-      quadrant = 'saturated';
+      quadrant = 'avoid';
     }
 
     return {
@@ -491,19 +491,18 @@ const getOpportunityData = (skusList: any[]): OpportunitySku[] => {
       rev: s.rev,
       margin: s.margin,
       growth: s.growth,
-      penetration,
-      demand,
-      expansionPotential,
+      investment,
+      returnMargin,
       quadrant,
       rec
     };
   });
 };
 
-const GrowthOpportunityMap: React.FC<GrowthOpportunityMapProps> = ({ skusList, isDarkMode, onSelectSku, addToast }) => {
-  const [activeQuad, setActiveQuad] = useState<'investment' | 'leader' | 'speculative' | 'saturated'>('investment');
+const InvestmentMarginMap: React.FC<InvestmentMarginMapProps> = ({ skusList, isDarkMode, onSelectSku, addToast }) => {
+  const [activeQuad, setActiveQuad] = useState<'quickwin' | 'strategic' | 'niche' | 'avoid'>('quickwin');
   
-  const oppData = getOpportunityData(skusList);
+  const oppData = getInvestmentMarginData(skusList);
   const filteredOppData = oppData.filter(x => x.quadrant === activeQuad);
   
   const accentColor = isDarkMode ? '#a78bfa' : '#6d28d9';
@@ -514,10 +513,10 @@ const GrowthOpportunityMap: React.FC<GrowthOpportunityMapProps> = ({ skusList, i
   const tooltipText = isDarkMode ? '#fff' : '#000';
 
   const counts = {
-    investment: oppData.filter(x => x.quadrant === 'investment').length,
-    leader: oppData.filter(x => x.quadrant === 'leader').length,
-    speculative: oppData.filter(x => x.quadrant === 'speculative').length,
-    saturated: oppData.filter(x => x.quadrant === 'saturated').length,
+    quickwin: oppData.filter(x => x.quadrant === 'quickwin').length,
+    strategic: oppData.filter(x => x.quadrant === 'strategic').length,
+    niche: oppData.filter(x => x.quadrant === 'niche').length,
+    avoid: oppData.filter(x => x.quadrant === 'avoid').length,
   };
 
   const handleApproveInvestment = (skuName: string, potential: number) => {
@@ -532,10 +531,10 @@ const GrowthOpportunityMap: React.FC<GrowthOpportunityMapProps> = ({ skusList, i
 
   const getBubbleColor = (quad: string) => {
     switch (quad) {
-      case 'investment': return '#8b5cf6';
-      case 'leader': return '#10b981';
-      case 'speculative': return '#f59e0b';
-      case 'saturated': return '#ef4444';
+      case 'quickwin': return '#10b981';
+      case 'strategic': return '#8b5cf6';
+      case 'niche': return '#f59e0b';
+      case 'avoid': return '#ef4444';
       default: return '#6b7280';
     }
   };
@@ -544,13 +543,13 @@ const GrowthOpportunityMap: React.FC<GrowthOpportunityMapProps> = ({ skusList, i
     <div className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm space-y-4">
       <div className="flex justify-between items-start pb-2 border-b border-black/5 dark:border-white/5 mb-3">
         <div>
-          <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">AI Growth Opportunity Map</span>
+          <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Investment vs. Return Margin Map</span>
           <p className="text-[9px] text-zinc-550 dark:text-zinc-400 uppercase tracking-widest mt-0.5">
-            AI-detected expansion targets: High Demand & Low Penetration. Invest here to maximize incremental revenue.
+            Optimize fund allocation: High Return & Low Investment (Quick Wins) represent top priority candidates.
           </p>
         </div>
-        <span className="text-[8px] font-bold uppercase tracking-wider text-[#8b5cf6] bg-[#8b5cf6]/10 px-2 py-0.5 rounded-full animate-pulse">
-          AI Investment Engine Active
+        <span className="text-[8px] font-bold uppercase tracking-wider text-[#10b981] bg-[#10b981]/10 px-2 py-0.5 rounded-full animate-pulse">
+          Capital Allocation Active
         </span>
       </div>
 
@@ -558,48 +557,50 @@ const GrowthOpportunityMap: React.FC<GrowthOpportunityMapProps> = ({ skusList, i
         {/* LEFT COLUMN: SCATTER MAP */}
         <div className="lg:col-span-7 space-y-2 relative">
           <div className="h-80 relative">
-            <div className="absolute top-2 left-10 pointer-events-none text-[8px] font-bold uppercase tracking-wider text-purple-500/80 bg-purple-500/5 px-2 py-0.5 border border-purple-500/10 rounded-sm">
-              Investment Zone (High Priority)
+            <div className="absolute top-2 left-10 pointer-events-none text-[8px] font-bold uppercase tracking-wider text-emerald-500/80 bg-emerald-500/5 px-2 py-0.5 border border-emerald-500/10 rounded-sm">
+              Quick Wins (High Priority)
             </div>
-            <div className="absolute top-2 right-4 pointer-events-none text-[8px] font-bold uppercase tracking-wider text-emerald-500/80 bg-emerald-500/5 px-2 py-0.5 border border-emerald-500/10 rounded-sm">
-              Market Leader (Protect)
+            <div className="absolute top-2 right-4 pointer-events-none text-[8px] font-bold uppercase tracking-wider text-purple-500/80 bg-purple-500/5 px-2 py-0.5 border border-purple-500/10 rounded-sm">
+              Strategic Bets (Scale)
             </div>
             <div className="absolute bottom-10 left-10 pointer-events-none text-[8px] font-bold uppercase tracking-wider text-amber-500/80 bg-amber-500/5 px-2 py-0.5 border border-amber-500/10 rounded-sm">
-              Speculative (Niche)
+              Niche / Tactical
             </div>
             <div className="absolute bottom-10 right-4 pointer-events-none text-[8px] font-bold uppercase tracking-wider text-red-500/80 bg-red-500/5 px-2 py-0.5 border border-red-500/10 rounded-sm">
-              Saturated (Optimize)
+              Avoid / High Risk
             </div>
 
             <ResponsiveContainer width="100%" height="100%">
               <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: -20 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} />
+                <ReferenceLine x={50} stroke={isDarkMode ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)'} strokeDasharray="5 5" />
+                <ReferenceLine y={50} stroke={isDarkMode ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)'} strokeDasharray="5 5" />
                 <XAxis 
                   type="number" 
-                  dataKey="penetration" 
-                  name="Penetration" 
+                  dataKey="investment" 
+                  name="Investment" 
                   domain={[0, 100]} 
                   tick={{ fill: tickColor, fontSize: 9 }} 
-                  label={{ value: 'Market Penetration (%) →', position: 'bottom', fill: tickColor, fontSize: 10, offset: 5 }} 
+                  label={{ value: 'Required Investment (₹ Cr) →', position: 'bottom', fill: tickColor, fontSize: 10, offset: 5 }} 
                 />
                 <YAxis 
                   type="number" 
-                  dataKey="demand" 
-                  name="Demand Velocity" 
+                  dataKey="returnMargin" 
+                  name="Return Margin" 
                   domain={[0, 100]} 
                   tick={{ fill: tickColor, fontSize: 9 }} 
-                  label={{ value: '← Market Demand / Velocity (%)', angle: -90, position: 'left', fill: tickColor, fontSize: 10, offset: 5 }} 
+                  label={{ value: '← Return Margin (%)', angle: -90, position: 'left', fill: tickColor, fontSize: 10, offset: 5 }} 
                 />
-                <ZAxis type="number" dataKey="expansionPotential" range={[100, 600]} />
+                <ZAxis type="number" dataKey="rev" range={[100, 600]} />
                 <Tooltip 
                   cursor={{ strokeDasharray: '3 3' }} 
                   contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, color: tooltipText }}
                   itemStyle={{ fontSize: 11 }}
                   labelStyle={{ fontSize: 11, fontWeight: 'bold' }}
                   formatter={(value: any, name: any, props: any) => {
-                    if (name === 'Penetration') return [`${value}%`, 'Penetration'];
-                    if (name === 'Demand Velocity') return [`${value}%`, 'Demand Velocity'];
-                    if (name === 'Expansion Potential') return [`₹${value} Cr`, 'Expansion Potential'];
+                    if (name === 'Investment') return [`₹${value} Cr`, 'Required Investment'];
+                    if (name === 'Return Margin') return [`${value}%`, 'Return Margin'];
+                    if (name === 'SKU Revenue') return [`₹${value} Cr`, 'SKU Revenue'];
                     return [value, name];
                   }}
                 />
@@ -622,7 +623,7 @@ const GrowthOpportunityMap: React.FC<GrowthOpportunityMapProps> = ({ skusList, i
                     position="top" 
                     style={{ fill: 'rgba(156, 163, 175, 0.65)', fontSize: 7, pointerEvents: 'none', fontWeight: 'bold' }} 
                     formatter={(val: string) => {
-                      const highlights = ['BrandC Energy Drink', 'BrandC Chips (Spicy)', 'Herbal Shampoo', 'Laundry Pods Premium'];
+                      const highlights = ['Herbal Shampoo', 'Oat Cookies', 'Laundry Pods Premium', 'Mango Fizz 500ml', 'Choco Wafers'];
                       return highlights.includes(val) ? val : '';
                     }}
                   />
@@ -636,10 +637,10 @@ const GrowthOpportunityMap: React.FC<GrowthOpportunityMapProps> = ({ skusList, i
         <div className="lg:col-span-5 space-y-4">
           <div className="flex border-b border-black/10 dark:border-white/10 p-0.5 bg-black/5 dark:bg-white/5 rounded-sm">
             {[
-              { id: 'investment', label: 'Invest', count: counts.investment, color: '#8b5cf6' },
-              { id: 'leader', label: 'Protect', count: counts.leader, color: '#10b981' },
-              { id: 'speculative', label: 'Niche', count: counts.speculative, color: '#f59e0b' },
-              { id: 'saturated', label: 'Optimize', count: counts.saturated, color: '#ef4444' }
+              { id: 'quickwin', label: 'Quick Wins', count: counts.quickwin, color: '#10b981' },
+              { id: 'strategic', label: 'Strategic', count: counts.strategic, color: '#8b5cf6' },
+              { id: 'niche', label: 'Niche', count: counts.niche, color: '#f59e0b' },
+              { id: 'avoid', label: 'Avoid', count: counts.avoid, color: '#ef4444' }
             ].map(t => (
               <button
                 key={t.id}
@@ -676,19 +677,19 @@ const GrowthOpportunityMap: React.FC<GrowthOpportunityMapProps> = ({ skusList, i
                     }}
                     className="cursor-pointer"
                   >
-                    <h4 className="text-[11.5px] font-extrabold text-zinc-850 dark:text-zinc-150 group-hover:text-purple-500 transition-colors font-display">
+                    <h4 className="text-[11.5px] font-extrabold text-zinc-850 dark:text-zinc-150 group-hover:text-emerald-500 transition-colors font-display">
                       {item.name}
                     </h4>
                     <p className="text-[8.5px] text-zinc-400 dark:text-zinc-500 uppercase font-bold tracking-wider mt-0.5">
-                      {item.cat} • Margin: {item.margin}% • Growth: {(item.growth * 100).toFixed(0)}%
+                      {item.cat} • Rev: ₹{item.rev} Cr • Margin: {item.margin}%
                     </p>
                   </div>
                   <div className="text-right">
-                    <span className="text-[9.5px] font-extrabold font-mono text-purple-500 dark:text-[#a78bfa]">
-                      +₹{item.expansionPotential} Cr
+                    <span className="text-[9.5px] font-extrabold font-mono text-emerald-600 dark:text-emerald-400">
+                      ₹{item.investment} Cr
                     </span>
                     <p className="text-[7.5px] text-zinc-400 dark:text-zinc-500 uppercase tracking-widest font-bold mt-0.5">
-                      Potential
+                      Investment
                     </p>
                   </div>
                 </div>
@@ -710,11 +711,11 @@ const GrowthOpportunityMap: React.FC<GrowthOpportunityMapProps> = ({ skusList, i
                   >
                     Review Metrics
                   </button>
-                  {item.quadrant === 'investment' && (
+                  {item.quadrant === 'quickwin' && (
                     <button
                       type="button"
-                      onClick={() => handleApproveInvestment(item.name, item.expansionPotential)}
-                      className="px-2 py-1 bg-[#6d28d9] dark:bg-[#a78bfa] text-white dark:text-zinc-950 hover:opacity-90 rounded-sm text-[8.5px] font-extrabold uppercase tracking-wider cursor-pointer border-none flex items-center gap-1 outline-none"
+                      onClick={() => handleApproveInvestment(item.name, item.investment)}
+                      className="px-2 py-1 bg-emerald-600 dark:bg-emerald-500 text-white dark:text-zinc-950 hover:opacity-90 rounded-sm text-[8.5px] font-extrabold uppercase tracking-wider cursor-pointer border-none flex items-center gap-1 outline-none"
                     >
                       <Plus size={10} />
                       Approve Investment
@@ -1393,9 +1394,9 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean; onAuditClick?: (metricNam
         </div>
       </div>
 
-      {/* AI Growth Opportunity Map */}
+      {/* AI Investment vs Return Margin Map */}
       <div className="mt-6">
-        <GrowthOpportunityMap 
+        <InvestmentMarginMap 
           skusList={SKUS} 
           isDarkMode={isDarkMode} 
           onSelectSku={setSelectedSkuForModal} 
@@ -1834,7 +1835,7 @@ export const PortfolioHealthMap: React.FC<PortfolioHealthMapProps> = ({ role, is
           { id: 'ph-pareto', label: 'Revenue Analysis' },
           { id: 'ph-channel', label: 'Channel Performance' },
           { id: 'ph-sim', label: 'Rationalization Sim' },
-          { id: 'ph-growth', label: 'Growth Opportunity Map' },
+          { id: 'ph-growth', label: 'Investment vs Margin' },
         ].map(st => (
           <button
             key={st.id}
@@ -2617,11 +2618,11 @@ export const PortfolioHealthMap: React.FC<PortfolioHealthMapProps> = ({ role, is
       )}
 
       {/* ────────────────────────────────────────────────────────────────────────
-          SUB-TAB 5: GROWTH OPPORTUNITY MAP
+          SUB-TAB 5: INVESTMENT VS RETURN MARGIN
           ──────────────────────────────────────────────────────────────────────── */}
       {activeSubTab === 'ph-growth' && (
         <div className="space-y-6">
-          <GrowthOpportunityMap 
+          <InvestmentMarginMap 
             skusList={filteredSKUs} 
             isDarkMode={isDarkMode} 
             onSelectSku={setSelectedSkuForModal} 
