@@ -1,21 +1,22 @@
 import React, { useState } from 'react';
 import { REGIONAL_DATA, SKUS } from '../../../constants/data';
-import { ArrowRight, Truck, Clock, ShieldCheck, AlertTriangle, Play, HelpCircle, Layers, Percent } from 'lucide-react';
+import { ArrowRight, Truck, Clock, ShieldCheck, AlertTriangle, Play, HelpCircle, Layers, Percent, ChevronDown } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 // Geographic coordinate proxies for dynamic distance/leadtime/freight calculations
+// Realistic geographical relative SVG coordinates (spread to fit the 100x80 viewBox)
 const COUNTRY_COORDS: Record<string, { x: number; y: number }> = {
-  'Netherlands': { x: 5.0, y: 5.0 },
-  'Germany':     { x: 6.0, y: 5.0 },
-  'Poland':      { x: 8.0, y: 5.0 },
-  'Austria':     { x: 6.5, y: 4.0 },
-  'Italy':       { x: 6.5, y: 2.0 },
-  'France':      { x: 4.0, y: 4.5 },
-  'Spain':       { x: 1.0, y: 2.5 }
+  'Netherlands': { x: 45.0, y: 15.0 },
+  'Germany':     { x: 60.0, y: 20.0 },
+  'Poland':      { x: 88.0, y: 16.0 },
+  'Austria':     { x: 70.0, y: 36.0 },
+  'Italy':       { x: 67.0, y: 64.0 },
+  'France':      { x: 35.0, y: 40.0 },
+  'Spain':       { x: 18.0, y: 60.0 }
 };
 
-const mapX = (x: number) => 12 + (x - 1) * 11.5;
-const mapY = (y: number) => 68 - (y - 2) * 16;
+const mapX = (x: number) => x;
+const mapY = (y: number) => y;
 
 export const CrossLocationTransfer: React.FC = () => {
   const [selectedSku, setSelectedSku] = useState<string>('Mango Fizz 500ml');
@@ -26,6 +27,7 @@ export const CrossLocationTransfer: React.FC = () => {
   // Drag and click selector states for SVG nodes
   const [dragStartCountry, setDragStartCountry] = useState<string | null>(null);
   const [dragCurrentCoords, setDragCurrentCoords] = useState<{ x: number; y: number } | null>(null);
+  const [activeSelectionSlot, setActiveSelectionSlot] = useState<'source' | 'target'>('source');
 
   const handleNodeMouseDown = (country: string, e: React.MouseEvent) => {
     e.preventDefault();
@@ -40,13 +42,10 @@ export const CrossLocationTransfer: React.FC = () => {
     e.stopPropagation();
     if (dragStartCountry) {
       if (dragStartCountry === country) {
-        // Toggle/Click-to-select logic
-        if (sourceCountry === targetCountry || sourceCountry === '') {
+        // Simple click selection logic using active selection slot
+        if (activeSelectionSlot === 'source') {
           setSourceCountry(country);
-        } else if (sourceCountry === country) {
-          // Reset target
-          setSourceCountry(country);
-          setTargetCountry(country);
+          setActiveSelectionSlot('target'); // Auto-focus target for the next click
         } else {
           setTargetCountry(country);
         }
@@ -87,17 +86,45 @@ export const CrossLocationTransfer: React.FC = () => {
   const dy = targetCoord.y - sourceCoord.y;
   const distance = Math.sqrt(dx * dx + dy * dy);
 
-  // Dynamic Freight Margin Penalty (farther = higher freight drag)
-  const freightDrag = distance === 0 ? 0 : parseFloat((distance * 0.38 + 0.2).toFixed(2));
-  
-  // Dynamic Transit Lead Time addition (farther = longer delay)
-  const transitLeadTime = distance === 0 ? 0 : parseFloat((distance * 0.85 + 0.5).toFixed(1));
+  // SKU Regional Margin calculation helper (incorporates SKU base margin + category-specific regional performance offset)
+  const getSkuRegionalMargin = (sku: typeof skuDetails, country: string) => {
+    const category = sku.cat || 'Beverages';
+    const categoryOffsets: Record<string, Record<string, number>> = {
+      'Beverages': { 'Italy': 0.8, 'Spain': -0.4, 'Germany': 0.5, 'France': -0.2, 'Austria': 1.1, 'Poland': -0.6, 'Netherlands': 0.2 },
+      'Snacks':    { 'Italy': -0.5, 'Spain': 0.9, 'Germany': -0.2, 'France': 0.6, 'Austria': -0.4, 'Poland': 1.2, 'Netherlands': -0.8 },
+      'Personal Care': { 'Italy': 1.2, 'Spain': -0.6, 'Germany': 0.8, 'France': -0.4, 'Austria': 0.5, 'Poland': -1.0, 'Netherlands': 0.6 },
+      'Dairy':     { 'Italy': -0.9, 'Spain': 0.4, 'Germany': -0.6, 'France': 1.1, 'Austria': -0.2, 'Poland': 0.5, 'Netherlands': -0.4 },
+      'Household': { 'Italy': 0.5, 'Spain': -1.1, 'Germany': 0.3, 'France': -0.5, 'Austria': 0.8, 'Poland': -0.3, 'Netherlands': 0.4 },
+    };
+    const offset = categoryOffsets[category]?.[country] || 0;
+    return parseFloat((sku.margin + offset).toFixed(2));
+  };
 
-  // Dynamic Route Feasibility Score (0 - 100)
-  const feasibilityScore = distance === 0 ? 100 : Math.max(10, Math.min(98, Math.round(98 - (distance * 12))));
+  const sourceSkuMargin = getSkuRegionalMargin(skuDetails, sourceCountry);
+  const targetSkuMargin = getSkuRegionalMargin(skuDetails, targetCountry);
+
+  // Dynamic Freight Margin Penalty (farther, heavier categories, and higher sourcing complexity = higher freight drag)
+  const categoryFreightMultipliers: Record<string, number> = {
+    'Dairy': 1.35,      // cold chain handling
+    'Beverages': 1.15,  // heavy liquid weight
+    'Household': 1.10,  // bulky packaging
+    'Snacks': 0.90,     // light dry items
+    'Personal Care': 0.95
+  };
+  const categoryMultiplier = categoryFreightMultipliers[skuDetails.cat] || 1.0;
+  const complexityModifier = 1 + (skuDetails.cx * 0.25);
+  
+  const freightDrag = distance === 0 ? 0 : parseFloat((distance * 0.38 * categoryMultiplier * complexityModifier + 0.2).toFixed(2));
+  
+  // Dynamic Transit Lead Time addition (farther, longer replenishment lead, and higher complexity = longer delay)
+  const transitLeadTime = distance === 0 ? 0 : parseFloat((distance * 0.85 + (skuDetails.lead * 0.08) + (skuDetails.cx * 0.5)).toFixed(1));
+
+  // Dynamic Route Feasibility Score (0 - 100) (reduced by distance, SKU stockouts, and promo dependency risks)
+  const riskPenalty = (skuDetails.stockouts * 2.5) + (skuDetails.promo * 5);
+  const feasibilityScore = distance === 0 ? 100 : Math.max(10, Math.min(98, Math.round(98 - (distance * 12) - riskPenalty)));
 
   // Margin Yield Difference
-  const marginDelta = parseFloat((targetRegion.marginPct - sourceRegion.marginPct).toFixed(2));
+  const marginDelta = parseFloat((targetSkuMargin - sourceSkuMargin).toFixed(2));
   
   // Net Assortment Margin Lift
   const netMarginLift = parseFloat((marginDelta - freightDrag).toFixed(2));
@@ -164,32 +191,87 @@ export const CrossLocationTransfer: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-2 gap-3">
-            {/* Source Region Selector */}
-            <div className="space-y-1">
-              <label className="text-[8px] uppercase font-bold text-zinc-400">Source Country</label>
-              <select
-                value={sourceCountry}
-                onChange={(e) => setSourceCountry(e.target.value)}
-                className="w-full bg-black/5 dark:bg-zinc-800 border border-black/10 dark:border-white/10 rounded px-2.5 py-1.5 text-[10px] outline-none text-zinc-800 dark:text-zinc-200"
-              >
-                {REGIONAL_DATA.map(r => (
-                  <option key={r.country} value={r.country}>{r.country}</option>
-                ))}
-              </select>
+            {/* Source Region Card */}
+            <div 
+              onClick={() => setActiveSelectionSlot('source')}
+              className={`group/slot relative p-2.5 rounded border transition-all cursor-pointer flex flex-col justify-between h-[55px] ${
+                activeSelectionSlot === 'source'
+                  ? 'bg-rose-500/10 border-rose-550/50 shadow-[0_0_8px_rgba(239,68,68,0.25)]'
+                  : 'bg-black/5 dark:bg-zinc-800/40 border-black/10 dark:border-white/10 hover:border-black/20 dark:hover:border-white/20'
+              }`}
+            >
+              <div className="flex justify-between items-center w-full">
+                <span className={`text-[8px] uppercase font-bold transition-colors ${
+                  activeSelectionSlot === 'source' ? 'text-rose-500' : 'text-zinc-400 group-hover/slot:text-rose-400'
+                }`}>Source (Click Map)</span>
+                {activeSelectionSlot === 'source' && (
+                  <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
+                )}
+              </div>
+              <div className="flex items-center justify-between mt-1 relative">
+                <span className="text-xs font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-rose-500" />
+                  {sourceCountry}
+                </span>
+                
+                <div className="relative w-5 h-5 flex items-center justify-center rounded hover:bg-black/15 dark:hover:bg-white/10 transition-colors">
+                  <ChevronDown size={12} className="text-zinc-400" />
+                  <select
+                    value={sourceCountry}
+                    onChange={(e) => {
+                      setSourceCountry(e.target.value);
+                      setActiveSelectionSlot('target');
+                    }}
+                    onClick={(e) => e.stopPropagation()}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  >
+                    {REGIONAL_DATA.map(r => (
+                      <option key={r.country} value={r.country}>{r.country}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
             </div>
 
-            {/* Target Region Selector */}
-            <div className="space-y-1">
-              <label className="text-[8px] uppercase font-bold text-zinc-400">Target Country</label>
-              <select
-                value={targetCountry}
-                onChange={(e) => setTargetCountry(e.target.value)}
-                className="w-full bg-black/5 dark:bg-zinc-800 border border-black/10 dark:border-white/10 rounded px-2.5 py-1.5 text-[10px] outline-none text-zinc-800 dark:text-zinc-200"
-              >
-                {REGIONAL_DATA.map(r => (
-                  <option key={r.country} value={r.country}>{r.country}</option>
-                ))}
-              </select>
+            {/* Target Region Card */}
+            <div 
+              onClick={() => setActiveSelectionSlot('target')}
+              className={`group/slot relative p-2.5 rounded border transition-all cursor-pointer flex flex-col justify-between h-[55px] ${
+                activeSelectionSlot === 'target'
+                  ? 'bg-emerald-500/10 border-emerald-550/50 shadow-[0_0_8px_rgba(16,185,129,0.25)]'
+                  : 'bg-black/5 dark:bg-zinc-800/40 border-black/10 dark:border-white/10 hover:border-black/20 dark:hover:border-white/20'
+              }`}
+            >
+              <div className="flex justify-between items-center w-full">
+                <span className={`text-[8px] uppercase font-bold transition-colors ${
+                  activeSelectionSlot === 'target' ? 'text-emerald-500' : 'text-zinc-400 group-hover/slot:text-emerald-400'
+                }`}>Target (Click Map)</span>
+                {activeSelectionSlot === 'target' && (
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                )}
+              </div>
+              <div className="flex items-center justify-between mt-1 relative">
+                <span className="text-xs font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                  {targetCountry}
+                </span>
+                
+                <div className="relative w-5 h-5 flex items-center justify-center rounded hover:bg-black/15 dark:hover:bg-white/10 transition-colors">
+                  <ChevronDown size={12} className="text-zinc-400" />
+                  <select
+                    value={targetCountry}
+                    onChange={(e) => {
+                      setTargetCountry(e.target.value);
+                    }}
+                    onClick={(e) => e.stopPropagation()}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  >
+                    {REGIONAL_DATA.map(r => (
+                      <option key={r.country} value={r.country}>{r.country}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -208,6 +290,32 @@ export const CrossLocationTransfer: React.FC = () => {
           </h5>
 
           <div className="space-y-3">
+            {/* Help Guide Banner */}
+            <div className="bg-black/5 dark:bg-zinc-800/40 border border-black/10 dark:border-white/10 px-2.5 py-1.5 rounded-sm text-[7.5px] font-sans font-bold flex items-center justify-between">
+              <span className="flex items-center gap-1.5 text-zinc-700 dark:text-zinc-300">
+                {activeSelectionSlot === 'source' ? (
+                  <>
+                    <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
+                    <span>Click map node to choose SOURCE warehouse</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    <span>Click map node to choose TARGET warehouse</span>
+                  </>
+                )}
+              </span>
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setActiveSelectionSlot(activeSelectionSlot === 'source' ? 'target' : 'source');
+                }}
+                className="text-blue-500 hover:text-blue-400 bg-none border-none cursor-pointer uppercase tracking-wider text-[6.5px] font-extrabold transition-colors outline-none"
+              >
+                Switch to {activeSelectionSlot === 'source' ? 'Target' : 'Source'}
+              </button>
+            </div>
+
             {/* Dynamic SVG Map (Always Visible) */}
             <div className="relative w-full h-[125px] bg-slate-950/40 dark:bg-black/45 rounded-sm border border-black/10 dark:border-white/10 overflow-hidden select-none">
               {/* Distance & CO2 labels (visible if active route) */}
@@ -238,14 +346,32 @@ export const CrossLocationTransfer: React.FC = () => {
                 `}</style>
                 
                 {/* Network background mesh links */}
-                <line x1={mapX(1.0)} y1={mapY(2.5)} x2={mapX(4.0)} y2={mapY(4.5)} stroke="rgba(255,255,255,0.04)" strokeWidth="0.5" />
-                <line x1={mapX(4.0)} y1={mapY(4.5)} x2={mapX(5.0)} y2={mapY(5.0)} stroke="rgba(255,255,255,0.04)" strokeWidth="0.5" />
-                <line x1={mapX(4.0)} y1={mapY(4.5)} x2={mapX(6.0)} y2={mapY(5.0)} stroke="rgba(255,255,255,0.04)" strokeWidth="0.5" />
-                <line x1={mapX(4.0)} y1={mapY(4.5)} x2={mapX(6.5)} y2={mapY(2.0)} stroke="rgba(255,255,255,0.04)" strokeWidth="0.5" />
-                <line x1={mapX(5.0)} y1={mapY(5.0)} x2={mapX(6.0)} y2={mapY(5.0)} stroke="rgba(255,255,255,0.04)" strokeWidth="0.5" />
-                <line x1={mapX(6.0)} y1={mapY(5.0)} x2={mapX(8.0)} y2={mapY(5.0)} stroke="rgba(255,255,255,0.04)" strokeWidth="0.5" />
-                <line x1={mapX(6.0)} y1={mapY(5.0)} x2={mapX(6.5)} y2={mapY(4.0)} stroke="rgba(255,255,255,0.04)" strokeWidth="0.5" />
-                <line x1={mapX(6.5)} y1={mapY(4.0)} x2={mapX(6.5)} y2={mapY(2.0)} stroke="rgba(255,255,255,0.04)" strokeWidth="0.5" />
+                {(() => {
+                  const links = [
+                    ['Spain', 'France'],
+                    ['France', 'Netherlands'],
+                    ['France', 'Germany'],
+                    ['France', 'Italy'],
+                    ['Netherlands', 'Germany'],
+                    ['Germany', 'Poland'],
+                    ['Germany', 'Austria'],
+                    ['Austria', 'Italy'],
+                  ];
+                  return links.map(([c1, c2], idx) => {
+                    const coord1 = COUNTRY_COORDS[c1];
+                    const coord2 = COUNTRY_COORDS[c2];
+                    if (!coord1 || !coord2) return null;
+                    return (
+                      <line 
+                        key={idx}
+                        x1={mapX(coord1.x)} y1={mapY(coord1.y)} 
+                        x2={mapX(coord2.x)} y2={mapY(coord2.y)} 
+                        stroke="rgba(255,255,255,0.04)" 
+                        strokeWidth="0.5" 
+                      />
+                    );
+                  });
+                })()}
 
                 {/* Active Route Path */}
                 {sourceCountry !== targetCountry && (() => {
@@ -330,9 +456,31 @@ export const CrossLocationTransfer: React.FC = () => {
                       {(isSource || isTarget) ? (
                         <circle cx={cx} cy={cy} r={nodeRadius + 2.5} fill="none" stroke={nodeStroke} strokeWidth="1" className="animate-pulse" />
                       ) : (
-                        <circle cx={cx} cy={cy} r={nodeRadius + 2} fill="none" stroke="rgba(250,204,21,0)" strokeWidth="1" className="group-hover:stroke-yellow-500/30 group-hover:animate-ping" />
+                        <circle 
+                          cx={cx} 
+                          cy={cy} 
+                          r={nodeRadius + 2} 
+                          fill="none" 
+                          stroke="rgba(250,204,21,0)" 
+                          strokeWidth="1" 
+                          className={`transition-all ${
+                            activeSelectionSlot === 'source'
+                              ? 'group-hover:stroke-rose-500/30 group-hover:animate-ping'
+                              : 'group-hover:stroke-emerald-500/30 group-hover:animate-ping'
+                          }`} 
+                        />
                       )}
-                      <circle cx={cx} cy={cy} r={nodeRadius} fill={nodeFill} className="group-hover:fill-yellow-500 transition-colors duration-200" />
+                      <circle 
+                        cx={cx} 
+                        cy={cy} 
+                        r={nodeRadius} 
+                        fill={nodeFill} 
+                        className={`transition-colors duration-200 ${
+                          activeSelectionSlot === 'source'
+                            ? 'group-hover:fill-rose-500'
+                            : 'group-hover:fill-emerald-500'
+                        }`} 
+                      />
                       <text 
                         x={cx} 
                         y={cy + 5.5} 
@@ -348,6 +496,7 @@ export const CrossLocationTransfer: React.FC = () => {
                   );
                 })}
               </svg>
+
             </div>
 
             {/* Conditionally render details underneath map */}
@@ -357,12 +506,12 @@ export const CrossLocationTransfer: React.FC = () => {
                 <div className="flex justify-between items-center text-[8.5px] px-3 py-1.5 bg-black/[0.01] dark:bg-white/[0.01] border border-black/5 dark:border-white/5 rounded-sm font-mono font-bold font-sans">
                   <div>
                     <span className="text-zinc-455 block text-[6.5px] font-sans">Source ({sourceCountry.substring(0,3).toUpperCase()})</span>
-                    <span className="text-rose-500">{sourceRegion.marginPct.toFixed(2)}% margin</span>
+                    <span className="text-rose-500">{sourceSkuMargin.toFixed(2)}% margin</span>
                   </div>
                   <ArrowRight size={10} className="text-zinc-400" />
                   <div className="text-right">
                     <span className="text-zinc-455 block text-[6.5px] font-sans">Target ({targetCountry.substring(0,3).toUpperCase()})</span>
-                    <span className="text-emerald-500">{targetRegion.marginPct.toFixed(2)}% margin</span>
+                    <span className="text-emerald-500">{targetSkuMargin.toFixed(2)}% margin</span>
                   </div>
                 </div>
 
