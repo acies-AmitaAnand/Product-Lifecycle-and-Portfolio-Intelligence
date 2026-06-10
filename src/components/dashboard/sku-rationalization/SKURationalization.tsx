@@ -6,7 +6,8 @@
 import React, { useState, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { Role } from '../../../types/dashboard';
-import { Download, Search, CheckCircle2, Activity, X } from 'lucide-react';
+import { Download, Search, CheckCircle2, Activity, X, Eye, Printer, FileText, RefreshCw } from 'lucide-react';
+import { SKUS } from '../../../constants/data';
 import { SkuIntelligenceModal } from './SkuIntelligenceModal';
 import { ProductDirectory } from './ProductDirectory';
 import { KPICard } from '../KPICard';
@@ -18,6 +19,7 @@ import { SkuToolbar } from './SkuToolbar';
 import { CannibalizationAnalystView } from './CannibalizationAnalystView';
 import { useSkuRationalizationState } from './useSkuRationalizationState';
 import { ActionRoutingPanel } from './ActionRoutingPanel';
+import { getDocumentTemplates } from './documentTemplates';
 
 // Re-export constants and pure functions to prevent breaking sibling imports
 export { srClassify, SR_CLASSES, getSkuLocation } from './skuConstants';
@@ -70,6 +72,65 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
     link.click();
     document.body.removeChild(link);
   };
+
+  const [isPrinting, setIsPrinting] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  const getDocTypeForStep = (team: string, actionLabel: string): string | null => {
+    const t = team.toLowerCase().replace(' ', '');
+    const a = actionLabel.trim();
+    if (t === 'pricing') {
+      if (a === 'Pull price ladder') return 'price_ladder';
+      if (a === 'Run cross-elasticity') return 'pricing_elasticity';
+      if (a === 'Separate promo slots') return 'promo_deconfliction';
+      if (a === 'Escalate to committee') return 'committee_escalation';
+    }
+    if (t === 'product') {
+      if (a === 'Add to shortlist') return 'watchlist_registration';
+      if (a === 'Feasibility check') return 'capacity';
+      if (a === 'Sunset plan draft') return 'sunset';
+    }
+    if (t === 'supplychain' || t === 'supply') {
+      if (a === 'Freeze replenishment') return 'replenishment_freeze';
+      if (a === 'Raise safety stock') return 'mrp_safety_revision';
+      if (a === 'Warehouse release') return 'warehouse_release';
+    }
+    return null;
+  };
+
+  const sA = SKUS.find(s => s.name === state.skuA) || SKUS[0];
+  const sB = SKUS.find(s => s.name === state.skuB) || SKUS[1];
+  const revA = sA ? sA.rev : 10;
+  const marginA = sA ? sA.margin : 35;
+  const marginB = sB ? sB.margin : 40;
+  const transferenceRate = Math.round(state.pairRisk * 100);
+  const transferenceVolume = parseFloat((revA * (transferenceRate / 100)).toFixed(2));
+  const marginDiffUplift = transferenceVolume * ((marginB - marginA) / 100);
+  const complexitySavings = revA * 0.05;
+  const annualSavingsLakhs = Math.round((marginDiffUplift + complexitySavings) * 100);
+
+  const skuA = state.skuA;
+  const skuB = state.skuB;
+  const exitDateDays = state.exitDateDays;
+  const pricingPriceShift = state.pricingPriceShift;
+  const supplySafetyStockShift = state.supplySafetyStockShift;
+  const pairRisk = state.pairRisk;
+  const category = state.category;
+
+  const documentTemplates = getDocumentTemplates({
+    skuA,
+    skuB,
+    category,
+    pairRisk,
+    transferenceRate,
+    transferenceVolume,
+    marginDiffUplift,
+    complexitySavings,
+    annualSavingsLakhs,
+    exitDateDays,
+    pricingPriceShift,
+    supplySafetyStockShift,
+  });
 
   return (
     <div className="space-y-6 pb-12 animate-fadeIn text-zinc-800 dark:text-white">
@@ -289,6 +350,7 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
                   <th className="py-2.5 px-3">Action Executed</th>
                   <th className="py-2.5 px-3">Parameters & Audit Rationale</th>
                   <th className="py-2.5 px-3 text-right">Sign-Off</th>
+                  <th className="py-2.5 px-3 text-right">Document Vault</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-black/5 dark:divide-white/5 font-medium">
@@ -316,17 +378,42 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
                       <div className="font-black text-[9px] text-zinc-400 uppercase">Params: {log.details}</div>
                       <div className="mt-0.5">{log.rationale}</div>
                     </td>
+                    <td className="py-3 px-3 text-right font-black uppercase">
+                      {log.actionLabel.startsWith('REVERSAL:') ? (
+                        <span className="inline-flex items-center gap-1 text-amber-500 text-[8px]">
+                          <X size={10} />
+                          <span>Reversed</span>
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 text-emerald-500 text-[8px]">
+                          <CheckCircle2 size={10} />
+                          <span>Success</span>
+                        </span>
+                      )}
+                    </td>
                     <td className="py-3 px-3 text-right">
-                      <span className="inline-flex items-center gap-1 text-emerald-500 text-[8px] font-black uppercase">
-                        <CheckCircle2 size={10} />
-                        <span>Success</span>
-                      </span>
+                      {(() => {
+                        const docType = getDocTypeForStep(log.team, log.actionLabel);
+                        if (docType) {
+                          return (
+                            <button
+                              type="button"
+                              onClick={() => state.setSelectedDoc(docType)}
+                              className="inline-flex items-center gap-1 px-2.5 py-1 text-[9px] font-black border border-purple-500/20 text-purple-600 dark:text-purple-400 bg-purple-500/5 hover:bg-purple-500/10 rounded-lg cursor-pointer transition border-none"
+                            >
+                              <FileText size={10} />
+                              <span>View Doc</span>
+                            </button>
+                          );
+                        }
+                        return <span className="text-zinc-400 dark:text-zinc-650">—</span>;
+                      })()}
                     </td>
                   </tr>
                 ))}
                 {filteredLogs.length === 0 && (
                   <tr>
-                    <td colSpan={7} className="py-8 text-center text-zinc-400 dark:text-zinc-500 font-bold uppercase tracking-widest">
+                    <td colSpan={8} className="py-8 text-center text-zinc-400 dark:text-zinc-500 font-bold uppercase tracking-widest">
                       No actions executed on the ledger yet. Open the Control Room to execute steps.
                     </td>
                   </tr>
@@ -406,9 +493,149 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
                 freezeSkuReplenishment={state.freezeSkuReplenishment}
                 unfreezeSkuReplenishment={state.unfreezeSkuReplenishment}
                 logAction={state.logAction}
+                logReversalAction={state.logReversalAction}
                 removeActionLog={state.removeActionLog}
                 isDarkMode={isDarkMode}
+                exitDateDays={state.exitDateDays}
+                setExitDateDays={state.setExitDateDays}
+                pricingPriceShift={state.pricingPriceShift}
+                setPricingPriceShift={state.setPricingPriceShift}
+                supplySafetyStockShift={state.supplySafetyStockShift}
+                setSupplySafetyStockShift={state.setSupplySafetyStockShift}
+                selectedDoc={state.selectedDoc}
+                setSelectedDoc={state.setSelectedDoc}
               />
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {/* Document Viewer Modal Overlay */}
+      {state.selectedDoc && documentTemplates[state.selectedDoc] && createPortal(
+        <div className="fixed inset-0 bg-black/60 dark:bg-black/85 backdrop-blur-sm z-[1000] flex items-center justify-center p-4 sm:p-6 animate-fadeIn font-mono">
+          <div className="bg-zinc-50 dark:bg-[#121214] border border-black/10 dark:border-white/10 rounded-xl w-full max-w-2xl h-[85vh] flex flex-col overflow-hidden shadow-2xl relative text-zinc-850 dark:text-zinc-100">
+            {/* Header */}
+            <div className="px-6 py-4 border-b border-black/5 dark:border-white/5 flex justify-between items-center bg-black/[0.02] dark:bg-white/[0.02]">
+              <div>
+                <h3 className="text-xs font-bold uppercase tracking-widest text-purple-600 dark:text-purple-400 flex items-center gap-1.5 font-sans">
+                  <FileText className="stroke-[2.5]" size={14} />
+                  <span>Executive Document Vault</span>
+                </h3>
+                <p className="text-[8px] text-zinc-400 font-bold uppercase mt-1 font-sans">
+                  Confidential Verification Certificate
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    setIsPrinting(true);
+                    setTimeout(() => {
+                      setIsPrinting(false);
+                      alert("Document sent to printer successfully.");
+                    }, 1200);
+                  }}
+                  disabled={isPrinting || isDownloading}
+                  className="p-1.5 hover:bg-black/5 dark:hover:bg-white/5 border-none rounded-lg cursor-pointer text-zinc-450 hover:text-zinc-850 dark:hover:text-white transition bg-transparent disabled:opacity-55"
+                  title="Print Document"
+                >
+                  <Printer size={14} />
+                </button>
+                <button
+                  onClick={() => {
+                    setIsDownloading(true);
+                    setTimeout(() => {
+                      setIsDownloading(false);
+                      const doc = documentTemplates[state.selectedDoc!];
+                      if (doc) {
+                        const blob = new Blob([`${doc.title}\n${doc.subtitle}\n${doc.code}\n\n[CONFIDENTIAL DOCUMENT LOG]`], { type: 'text/plain;charset=utf-8;' });
+                        const url = URL.createObjectURL(blob);
+                        const link = document.createElement('a');
+                        link.setAttribute('href', url);
+                        link.setAttribute('download', `${state.selectedDoc}_report.txt`);
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                      }
+                    }, 1200);
+                  }}
+                  disabled={isPrinting || isDownloading}
+                  className="p-1.5 hover:bg-black/5 dark:hover:bg-white/5 border-none rounded-lg cursor-pointer text-zinc-450 hover:text-zinc-850 dark:hover:text-white transition bg-transparent disabled:opacity-55"
+                  title="Download PDF/Report"
+                >
+                  <Download size={14} />
+                </button>
+                <button
+                  onClick={() => state.setSelectedDoc(null)}
+                  className="p-1.5 hover:bg-black/5 dark:hover:bg-white/5 border-none rounded-lg cursor-pointer text-zinc-450 hover:text-zinc-850 dark:hover:text-white transition bg-transparent"
+                  title="Close"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+            </div>
+
+            {/* Document Body Area */}
+            <div className="flex-1 overflow-y-auto p-8 relative bg-white dark:bg-[#16161c]">
+              {/* Paper Look */}
+              <div className="border border-zinc-250 dark:border-zinc-800 p-6 rounded shadow-sm bg-zinc-50/50 dark:bg-zinc-900/30 min-h-full flex flex-col justify-between relative">
+                
+                {/* Confidential Watermark Ribbon */}
+                <div className="absolute top-2 right-2 text-[6px] tracking-widest font-sans font-bold px-1.5 py-0.5 rounded border border-red-500/20 text-red-500 bg-red-500/5 rotate-[5deg] uppercase">
+                  Confidential - Exec Eyes Only
+                </div>
+
+                {/* Main Content */}
+                <div className="space-y-6">
+                  {/* Header info */}
+                  <div className="space-y-1">
+                    <div className="text-[14px] font-black tracking-tight text-zinc-900 dark:text-white leading-tight font-sans">
+                      {documentTemplates[state.selectedDoc].title}
+                    </div>
+                    <div className="text-[9px] text-zinc-400 font-bold uppercase tracking-wider font-sans">
+                      {documentTemplates[state.selectedDoc].subtitle}
+                    </div>
+                    <div className="text-[7px] text-zinc-400 font-mono select-all break-all bg-black/5 dark:bg-white/5 p-1 rounded">
+                      {documentTemplates[state.selectedDoc].code}
+                    </div>
+                  </div>
+
+                  <hr className="border-t-2 border-zinc-300 dark:border-zinc-700" />
+
+                  {/* Render content */}
+                  <div className="text-zinc-700 dark:text-zinc-300 font-mono text-[10px] leading-relaxed">
+                    {documentTemplates[state.selectedDoc].content}
+                  </div>
+                </div>
+
+                {/* Footer security warning */}
+                <div className="mt-8 pt-4 border-t border-dashed border-zinc-200 dark:border-zinc-800 text-[7px] text-zinc-400 font-sans uppercase tracking-widest text-center">
+                  This document was automatically generated upon execution of state-certified workflow steps in the Acies Portfolio Intelligence Suite. All operations are logged on the immutable ledger under hash key protocols.
+                </div>
+              </div>
+
+              {/* Status overlays for actions */}
+              {isPrinting && (
+                <div className="absolute inset-0 bg-black/55 backdrop-blur-xs flex items-center justify-center animate-fadeIn z-50">
+                  <div className="bg-white dark:bg-[#121214] border border-black/10 dark:border-white/10 rounded-xl p-6 shadow-xl flex flex-col items-center gap-3">
+                    <RefreshCw size={24} className="animate-spin text-purple-600 dark:text-purple-400" />
+                    <span className="text-xs font-bold uppercase tracking-wider text-zinc-850 dark:text-zinc-250 font-sans">
+                      Sending to Vault Printer...
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {isDownloading && (
+                <div className="absolute inset-0 bg-black/55 backdrop-blur-xs flex items-center justify-center animate-fadeIn z-50">
+                  <div className="bg-white dark:bg-[#121214] border border-black/10 dark:border-white/10 rounded-xl p-6 shadow-xl flex flex-col items-center gap-3">
+                    <RefreshCw size={24} className="animate-spin text-purple-600 dark:text-purple-400" />
+                    <span className="text-xs font-bold uppercase tracking-wider text-zinc-850 dark:text-zinc-250 font-sans">
+                      Generating Verification Report...
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>,

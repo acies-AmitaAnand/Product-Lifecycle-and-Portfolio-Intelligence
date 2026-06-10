@@ -354,6 +354,15 @@ export function useSkuRationalizationState(role: Role, isDarkMode: boolean) {
 
   const [isControlCenterOpen, setIsControlCenterOpen] = useState(false);
 
+  const [exitDateDays, setExitDateDays] = useState(60);
+  const [pricingPriceShift, setPricingPriceShift] = useState(0);
+  const [supplySafetyStockShift, setSupplySafetyStockShift] = useState(15);
+  const [selectedDoc, setSelectedDoc] = useState<string | null>(null);
+
+  useEffect(() => {
+    setSelectedDoc(null);
+  }, [skuA, skuB]);
+
   useEffect(() => {
     localStorage.setItem('sku_rationalization_workflow_steps', JSON.stringify(completedSteps));
   }, [completedSteps]);
@@ -394,6 +403,22 @@ export function useSkuRationalizationState(role: Role, isDarkMode: boolean) {
       const filtered = prev.filter(entry => !(entry.pairKey === newEntry.pairKey && entry.actionLabel === newEntry.actionLabel));
       return [newEntry, ...filtered];
     });
+  };
+
+  const logReversalAction = (team: string, stepLabel: string, details: string, rationale: string) => {
+    const newEntry = {
+      id: `AUD-${Math.floor(100000 + Math.random() * 900000)}`,
+      timestamp: new Date().toLocaleString(),
+      pairKey: `${skuA}|${skuB}`,
+      skuA,
+      skuB,
+      team,
+      actionLabel: `REVERSAL: ${stepLabel}`,
+      details,
+      rationale,
+      riskScore: pairRisk,
+    };
+    setAuditLog(prev => [newEntry, ...prev]);
   };
 
   const removeActionLog = (pairKey: string, stepLabel: string) => {
@@ -564,6 +589,10 @@ export function useSkuRationalizationState(role: Role, isDarkMode: boolean) {
     shortlistedSkus, shortlistSku, unshortlistSku,
     frozenSkus, freezeSkuReplenishment, unfreezeSkuReplenishment,
     auditLog, isControlCenterOpen, setIsControlCenterOpen,
-    logAction, removeActionLog,
+    logAction, logReversalAction, removeActionLog,
+    exitDateDays, setExitDateDays,
+    pricingPriceShift, setPricingPriceShift,
+    supplySafetyStockShift, setSupplySafetyStockShift,
+    selectedDoc, setSelectedDoc,
   };
 }

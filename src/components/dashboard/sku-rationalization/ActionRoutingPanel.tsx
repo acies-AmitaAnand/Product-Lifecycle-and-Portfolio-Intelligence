@@ -6,9 +6,11 @@
 import React, { useState } from 'react';
 import { 
   Activity, Check, RefreshCw, Sparkles, CreditCard, Briefcase, Truck, X,
-  TrendingUp, AlertTriangle, ShieldCheck, Info, DollarSign, Globe, Layers, ArrowRight
+  TrendingUp, AlertTriangle, ShieldCheck, Info, DollarSign, Globe, Layers, ArrowRight,
+  Eye, Printer, Download, FileText
 } from 'lucide-react';
 import { SKUS } from '../../../constants/data';
+import { BusinessCaseAdvisor } from './BusinessCaseAdvisor';
 
 interface ActionRoutingPanelProps {
   hasScored: boolean;
@@ -32,8 +34,19 @@ interface ActionRoutingPanelProps {
   freezeSkuReplenishment: (name: string) => void;
   unfreezeSkuReplenishment: (name: string) => void;
   logAction: (team: string, stepLabel: string, details: string, rationale: string) => void;
+  logReversalAction: (team: string, stepLabel: string, details: string, rationale: string) => void;
   removeActionLog: (pairKey: string, stepLabel: string) => void;
   isDarkMode?: boolean;
+
+  // Lifted States
+  exitDateDays: number;
+  setExitDateDays: (days: number) => void;
+  pricingPriceShift: number;
+  setPricingPriceShift: (shift: number) => void;
+  supplySafetyStockShift: number;
+  setSupplySafetyStockShift: (shift: number) => void;
+  selectedDoc: string | null;
+  setSelectedDoc: (doc: string | null) => void;
 }
 
 export const ActionRoutingPanel: React.FC<ActionRoutingPanelProps> = ({
@@ -57,23 +70,25 @@ export const ActionRoutingPanel: React.FC<ActionRoutingPanelProps> = ({
   freezeSkuReplenishment,
   unfreezeSkuReplenishment,
   logAction,
+  logReversalAction,
   removeActionLog,
   isDarkMode = false,
+
+  exitDateDays,
+  setExitDateDays,
+  pricingPriceShift,
+  setPricingPriceShift,
+  supplySafetyStockShift,
+  setSupplySafetyStockShift,
+  selectedDoc,
+  setSelectedDoc,
 }) => {
   const [expandedStep, setExpandedStep] = useState<number | null>(0);
   const [executingStep, setExecutingStep] = useState<string | null>(null);
 
-  // Pricing sandbox shift slider state
-  const [pricingPriceShift, setPricingPriceShift] = useState(0);
-
-  // Safety stock slider state
-  const [supplySafetyStockShift, setSupplySafetyStockShift] = useState(15);
-
   // Calendar deconfliction state
   const [calendarDeconflicted, setCalendarDeconflicted] = useState(false);
 
-  // Exit date state
-  const [exitDateDays, setExitDateDays] = useState(60);
 
   // Find SKU details for calculations
   const pairKey = `${skuA}|${skuB}`;
@@ -307,11 +322,460 @@ export const ActionRoutingPanel: React.FC<ActionRoutingPanelProps> = ({
     }, 850);
   };
 
+  const getDocTypeForStep = (team: string, stepIdx: number): string | null => {
+    if (team === 'pricing') {
+      if (stepIdx === 0) return 'price_ladder';
+      if (stepIdx === 1) return 'pricing_elasticity';
+      if (stepIdx === 2) return 'promo_deconfliction';
+      if (stepIdx === 3) return 'committee_escalation';
+    }
+    if (team === 'product') {
+      if (stepIdx === 0) return 'watchlist_registration';
+      if (stepIdx === 1) return 'capacity';
+      if (stepIdx === 2) return 'sunset';
+    }
+    if (team === 'supplychain') {
+      if (stepIdx === 0) return 'replenishment_freeze';
+      if (stepIdx === 1) return 'mrp_safety_revision';
+      if (stepIdx === 2) return 'warehouse_release';
+    }
+    return null;
+  };
+
+  const documentTemplates: Record<string, { title: string; subtitle: string; code: string; content: React.ReactNode }> = {
+    price_ladder: {
+      title: "BRAND PRICE LADDER COMPARISON REPORT",
+      subtitle: "FORM FIN-LADDER-102",
+      code: "SHA256: e82f1b0a92d3f9e9a44b8292019c83664ef819bc2e1a90c1f2b2c3a5b6c7d8e90",
+      content: (
+        <div className="space-y-4 text-[9.5px]">
+          <div>
+            <strong>[1] ANALYSIS STATUS:</strong> <span className="text-emerald-500 font-extrabold">COMPLETED</span>
+          </div>
+          <hr className="border-dashed border-zinc-200 dark:border-zinc-800" />
+          <div className="grid grid-cols-3 gap-2 text-[9px] font-bold text-center border-b pb-1.5 border-black/5 dark:border-white/5 text-zinc-450">
+            <div>Metric</div>
+            <div className="text-purple-650 dark:text-purple-400">{skuA ? skuA.split(' ')[0] : ''}</div>
+            <div className="text-emerald-500">{skuB ? skuB.split(' ')[0] : ''}</div>
+          </div>
+          <div className="grid grid-cols-3 gap-2 text-[9px] font-semibold text-center divide-y divide-black/[0.02] dark:divide-white/[0.02] text-zinc-550 dark:text-zinc-400">
+            <div className="text-left font-bold text-[8px] uppercase">Base Retail Price</div>
+            <div>₹90</div>
+            <div>₹80</div>
+            <div className="text-left font-bold text-[8px] uppercase pt-1.5">Distributor Price</div>
+            <div className="pt-1.5">₹65</div>
+            <div className="pt-1.5">₹55</div>
+            <div className="text-left font-bold text-[8px] uppercase pt-1.5">Gross Margin</div>
+            <div className="pt-1.5 text-red-500 font-extrabold font-bold">41.0%</div>
+            <div className="pt-1.5 text-emerald-500 font-extrabold font-bold">34.0%</div>
+          </div>
+          <hr className="border-dashed border-zinc-200 dark:border-zinc-800" />
+          <div className="space-y-1">
+            <span className="text-zinc-400 block uppercase tracking-wider text-[8px] font-bold font-sans">Price Positioning Audit</span>
+            <p>· Sibling {skuB ? skuB.split(' ')[0] : ''} sits ₹10 lower in the retail value tier.</p>
+            <p>· Net margins are aligned; margin shift will be mitigated by volume transference gains.</p>
+          </div>
+          <hr className="border-dashed border-zinc-200 dark:border-zinc-800" />
+          <div className="flex justify-between items-end pt-4">
+            <div>
+              <span className="text-zinc-450 block uppercase tracking-wider text-[7px] font-bold font-sans">AUTHORIZED SIGNATURE</span>
+              <span className="font-serif italic text-sm font-extrabold text-zinc-900 dark:text-zinc-100">David Miller</span>
+              <span className="block text-[8px] text-zinc-400 font-sans">Category Financial Controller</span>
+            </div>
+            <div className="text-right text-[8px] text-zinc-400">
+              <span>Audit Date: {new Date().toLocaleDateString()}</span>
+            </div>
+          </div>
+        </div>
+      )
+    },
+    promo_deconfliction: {
+      title: "PROMOTIONAL CALENDAR DE-CONFLICTION DIRECTIVE",
+      subtitle: "FORM MKT-PROMO-903",
+      code: "SHA256: 12f9b2d9a9bc8f42d201e912f2b2d2a2c2c2f1f5e2a2c3a5b6c7d8e90a98c819",
+      content: (
+        <div className="space-y-4 text-[9.5px]">
+          <div>
+            <strong>[1] MITIGATION STATUS:</strong> <span className="text-emerald-500 font-extrabold">DE-CONFLICTED</span>
+          </div>
+          <hr className="border-dashed border-zinc-200 dark:border-zinc-800" />
+          <div className="space-y-1">
+            <span className="text-zinc-400 block uppercase tracking-wider text-[8px] font-bold font-sans">Promo Schedule Separations</span>
+            <p>Overlapping promotion slots detected on: <strong>Week 4 and Week 8</strong></p>
+            <p>Erosion Risk: Double discounting on overlapping category items causes blended margin dilution.</p>
+            <p>Mitigation: Halted promotional discount overlays. Separated campaign schedules by 14 days minimum.</p>
+          </div>
+          <hr className="border-dashed border-zinc-200 dark:border-zinc-800" />
+          <div className="space-y-1">
+            <span className="text-zinc-400 block uppercase tracking-wider text-[8px] font-bold font-sans">Promotional Calendar Slots</span>
+            <div className="grid grid-cols-6 gap-1.5 text-[8px] text-center font-bold">
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(w => (
+                <div key={w} className={`p-1 rounded border bg-black/5 dark:bg-white/5 border-transparent text-zinc-450`}>
+                  Wk {w} {w === 4 || w === 8 ? '✅' : ''}
+                </div>
+              ))}
+            </div>
+          </div>
+          <hr className="border-dashed border-zinc-200 dark:border-zinc-800" />
+          <div className="flex justify-between items-end pt-4">
+            <div>
+              <span className="text-zinc-450 block uppercase tracking-wider text-[7px] font-bold font-sans">AUTHORIZED SIGNATURE</span>
+              <span className="font-serif italic text-sm font-extrabold text-zinc-900 dark:text-zinc-100">Clara Higgins</span>
+              <span className="block text-[8px] text-zinc-400 font-sans">Brand Promotion Director</span>
+            </div>
+            <div className="text-right text-[8px] text-zinc-400">
+              <span>Date: {new Date().toLocaleDateString()}</span>
+            </div>
+          </div>
+        </div>
+      )
+    },
+    committee_escalation: {
+      title: "SKU RATIONALIZATION COMMITTEE ESCALATION BRIEF",
+      subtitle: "FORM COM-ESC-122",
+      code: "SHA256: 5f9d22c8b9354117fd89c1b3f9b2d90a98c819192938e3e4a9bc8f42d201e912",
+      content: (
+        <div className="space-y-4 text-[9.5px]">
+          <div>
+            <strong>[1] ESCALATION STATUS:</strong> <span className="text-purple-600 dark:text-purple-400 font-extrabold">SUBMITTED TO BOARD</span>
+          </div>
+          <hr className="border-dashed border-zinc-200 dark:border-zinc-800" />
+          <div className="space-y-1">
+            <span className="text-zinc-400 block uppercase tracking-wider text-[8px] font-bold font-sans">Escalation Proposal Summary</span>
+            <p>Sunset Candidate SKU: <strong>{skuA}</strong></p>
+            <p>Target Category: {category}</p>
+            <p>Risk Score: {(pairRisk * 100).toFixed(0)}% Substitution Risk</p>
+            <p>Estimated Revenue Exposure: ₹{Math.round(pairRisk * 42)} Cr</p>
+          </div>
+          <hr className="border-dashed border-zinc-200 dark:border-zinc-800" />
+          <div className="space-y-1">
+            <span className="text-zinc-400 block uppercase tracking-wider text-[8px] font-bold font-sans">Escalation Justification</span>
+            <p>· Sibling variant {skuB} has capacity margins and supply network ready to absorb sunset demand.</p>
+            <p>· Eliminating SKU A will simplify manufacturing lines, reducing logistics and changeover overhead.</p>
+            <p>· Net annual Category saving is estimated to reach ₹{annualSavingsLakhs}L.</p>
+          </div>
+          <hr className="border-dashed border-zinc-200 dark:border-zinc-800" />
+          <div className="flex justify-between items-end pt-4">
+            <div>
+              <span className="text-zinc-450 block uppercase tracking-wider text-[7px] font-bold font-sans">AUTHORIZED SIGNATURE</span>
+              <span className="font-serif italic text-sm font-extrabold text-zinc-900 dark:text-zinc-100">Vikash Sharma</span>
+              <span className="block text-[8px] text-zinc-400 font-sans">Portfolio Review Secretariat</span>
+            </div>
+            <div className="text-right text-[8px] text-zinc-400">
+              <span>Date: {new Date().toLocaleDateString()}</span>
+            </div>
+          </div>
+        </div>
+      )
+    },
+    watchlist_registration: {
+      title: "PORTFOLIO SHORTLIST WATCHLIST REGISTRATION CERTIFICATE",
+      subtitle: "FORM PM-WATCH-884",
+      code: "SHA256: a82f1b0a92d3f9e9a44b8292019c83664ef819bc2e1a90c1f2b2c3a5b6c7d8e90",
+      content: (
+        <div className="space-y-4 text-[9.5px]">
+          <div>
+            <strong>[1] WATCHLIST STATUS:</strong> <span className="text-emerald-500 font-extrabold">SHORTLISTED</span>
+          </div>
+          <hr className="border-dashed border-zinc-200 dark:border-zinc-800" />
+          <div className="space-y-1">
+            <span className="text-zinc-400 block uppercase tracking-wider text-[8px] font-bold font-sans">Shortlist Registration Details</span>
+            <p>SKU Name: <strong>{skuA}</strong></p>
+            <p>Shortlist Date: {new Date().toLocaleDateString()}</p>
+            <p>Audit Class: Sunset Candidate</p>
+          </div>
+          <hr className="border-dashed border-zinc-200 dark:border-zinc-800" />
+          <div className="space-y-1">
+            <span className="text-zinc-400 block uppercase tracking-wider text-[8px] font-bold font-sans">Strategic Justification</span>
+            <p>· High substitution overlap with sibling variant {skuB} ({transferenceRate}%).</p>
+            <p>· Low-value product margin performance profile.</p>
+            <p>· Registered under the active rationalization monitor loop.</p>
+          </div>
+          <hr className="border-dashed border-zinc-200 dark:border-zinc-800" />
+          <div className="flex justify-between items-end pt-4">
+            <div>
+              <span className="text-zinc-450 block uppercase tracking-wider text-[7px] font-bold font-sans">AUTHORIZED SIGNATURE</span>
+              <span className="font-serif italic text-sm font-extrabold text-zinc-900 dark:text-zinc-100">Linda Carter</span>
+              <span className="block text-[8px] text-zinc-400 font-sans">Category Portfolio Director</span>
+            </div>
+            <div className="text-right text-[8px] text-zinc-400">
+              <span>Date: {new Date().toLocaleDateString()}</span>
+            </div>
+          </div>
+        </div>
+      )
+    },
+    mrp_safety_revision: {
+      title: "MRP SAFETY STOCK BUFFER REVISION ORDER",
+      subtitle: "FORM SC-MRP-049",
+      code: "SHA256: c3a5b6c7d8e90a98c819f2b2d2a2c2c2f1f5e2a2c3a5b6c7d8e90a98c81912fa",
+      content: (
+        <div className="space-y-4 text-[9.5px]">
+          <div>
+            <strong>[1] MRP STATUS:</strong> <span className="text-emerald-500 font-extrabold">UPDATED / RE-BUFFERED</span>
+          </div>
+          <hr className="border-dashed border-zinc-200 dark:border-zinc-800" />
+          <div className="space-y-1">
+            <span className="text-zinc-400 block uppercase tracking-wider text-[8px] font-bold font-sans">MRP Buffer Modification</span>
+            <p>Target Sibling SKU: <strong>{skuB}</strong></p>
+            <p>Adjust Safety Buffer Stock level: <strong>+{supplySafetyStockShift}%</strong></p>
+            <p>MRP Re-order Point Parameter: Raised to handle target demand redirection.</p>
+          </div>
+          <hr className="border-dashed border-zinc-200 dark:border-zinc-800" />
+          <div className="space-y-1">
+            <span className="text-zinc-400 block uppercase tracking-wider text-[8px] font-bold font-sans">Operations Safety Assessment</span>
+            <p>· Increased safety buffers provide a transition safety net for accounts during the run-down of SKU A.</p>
+            <p>· Ensures zero shelf out-of-stock events on variant {skuB ? skuB.split(' ')[0] : ''}.</p>
+          </div>
+          <hr className="border-dashed border-zinc-200 dark:border-zinc-800" />
+          <div className="flex justify-between items-end pt-4">
+            <div>
+              <span className="text-zinc-450 block uppercase tracking-wider text-[7px] font-bold font-sans">AUTHORIZED SIGNATURE</span>
+              <span className="font-serif italic text-sm font-extrabold text-zinc-900 dark:text-zinc-100">David Reynolds</span>
+              <span className="block text-[8px] text-zinc-400 font-sans">Director of Material Requirements Planning</span>
+            </div>
+            <div className="text-right text-[8px] text-zinc-400">
+              <span>Issue Date: {new Date().toLocaleDateString()}</span>
+            </div>
+          </div>
+        </div>
+      )
+    },
+    capacity: {
+      title: "CAPACITY CLEARANCE & LINE FEASIBILITY CERTIFICATE",
+      subtitle: "FORM MFG-CAP-AUD-2026",
+      code: "SHA256: 8f3b20c92176d54efd0a1b92a3f9e9a44b8292019c83664ef819bc2e1a90c1f2",
+      content: (
+        <div className="space-y-4 text-[9.5px]">
+          <div>
+            <strong>[1] EVALUATION STATUS:</strong> <span className="text-emerald-500 font-extrabold">FEASIBLE (APPROVED)</span>
+          </div>
+          <hr className="border-dashed border-zinc-200 dark:border-zinc-800" />
+          <div className="grid grid-cols-2 gap-4 font-semibold">
+            <div>
+              <span className="text-zinc-400 block uppercase tracking-wider text-[8px] font-bold">Sunset SKU (A)</span>
+              <span className="font-bold">{skuA}</span>
+            </div>
+            <div>
+              <span className="text-zinc-400 block uppercase tracking-wider text-[8px] font-bold">Sibling SKU (B)</span>
+              <span className="font-bold">{skuB}</span>
+            </div>
+          </div>
+          <hr className="border-dashed border-zinc-200 dark:border-zinc-800" />
+          <div className="space-y-1">
+            <span className="text-zinc-400 block uppercase tracking-wider text-[8px] font-bold font-sans">Manufacturing Line Audit Details</span>
+            <p>Location: Pune Manufacturing Complex, Plant Bottling Line 4</p>
+            <p>Line Velocity: 120 Units/Minute (Rotary filler capacity)</p>
+            <p>Baseline Line Utilization (pre-absorption): 82.1% OEE</p>
+            <p>Incremental Load (SKU A absorbed volume): +7.2% load projection</p>
+            <p>Projected Post-Absorption Utilization: 89.3% OEE (Under 96% critical limit)</p>
+          </div>
+          <hr className="border-dashed border-zinc-200 dark:border-zinc-800" />
+          <div className="space-y-1">
+            <span className="text-zinc-400 block uppercase tracking-wider text-[8px] font-bold font-sans">Operational Impact & Mitigation</span>
+            <p>· Sibling SKU {skuB ? skuB.split(' ')[0] : ''} shares tooling and nozzle calibrations with SKU A.</p>
+            <p>· Line changeovers will be reduced from 3 to 1 per week, recovering 8 hours of active runtime.</p>
+            <p>· Operations recommends extending shift hours by 4 hours/week during transition peaks.</p>
+          </div>
+          <hr className="border-dashed border-zinc-200 dark:border-zinc-800" />
+          <div className="flex justify-between items-end pt-4">
+            <div>
+              <span className="text-zinc-450 block uppercase tracking-wider text-[7px] font-bold font-sans">AUTHORIZED SIGNATURE</span>
+              <span className="font-serif italic text-sm font-extrabold text-zinc-900 dark:text-zinc-100">Rajesh Nair</span>
+              <span className="block text-[8px] text-zinc-400 font-sans">Director of Manufacturing Operations</span>
+            </div>
+            <div className="text-right text-[8px] text-zinc-400">
+              <span>Audit Date: {new Date().toLocaleDateString()}</span>
+            </div>
+          </div>
+        </div>
+      )
+    },
+    sunset: {
+      title: "SKU SUNSET DIRECTIVE & RETRACTION TIMELINE",
+      subtitle: "FORM MKT-SUNSET-2026-04",
+      code: "SHA256: 4f9d22c8b9354117fd89c1b3f9b2d90a98c819192938e3e4a9bc8f42d201e912",
+      content: (
+        <div className="space-y-4 text-[9.5px]">
+          <div>
+            <strong>[1] DIRECTION STATUS:</strong> <span className="text-purple-600 dark:text-purple-400 font-extrabold">PHASE-OUT AUTHORIZED</span>
+          </div>
+          <hr className="border-dashed border-zinc-200 dark:border-zinc-800" />
+          <div className="grid grid-cols-2 gap-4 font-semibold">
+            <div>
+              <span className="text-zinc-400 block uppercase tracking-wider text-[8px] font-bold">Product to Sunset</span>
+              <span className="font-bold text-red-500">{skuA}</span>
+            </div>
+            <div>
+              <span className="text-zinc-400 block uppercase tracking-wider text-[8px] font-bold">Primary Substituted Variant</span>
+              <span className="font-bold text-emerald-500">{skuB}</span>
+            </div>
+          </div>
+          <hr className="border-dashed border-zinc-200 dark:border-zinc-800" />
+          <div className="space-y-1">
+            <span className="text-zinc-400 block uppercase tracking-wider text-[8px] font-bold font-sans">Phase-out Parameters</span>
+            <p>Exit Duration Target: {exitDateDays} Days</p>
+            <p>Distributor Markdown Allowance: 25% discount threshold</p>
+            <p>Shelf Retraction Schedule: Immediate notice to accounts</p>
+          </div>
+          <hr className="border-dashed border-zinc-200 dark:border-zinc-800" />
+          <div className="space-y-1">
+            <span className="text-zinc-400 block uppercase tracking-wider text-[8px] font-bold font-sans">Account Notice Dispatches</span>
+            <p>· Walmart US: Notice dispatched (Delisting on sunset date)</p>
+            <p>· Target Corp: Notice dispatched (Inventory run-down active)</p>
+            <p>· Tesco PLC: Delisting pending (Notice queue confirmed)</p>
+            <p>· Costco Wholesale: Active review (Margin offset negotiations ongoing)</p>
+          </div>
+          <hr className="border-dashed border-zinc-200 dark:border-zinc-800" />
+          <div className="flex justify-between items-end pt-4">
+            <div>
+              <span className="text-zinc-450 block uppercase tracking-wider text-[7px] font-bold font-sans">AUTHORIZED SIGNATURE</span>
+              <span className="font-serif italic text-sm font-extrabold text-zinc-900 dark:text-zinc-100">Sarah Jenkins</span>
+              <span className="block text-[8px] text-zinc-400 font-sans">VP Category Management & Brand Planning</span>
+            </div>
+            <div className="text-right text-[8px] text-zinc-400">
+              <span>Issue Date: {new Date().toLocaleDateString()}</span>
+            </div>
+          </div>
+        </div>
+      )
+    },
+    replenishment_freeze: {
+      title: "WMS REPLENISHMENT FREEZE & PRODUCTION BLOCK DIRECTIVE",
+      subtitle: "FORM WMS-FRZ-992",
+      code: "SHA256: d182c3f8e91916362547b9a8f4c2e1f2b2d2a2c2c2f1f5e2a2c3a5b6c7d8e90a",
+      content: (
+        <div className="space-y-4 text-[9.5px]">
+          <div>
+            <strong>[1] INVENTORY STATUS:</strong> <span className="text-red-500 font-extrabold">LOCKED / STOP REPLENISHMENT</span>
+          </div>
+          <hr className="border-dashed border-zinc-200 dark:border-zinc-800" />
+          <div className="space-y-1">
+            <span className="text-zinc-400 block uppercase tracking-wider text-[8px] font-bold font-sans">ERP Block Directive</span>
+            <p>System Affected: SAP S/4HANA & WMS Ledger</p>
+            <p>Target SKU Identifier: {skuA}</p>
+            <p>Status: Block Level 1 (Stop all inbound SKU releases and manufacturing order routing)</p>
+            <p>Warehouse Action: Allow run-down of existing finished DC inventory. Do not replenish.</p>
+          </div>
+          <hr className="border-dashed border-zinc-200 dark:border-zinc-800" />
+          <div className="space-y-1">
+            <span className="text-zinc-400 block uppercase tracking-wider text-[8px] font-bold font-sans">Current Stock Run-down Estimate</span>
+            <p>Warehouse DC-2 (Pune): 1,240 cases remaining</p>
+            <p>Warehouse DC-4 (Mumbai): 850 cases remaining</p>
+            <p>Estimated Supply Runway: {exitDateDays} days based on current category run rates</p>
+          </div>
+          <hr className="border-dashed border-zinc-200 dark:border-zinc-800" />
+          <div className="flex justify-between items-end pt-4">
+            <div>
+              <span className="text-zinc-450 block uppercase tracking-wider text-[7px] font-bold font-sans">AUTHORIZED SIGNATURE</span>
+              <span className="font-serif italic text-sm font-extrabold text-zinc-900 dark:text-zinc-100">Marcus Brody</span>
+              <span className="block text-[8px] text-zinc-400 font-sans">Supply Chain & Logistics Operations Manager</span>
+            </div>
+            <div className="text-right text-[8px] text-zinc-400">
+              <span>Block Date: {new Date().toLocaleDateString()}</span>
+            </div>
+          </div>
+        </div>
+      )
+    },
+    pricing_elasticity: {
+      title: "PORTFOLIO CROSS-ELASTICITY & DE-RUIZING SIMULATION REPORT",
+      subtitle: "FORM FIN-ELAST-881",
+      code: "SHA256: 7f3b8219c92176d54efd0a1b92a3f9e9a44b8292019c83664ef819bc2e1a90c1f2",
+      content: (
+        <div className="space-y-4 text-[9.5px]">
+          <div>
+            <strong>[1] ANALYSIS SUMMARY:</strong> <span className="text-emerald-500 font-extrabold">UPLIFT ESTIMATED (APPROVED)</span>
+          </div>
+          <hr className="border-dashed border-zinc-200 dark:border-zinc-800" />
+          <div className="grid grid-cols-2 gap-4 font-semibold">
+            <div>
+              <span className="text-zinc-400 block uppercase tracking-wider text-[8px] font-bold">Pricing Price Gap</span>
+              <span className="font-bold">{pricingPriceShift >= 0 ? '+' : ''}{pricingPriceShift}%</span>
+            </div>
+            <div>
+              <span className="text-zinc-400 block uppercase tracking-wider text-[8px] font-bold">Estimated Sibling Transference</span>
+              <span className="font-bold text-emerald-500">{transferenceRate}%</span>
+            </div>
+          </div>
+          <hr className="border-dashed border-zinc-200 dark:border-zinc-800" />
+          <div className="space-y-1">
+            <span className="text-zinc-400 block uppercase tracking-wider text-[8px] font-bold font-sans">Quantitative Elasticity Parameters</span>
+            <p>Sunset SKU Base Price: ₹90</p>
+            <p>Sibling SKU Base Price: ₹80</p>
+            <p>Estimated Sibling Volume Shift: +{(15 + pricingPriceShift * 0.8).toFixed(1)}%</p>
+            <p>Uncompensated Category Leakage: {(100 - transferenceRate).toFixed(1)}%</p>
+          </div>
+          <hr className="border-dashed border-zinc-200 dark:border-zinc-800" />
+          <div className="space-y-1">
+            <span className="text-zinc-400 block uppercase tracking-wider text-[8px] font-bold font-sans">Financial Net Benefit</span>
+            <p>Net Annual Margin Uplift: ₹{marginDiffUplift.toFixed(2)} Cr</p>
+            <p>Complexity Savings (Logistics release): ₹{complexitySavings.toFixed(2)} Cr</p>
+            <p>Total Estimated Annual Category Gain: ₹{(marginDiffUplift + complexitySavings).toFixed(2)} Cr</p>
+          </div>
+          <hr className="border-dashed border-zinc-200 dark:border-zinc-800" />
+          <div className="flex justify-between items-end pt-4">
+            <div>
+              <span className="text-zinc-450 block uppercase tracking-wider text-[7px] font-bold font-sans">AUTHORIZED SIGNATURE</span>
+              <span className="font-serif italic text-sm font-extrabold text-zinc-900 dark:text-zinc-100">Ananya Roy</span>
+              <span className="block text-[8px] text-zinc-400 font-sans">Lead Pricing & FP&A Analyst</span>
+            </div>
+            <div className="text-right text-[8px] text-zinc-400">
+              <span>Simulation Date: {new Date().toLocaleDateString()}</span>
+            </div>
+          </div>
+        </div>
+      )
+    },
+    warehouse_release: {
+      title: "FORM SC-114: DC BAY DE-ALLOCATION & CAPITAL RELEASE",
+      subtitle: "FORM LOG-BAY-RELEASE",
+      code: "SHA256: 3c9b20d98127efd0a1b92a3f9e9a44b8292019c83664ef819bc2e1a90c1f28b2c",
+      content: (
+        <div className="space-y-4 text-[9.5px]">
+          <div>
+            <strong>[1] BAY RELEASE STATUS:</strong> <span className="text-emerald-500 font-extrabold">RELEASED / DE-ALLOCATED</span>
+          </div>
+          <hr className="border-dashed border-zinc-200 dark:border-zinc-800" />
+          <div className="space-y-1">
+            <span className="text-zinc-400 block uppercase tracking-wider text-[8px] font-bold font-sans">Distribution Center De-allocation</span>
+            <p>Target DC: Pune Regional Distribution Center</p>
+            <p>Released Pallet Locations: 120 locations (Bays DC-2 & DC-4)</p>
+            <p>Inventory Level: 0 cases (Run-down completed)</p>
+            <p>Recovered Storage Capital: ₹{(pairRisk * 40).toFixed(1)} Lakhs / year</p>
+          </div>
+          <hr className="border-dashed border-zinc-200 dark:border-zinc-800" />
+          <div className="space-y-1">
+            <span className="text-zinc-400 block uppercase tracking-wider text-[8px] font-bold font-sans">Sourcing Redirection</span>
+            <p>· Freed warehouse storage positions re-allocated to Hero SKU {skuB ? skuB.split(' ')[0] : ''} stock safety buffers.</p>
+            <p>· Material handling labor hours for SKU A reassigned to active SKU B line consolidation.</p>
+          </div>
+          <hr className="border-dashed border-zinc-200 dark:border-zinc-800" />
+          <div className="flex justify-between items-end pt-4">
+            <div>
+              <span className="text-zinc-450 block uppercase tracking-wider text-[7px] font-bold font-sans">AUTHORIZED SIGNATURE</span>
+              <span className="font-serif italic text-sm font-extrabold text-zinc-900 dark:text-zinc-100">Vikram Rathore</span>
+              <span className="block text-[8px] text-zinc-400 font-sans">DC Warehouse Director</span>
+            </div>
+            <div className="text-right text-[8px] text-zinc-400">
+              <span>Form Signature Date: {new Date().toLocaleDateString()}</span>
+            </div>
+          </div>
+        </div>
+      )
+    }
+  };
+
   const undoStep = (si: number, label: string, customUndo?: () => void) => {
     if (customUndo) {
       customUndo();
     }
-    removeActionLog(pairKey, label);
+    const logData = getStepLogData(si);
+    if (logData) {
+      const rollbackDetails = `REVERSED | ${logData.details}`;
+      const rollbackRationale = `Rollback authorized. Action "${label}" has been cancelled/reverted. Original context: ${logData.rationale}`;
+      logReversalAction(activeTeamKey, label, rollbackDetails, rollbackRationale);
+    }
     setStepCompleted(pairKey, activeTeamKey, si, false);
   };
 
@@ -671,23 +1135,39 @@ export const ActionRoutingPanel: React.FC<ActionRoutingPanelProps> = ({
                     {/* Execution Buttons */}
                     <div className="flex gap-2">
                       {isCompleted ? (
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const isShortlistStep = activeTeamKey === 'product' && si === 0 && isHigh;
-                            const isFreezeStep = activeTeamKey === 'supplychain' && si === 0 && isHigh;
-                            
-                            const undoAction = () => {
-                              if (isShortlistStep) unshortlistSku(skuA);
-                              if (isFreezeStep) unfreezeSkuReplenishment(skuA);
-                            };
+                        <div className="flex gap-2">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const isShortlistStep = activeTeamKey === 'product' && si === 0 && isHigh;
+                              const isFreezeStep = activeTeamKey === 'supplychain' && si === 0 && isHigh;
+                              
+                              const undoAction = () => {
+                                if (isShortlistStep) unshortlistSku(skuA);
+                                if (isFreezeStep) unfreezeSkuReplenishment(skuA);
+                              };
 
-                            undoStep(si, step.label, undoAction);
-                          }}
-                          className="px-3 py-1 text-[9px] font-black border border-red-500/20 text-red-500 bg-red-500/5 hover:bg-red-500/10 rounded-lg cursor-pointer transition border-none"
-                        >
-                          Undo execution
-                        </button>
+                              undoStep(si, step.label, undoAction);
+                            }}
+                            className="px-3 py-1 text-[9px] font-black border border-red-500/20 text-red-500 bg-red-500/5 hover:bg-red-500/10 rounded-lg cursor-pointer transition border-none"
+                          >
+                            Undo execution
+                          </button>
+                          {(() => {
+                            const docType = getDocTypeForStep(activeTeamKey, si);
+                            if (!docType) return null;
+                            return (
+                              <button
+                                type="button"
+                                onClick={() => setSelectedDoc(docType)}
+                                className="flex items-center gap-1.5 px-3 py-1 text-[9px] font-black border border-purple-500/20 text-purple-600 dark:text-purple-400 bg-purple-500/5 hover:bg-purple-500/10 rounded-lg cursor-pointer transition border-none"
+                              >
+                                <Eye size={10} />
+                                <span>View Document</span>
+                              </button>
+                            );
+                          })()}
+                        </div>
                       ) : (
                         <button
                           type="button"
@@ -737,150 +1217,21 @@ export const ActionRoutingPanel: React.FC<ActionRoutingPanelProps> = ({
       </div>
 
         {/* Right Column: Category & Financial Business Case Advisor */}
-        <div className="lg:col-span-5 space-y-5">
-          {/* Advisor Header */}
-          <div className="p-4 bg-purple-500/5 border border-purple-500/10 rounded-xl space-y-1">
-            <h4 className="text-[10px] font-black uppercase text-purple-600 dark:text-purple-400 tracking-wider flex items-center gap-1.5 font-sans">
-              <Globe size={11} className="stroke-[2.5]" />
-              <span>Category Business Case Advisor</span>
-            </h4>
-            <p className="text-[8.5px] font-medium text-zinc-450 dark:text-zinc-500 leading-normal font-sans">
-              Continuous simulations evaluating substitutions, obsolescence costs, and retailer notice runways.
-            </p>
-          </div>
-
-          {/* Payback Card */}
-          <div className="p-4 bg-white dark:bg-[#1a1a24] border border-black/10 dark:border-white/10 rounded-xl space-y-3.5 shadow-sm">
-            <div className="flex justify-between items-center">
-              <span className="text-[8.5px] font-black uppercase tracking-wider text-zinc-450">Payback Feasibility</span>
-              <span className={`px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest ${
-                paybackMonths < 9 
-                  ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' 
-                  : paybackMonths <= 18 
-                    ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20' 
-                    : 'bg-red-500/10 text-red-500 border border-red-500/20'
-              }`}>
-                {paybackMonths < 12 ? 'RECOMMENDED' : 'EVALUATE'}
-              </span>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1">
-                <span className="text-[8px] font-bold text-zinc-400 uppercase tracking-widest block">Exit Cost Burden</span>
-                <span className="text-base font-black text-zinc-800 dark:text-zinc-100 block">
-                  ₹{totalExitCost.toFixed(0)}L
-                </span>
-                <span className="text-[7.5px] text-zinc-450 dark:text-zinc-500 block font-bold uppercase">
-                  Write-offs + markdowns
-                </span>
-              </div>
-              <div className="space-y-1">
-                <span className="text-[8px] font-bold text-zinc-400 uppercase tracking-widest block">Annual Savings</span>
-                <span className="text-base font-black text-emerald-500 block">
-                  ₹{annualSavingsLakhs.toFixed(0)}L
-                </span>
-                <span className="text-[7.5px] text-zinc-450 dark:text-zinc-500 block font-bold uppercase">
-                  Margin uplift + SC savings
-                </span>
-              </div>
-            </div>
-
-            {/* Payback speed progress */}
-            <div className="pt-2 border-t border-black/5 dark:border-white/5 space-y-1.5">
-              <div className="flex justify-between text-[8px] font-black uppercase text-zinc-450">
-                <span>Exit Payback Speed</span>
-                <span className="text-purple-500 font-extrabold">{paybackMonths} Months</span>
-              </div>
-              <div className="w-full bg-black/5 dark:bg-white/5 h-1.5 rounded-full overflow-hidden">
-                <div 
-                  className={`h-full transition-all duration-300 ${
-                    paybackMonths < 9 ? 'bg-emerald-500' : paybackMonths <= 18 ? 'bg-amber-500' : 'bg-red-500'
-                  }`}
-                  style={{ width: `${Math.min(100, (paybackMonths / 24) * 100)}%` }}
-                />
-              </div>
-              <p className="text-[8.5px] text-zinc-450 leading-relaxed font-semibold italic mt-1 font-sans">
-                * Payback calculations automatically factor run-down optimization over {exitDateDays} days.
-              </p>
-            </div>
-          </div>
-
-          {/* Volume Transference Map */}
-          <div className="p-4 bg-white dark:bg-[#1a1a24] border border-black/10 dark:border-white/10 rounded-xl space-y-3 shadow-sm">
-            <span className="text-[8.5px] font-black uppercase tracking-wider text-zinc-450 block">Variant Substitution Rate</span>
-            
-            <div className="space-y-3.5">
-              <div className="space-y-1">
-                <div className="flex justify-between text-[8.5px] font-bold">
-                  <span className="text-acies-gray dark:text-zinc-300">Transferred to Sibling ({skuB ? skuB.split(' ')[0] : ''})</span>
-                  <span className="text-purple-600 dark:text-purple-400 font-black">{transferenceRate}%</span>
-                </div>
-                <div className="w-full bg-black/5 dark:bg-white/5 h-2 rounded overflow-hidden flex">
-                  <div className="bg-purple-500 h-full" style={{ width: `${transferenceRate}%` }} />
-                  <div className="bg-red-500/20 h-full" style={{ width: `${100 - transferenceRate}%` }} />
-                </div>
-                <div className="flex justify-between text-[7.5px] font-bold text-zinc-450">
-                  <span>₹{transferenceVolume} Cr preserved</span>
-                  <span>₹{leakageVolume} Cr category leak ({100 - transferenceRate}%)</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Retailer Delisting Notice Checklist */}
-          <div className="p-4 bg-white dark:bg-[#1a1a24] border border-black/10 dark:border-white/10 rounded-xl space-y-3 shadow-sm">
-            <span className="text-[8.5px] font-black uppercase tracking-wider text-zinc-450 block">Global Retailer Alignment</span>
-            
-            <div className="divide-y divide-black/5 dark:divide-white/5 text-[9px] font-bold">
-              <div className="flex justify-between py-2 items-center">
-                <span className="text-zinc-600 dark:text-zinc-300">Walmart US SKU Listing</span>
-                <span className={`px-2 py-0.5 rounded text-[7.5px] font-black uppercase ${
-                  walmartStatus === 'Delisted' ? 'bg-emerald-500/10 text-emerald-500 font-black' : 'bg-amber-500/10 text-amber-500 font-black'
-                }`}>{walmartStatus}</span>
-              </div>
-              <div className="flex justify-between py-2 items-center">
-                <span className="text-zinc-600 dark:text-zinc-300">Target Corp De-listing</span>
-                <span className={`px-2 py-0.5 rounded text-[7.5px] font-black uppercase ${
-                  targetStatus === 'Delisted' ? 'bg-emerald-500/10 text-emerald-500 font-black' : 'bg-amber-500/10 text-amber-500 font-black'
-                }`}>{targetStatus}</span>
-              </div>
-              <div className="flex justify-between py-2 items-center">
-                <span className="text-zinc-600 dark:text-zinc-300">Tesco PLC Notice</span>
-                <span className={`px-2 py-0.5 rounded text-[7.5px] font-black uppercase ${
-                  tescoStatus === 'Delisted' ? 'bg-emerald-500/10 text-emerald-500 font-black' : 'bg-blue-500/10 text-blue-500 font-black'
-                }`}>{tescoStatus}</span>
-              </div>
-              <div className="flex justify-between py-2 items-center">
-                <span className="text-zinc-600 dark:text-zinc-300">Costco Wholesale Review</span>
-                <span className={`px-2 py-0.5 rounded text-[7.5px] font-black uppercase ${
-                  costcoStatus === 'In Negotiation' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-zinc-500/10 text-zinc-450 font-black'
-                }`}>{costcoStatus}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Supply Chain Runway */}
-          <div className="p-4 bg-white dark:bg-[#1a1a24] border border-black/10 dark:border-white/10 rounded-xl space-y-3 shadow-sm">
-            <span className="text-[8.5px] font-black uppercase tracking-wider text-zinc-450 block">Supply Run-down Runway</span>
-            <div className="bg-black/5 dark:bg-white/5 p-3 rounded-lg text-[9px] font-bold space-y-1.5 text-zinc-450 font-mono">
-              <div className="flex justify-between">
-                <span>Phase-out Period:</span>
-                <span className="text-zinc-850 dark:text-zinc-200">{exitDateDays} Days</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Remaining Packaging Runway:</span>
-                <span className="text-purple-650 dark:text-purple-400">{Math.round(exitDateDays * 0.08)} weeks of supply</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Supply Transition Risk:</span>
-                <span className={isSafetyStockRaised ? 'text-emerald-500' : 'text-amber-500'}>
-                  {isSafetyStockRaised ? 'Minimal (Sibling safety raised)' : 'Medium (Raise sibling buffer)'}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-
+        <BusinessCaseAdvisor
+          paybackMonths={paybackMonths}
+          totalExitCost={totalExitCost}
+          annualSavingsLakhs={annualSavingsLakhs}
+          exitDateDays={exitDateDays}
+          skuB={skuB}
+          transferenceRate={transferenceRate}
+          transferenceVolume={transferenceVolume}
+          leakageVolume={leakageVolume}
+          walmartStatus={walmartStatus}
+          targetStatus={targetStatus}
+          tescoStatus={tescoStatus}
+          costcoStatus={costcoStatus}
+          isSafetyStockRaised={isSafetyStockRaised}
+        />
       </div>
 
       {/* Footer */}
