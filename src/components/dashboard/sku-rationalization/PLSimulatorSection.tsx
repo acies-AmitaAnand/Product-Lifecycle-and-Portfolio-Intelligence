@@ -5,9 +5,10 @@
 
 import React from 'react';
 import { 
-  ResponsiveContainer, Bar, ComposedChart, Line, Cell, XAxis, YAxis, Tooltip, CartesianGrid 
+  ResponsiveContainer, Bar, ComposedChart, Line, Cell, XAxis, YAxis, Tooltip, CartesianGrid,
+  AreaChart, Area
 } from 'recharts';
-import { AlertTriangle, RefreshCw, Cpu, BarChart2 } from 'lucide-react';
+import { AlertTriangle, RefreshCw, Cpu, BarChart2, Sparkles, TrendingUp, TrendingDown, Info, BadgePercent, Sliders } from 'lucide-react';
 import { srClassify, SR_CLASSES } from './SKURationalization';
 
 interface PLSimulatorSectionProps {
@@ -95,13 +96,37 @@ export const PLSimulatorSection: React.FC<PLSimulatorSectionProps> = ({
 }) => {
   const cannHaircut = cannibalizationRisk === 2 ? 0.18 : cannibalizationRisk === 1 ? 0.09 : 0.02;
 
+  // Pre-calculate Price Elasticity Curve coordinates
+  const priceCurveData = React.useMemo(() => {
+    if (!selectedSku) return [];
+    const points = [];
+    // Compute 8 points from -30% to +40% price change in steps of 10%
+    for (let p = -30; p <= 40; p += 10) {
+      const volC = (p * volumeElasticity) / 100;
+      const projR = selectedSku.rev * (1 + p / 100) * (1 + volC);
+      points.push({
+        priceChange: `${p > 0 ? '+' : ''}${p}%`,
+        revenue: parseFloat(projR.toFixed(1)),
+        isCurrent: p === priceChange
+      });
+    }
+    return points;
+  }, [selectedSku, volumeElasticity, priceChange]);
+
+  // Launch contribution factors
+  const incrementalPct = Math.round((netLaunchRev / (projectedRevenue || 1)) * 100);
+  const cannibalizedPct = 100 - incrementalPct;
+
   return (
     <>
       {/* ③ DYNAMIC P&L SIMULATOR COMMAND DESK */}
       <div className="space-y-3" id="simulation-desk-section" style={{ scrollMarginTop: '100px' }}>
         <div className="glass-card bg-white dark:bg-[#1a1a24] border border-black/10 dark:border-white/10 overflow-hidden shadow-sm rounded-xl">
           <div className="flex items-center justify-between border-b border-black/5 dark:border-white/5 py-3.5 px-5 bg-black/[0.01]">
-            <h4 className="text-xs font-bold uppercase tracking-widest text-acies-gray dark:text-white">Active Scenarios Console</h4>
+            <h4 className="text-xs font-bold uppercase tracking-widest text-acies-gray dark:text-white flex items-center gap-1.5">
+              <Sliders size={12} className="text-acies-yellow" />
+              Active Scenarios Console
+            </h4>
           </div>
 
           <div className="p-5 grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -120,7 +145,7 @@ export const PLSimulatorSection: React.FC<PLSimulatorSectionProps> = ({
                       onClick={() => setSimTab(tab.id as any)}
                       className={`flex-1 py-1.5 text-[9px] font-black uppercase tracking-widest rounded transition-all border-none cursor-pointer outline-none ${
                         simTab === tab.id
-                          ? 'bg-acies-yellow text-white dark:text-acies-gray shadow-sm'
+                          ? 'bg-[#5850ec] text-white shadow-sm font-extrabold'
                           : 'bg-transparent text-zinc-500 hover:text-zinc-800 dark:hover:text-white'
                       }`}
                     >
@@ -140,7 +165,7 @@ export const PLSimulatorSection: React.FC<PLSimulatorSectionProps> = ({
                       }}
                       className="text-[8px] text-[#8b5cf6] dark:text-purple-300 font-bold uppercase tracking-widest hover:underline cursor-pointer border-none bg-transparent outline-none"
                     >
-                      Inspect ℹ️
+                      Inspect ℹ®
                     </button>
                   </div>
                   <select
@@ -169,7 +194,7 @@ export const PLSimulatorSection: React.FC<PLSimulatorSectionProps> = ({
                       <AlertTriangle size={10} /> Discontinuation Parameter
                     </span>
                     <p>
-                      Discontinuing this product removes it from the catalog. The simulation models regional brand loyalty retention, safety stock releasing thresholds, and complexity relief margin benefits.
+                      Discontinuing this product removes it from the active portfolio. The simulation models brand loyalty retention, safety stock freeing thresholds, and complexity relief margin benefits.
                     </p>
                   </div>
                 )}
@@ -188,7 +213,7 @@ export const PLSimulatorSection: React.FC<PLSimulatorSectionProps> = ({
                         step="1"
                         value={priceChange}
                         onChange={(e) => setPriceChange(parseInt(e.target.value))}
-                        className="w-full accent-purple-550 cursor-pointer"
+                        className="w-full accent-purple-550 cursor-pointer h-1.5 rounded-lg bg-zinc-200 dark:bg-zinc-700 appearance-none"
                       />
                     </div>
 
@@ -204,7 +229,7 @@ export const PLSimulatorSection: React.FC<PLSimulatorSectionProps> = ({
                         step="0.1"
                         value={volumeElasticity}
                         onChange={(e) => setVolumeElasticity(parseFloat(e.target.value))}
-                        className="w-full accent-purple-550 cursor-pointer"
+                        className="w-full accent-purple-550 cursor-pointer h-1.5 rounded-lg bg-zinc-200 dark:bg-zinc-700 appearance-none"
                       />
                     </div>
                   </>
@@ -224,7 +249,7 @@ export const PLSimulatorSection: React.FC<PLSimulatorSectionProps> = ({
                         step="5"
                         value={projectedRevenue}
                         onChange={(e) => setProjectedRevenue(parseInt(e.target.value))}
-                        className="w-full accent-purple-550 cursor-pointer"
+                        className="w-full accent-purple-550 cursor-pointer h-1.5 rounded-lg bg-zinc-200 dark:bg-zinc-700 appearance-none"
                       />
                     </div>
 
@@ -240,7 +265,7 @@ export const PLSimulatorSection: React.FC<PLSimulatorSectionProps> = ({
                         step="1"
                         value={expectedMargin}
                         onChange={(e) => setExpectedMargin(parseInt(e.target.value))}
-                        className="w-full accent-purple-550 cursor-pointer"
+                        className="w-full accent-purple-550 cursor-pointer h-1.5 rounded-lg bg-zinc-200 dark:bg-zinc-700 appearance-none"
                       />
                     </div>
 
@@ -256,7 +281,7 @@ export const PLSimulatorSection: React.FC<PLSimulatorSectionProps> = ({
                         step="1"
                         value={cannibalizationRisk}
                         onChange={(e) => setCannibalizationRisk(parseInt(e.target.value))}
-                        className="w-full accent-purple-550 cursor-pointer"
+                        className="w-full accent-purple-550 cursor-pointer h-1.5 rounded-lg bg-zinc-200 dark:bg-zinc-700 appearance-none"
                       />
                     </div>
                   </>
@@ -379,6 +404,37 @@ export const PLSimulatorSection: React.FC<PLSimulatorSectionProps> = ({
                           <div className="h-full bg-purple-500" style={{ width: `${(Math.abs(volumeElasticity) / 3) * 100}%` }} />
                         </div>
                       </div>
+
+                      {/* Interactive Price Optimization Curve */}
+                      <div className="col-span-2 bg-white dark:bg-[#1a1a24] p-3.5 rounded-lg border border-black/5 dark:border-white/10 space-y-2.5 mt-1 shadow-sm">
+                        <div className="flex justify-between items-center text-[9px] font-bold uppercase text-zinc-500">
+                          <span className="flex items-center gap-1"><Sparkles size={11} className="text-acies-yellow animate-pulse" /> Price Optimization Curve</span>
+                          <span className="text-[#8b5cf6] font-black">Sweet Spot: {volumeElasticity >= -1.0 ? '+15%' : '0% price shift'}</span>
+                        </div>
+                        <div className="h-28 w-full">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <AreaChart data={priceCurveData} margin={{ top: 5, right: 5, left: -25, bottom: 0 }}>
+                              <defs>
+                                <linearGradient id="priceCurveGlow" x1="0" y1="0" x2="0" y2="1">
+                                  <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.25}/>
+                                  <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/>
+                                </linearGradient>
+                              </defs>
+                              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridStroke} />
+                              <XAxis dataKey="priceChange" tick={{ fontSize: 7, fill: tickColor }} axisLine={false} tickLine={false} />
+                              <YAxis tick={{ fontSize: 7, fill: tickColor }} axisLine={false} tickLine={false} />
+                              <Tooltip
+                                contentStyle={{ backgroundColor: tooltipBg, borderColor: tooltipBorder, color: tooltipText, fontSize: '8.5px' }}
+                                formatter={(value) => [`₹${value} Cr`, 'Revenue']}
+                              />
+                              <Area type="monotone" dataKey="revenue" stroke="#8b5cf6" strokeWidth={2} fillOpacity={1} fill="url(#priceCurveGlow)" />
+                            </AreaChart>
+                          </ResponsiveContainer>
+                        </div>
+                        <p className="text-[7.5px] text-zinc-450 dark:text-zinc-500 font-bold uppercase tracking-wider text-center">
+                          Simulated revenue output across pricing corridors from -30% to +40%
+                        </p>
+                      </div>
                     </>
                   )}
 
@@ -423,31 +479,55 @@ export const PLSimulatorSection: React.FC<PLSimulatorSectionProps> = ({
                           <div className="h-full bg-amber-500" style={{ width: '40%' }} />
                         </div>
                       </div>
+
+                      {/* Stacked Revenue Contribution Bar for Launches */}
+                      <div className="col-span-2 bg-white dark:bg-[#1a1a24] p-3.5 rounded-lg border border-black/5 dark:border-white/10 space-y-2 mt-1 shadow-sm">
+                        <div className="flex justify-between items-center text-[9px] font-bold uppercase text-zinc-500">
+                          <span className="flex items-center gap-1"><BadgePercent size={11} className="text-acies-yellow" /> Launch Revenue Breakdown</span>
+                          <span className="text-emerald-500 font-extrabold">{incrementalPct}% Incremental</span>
+                        </div>
+                        <div className="h-3.5 w-full bg-black/10 dark:bg-white/10 rounded overflow-hidden flex text-[8.5px] font-black text-white shadow-inner">
+                          {incrementalPct > 0 && (
+                            <div style={{ width: `${incrementalPct}%` }} className="bg-emerald-500 h-full flex items-center justify-center transition-all duration-300">
+                              {incrementalPct >= 10 ? `${incrementalPct}%` : ''}
+                            </div>
+                          )}
+                          {cannibalizedPct > 0 && (
+                            <div style={{ width: `${cannibalizedPct}%` }} className="bg-red-500 h-full flex items-center justify-center transition-all duration-300">
+                              {cannibalizedPct >= 10 ? `${cannibalizedPct}%` : ''}
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex justify-between text-[8px] font-bold text-zinc-450 dark:text-zinc-500 uppercase mt-1">
+                          <span className="flex items-center gap-1">🟢 Net Incremental: ₹{netLaunchRev.toFixed(1)} Cr</span>
+                          <span className="flex items-center gap-1">🔴 Cannibalized Sibling: ₹{(projectedRevenue * cannHaircut).toFixed(1)} Cr</span>
+                        </div>
+                      </div>
                     </>
                   )}
                 </div>
               </div>
 
               {/* Simulated AI Explanation Feed Banner */}
-              <div className="p-3.5 bg-acies-yellow/[0.03] dark:bg-white/[0.01] border border-black/10 dark:border-white/10 rounded-xl text-[10.5px] leading-relaxed text-zinc-500 dark:text-zinc-400 font-semibold relative">
-                <div className="absolute top-0 right-0 p-1.5 opacity-25">
-                  <Cpu size={14} className="text-acies-yellow" />
+              <div className="p-3.5 bg-acies-yellow/[0.03] dark:bg-white/[0.01] border border-black/10 dark:border-white/10 rounded-xl text-[10.5px] leading-relaxed text-zinc-550 dark:text-zinc-450 font-semibold relative flex gap-2 items-start">
+                <Cpu size={14} className="text-acies-yellow shrink-0 mt-0.5 animate-pulse" />
+                <div>
+                  {simTab === 'remove' && (
+                    <span>
+                      <strong>AI Reasoner Feedback:</strong> Discontinuing <strong>{selectedSku.name}</strong> eliminates {selectedSku.stockouts} annual stockouts and {(selectedSku.cx * 100).toFixed(0)}% complexity score from the catalog. {removeMarginImpact > 0 ? `Global portfolio margin improves by +${removeMarginImpact}pp.` : 'Be sure to monitor customer retention on substitute variants.'}
+                    </span>
+                  )}
+                  {simTab === 'price' && (
+                    <span>
+                      <strong>AI Reasoner Feedback:</strong> A pricing shift of <strong>{priceChange > 0 ? '+' : ''}{priceChange}%</strong> on <strong>{selectedSku.name}</strong> with a volume elasticity coefficient of {volumeElasticity}x is predicted to {revDelta > 0 ? 'increase' : 'decrease'} revenue by ₹{Math.abs(revDelta)} Cr and {newMargin > selectedSku.margin ? 'lift' : 'reduce'} margins to {newMargin}%.
+                    </span>
+                  )}
+                  {simTab === 'launch' && (
+                    <span>
+                      <strong>AI Reasoner Feedback:</strong> A new launch projected at ₹{projectedRevenue} Cr and {expectedMargin}% margin with a <strong>{cannRiskLabel}</strong> cannibalization rate is predicted to deliver ₹{netLaunchRev} Cr net portfolio revenue after cannibalization adjustments.
+                    </span>
+                  )}
                 </div>
-                {simTab === 'remove' && (
-                  <span>
-                    <strong>AI Reasoner Feedback:</strong> Discontinuing <strong>{selectedSku.name}</strong> eliminates {selectedSku.stockouts} annual stockouts and {(selectedSku.cx * 100).toFixed(0)}% complexity score from the catalog. {removeMarginImpact > 0 ? `Global portfolio margin improves by +${removeMarginImpact}pp.` : 'Be sure to monitor customer retention on substitute variants.'}
-                  </span>
-                )}
-                {simTab === 'price' && (
-                  <span>
-                    <strong>AI Reasoner Feedback:</strong> A pricing shift of <strong>{priceChange > 0 ? '+' : ''}{priceChange}%</strong> on <strong>{selectedSku.name}</strong> with a volume elasticity coefficient of {volumeElasticity}x is predicted to {revDelta > 0 ? 'increase' : 'decrease'} revenue by ₹{Math.abs(revDelta)} Cr and {newMargin > selectedSku.margin ? 'lift' : 'reduce'} margins to {newMargin}%.
-                  </span>
-                )}
-                {simTab === 'launch' && (
-                  <span>
-                    <strong>AI Reasoner Feedback:</strong> A new launch projected at ₹{projectedRevenue} Cr and {expectedMargin}% margin with a <strong>{cannRiskLabel}</strong> cannibalization rate is predicted to deliver ₹{netLaunchRev} Cr net portfolio revenue after cannibalization adjustments.
-                  </span>
-                )}
               </div>
             </div>
           </div>

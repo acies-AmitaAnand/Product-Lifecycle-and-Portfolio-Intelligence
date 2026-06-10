@@ -6,6 +6,18 @@ import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend
 } from 'recharts';
+import { ResolveEscalationModal, VPEscalation } from './ResolveEscalationModal';
+import { EmailComposerModal } from '../portfolio-health/EmailComposerModal';
+import { SuccessFeedbackModal } from '../portfolio-health/SuccessFeedbackModal';
+
+const RECIPIENT_TITLES: Record<string, string> = {
+  'ananya.sen@aciesglobal.com': 'VP Finance',
+  'vikram.solanki@aciesglobal.com': 'QC Manager & Logistics Lead',
+  'priya.sharma@aciesglobal.com': 'Brand Director',
+  'rajendra.patel@aciesglobal.com': 'Vapi Hub Director',
+  'amit.verma@aciesglobal.com': 'NPD Lead',
+  'karan.johar@aciesglobal.com': 'Retail Relations Director'
+};
 
 interface VPLaunchProduct {
   id: string;
@@ -96,6 +108,19 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
     { id: 'esc3', title: 'Co-packer Capacity Constraint', sub: 'BrandD Organic Yogurt', severity: 'High', impact: '₹10Cr Revenue Risk', status: 'Pending', color: '#ef4444' },
     { id: 'esc4', title: 'Label Compliance Issue', sub: 'BrandG Glass Cleaner', severity: 'Low', impact: 'Minor packaging rerun', status: 'Pending', color: '#3b82f6' }
   ]);
+
+  const [activeResolveEscalation, setActiveResolveEscalation] = useState<string | null>(null);
+  const [composerOpen, setComposerOpen] = useState(false);
+  const [composerEmail, setComposerEmail] = useState({ to: '', name: '', subject: '', body: '', action: '' });
+  const [successFeedback, setSuccessFeedback] = useState<{
+    isOpen: boolean;
+    recipientName: string;
+    recipientTitle: string;
+    recipientEmail: string;
+    contextType: 'approval' | 'bottleneck' | 'signal';
+    contextTitle: string;
+    channel: 'email' | 'message';
+  } | null>(null);
 
   const handleResolveEscalation = (id: string, title: string, actionMsg: string) => {
     setEscalations(prev => prev.filter(e => e.id !== id));
@@ -313,14 +338,7 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
                   </div>
                 </div>
                 <button 
-                  onClick={() => {
-                    let action = '';
-                    if (esc.id === 'esc1') action = 'Approved alternative domestic vendor.';
-                    else if (esc.id === 'esc2') action = 'Dispatched response to regulatory audit.';
-                    else if (esc.id === 'esc3') action = 'Co-packing capacity split approved.';
-                    else action = 'Standard label revisions auto-approved.';
-                    handleResolveEscalation(esc.id, esc.title, action);
-                  }}
+                  onClick={() => setActiveResolveEscalation(esc.id)}
                   className="px-2 py-1 shrink-0 border border-[#6d28d9]/35 text-[#6d28d9] dark:text-[#a78bfa] bg-[#6d28d9]/5 hover:bg-[#6d28d9] hover:text-white rounded-sm text-[8px] font-bold uppercase tracking-wider transition-all cursor-pointer"
                 >
                   Resolve
@@ -425,6 +443,71 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
           </div>
         ))}
       </div>
+
+      {/* Resolve Sync Meeting Modal */}
+      <ResolveEscalationModal
+        isOpen={!!activeResolveEscalation}
+        escalation={escalations.find(x => x.id === activeResolveEscalation) || null}
+        onClose={() => setActiveResolveEscalation(null)}
+        onRequestAction={(email, name, subject, body) => {
+          setComposerEmail({
+            to: email,
+            name,
+            subject,
+            body,
+            action: activeResolveEscalation || ''
+          });
+          setComposerOpen(true);
+        }}
+      />
+
+      {/* Email Composer Modal */}
+      <EmailComposerModal 
+        isOpen={composerOpen}
+        onClose={() => setComposerOpen(false)}
+        initialEmail={composerEmail}
+        onSend={(name, email, subject, body, channel) => {
+          setComposerOpen(false);
+          const resolvedTitle = RECIPIENT_TITLES[email.toLowerCase()] || 'Product Lead';
+          const escalation = escalations.find(x => x.id === composerEmail.action);
+          const title = escalation ? escalation.title : '';
+          
+          setSuccessFeedback({
+            isOpen: true,
+            recipientName: name,
+            recipientTitle: resolvedTitle,
+            recipientEmail: email,
+            contextType: 'bottleneck',
+            contextTitle: title,
+            channel: channel === 'email' ? 'email' : 'message'
+          });
+          
+          addToast(
+            'Sync Meeting Invitation Sent', 
+            `Meeting invite ${channel === 'email' ? 'email' : 'message'} sent successfully to ${name} (${email}).`, 
+            '#10b981'
+          );
+          
+          // Resolve escalation
+          setEscalations(prev => prev.filter(e => e.id !== composerEmail.action));
+          setActiveResolveEscalation(null);
+        }}
+      />
+
+      {/* Success Feedback Modal */}
+      {successFeedback && (
+        <SuccessFeedbackModal
+          isOpen={successFeedback.isOpen}
+          onClose={() => setSuccessFeedback(null)}
+          recipientName={successFeedback.recipientName}
+          recipientTitle={successFeedback.recipientTitle}
+          recipientEmail={successFeedback.recipientEmail}
+          contextType={successFeedback.contextType}
+          contextTitle={successFeedback.contextTitle}
+          isDarkMode={isDarkMode}
+          channel={successFeedback.channel}
+        />
+      )}
     </div>
   );
 };

@@ -10,9 +10,16 @@ import { srClassify, SR_CLASSES, getSkuLocation } from './SKURationalization';
 interface ProductDirectoryProps {
   onSelectSku: (sku: typeof SKUS[0]) => void;
   selectedLocation?: string;
+  shortlistedSkus?: string[];
+  frozenSkus?: string[];
 }
 
-export const ProductDirectory: React.FC<ProductDirectoryProps> = ({ onSelectSku, selectedLocation }) => {
+export const ProductDirectory: React.FC<ProductDirectoryProps> = ({ 
+  onSelectSku, 
+  selectedLocation,
+  shortlistedSkus = [],
+  frozenSkus = [],
+}) => {
   // Product Directory Search & Filtering States
   const [dirSearch, setDirSearch] = useState('');
   const [dirCatFilter, setDirCatFilter] = useState('ALL');
@@ -91,6 +98,8 @@ export const ProductDirectory: React.FC<ProductDirectoryProps> = ({ onSelectSku,
           {filteredDirSKUs.map((sku) => {
             const cls = srClassify(sku);
             const cfg = SR_CLASSES[cls];
+            const isShortlisted = shortlistedSkus.includes(sku.name);
+            const isFrozen = frozenSkus.includes(sku.name);
             return (
               <div 
                 key={`dir-${sku.name}`}
@@ -98,13 +107,31 @@ export const ProductDirectory: React.FC<ProductDirectoryProps> = ({ onSelectSku,
                 className="p-3 bg-black/[0.02] dark:bg-white/[0.02] border border-black/5 dark:border-white/5 rounded-lg hover:border-purple-500/30 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] cursor-pointer transition-all flex flex-col justify-between h-24 group relative overflow-hidden"
               >
                 <div>
-                  <div className="text-[10px] font-black text-acies-gray dark:text-white truncate group-hover:text-[#8b5cf6] transition-colors">{sku.name}</div>
+                  <div className="text-[10px] font-black text-acies-gray dark:text-white truncate group-hover:text-[#8b5cf6] transition-colors flex items-center justify-between gap-1">
+                    <span className="truncate">{sku.name}</span>
+                    <div className="flex gap-0.5 shrink-0">
+                      {isShortlisted && <span title="Shortlisted for rationalization" className="text-[9px]">⚠️</span>}
+                      {isFrozen && <span title="Replenishment frozen" className="text-[9px]">❄️</span>}
+                    </div>
+                  </div>
                   <div className="text-[8px] text-zinc-450 dark:text-zinc-500 font-bold uppercase mt-0.5">{sku.cat} · ₹{sku.rev}Cr · {getSkuLocation(sku.name)}</div>
                 </div>
-                <div className="flex justify-between items-center mt-2">
-                  <span className="text-[7px] font-extrabold px-1.5 py-0.5 rounded-sm uppercase tracking-widest" style={{ backgroundColor: cfg.bg, color: cfg.color }}>
-                    {cfg.label}
-                  </span>
+                <div className="flex justify-between items-center mt-2 font-sans">
+                  <div className="flex items-center gap-1 flex-wrap">
+                    <span className="text-[7px] font-extrabold px-1.5 py-0.5 rounded-sm uppercase tracking-widest" style={{ backgroundColor: cfg.bg, color: cfg.color }}>
+                      {cfg.label}
+                    </span>
+                    {isShortlisted && (
+                      <span className="text-[6px] font-black bg-amber-500/10 text-amber-500 px-1 py-0.5 rounded uppercase tracking-wider">
+                        Shortlist
+                      </span>
+                    )}
+                    {isFrozen && (
+                      <span className="text-[6px] font-black bg-blue-500/10 text-blue-400 px-1 py-0.5 rounded uppercase tracking-wider">
+                        Frozen
+                      </span>
+                    )}
+                  </div>
                   <span className="text-[9px] text-[#8b5cf6] dark:text-purple-300 font-bold opacity-0 group-hover:opacity-100 transition-opacity">Inspect →</span>
                 </div>
               </div>
