@@ -7,6 +7,7 @@ import { TransferenceSimulator } from './TransferenceSimulator';
 import { CrossLocationTransfer } from './CrossLocationTransfer';
 import { LaunchEvaluator } from './LaunchEvaluator';
 import { ExecutiveCart } from './ExecutiveCart';
+import { SKUHoldingsMatrix } from './SKUHoldingsMatrix';
 import { StagedAction } from './types';
 import { Globe, Layers, Truck, Briefcase, ChevronRight, ChevronLeft, Trash2, CheckCircle } from 'lucide-react';
 
@@ -191,9 +192,13 @@ export const AssortmentOverview: React.FC<AssortmentOverviewProps> = ({ role, is
             <div className="space-y-6 animate-fadeIn">
               <div className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-sm text-[10px] leading-relaxed text-zinc-700 dark:text-zinc-300 font-medium">
                 <h3 className="font-extrabold uppercase tracking-widest text-blue-500 mb-1 text-xs">Step 1: Current holdings & Catalog Footprints</h3>
-                <p>What is the current holding of different SKUs at different locations? Analyze how product variants are distributed across European regions, review competitor indices, and check warehouse capacities (e.g. Italy is at peak 95% load) by clicking regional cards below.</p>
+                <p>What is the current holding of different SKUs at different locations? Use the holdings matrix below to inspect the listing availability and stock health of all 24 product variants across regions. Then, click the footprint cards below to inspect competitor price indices and depot capacity bounds.</p>
               </div>
 
+              {/* SKU Holdings Matrix Grid */}
+              <SKUHoldingsMatrix />
+
+              {/* Regional Capacity Cards */}
               <RegionalAssortmentGrid 
                 onSliderChange={handleSliderChange} 
                 onStageAction={handleStageAction} 
@@ -238,7 +243,7 @@ export const AssortmentOverview: React.FC<AssortmentOverviewProps> = ({ role, is
               {stagedActions.length === 0 ? (
                 <div className="p-12 border border-dashed border-black/10 dark:border-white/10 rounded-sm text-center bg-black/[0.01] dark:bg-white/[0.01]">
                   <Briefcase size={32} className="mx-auto text-zinc-400 mb-4 animate-pulse" />
-                  <h4 className="text-xs uppercase font-extrabold tracking-widest text-zinc-650 dark:text-zinc-300">No Staged Actions in Ledger</h4>
+                  <h4 className="text-xs uppercase font-extrabold tracking-widest text-zinc-655 dark:text-zinc-300">No Staged Actions in Ledger</h4>
                   <p className="text-[10px] text-zinc-500 mt-2 max-w-sm mx-auto leading-relaxed">
                     Staged decisions are currently empty. Please go back to Step 1, 2, or 3 to stage category realignments, delistings, price updates, or SKU launches.
                   </p>
