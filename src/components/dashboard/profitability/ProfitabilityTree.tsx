@@ -33,6 +33,18 @@ interface Scenario {
   ebitPct: string;
 }
 
+const marginVelocityAlerts = [
+  { name: 'Snacks', detail: 'from 22% margin', delta: '-1.2pp/mo', status: 'critical', sColor: '#ef4444' },
+  { name: 'Green Tea RTD', detail: 'Beverages · Now 29% margin', delta: '-1.1pp/mo', status: 'high', sColor: '#f59e0b' },
+  { name: 'Foam Face Wash', detail: 'Personal Care · Now 26% margin', delta: '-1.0pp/mo', status: 'high', sColor: '#f59e0b' },
+  { name: 'Fabric Softener', detail: 'Household · Now 15% margin', delta: '-1.0pp/mo', status: 'critical', sColor: '#ef4444' },
+];
+
+const breakevenSKUs = [
+  { name: 'Fabric Softener', detail: 'Household · Rev ₹28Cr', margin: 15, color: '#ef4444' },
+  { name: 'Floor Cleaner', detail: 'Household · Rev ₹30Cr', margin: 19, color: '#f59e0b' },
+];
+
 const VPProfitabilityTreeView: React.FC<{ 
   isDarkMode: boolean;
   isSimulatorOpen?: boolean;
@@ -226,17 +238,7 @@ const VPProfitabilityTreeView: React.FC<{
 
 
 
-  const marginVelocityAlerts = [
-    { name: 'Snacks', detail: 'from 22% margin', delta: '-1.2pp/mo', status: 'critical', sColor: '#ef4444' },
-    { name: 'Green Tea RTD', detail: 'Beverages · Now 29% margin', delta: '-1.1pp/mo', status: 'high', sColor: '#f59e0b' },
-    { name: 'Foam Face Wash', detail: 'Personal Care · Now 26% margin', delta: '-1.0pp/mo', status: 'high', sColor: '#f59e0b' },
-    { name: 'Fabric Softener', detail: 'Household · Now 15% margin', delta: '-1.0pp/mo', status: 'critical', sColor: '#ef4444' },
-  ];
 
-  const breakevenSKUs = [
-    { name: 'Fabric Softener', detail: 'Household · Rev ₹28Cr', margin: 15, color: '#ef4444' },
-    { name: 'Floor Cleaner', detail: 'Household · Rev ₹30Cr', margin: 19, color: '#f59e0b' },
-  ];
 
   const monthsList = ['Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'];
   const marginHealthmapData = [
@@ -1104,64 +1106,7 @@ const VPProfitabilityTreeView: React.FC<{
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="glass-card bg-white dark:bg-[#1a1a24]/90 border border-black/10 dark:border-white/10 p-5 rounded-xl shadow-sm space-y-4">
-          <div className="flex justify-between items-center">
-            <div>
-              <h4 className="text-[12px] font-bold uppercase tracking-widest text-zinc-400">Margin Velocity Alerts</h4>
-              <p className="text-[9px] text-zinc-500 uppercase tracking-widest mt-0.5">SKUs declining faster than 2pp/month — auto-surfaced</p>
-            </div>
-            <span className="text-[8px] font-black bg-red-500/10 text-red-500 border border-red-500/20 px-2 py-0.5 rounded-full shrink-0">
-              3 critical
-            </span>
-          </div>
-          <div className="divide-y divide-black/[0.04] dark:divide-white/[0.04] text-xs font-semibold">
-            {marginVelocityAlerts.map((a, idx) => (
-              <div key={idx} className="flex justify-between items-center py-3">
-                <div className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: a.sColor }} />
-                  <div>
-                    <p className="font-bold text-zinc-800 dark:text-zinc-200">{a.name}</p>
-                    <p className="text-[9.5px] text-zinc-400 font-medium">{a.detail}</p>
-                  </div>
-                </div>
-                <span className="text-[9px] font-black text-red-500 bg-red-500/10 border border-red-500/20 px-2 py-0.5 rounded">
-                  {a.delta}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="glass-card bg-white dark:bg-[#1a1a24]/90 border border-black/10 dark:border-white/10 p-5 rounded-xl shadow-sm space-y-4">
-          <div>
-            <h4 className="text-[12px] font-bold uppercase tracking-widest text-zinc-400">Break-even SKU Radar</h4>
-            <p className="text-[9px] text-zinc-500 uppercase tracking-widest mt-0.5">SKUs near or below break-even — ranked by revenue at risk</p>
-          </div>
-          <div className="space-y-5 pt-2 text-xs font-semibold">
-            {breakevenSKUs.map((s, idx) => (
-              <div key={idx} className="space-y-1.5">
-                <div className="flex justify-between items-center font-bold text-zinc-805 dark:text-zinc-200">
-                  <div>
-                    <p>{s.name}</p>
-                    <p className="text-[9px] text-zinc-450 uppercase font-medium">{s.detail}</p>
-                  </div>
-                  <span className="font-mono text-red-500 font-extrabold">{s.margin}% margin</span>
-                </div>
-                <div className="w-full bg-black/5 dark:bg-white/15 h-2 rounded relative overflow-hidden">
-                  <div 
-                    className="absolute left-0 top-0 bottom-0 rounded" 
-                    style={{ 
-                      width: `${s.margin * 2.5}%`,
-                      backgroundColor: s.margin < 18 ? '#dc2626' : '#ea580c' 
-                    }} 
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+      
 
       <div className="glass-card bg-white dark:bg-[#1a1a24]/90 border border-black/10 dark:border-white/10 rounded-xl overflow-hidden shadow-sm">
         <div className="flex items-center justify-between p-3.5 border-b bg-[#8b5cf6]/[0.03]">
@@ -1588,6 +1533,66 @@ export const ProfitabilityTree: React.FC<ProfitabilityTreeProps> = ({
           >
             Save Scenario
           </button>
+        </div>
+      </div>
+
+      {/* Margin Velocity Alerts & Break-even SKU Radar (PM view) */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="glass-card bg-white dark:bg-[#1a1a24]/90 border border-black/10 dark:border-white/10 p-5 rounded-xl shadow-sm space-y-4">
+          <div className="flex justify-between items-center">
+            <div>
+              <h4 className="text-[12px] font-bold uppercase tracking-widest text-zinc-400">Margin Velocity Alerts</h4>
+              <p className="text-[9px] text-zinc-500 uppercase tracking-widest mt-0.5">SKUs declining faster than 2pp/month — auto-surfaced</p>
+            </div>
+            <span className="text-[8px] font-black bg-red-500/10 text-red-500 border border-red-500/20 px-2 py-0.5 rounded-full shrink-0">
+              3 critical
+            </span>
+          </div>
+          <div className="divide-y divide-black/[0.04] dark:divide-white/[0.04] text-xs font-semibold">
+            {marginVelocityAlerts.map((a, idx) => (
+              <div key={idx} className="flex justify-between items-center py-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: a.sColor }} />
+                  <div>
+                    <p className="font-bold text-zinc-800 dark:text-zinc-200">{a.name}</p>
+                    <p className="text-[9.5px] text-zinc-400 font-medium">{a.detail}</p>
+                  </div>
+                </div>
+                <span className="text-[9px] font-black text-red-500 bg-red-500/10 border border-red-500/20 px-2 py-0.5 rounded">
+                  {a.delta}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="glass-card bg-white dark:bg-[#1a1a24]/90 border border-black/10 dark:border-white/10 p-5 rounded-xl shadow-sm space-y-4">
+          <div>
+            <h4 className="text-[12px] font-bold uppercase tracking-widest text-zinc-400">Break-even SKU Radar</h4>
+            <p className="text-[9px] text-zinc-500 uppercase tracking-widest mt-0.5">SKUs near or below break-even — ranked by revenue at risk</p>
+          </div>
+          <div className="space-y-5 pt-2 text-xs font-semibold">
+            {breakevenSKUs.map((s, idx) => (
+              <div key={idx} className="space-y-1.5">
+                <div className="flex justify-between items-center font-bold text-zinc-805 dark:text-zinc-200">
+                  <div>
+                    <p>{s.name}</p>
+                    <p className="text-[9px] text-zinc-450 uppercase font-medium">{s.detail}</p>
+                  </div>
+                  <span className="font-mono text-red-500 font-extrabold">{s.margin}% margin</span>
+                </div>
+                <div className="w-full bg-black/5 dark:bg-white/15 h-2 rounded relative overflow-hidden">
+                  <div 
+                    className="absolute left-0 top-0 bottom-0 rounded" 
+                    style={{ 
+                      width: `${s.margin * 2.5}%`,
+                      backgroundColor: s.margin < 18 ? '#dc2626' : '#ea580c' 
+                    }} 
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 

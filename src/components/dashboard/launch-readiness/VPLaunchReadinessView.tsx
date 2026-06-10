@@ -349,28 +349,30 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
               <span className="text-[8px] font-bold uppercase tracking-wider text-blue-500 bg-blue-500/10 px-2 py-0.5 rounded-full">
                 {activePipelineSKUs} active pipeline SKUs
               </span>
-              <div className="flex bg-black/5 dark:bg-white/5 rounded-full p-0.5 border border-black/10 dark:border-white/10 items-center">
+              <div className="flex items-center border border-black/10 dark:border-white/10 rounded-md overflow-hidden bg-black/5 dark:bg-white/5 p-0.5 ml-1 shrink-0">
                 <button
+                  type="button"
                   onClick={() => setPipelineView('bar')}
-                  className={`p-1 rounded-full transition-all cursor-pointer ${
+                  className={`p-1.5 px-2.5 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm shrink-0 ${
                     pipelineView === 'bar'
-                      ? 'bg-acies-yellow text-white dark:text-acies-gray shadow-sm'
-                      : 'text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200'
+                      ? 'bg-blue-500 text-white shadow-sm'
+                      : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 bg-transparent'
                   }`}
                   title="Bar Chart"
                 >
-                  <BarChart2 size={13} strokeWidth={2.5} />
+                  <BarChart2 size={18} />
                 </button>
                 <button
+                  type="button"
                   onClick={() => setPipelineView('pie')}
-                  className={`p-1 rounded-full transition-all cursor-pointer ${
+                  className={`p-1.5 px-2.5 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm shrink-0 ${
                     pipelineView === 'pie'
-                      ? 'bg-acies-yellow text-white dark:text-acies-gray shadow-sm'
-                      : 'text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200'
+                      ? 'bg-blue-500 text-white shadow-sm'
+                      : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 bg-transparent'
                   }`}
                   title="Pie Chart"
                 >
-                  <PieIcon size={13} strokeWidth={2.5} />
+                  <PieIcon size={18} />
                 </button>
               </div>
             </div>
