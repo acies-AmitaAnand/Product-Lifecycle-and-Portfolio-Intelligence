@@ -15,6 +15,8 @@ import { BottleneckDetailsModal } from './BottleneckDetailsModal';
 import { EmailComposerModal } from './EmailComposerModal';
 import { ScheduleMeetingModal } from './ScheduleMeetingModal';
 import { SuccessFeedbackModal } from './SuccessFeedbackModal';
+import { SkuDetailsModal } from '../executive/SkuDetailsModal';
+
 
 interface PortfolioHealthMapProps {
   role: Role;
@@ -76,6 +78,11 @@ const calculatePortfolioHealth = (skusList: any[]) => {
       growth: 0, 
       margin: 0, 
       decline: 0, 
+      introRev: 0,
+      growthRev: 0,
+      marginRev: 0,
+      declineRev: 0,
+      totalRev: 0,
       list: { intro: [], growth: [], margin: [], decline: [] } 
     };
   }
@@ -84,6 +91,11 @@ const calculatePortfolioHealth = (skusList: any[]) => {
   let growthCount = 0;
   let marginCount = 0;
   let declineCount = 0;
+  
+  let introRev = 0;
+  let growthRev = 0;
+  let marginRev = 0;
+  let declineRev = 0;
   
   const introSKUs: string[] = [];
   const growthSKUs: string[] = [];
@@ -99,15 +111,19 @@ const calculatePortfolioHealth = (skusList: any[]) => {
     if (stage === 'Introduction') {
       introCount++;
       introSKUs.push(s.name);
+      introRev += s.rev;
     } else if (stage === 'Growth') {
       growthCount++;
       growthSKUs.push(s.name);
+      growthRev += s.rev;
     } else if (stage === 'Margin') {
       marginCount++;
       marginSKUs.push(s.name);
+      marginRev += s.rev;
     } else {
       declineCount++;
       declineSKUs.push(s.name);
+      declineRev += s.rev;
     }
     totalMargin += s.margin;
     totalStockouts += s.stockouts;
@@ -136,6 +152,7 @@ const calculatePortfolioHealth = (skusList: any[]) => {
   );
   
   const finalScore = Math.max(0, Math.min(100, score));
+  const totalRev = skusList.reduce((sum, s) => sum + s.rev, 0) || 1;
   
   return {
     score: finalScore,
@@ -143,6 +160,11 @@ const calculatePortfolioHealth = (skusList: any[]) => {
     growth: growthCount,
     margin: marginCount,
     decline: declineCount,
+    introRev,
+    growthRev,
+    marginRev,
+    declineRev,
+    totalRev,
     list: {
       intro: introSKUs,
       growth: growthSKUs,
@@ -155,9 +177,10 @@ const calculatePortfolioHealth = (skusList: any[]) => {
 interface LifecycleHealthPanelProps {
   skusList: any[];
   isDarkMode: boolean;
+  onSelectSku?: (sku: any) => void;
 }
 
-const LifecycleHealthPanel: React.FC<LifecycleHealthPanelProps> = ({ skusList, isDarkMode }) => {
+const LifecycleHealthPanel: React.FC<LifecycleHealthPanelProps> = ({ skusList, isDarkMode, onSelectSku }) => {
   const data = calculatePortfolioHealth(skusList);
   
   // Circular progress ring setup
@@ -191,11 +214,13 @@ const LifecycleHealthPanel: React.FC<LifecycleHealthPanelProps> = ({ skusList, i
 
   const [hoveredStage, setHoveredStage] = useState<string | null>(null);
 
+  const totalCount = skusList.length || 1;
+  const totalRevVal = data.totalRev || 1;
   const stages = [
-    { key: 'intro', label: 'Introduction', count: data.intro, pct: Math.round((data.intro / skusList.length) * 100), color: '#8b5cf6', list: data.list.intro, desc: 'New launches and pipeline concepts' },
-    { key: 'growth', label: 'Growth', count: data.growth, pct: Math.round((data.growth / skusList.length) * 100), color: '#10b981', list: data.list.growth, desc: 'High growth and expanding volume' },
-    { key: 'margin', label: 'Margin', count: data.margin, pct: Math.round((data.margin / skusList.length) * 100), color: '#f59e0b', list: data.list.margin, desc: 'Mature cash cows with solid margins' },
-    { key: 'decline', label: 'Decline', count: data.decline, pct: Math.round((data.decline / skusList.length) * 100), color: '#ef4444', list: data.list.decline, desc: 'Dwindling volumes and low margins' },
+    { key: 'intro', label: 'Introduction', count: data.intro, pct: Math.round((data.intro / totalCount) * 100), revAmount: data.introRev, revPct: Math.round((data.introRev / totalRevVal) * 100), color: '#8b5cf6', list: data.list.intro, desc: 'New launches and pipeline concepts' },
+    { key: 'growth', label: 'Growth', count: data.growth, pct: Math.round((data.growth / totalCount) * 100), revAmount: data.growthRev, revPct: Math.round((data.growthRev / totalRevVal) * 100), color: '#10b981', list: data.list.growth, desc: 'High growth and expanding volume' },
+    { key: 'margin', label: 'Margin', count: data.margin, pct: Math.round((data.margin / totalCount) * 100), revAmount: data.marginRev, revPct: Math.round((data.marginRev / totalRevVal) * 100), color: '#f59e0b', list: data.list.margin, desc: 'Mature cash cows with solid margins' },
+    { key: 'decline', label: 'Decline', count: data.decline, pct: Math.round((data.decline / totalCount) * 100), revAmount: data.declineRev, revPct: Math.round((data.declineRev / totalRevVal) * 100), color: '#ef4444', list: data.list.decline, desc: 'Dwindling volumes and low margins' },
   ];
 
   return (
@@ -238,28 +263,61 @@ const LifecycleHealthPanel: React.FC<LifecycleHealthPanelProps> = ({ skusList, i
 
       {/* RIGHT COLUMN: DISTRIBUTION BAR AND STAGE DETAILS */}
       <div className="lg:col-span-8 space-y-4">
-        <div>
-          <span className="text-[9px] font-bold uppercase tracking-widest text-zinc-400 block mb-2">Product Lifecycle Distribution</span>
+        <div className="space-y-3">
+          <span className="text-[9px] font-bold uppercase tracking-widest text-zinc-400 block mb-1">Product Lifecycle Distribution</span>
           
-          {/* Stacked Proportions Bar */}
-          <div className="w-full h-5 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-sm overflow-hidden flex gap-0.5">
-            {stages.map(st => {
-              if (st.count === 0) return null;
-              return (
-                <div 
-                  key={st.key}
-                  style={{ width: `${st.pct}%`, backgroundColor: st.color }}
-                  onMouseEnter={() => setHoveredStage(st.key)}
-                  onMouseLeave={() => setHoveredStage(null)}
-                  className="h-full relative cursor-pointer opacity-90 hover:opacity-100 transition-opacity flex items-center justify-center"
-                  title={`${st.label}: ${st.count} SKUs (${st.pct}%)`}
-                >
-                  {st.pct >= 8 && (
-                    <span className="text-[8px] font-bold text-white leading-none select-none">{st.pct}%</span>
-                  )}
-                </div>
-              );
-            })}
+          {/* SKU Count Proportions Bar */}
+          <div className="space-y-1">
+            <div className="flex justify-between items-center text-[7.5px] uppercase tracking-wider text-zinc-400 font-bold">
+              <span>SKU Count Share</span>
+              <span>Total: {skusList.length} SKUs</span>
+            </div>
+            <div className="w-full h-4 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-sm overflow-hidden flex gap-0.5">
+              {stages.map(st => {
+                if (st.count === 0) return null;
+                return (
+                  <div 
+                    key={st.key}
+                    style={{ width: `${st.pct}%`, backgroundColor: st.color }}
+                    onMouseEnter={() => setHoveredStage(st.key)}
+                    onMouseLeave={() => setHoveredStage(null)}
+                    className="h-full relative cursor-pointer opacity-90 hover:opacity-100 transition-opacity flex items-center justify-center"
+                    title={`${st.label}: ${st.count} SKUs (${st.pct}%)`}
+                  >
+                    {st.pct >= 8 && (
+                      <span className="text-[8px] font-bold text-white leading-none select-none">{st.pct}%</span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Revenue Contribution Proportions Bar */}
+          <div className="space-y-1">
+            <div className="flex justify-between items-center text-[7.5px] uppercase tracking-wider text-zinc-400 font-bold">
+              <span>Revenue Contribution Share</span>
+              <span>Total: ₹{data.totalRev.toFixed(1)} Cr</span>
+            </div>
+            <div className="w-full h-4 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-sm overflow-hidden flex gap-0.5">
+              {stages.map(st => {
+                if (st.revAmount === 0) return null;
+                return (
+                  <div 
+                    key={st.key}
+                    style={{ width: `${st.revPct}%`, backgroundColor: st.color }}
+                    onMouseEnter={() => setHoveredStage(st.key)}
+                    onMouseLeave={() => setHoveredStage(null)}
+                    className="h-full relative cursor-pointer opacity-90 hover:opacity-100 transition-opacity flex items-center justify-center"
+                    title={`${st.label} Revenue: ₹${st.revAmount.toFixed(1)} Cr (${st.revPct}%)`}
+                  >
+                    {st.revPct >= 8 && (
+                      <span className="text-[8px] font-bold text-white leading-none select-none">{st.revPct}%</span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
 
@@ -286,16 +344,29 @@ const LifecycleHealthPanel: React.FC<LifecycleHealthPanelProps> = ({ skusList, i
                   <span className="text-base font-display font-extrabold text-acies-gray dark:text-white leading-none">{st.count}</span>
                   <span className="text-[9px] text-zinc-400 leading-none">SKUs</span>
                 </div>
+                <div className="text-[8px] text-zinc-500 font-semibold mt-1.5 truncate">
+                  Rev: <span className="text-acies-gray dark:text-zinc-350 font-extrabold">₹{st.revAmount.toFixed(0)} Cr</span> ({st.revPct}%)
+                </div>
                 
                 {/* Micro SKU list popover on hover */}
                 {isHoveredOrActive && st.list.length > 0 && (
-                  <div className="absolute left-0 right-0 top-full mt-1.5 bg-white dark:bg-zinc-900 border border-black/10 dark:border-white/15 p-2 rounded-sm shadow-xl z-30 space-y-1.5 pointer-events-none max-h-48 overflow-y-auto no-scrollbar">
+                  <div className="absolute left-0 right-0 top-full mt-1.5 bg-white dark:bg-zinc-900 border border-black/10 dark:border-white/15 p-2 rounded-sm shadow-xl z-30 space-y-1.5 max-h-48 overflow-y-auto no-scrollbar">
                     <p className="text-[7.5px] font-bold uppercase tracking-widest text-zinc-400 mb-1 leading-none">{st.label} SKUs ({st.count})</p>
                     <div className="flex flex-wrap gap-1">
                       {st.list.map(name => (
-                        <span key={name} className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 px-1 py-0.5 rounded-sm text-[8px] font-medium text-acies-gray dark:text-zinc-200">
+                        <button 
+                          key={name}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            const skuObject = SKUS.find(s => s.name === name);
+                            if (skuObject && onSelectSku) {
+                              onSelectSku(skuObject);
+                            }
+                          }}
+                          className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 px-1 py-0.5 rounded-sm text-[8px] font-medium text-acies-gray dark:text-zinc-200 hover:bg-[#8b5cf6]/10 hover:border-[#8b5cf6]/30 cursor-pointer transition-all outline-none"
+                        >
                           {name}
-                        </span>
+                        </button>
                       ))}
                     </div>
                   </div>
@@ -354,6 +425,8 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean; onAuditClick?: (metricNam
     contextTitle: string;
     channel: 'email' | 'message';
   } | null>(null);
+
+  const [selectedSkuForModal, setSelectedSkuForModal] = useState<any>(null);
 
   // KPIs
   const [kpis, setKpis] = useState({
@@ -788,7 +861,7 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean; onAuditClick?: (metricNam
       </div>
 
       {/* Portfolio Health & Lifecycle Distribution */}
-      <LifecycleHealthPanel skusList={SKUS} isDarkMode={isDarkMode} />
+      <LifecycleHealthPanel skusList={SKUS} isDarkMode={isDarkMode} onSelectSku={setSelectedSkuForModal} />
 
       {/* Main Command Center Grid */}
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
@@ -1084,6 +1157,17 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean; onAuditClick?: (metricNam
         }}
       />
 
+      {/* SKU Details Modal */}
+      <SkuDetailsModal
+        isOpen={!!selectedSkuForModal}
+        sku={selectedSkuForModal}
+        onClose={() => setSelectedSkuForModal(null)}
+        onRequestAction={(email, name, subject, body) => {
+          openEmailComposer(email, name, subject, body);
+          setSelectedSkuForModal(null);
+        }}
+      />
+
     </div>
   );
 };
@@ -1107,6 +1191,24 @@ export const PortfolioHealthMap: React.FC<PortfolioHealthMapProps> = ({ role, is
   const [filterCat, setFilterCat] = useState<string>('all');
   const [filterMinRev, setFilterMinRev] = useState<number>(0);
   const [filteredSKUs, setFilteredSKUs] = useState(() => [...SKUS]);
+
+  const [selectedSkuForModal, setSelectedSkuForModal] = useState<any>(null);
+
+  // Standard view toasts state
+  interface Toast {
+    id: string;
+    title: string;
+    body: string;
+    color: string;
+  }
+  const [toasts, setToasts] = useState<Toast[]>([]);
+  const addToast = (title: string, body: string, color: string) => {
+    const id = Math.random().toString();
+    setToasts(prev => [{ id, title, body, color }, ...prev]);
+    setTimeout(() => {
+      setToasts(prev => prev.filter(t => t.id !== id));
+    }, 5000);
+  };
 
   // Guide accordion toggles
   const [openGuides, setOpenGuides] = useState<Record<string, boolean>>({});
@@ -1508,7 +1610,7 @@ export const PortfolioHealthMap: React.FC<PortfolioHealthMapProps> = ({ role, is
           </div>
 
           {/* Portfolio Health & Lifecycle Distribution */}
-          <LifecycleHealthPanel skusList={filteredSKUs} isDarkMode={isDarkMode} />
+          <LifecycleHealthPanel skusList={filteredSKUs} isDarkMode={isDarkMode} onSelectSku={setSelectedSkuForModal} />
 
           {/* Revenue vs Complexity Scatter chart */}
           <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-5">
@@ -2152,6 +2254,38 @@ export const PortfolioHealthMap: React.FC<PortfolioHealthMapProps> = ({ role, is
 
         </div>
       )}
+
+      {/* Floating Corner Toasts Container */}
+      <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none max-w-sm">
+        {toasts.map(t => (
+          <div 
+            key={t.id} 
+            onClick={() => setToasts(prev => prev.filter(x => x.id !== t.id))}
+            className="pointer-events-auto bg-white dark:bg-zinc-900 border border-black/10 dark:border-white/15 p-3.5 rounded shadow-lg flex items-start gap-2.5 cursor-pointer hover:opacity-90 transition-opacity animate-fadeIn"
+          >
+            <span className="w-2.5 h-2.5 rounded-full shrink-0 mt-1" style={{ backgroundColor: t.color }} />
+            <div>
+              <h5 className="text-[11px] font-bold text-zinc-850 dark:text-zinc-100 leading-none">{t.title}</h5>
+              <p className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-1 leading-snug">{t.body}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* SKU Details Modal */}
+      <SkuDetailsModal
+        isOpen={!!selectedSkuForModal}
+        sku={selectedSkuForModal}
+        onClose={() => setSelectedSkuForModal(null)}
+        onRequestAction={(email, name, subject, body) => {
+          addToast(
+            'Action Plan Request Logged',
+            `Mitigation action plan request successfully logged and sent to ${name} (${email}).`,
+            '#10b981'
+          );
+          setSelectedSkuForModal(null);
+        }}
+      />
 
     </div>
   );
