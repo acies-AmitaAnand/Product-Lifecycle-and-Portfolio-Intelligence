@@ -1041,6 +1041,13 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean; onAuditClick?: (metricNam
   const tooltipBorder = isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
   const tooltipText = isDarkMode ? '#fff' : '#000';
 
+  const scrollToSection = (id: string) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
 
   // Toasts
   interface Toast {
@@ -1687,11 +1694,45 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean; onAuditClick?: (metricNam
         </div>
       </div>
 
+      {/* Quick Navigation Bar */}
+      <div className="flex flex-wrap items-center gap-2 bg-white/60 dark:bg-white/5 border border-black/5 dark:border-white/10 p-2 rounded-sm shadow-sm text-[9px] font-bold uppercase tracking-wider">
+        <span className="text-zinc-400 dark:text-zinc-500 mr-2 uppercase tracking-widest text-[8px]">Quick Jump:</span>
+        <button 
+          onClick={() => scrollToSection('vp-lifecycle-health')}
+          className="px-2.5 py-1 hover:bg-black/5 dark:hover:bg-white/10 text-zinc-700 dark:text-zinc-350 rounded-sm cursor-pointer border-none bg-transparent font-bold outline-none"
+        >
+          📊 Lifecycle Health
+        </button>
+        <span className="text-zinc-300 dark:text-zinc-700">|</span>
+        <button 
+          onClick={() => scrollToSection('vp-action-desk')}
+          className="px-2.5 py-1 hover:bg-black/5 dark:hover:bg-white/10 text-zinc-700 dark:text-zinc-350 rounded-sm cursor-pointer border-none bg-transparent font-bold outline-none"
+        >
+          ⚡ Executive Action Desk
+        </button>
+        <span className="text-zinc-300 dark:text-zinc-700">|</span>
+        <button 
+          onClick={() => scrollToSection('vp-investment-map')}
+          className="px-2.5 py-1 hover:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-sm cursor-pointer border-none bg-transparent font-bold outline-none"
+        >
+          🎯 Investment vs. Return
+        </button>
+        <span className="text-zinc-300 dark:text-zinc-700">|</span>
+        <button 
+          onClick={() => scrollToSection('vp-rev-perf-matrix')}
+          className="px-2.5 py-1 hover:bg-purple-500/10 text-purple-600 dark:text-purple-400 rounded-sm cursor-pointer border-none bg-transparent font-bold outline-none"
+        >
+          📈 Revenue vs. Performance Matrix
+        </button>
+      </div>
+
       {/* Portfolio Health & Lifecycle Distribution */}
-      <LifecycleHealthPanel skusList={filteredSKUs} isDarkMode={isDarkMode} onSelectSku={setSelectedSkuForModal} />
+      <div id="vp-lifecycle-health" className="scroll-mt-16">
+        <LifecycleHealthPanel skusList={filteredSKUs} isDarkMode={isDarkMode} onSelectSku={setSelectedSkuForModal} />
+      </div>
 
       {/* Main Command Center Grid */}
-      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
+      <div id="vp-action-desk" className="grid grid-cols-1 xl:grid-cols-12 gap-6 scroll-mt-16">
         {/* LEFT COLUMN: EXECUTIVE APPROVAL BOARD */}
         <div className="xl:col-span-4 space-y-6">
           {/* Executive Approval Board */}
@@ -1871,7 +1912,7 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean; onAuditClick?: (metricNam
       </div>
 
       {/* AI Investment vs Return Margin Map */}
-      <div className="mt-6">
+      <div id="vp-investment-map" className="mt-6 scroll-mt-16">
         <InvestmentMarginMap 
           skusList={SKUS} 
           isDarkMode={isDarkMode} 
@@ -1881,7 +1922,7 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean; onAuditClick?: (metricNam
       </div>
 
       {/* Revenue vs. Performance Matrix */}
-      <div className="mt-6">
+      <div id="vp-rev-perf-matrix" className="mt-6 scroll-mt-16">
         <RevenuePerformanceMatrix 
           skusList={SKUS} 
           isDarkMode={isDarkMode} 
@@ -2024,7 +2065,40 @@ export const PortfolioHealthMap: React.FC<PortfolioHealthMapProps> = ({ role, is
     return <VPCommandCenter isDarkMode={isDarkMode} onAuditClick={onAuditClick} />;
   }
 
-  const [activeSubTab, setActiveSubTab] = useState<string>('ph-kpi');
+  // Hash helpers for sub-tab routing
+  const getSubTabHashParam = (key: string): string | null => {
+    try {
+      const hash = window.location.hash || '#';
+      const params = new URLSearchParams(hash.substring(1).replace(/\+/g, '%20'));
+      return params.get(key);
+    } catch (e) {
+      return null;
+    }
+  };
+
+  const updateSubTabHash = (key: string, value: string) => {
+    try {
+      const hash = window.location.hash || '#';
+      const params = new URLSearchParams(hash.substring(1));
+      params.set(key, value);
+      window.history.replaceState(null, '', '#' + params.toString());
+    } catch (e) {
+      console.warn("Could not update URL hash:", e);
+    }
+  };
+
+  const [activeSubTab, setActiveSubTab] = useState<string>(() => {
+    const subParam = getSubTabHashParam('subtab');
+    const validSubTabs = ['ph-kpi', 'ph-matrix', 'ph-classification', 'ph-pareto', 'ph-channel', 'ph-sim', 'ph-growth'];
+    if (subParam && validSubTabs.includes(subParam)) {
+      return subParam;
+    }
+    return 'ph-kpi';
+  });
+
+  useEffect(() => {
+    updateSubTabHash('subtab', activeSubTab);
+  }, [activeSubTab]);
   
   const accentColor = isDarkMode ? '#a78bfa' : '#6d28d9';
   const gridStroke = isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
