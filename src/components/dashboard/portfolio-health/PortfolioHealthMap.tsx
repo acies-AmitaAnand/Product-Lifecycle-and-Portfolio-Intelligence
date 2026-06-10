@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { 
   Layers, Filter, RefreshCw, BarChart2, PieChart, Info, HelpCircle, Save, Plus, Trash2, ArrowRight, Zap,
   Shield, Bell, Check, X, AlertTriangle, AlertCircle, TrendingUp, Globe, Activity as ActivityIcon,
-  Mail, MapPin, Calendar
+  Mail, MapPin, Calendar, Download
 } from 'lucide-react';
 import { 
   ResponsiveContainer, ScatterChart, Scatter, XAxis, YAxis, ZAxis, Tooltip, CartesianGrid, LabelList,
@@ -779,46 +779,142 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean; onAuditClick?: (metricNam
 
   const [selectedSkuForModal, setSelectedSkuForModal] = useState<any>(null);
 
-  // KPIs
-  const [kpis, setKpis] = useState({
-    rev: { val: 851.2, hist: [790, 800, 811, 820, 829, 838, 845, 851.2], target: 900, label: 'Portfolio Revenue', suffix: ' Cr', prefix: '₹', color: '#3b82f6' },
-    skuCount: { val: 102, hist: [105, 104, 104, 103, 103, 102, 102, 102], target: 100, label: 'Portfolio SKU Count', suffix: '', prefix: '', color: '#10b981' },
-    growth: { val: 8.4, hist: [7.2, 7.5, 7.8, 8.0, 8.1, 8.3, 8.3, 8.4], target: 10.0, label: 'Growth Rate', suffix: '%', prefix: '', color: '#ec4899' },
-    orders: { val: 4218, hist: [3800, 3900, 3980, 4050, 4100, 4150, 4190, 4218], target: 5000, label: 'Orders — Today', suffix: '', prefix: '', color: '#8b5cf6' },
-    fcast: { val: 94.6, hist: [96.1, 95.8, 95.4, 95.2, 95.0, 94.9, 94.7, 94.6], target: 97.0, label: 'Forecast Attainment', suffix: '%', prefix: '', color: '#f59e0b' },
+  // Dropdown filter states
+  const [filterRegion, setFilterRegion] = useState('All');
+  const [filterCategory, setFilterCategory] = useState('All');
+  const [filterRisk, setFilterRisk] = useState('All');
+  const [filterQuarter, setFilterQuarter] = useState('All');
+  const [lastRefreshed, setLastRefreshed] = useState('');
+
+  // Jitter offsets
+  const [jitterOffset, setJitterOffset] = useState({
+    rev: 0,
+    skuCount: 0,
+    growth: 0,
+    orders: 0,
+    fcast: 0
   });
   const [kpiFlash, setKpiFlash] = useState<Record<string, 'up' | 'dn' | null>>({});
 
-  // Jitter KPIs
-  const stockToasted = useRef(false);
+  // Sync selectedCategory state with filterCategory selection
+  useEffect(() => {
+    setSelectedCategory(filterCategory === 'All' ? 'all' : filterCategory);
+  }, [filterCategory]);
+
+  // Jitter KPIs via offsets
   useEffect(() => {
     const interval = setInterval(() => {
       const keys = ['rev', 'orders', 'fcast', 'skuCount', 'growth'] as const;
       const key = keys[Math.floor(Math.random() * keys.length)];
       const delta = (Math.random() - 0.3) * { rev: 0.4, orders: 8, fcast: 0.05, skuCount: 0, growth: 0.05 }[key];
 
-      setKpis(prev => {
-        const k = (prev as any)[key];
-        const rawVal = k.val + delta;
-        const newVal = key === 'orders' || key === 'skuCount'
-          ? Math.max(0, Math.round(rawVal)) 
-          : parseFloat(Math.max(0, rawVal).toFixed(1));
-
-        const wasUp = newVal > k.val;
-        setKpiFlash(f => ({ ...f, [key]: wasUp ? 'up' : 'dn' }));
+      setJitterOffset(prev => {
+        const newVal = prev[key] + delta;
+        setKpiFlash(f => ({ ...f, [key]: delta > 0 ? 'up' : 'dn' }));
         setTimeout(() => {
           setKpiFlash(f => ({ ...f, [key]: null }));
         }, 800);
 
-        const newHist = [...k.hist.slice(1), newVal];
         return {
           ...prev,
-          [key]: { ...k, val: newVal, hist: newHist }
+          [key]: newVal
         };
       });
     }, 3000);
     return () => clearInterval(interval);
   }, []);
+
+  // Update clock time live matching the template '02:31:46 pm'
+  useEffect(() => {
+    const updateTime = () => {
+      const now = new Date();
+      let hours = now.getHours();
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const seconds = String(now.getSeconds()).padStart(2, '0');
+      const ampm = hours >= 12 ? 'pm' : 'am';
+      hours = hours % 12;
+      hours = hours ? hours : 12;
+      const strHours = String(hours).padStart(2, '0');
+      setLastRefreshed(`${strHours}:${minutes}:${seconds} ${ampm}`);
+    };
+    updateTime();
+    const interval = setInterval(updateTime, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Map SKU properties for filtering
+  const processedSKUs = React.useMemo(() => {
+    return SKUS.map((s, idx) => {
+      const regions = ['APAC', 'EMEA', 'Americas', 'India'];
+      const region = regions[idx % regions.length];
+
+      const quarters = ['Q2 2026', 'Q3 2026', 'Q4 2026'];
+      const quarter = quarters[idx % quarters.length];
+
+      let risk = 'Low';
+      if (s.cx > 0.6 || s.stockouts >= 5 || s.margin < 25) {
+        risk = 'High';
+      } else if (s.cx > 0.4 || s.stockouts >= 3 || s.margin < 35) {
+        risk = 'Medium';
+      }
+
+      return { ...s, region, quarter, risk };
+    });
+  }, []);
+
+  // Filter SKUs
+  const filteredSKUs = React.useMemo(() => {
+    return processedSKUs.filter(s => {
+      const matchRegion = filterRegion === 'All' || s.region === filterRegion;
+      const matchCategory = filterCategory === 'All' || s.cat === filterCategory;
+      const matchRisk = filterRisk === 'All' || s.risk === filterRisk;
+      const matchQuarter = filterQuarter === 'All' || s.quarter === filterQuarter;
+      return matchRegion && matchCategory && matchRisk && matchQuarter;
+    });
+  }, [processedSKUs, filterRegion, filterCategory, filterRisk, filterQuarter]);
+
+  // Dynamically calculate KPIs based on filtered SKUs and jittering offset
+  const filteredCount = filteredSKUs.length || 1;
+  const dynamicTotalRev = filteredSKUs.reduce((sum, s) => sum + s.rev, 0) * 0.3915;
+  const dynamicSkuCount = Math.round(filteredSKUs.length * (102 / 29));
+  const dynamicGrowth = (filteredSKUs.reduce((sum, s) => sum + s.growth, 0) / filteredCount) * 100;
+  const dynamicOrders = filteredSKUs.reduce((sum, s) => sum + s.rev, 0) * (4218 / 2174);
+  const dynamicFcast = 94.6 + (filteredSKUs.reduce((sum, s) => sum + s.margin, 0) / filteredCount - 35.1) * 0.1;
+
+  // Apply scale offsets
+  const revVal = parseFloat((dynamicTotalRev + jitterOffset.rev).toFixed(1));
+  const revScale = Math.max(0.1, revVal / 851.2);
+  const revHist = [790, 800, 811, 820, 829, 838, 845, 851.2].map(v => v * revScale);
+
+  const skuCountVal = Math.round(dynamicSkuCount + jitterOffset.skuCount);
+  const skuCountScale = Math.max(0.1, skuCountVal / 102);
+  const skuCountHist = [105, 104, 104, 103, 103, 102, 102, 102].map(v => v * skuCountScale);
+
+  const growthVal = parseFloat((dynamicGrowth + jitterOffset.growth).toFixed(1));
+  const growthScale = Math.max(0.1, growthVal / 8.4);
+  const growthHist = [7.2, 7.5, 7.8, 8.0, 8.1, 8.3, 8.3, 8.4].map(v => v * growthScale);
+
+  const ordersVal = Math.round(dynamicOrders + jitterOffset.orders);
+  const ordersScale = Math.max(0.1, ordersVal / 4218);
+  const ordersHist = [3800, 3900, 3980, 4050, 4100, 4150, 4190, 4218].map(v => v * ordersScale);
+
+  const fcastVal = parseFloat((dynamicFcast + jitterOffset.fcast).toFixed(1));
+  const fcastScale = Math.max(0.1, fcastVal / 94.6);
+  const fcastHist = [96.1, 95.8, 95.4, 95.2, 95.0, 94.9, 94.7, 94.6].map(v => v * fcastScale);
+
+  const kpis = {
+    rev: { val: revVal, hist: revHist, target: 900, label: 'Portfolio Revenue', suffix: ' Cr', prefix: '₹', color: '#3b82f6' },
+    skuCount: { val: skuCountVal, hist: skuCountHist, target: 100, label: 'Portfolio SKU Count', suffix: '', prefix: '', color: '#10b981' },
+    growth: { val: growthVal, hist: growthHist, target: 10.0, label: 'Growth Rate', suffix: '%', prefix: '', color: '#ec4899' },
+    orders: { val: ordersVal, hist: ordersHist, target: 5000, label: 'Orders — Today', suffix: '', prefix: '', color: '#8b5cf6' },
+    fcast: { val: fcastVal, hist: fcastHist, target: 97.0, label: 'Forecast Attainment', suffix: '%', prefix: '', color: '#f59e0b' },
+  };
+
+  const handleExport = () => {
+    addToast('Report Export Initiated', 'Compiling PDF executive summary for portfolio health.', '#3b82f6');
+  };
+
+  const stockToasted = useRef(false);
 
   // Alerts
   const [alerts, setAlerts] = useState([
@@ -1211,8 +1307,89 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean; onAuditClick?: (metricNam
         })}
       </div>
 
+      {/* Filters + Action Bar */}
+      <div className="flex flex-col xl:flex-row justify-between items-stretch xl:items-center gap-4 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 px-5 py-3 rounded-sm shadow-sm">
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-1.5 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 px-2.5 py-1.5 rounded-sm">
+            <Filter size={11} className="text-[#6d28d9] dark:text-[#a78bfa] shrink-0" />
+            <span className="text-[9px] font-bold uppercase tracking-wider text-zinc-400">Filters</span>
+          </div>
+
+          <select 
+            value={filterRegion} 
+            onChange={(e) => setFilterRegion(e.target.value)}
+            className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-sm p-1.5 text-[9px] font-bold text-zinc-650 dark:text-zinc-350 outline-none cursor-pointer"
+          >
+            <option value="All">All Regions</option>
+            <option value="APAC">APAC</option>
+            <option value="EMEA">EMEA</option>
+            <option value="Americas">Americas</option>
+            <option value="India">India</option>
+          </select>
+
+          <select 
+            value={filterCategory} 
+            onChange={(e) => setFilterCategory(e.target.value)}
+            className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-sm p-1.5 text-[9px] font-bold text-zinc-650 dark:text-zinc-350 outline-none cursor-pointer"
+          >
+            <option value="All">All Categories</option>
+            <option value="Beverages">Beverages</option>
+            <option value="Snacks">Snacks</option>
+            <option value="Personal Care">Personal Care</option>
+            <option value="Dairy">Dairy</option>
+            <option value="Household">Household</option>
+          </select>
+
+          <select 
+            value={filterRisk} 
+            onChange={(e) => setFilterRisk(e.target.value)}
+            className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-sm p-1.5 text-[9px] font-bold text-zinc-650 dark:text-zinc-350 outline-none cursor-pointer"
+          >
+            <option value="All">All Risk Levels</option>
+            <option value="Low">Low Risk</option>
+            <option value="Medium">Medium Risk</option>
+            <option value="High">High Risk</option>
+          </select>
+
+          <select 
+            value={filterQuarter} 
+            onChange={(e) => setFilterQuarter(e.target.value)}
+            className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-sm p-1.5 text-[9px] font-bold text-zinc-650 dark:text-zinc-350 outline-none cursor-pointer"
+          >
+            <option value="All">All Quarters</option>
+            <option value="Q2 2026">Q2 2026</option>
+            <option value="Q3 2026">Q3 2026</option>
+            <option value="Q4 2026">Q4 2026</option>
+          </select>
+
+          {(filterRegion !== 'All' || filterCategory !== 'All' || filterRisk !== 'All' || filterQuarter !== 'All') && (
+            <button 
+              onClick={() => { setFilterRegion('All'); setFilterCategory('All'); setFilterRisk('All'); setFilterQuarter('All'); }}
+              className="text-[9px] text-[#6d28d9] dark:text-[#a78bfa] font-bold uppercase tracking-wider hover:underline px-1 cursor-pointer bg-transparent border-none"
+            >
+              Reset
+            </button>
+          )}
+        </div>
+
+        <div className="flex items-center gap-3 justify-between">
+          <div className="flex items-center gap-1.5 text-[10px] text-zinc-400 font-bold font-mono">
+            <RefreshCw size={11} className="text-zinc-400" />
+            <span>UPDATED: {lastRefreshed}</span>
+          </div>
+          <span className="h-4 w-px bg-black/10 dark:bg-white/15"></span>
+          <button 
+            onClick={handleExport}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 hover:bg-black/10 dark:hover:bg-white/10 text-[9px] font-bold uppercase tracking-wider rounded-sm text-zinc-600 dark:text-zinc-400 cursor-pointer"
+          >
+            <Download size={11} />
+            Export
+          </button>
+        </div>
+      </div>
+
       {/* Portfolio Health & Lifecycle Distribution */}
-      <LifecycleHealthPanel skusList={SKUS} isDarkMode={isDarkMode} onSelectSku={setSelectedSkuForModal} />
+      <LifecycleHealthPanel skusList={filteredSKUs} isDarkMode={isDarkMode} onSelectSku={setSelectedSkuForModal} />
 
       {/* Main Command Center Grid */}
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">

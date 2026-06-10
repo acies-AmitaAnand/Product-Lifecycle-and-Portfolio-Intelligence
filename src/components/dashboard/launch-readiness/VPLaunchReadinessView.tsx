@@ -3,7 +3,7 @@ import {
   Filter, RefreshCw, Download, Zap
 } from 'lucide-react';
 import { 
-  ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
+  ResponsiveContainer, BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip,
   RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend
 } from 'recharts';
 import { ResolveEscalationModal, VPEscalation } from './ResolveEscalationModal';
@@ -188,6 +188,21 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
     'Launched': filteredProducts.filter(p => p.stage === 'Launch Completed').length,
   };
 
+  const activePipelineSKUs = filteredProducts.length;
+  const launchedCount = pipelineCounts.Launched;
+  const nearLaunchCount = pipelineCounts['Market Ready'] + pipelineCounts.Launched;
+  const inDevelopmentPlus = activePipelineSKUs - nearLaunchCount;
+
+  const pipelineChartData = [
+    { name: 'Ideation', count: pipelineCounts.Ideation, fill: '#b4aceb' },
+    { name: 'Development', count: pipelineCounts.Development, fill: '#8e7bf5' },
+    { name: 'Testing', count: pipelineCounts.Testing, fill: '#634bf6' },
+    { name: 'Regulatory', count: pipelineCounts.Regulatory, fill: '#2563eb' },
+    { name: 'Production', count: pipelineCounts.Production, fill: '#1d4ed8' },
+    { name: 'Market Ready', count: pipelineCounts['Market Ready'], fill: '#1e3a8a' },
+    { name: 'Launched', count: pipelineCounts.Launched, fill: '#3b82f6' }
+  ];
+
   const baseRadarData = [
     { subject: 'Marketing', Actual: 85, Target: 90 },
     { subject: 'Supply Chain', Actual: 72, Target: 85 },
@@ -321,34 +336,107 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
 
 
 
-      {/* Risk Escalations */}
-      <div className="bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm space-y-4">
-        <div className="flex justify-between items-center">
-          <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Active Escalations ({escalations.length})</span>
+      {/* Row 2: Launch Pipeline Overview | Risk & Escalation Center */}
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
+        
+        {/* Launch Pipeline Overview */}
+        <div className="xl:col-span-7 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm space-y-4">
+          <div className="flex justify-between items-center pb-2 border-b border-black/5 dark:border-white/5">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Launch Pipeline Overview</span>
+            <span className="text-[8px] font-bold uppercase tracking-wider text-blue-500 bg-blue-500/10 px-2 py-0.5 rounded-full">
+              {activePipelineSKUs} active pipeline SKUs
+            </span>
+          </div>
+
+          {/* 4 KPI Cards */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5">
+            <div className="bg-zinc-100/80 dark:bg-zinc-900/60 border border-black/5 dark:border-white/5 p-4 rounded-xl hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition-all">
+              <p className="text-[10px] font-bold text-zinc-400">Active pipeline SKUs</p>
+              <h4 className="text-2xl font-display font-extrabold text-zinc-850 dark:text-white mt-1.5 leading-none">{activePipelineSKUs}</h4>
+            </div>
+
+            <div className="bg-zinc-100/80 dark:bg-zinc-900/60 border border-black/5 dark:border-white/5 p-4 rounded-xl hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition-all">
+              <p className="text-[10px] font-bold text-zinc-400">In development+</p>
+              <h4 className="text-2xl font-display font-extrabold text-zinc-850 dark:text-white mt-1.5 leading-none">{inDevelopmentPlus}</h4>
+            </div>
+
+            <div className="bg-zinc-100/80 dark:bg-zinc-900/60 border border-black/5 dark:border-white/5 p-4 rounded-xl hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition-all">
+              <p className="text-[10px] font-bold text-zinc-400">Near launch</p>
+              <h4 className="text-2xl font-display font-extrabold text-zinc-850 dark:text-white mt-1.5 leading-none">{nearLaunchCount}</h4>
+            </div>
+
+            <div className="bg-zinc-100/80 dark:bg-zinc-900/60 border border-black/5 dark:border-white/5 p-4 rounded-xl hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition-all">
+              <p className="text-[10px] font-bold text-zinc-400">Launched</p>
+              <h4 className="text-2xl font-display font-extrabold text-zinc-850 dark:text-white mt-1.5 leading-none">{launchedCount}</h4>
+            </div>
+          </div>
+
+          {/* Bar Chart */}
+          <div className="h-56 mt-4">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={pipelineChartData} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke={isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'} vertical={false} />
+                <XAxis dataKey="name" tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 9 }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 9 }} axisLine={false} tickLine={false} domain={[0, 8]} ticks={[0, 2, 4, 6, 8]} />
+                <Tooltip contentStyle={{ backgroundColor: isDarkMode ? '#1f1f1f' : '#fff', border: isDarkMode ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.1)', color: isDarkMode ? '#fff' : '#000' }} />
+                <Bar dataKey="count" radius={[2, 2, 0, 0]} barSize={36}>
+                  {pipelineChartData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.fill} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* Legend */}
+          <div className="flex flex-wrap items-center gap-4 text-[10px] text-zinc-550 dark:text-zinc-400 mt-3 pl-4">
+            <div className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-sm bg-[#634bf6]" />
+              <span className="font-semibold text-zinc-650 dark:text-zinc-300">Early stage (Ideation - Testing)</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-sm bg-[#2563eb]" />
+              <span className="font-semibold text-zinc-650 dark:text-zinc-300">Late stage (Regulatory - Launched)</span>
+            </div>
+          </div>
         </div>
-        <div className="space-y-2">
-          {escalations.length > 0 ? (
-            escalations.map(esc => (
-              <div key={esc.id} className="p-3 border border-black/5 dark:border-white/10 rounded-sm bg-zinc-50/50 dark:bg-white/5 flex items-start gap-2 justify-between">
-                <div className="flex items-start gap-2 min-w-0">
-                  <span className="w-2.5 h-2.5 rounded-full shrink-0 mt-1" style={{ backgroundColor: esc.color }} />
-                  <div>
-                    <h4 className="text-[11px] font-bold text-zinc-800 dark:text-zinc-200">{esc.title}</h4>
-                    <p className="text-[9px] text-zinc-500 mt-0.5">{esc.sub} · <span className="font-semibold text-red-500">{esc.impact}</span></p>
+
+        {/* Risk & Escalation Center */}
+        <div className="xl:col-span-5 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm flex flex-col justify-between">
+          <div className="space-y-4">
+            <div className="flex justify-between items-center pb-2 border-b border-black/5 dark:border-white/5">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Risk & Escalation Center</span>
+              <span className="text-[8px] font-bold uppercase tracking-wider text-red-500 bg-red-500/10 px-2 py-0.5 rounded-full">
+                {escalations.length} unresolved delays
+              </span>
+            </div>
+
+            <div className="space-y-2 max-h-[280px] overflow-y-auto pr-1">
+              {escalations.length > 0 ? (
+                escalations.map(esc => (
+                  <div key={esc.id} className="p-3 border border-black/5 dark:border-white/10 rounded-sm bg-zinc-50/50 dark:bg-white/5 flex items-start gap-2.5 justify-between">
+                    <div className="flex items-start gap-2 min-w-0">
+                      <span className="w-2.5 h-2.5 rounded-full shrink-0 mt-1" style={{ backgroundColor: esc.color }} />
+                      <div className="min-w-0">
+                        <h4 className="text-[11px] font-bold text-zinc-800 dark:text-zinc-200 truncate" title={esc.title}>{esc.title}</h4>
+                        <p className="text-[9px] text-zinc-500 mt-0.5 truncate">{esc.sub} · <span className="font-semibold text-red-500">{esc.impact}</span></p>
+                      </div>
+                    </div>
+                    <button 
+                      onClick={() => setActiveResolveEscalation(esc.id)}
+                      className="px-2 py-1 shrink-0 border border-[#6d28d9]/35 text-[#6d28d9] dark:text-[#a78bfa] bg-[#6d28d9]/5 hover:bg-[#6d28d9] hover:text-white rounded-sm text-[8px] font-bold uppercase tracking-wider transition-all cursor-pointer font-sans"
+                    >
+                      Resolve
+                    </button>
                   </div>
-                </div>
-                <button 
-                  onClick={() => setActiveResolveEscalation(esc.id)}
-                  className="px-2 py-1 shrink-0 border border-[#6d28d9]/35 text-[#6d28d9] dark:text-[#a78bfa] bg-[#6d28d9]/5 hover:bg-[#6d28d9] hover:text-white rounded-sm text-[8px] font-bold uppercase tracking-wider transition-all cursor-pointer"
-                >
-                  Resolve
-                </button>
-              </div>
-            ))
-          ) : (
-            <p className="text-center text-[10px] text-zinc-500 py-4">✓ All escalations cleared</p>
-          )}
+                ))
+              ) : (
+                <p className="text-center text-[10px] text-zinc-500 py-12">✓ All escalations cleared</p>
+              )}
+            </div>
+          </div>
         </div>
+
       </div>
 
       {/* Financial & AI Predictions */}
