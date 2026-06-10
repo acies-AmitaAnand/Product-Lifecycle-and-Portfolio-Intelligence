@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Filter, RefreshCw, Download, Zap
+  Filter, RefreshCw, Download, Zap, BarChart2, PieChart as PieIcon
 } from 'lucide-react';
 import { 
   ResponsiveContainer, BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -349,26 +349,28 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
               <span className="text-[8px] font-bold uppercase tracking-wider text-blue-500 bg-blue-500/10 px-2 py-0.5 rounded-full">
                 {activePipelineSKUs} active pipeline SKUs
               </span>
-              <div className="flex bg-black/5 dark:bg-white/5 rounded-full p-0.5 border border-black/10 dark:border-white/10">
+              <div className="flex bg-black/5 dark:bg-white/5 rounded-full p-0.5 border border-black/10 dark:border-white/10 items-center">
                 <button
                   onClick={() => setPipelineView('bar')}
-                  className={`px-2.5 py-0.5 rounded-full text-[8.5px] font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                  className={`p-1 rounded-full transition-all cursor-pointer ${
                     pipelineView === 'bar'
                       ? 'bg-acies-yellow text-white dark:text-acies-gray shadow-sm'
                       : 'text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200'
                   }`}
+                  title="Bar Chart"
                 >
-                  Bar
+                  <BarChart2 size={13} strokeWidth={2.5} />
                 </button>
                 <button
                   onClick={() => setPipelineView('pie')}
-                  className={`px-2.5 py-0.5 rounded-full text-[8.5px] font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                  className={`p-1 rounded-full transition-all cursor-pointer ${
                     pipelineView === 'pie'
                       ? 'bg-acies-yellow text-white dark:text-acies-gray shadow-sm'
                       : 'text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200'
                   }`}
+                  title="Pie Chart"
                 >
-                  Pie
+                  <PieIcon size={13} strokeWidth={2.5} />
                 </button>
               </div>
             </div>
@@ -407,7 +409,7 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
                     <XAxis dataKey="name" tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 9 }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 9 }} axisLine={false} tickLine={false} domain={[0, 8]} ticks={[0, 2, 4, 6, 8]} />
                     <Tooltip contentStyle={{ backgroundColor: isDarkMode ? '#1f1f1f' : '#fff', border: isDarkMode ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.1)', color: isDarkMode ? '#fff' : '#000' }} />
-                    <Bar dataKey="count" radius={[2, 2, 0, 0]} barSize={36}>
+                    <Bar dataKey="count" radius={[2, 2, 0, 0]} barSize={46}>
                       {pipelineChartData.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={entry.fill} />
                       ))}
@@ -431,15 +433,15 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
           ) : (
             <div className="flex flex-col sm:flex-row items-center justify-center gap-8 py-4 h-56 mt-4">
               {/* Donut Chart Container */}
-              <div className="relative w-40 h-40 flex items-center justify-center shrink-0">
+              <div className="relative w-48 h-48 flex items-center justify-center shrink-0">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
                       data={pipelineChartData}
                       cx="50%"
                       cy="50%"
-                      innerRadius={50}
-                      outerRadius={70}
+                      innerRadius={60}
+                      outerRadius={80}
                       paddingAngle={2}
                       dataKey="count"
                     >
@@ -453,10 +455,10 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
                   </PieChart>
                 </ResponsiveContainer>
                 <div className="absolute flex flex-col items-center justify-center text-center">
-                  <span className="text-2xl font-display font-extrabold text-zinc-850 dark:text-white leading-none">
+                  <span className="text-3xl font-display font-extrabold text-zinc-850 dark:text-white leading-none">
                     {activePipelineSKUs}
                   </span>
-                  <span className="text-[9px] font-bold uppercase tracking-wider text-zinc-400 mt-1">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 mt-1">
                     SKUs
                   </span>
                 </div>
@@ -468,7 +470,7 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
                   <div key={entry.name} className="flex items-center justify-between text-[10px]">
                     <div className="flex items-center gap-2">
                       <span className="w-2 h-2 rounded-sm shrink-0" style={{ backgroundColor: entry.fill }} />
-                      <span className="font-semibold text-zinc-600 dark:text-zinc-400">{entry.name}</span>
+                      <span className="font-semibold text-zinc-650 dark:text-zinc-350">{entry.name}</span>
                     </div>
                     <span className="font-mono font-bold text-zinc-800 dark:text-zinc-200">{entry.count}</span>
                   </div>
