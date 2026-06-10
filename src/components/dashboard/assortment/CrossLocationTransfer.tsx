@@ -23,6 +23,56 @@ export const CrossLocationTransfer: React.FC = () => {
   const [targetCountry, setTargetCountry] = useState<string>('Austria');
   const [isTransferred, setIsTransferred] = useState<boolean>(false);
 
+  // Drag and click selector states for SVG nodes
+  const [dragStartCountry, setDragStartCountry] = useState<string | null>(null);
+  const [dragCurrentCoords, setDragCurrentCoords] = useState<{ x: number; y: number } | null>(null);
+
+  const handleNodeMouseDown = (country: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    setDragStartCountry(country);
+    const coords = COUNTRY_COORDS[country];
+    if (coords) {
+      setDragCurrentCoords({ x: mapX(coords.x), y: mapY(coords.y) });
+    }
+  };
+
+  const handleNodeMouseUp = (country: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (dragStartCountry) {
+      if (dragStartCountry === country) {
+        // Toggle/Click-to-select logic
+        if (sourceCountry === targetCountry || sourceCountry === '') {
+          setSourceCountry(country);
+        } else if (sourceCountry === country) {
+          // Reset target
+          setSourceCountry(country);
+          setTargetCountry(country);
+        } else {
+          setTargetCountry(country);
+        }
+      } else {
+        // Drag select logic
+        setSourceCountry(dragStartCountry);
+        setTargetCountry(country);
+      }
+    }
+    setDragStartCountry(null);
+    setDragCurrentCoords(null);
+  };
+
+  const handleSvgMouseMove = (e: React.MouseEvent<SVGSVGElement>) => {
+    if (!dragStartCountry) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 80;
+    setDragCurrentCoords({ x, y });
+  };
+
+  const handleSvgMouseUp = () => {
+    setDragStartCountry(null);
+    setDragCurrentCoords(null);
+  };
+
   // Retrieve SKU and Region details
   const skuDetails = SKUS.find(s => s.name === selectedSku) || SKUS[0];
   const sourceRegion = REGIONAL_DATA.find(r => r.country === sourceCountry) || REGIONAL_DATA[6];
@@ -157,165 +207,196 @@ export const CrossLocationTransfer: React.FC = () => {
             2. Logistics Route Friction
           </h5>
 
-          {sourceCountry !== targetCountry ? (
-            <div className="space-y-3">
-              {/* Dynamic SVG Map */}
-              <div className="relative w-full h-[125px] bg-slate-950/40 dark:bg-black/45 rounded-sm border border-black/10 dark:border-white/10 overflow-hidden select-none">
-                {/* Distance & CO2 labels */}
+          <div className="space-y-3">
+            {/* Dynamic SVG Map (Always Visible) */}
+            <div className="relative w-full h-[125px] bg-slate-950/40 dark:bg-black/45 rounded-sm border border-black/10 dark:border-white/10 overflow-hidden select-none">
+              {/* Distance & CO2 labels (visible if active route) */}
+              {sourceCountry !== targetCountry && (
                 <div className="absolute top-2 right-2 bg-black/60 text-[6.5px] font-mono px-1.5 py-0.5 rounded text-zinc-450 flex gap-2">
                   <span>Dist: {Math.round(distance * 320)} km</span>
                   <span>CO₂: {(distance * 0.14).toFixed(2)} kg/u</span>
                 </div>
+              )}
+              
+              {/* SVG canvas */}
+              <svg 
+                viewBox="0 0 100 80" 
+                className="w-full h-full"
+                onMouseMove={handleSvgMouseMove}
+                onMouseUp={handleSvgMouseUp}
+                onMouseLeave={handleSvgMouseUp}
+              >
+                <style>{`
+                  @keyframes dash {
+                    to {
+                      stroke-dashoffset: -20;
+                    }
+                  }
+                  .animate-path {
+                    animation: dash 5s linear infinite;
+                  }
+                `}</style>
                 
-                {/* SVG canvas */}
-                <svg viewBox="0 0 100 80" className="w-full h-full">
-                  <style>{`
-                    @keyframes dash {
-                      to {
-                        stroke-dashoffset: -20;
-                      }
-                    }
-                    .animate-path {
-                      animation: dash 5s linear infinite;
-                    }
-                  `}</style>
+                {/* Network background mesh links */}
+                <line x1={mapX(1.0)} y1={mapY(2.5)} x2={mapX(4.0)} y2={mapY(4.5)} stroke="rgba(255,255,255,0.04)" strokeWidth="0.5" />
+                <line x1={mapX(4.0)} y1={mapY(4.5)} x2={mapX(5.0)} y2={mapY(5.0)} stroke="rgba(255,255,255,0.04)" strokeWidth="0.5" />
+                <line x1={mapX(4.0)} y1={mapY(4.5)} x2={mapX(6.0)} y2={mapY(5.0)} stroke="rgba(255,255,255,0.04)" strokeWidth="0.5" />
+                <line x1={mapX(4.0)} y1={mapY(4.5)} x2={mapX(6.5)} y2={mapY(2.0)} stroke="rgba(255,255,255,0.04)" strokeWidth="0.5" />
+                <line x1={mapX(5.0)} y1={mapY(5.0)} x2={mapX(6.0)} y2={mapY(5.0)} stroke="rgba(255,255,255,0.04)" strokeWidth="0.5" />
+                <line x1={mapX(6.0)} y1={mapY(5.0)} x2={mapX(8.0)} y2={mapY(5.0)} stroke="rgba(255,255,255,0.04)" strokeWidth="0.5" />
+                <line x1={mapX(6.0)} y1={mapY(5.0)} x2={mapX(6.5)} y2={mapY(4.0)} stroke="rgba(255,255,255,0.04)" strokeWidth="0.5" />
+                <line x1={mapX(6.5)} y1={mapY(4.0)} x2={mapX(6.5)} y2={mapY(2.0)} stroke="rgba(255,255,255,0.04)" strokeWidth="0.5" />
+
+                {/* Active Route Path */}
+                {sourceCountry !== targetCountry && (() => {
+                  const sx = mapX(sourceCoord.x);
+                  const sy = mapY(sourceCoord.y);
+                  const tx = mapX(targetCoord.x);
+                  const ty = mapY(targetCoord.y);
+                  const isUp = netMarginLift >= 0;
                   
-                  {/* Network background mesh links */}
-                  <line x1={mapX(1.0)} y1={mapY(2.5)} x2={mapX(4.0)} y2={mapY(4.5)} stroke="rgba(255,255,255,0.04)" strokeWidth="0.5" /> {/* ES -> FR */}
-                  <line x1={mapX(4.0)} y1={mapY(4.5)} x2={mapX(5.0)} y2={mapY(5.0)} stroke="rgba(255,255,255,0.04)" strokeWidth="0.5" /> {/* FR -> NL */}
-                  <line x1={mapX(4.0)} y1={mapY(4.5)} x2={mapX(6.0)} y2={mapY(5.0)} stroke="rgba(255,255,255,0.04)" strokeWidth="0.5" /> {/* FR -> DE */}
-                  <line x1={mapX(4.0)} y1={mapY(4.5)} x2={mapX(6.5)} y2={mapY(2.0)} stroke="rgba(255,255,255,0.04)" strokeWidth="0.5" /> {/* FR -> IT */}
-                  <line x1={mapX(5.0)} y1={mapY(5.0)} x2={mapX(6.0)} y2={mapY(5.0)} stroke="rgba(255,255,255,0.04)" strokeWidth="0.5" /> {/* NL -> DE */}
-                  <line x1={mapX(6.0)} y1={mapY(5.0)} x2={mapX(8.0)} y2={mapY(5.0)} stroke="rgba(255,255,255,0.04)" strokeWidth="0.5" /> {/* DE -> PL */}
-                  <line x1={mapX(6.0)} y1={mapY(5.0)} x2={mapX(6.5)} y2={mapY(4.0)} stroke="rgba(255,255,255,0.04)" strokeWidth="0.5" /> {/* DE -> AT */}
-                  <line x1={mapX(6.5)} y1={mapY(4.0)} x2={mapX(6.5)} y2={mapY(2.0)} stroke="rgba(255,255,255,0.04)" strokeWidth="0.5" /> {/* AT -> IT */}
+                  return (
+                    <>
+                      <line 
+                        x1={sx} y1={sy} x2={tx} y2={ty} 
+                        stroke={isUp ? 'rgba(16,185,129,0.2)' : 'rgba(239,68,68,0.2)'} 
+                        strokeWidth="2.5" 
+                      />
+                      <line 
+                        x1={sx} y1={sy} x2={tx} y2={ty} 
+                        stroke={isUp ? '#10b981' : '#f43f5e'} 
+                        strokeWidth="1" 
+                        strokeDasharray="4, 3"
+                        className="animate-path"
+                      />
+                      <motion.circle
+                        cx={sx}
+                        cy={sy}
+                        r="1.8"
+                        fill="#facc15"
+                        animate={{ cx: [sx, tx], cy: [sy, ty] }}
+                        transition={{ repeat: Infinity, duration: 3, ease: 'linear' }}
+                      />
+                    </>
+                  );
+                })()}
 
-                  {/* Active Route Path */}
-                  {(() => {
-                    const sx = mapX(sourceCoord.x);
-                    const sy = mapY(sourceCoord.y);
-                    const tx = mapX(targetCoord.x);
-                    const ty = mapY(targetCoord.y);
-                    const isUp = netMarginLift >= 0;
-                    
-                    return (
-                      <>
-                        {/* Glow background line */}
-                        <line 
-                          x1={sx} y1={sy} x2={tx} y2={ty} 
-                          stroke={isUp ? 'rgba(16,185,129,0.2)' : 'rgba(239,68,68,0.2)'} 
-                          strokeWidth="2.5" 
-                        />
-                        {/* Animated dashed link */}
-                        <line 
-                          x1={sx} y1={sy} x2={tx} y2={ty} 
-                          stroke={isUp ? '#10b981' : '#f43f5e'} 
-                          strokeWidth="1" 
-                          strokeDasharray="4, 3"
-                          className="animate-path"
-                        />
-                        {/* Framer motion moving cargo indicator */}
-                        <motion.circle
-                          cx={sx}
-                          cy={sy}
-                          r="1.8"
-                          fill="#facc15"
-                          animate={{ cx: [sx, tx], cy: [sy, ty] }}
-                          transition={{ repeat: Infinity, duration: 3, ease: 'linear' }}
-                        />
-                      </>
-                    );
-                  })()}
+                {/* Drag-drawing line */}
+                {dragStartCountry && dragCurrentCoords && (() => {
+                  const startCoords = COUNTRY_COORDS[dragStartCountry];
+                  if (!startCoords) return null;
+                  return (
+                    <line
+                      x1={mapX(startCoords.x)}
+                      y1={mapY(startCoords.y)}
+                      x2={dragCurrentCoords.x}
+                      y2={dragCurrentCoords.y}
+                      stroke="#facc15"
+                      strokeWidth="1"
+                      strokeDasharray="3, 3"
+                    />
+                  );
+                })()}
 
-                  {/* Country Node circles */}
-                  {Object.entries(COUNTRY_COORDS).map(([country, coords]) => {
-                    const cx = mapX(coords.x);
-                    const cy = mapY(coords.y);
-                    const isSource = country === sourceCountry;
-                    const isTarget = country === targetCountry;
-                    
-                    let nodeFill = 'rgba(255,255,255,0.1)';
-                    let nodeStroke = 'rgba(255,255,255,0.2)';
-                    let nodeRadius = 2.0;
+                {/* Country Node circles */}
+                {Object.entries(COUNTRY_COORDS).map(([country, coords]) => {
+                  const cx = mapX(coords.x);
+                  const cy = mapY(coords.y);
+                  const isSource = country === sourceCountry;
+                  const isTarget = country === targetCountry && sourceCountry !== targetCountry;
+                  
+                  let nodeFill = 'rgba(255,255,255,0.15)';
+                  let nodeStroke = 'rgba(255,255,255,0.2)';
+                  let nodeRadius = 2.0;
 
-                    if (isSource) {
-                      nodeFill = '#ef4444';
-                      nodeStroke = 'rgba(239,68,68,0.3)';
-                      nodeRadius = 3.2;
-                    } else if (isTarget) {
-                      nodeFill = '#10b981';
-                      nodeStroke = 'rgba(16,185,129,0.3)';
-                      nodeRadius = 3.2;
-                    }
+                  if (isSource) {
+                    nodeFill = '#ef4444';
+                    nodeStroke = 'rgba(239,68,68,0.3)';
+                    nodeRadius = 3.2;
+                  } else if (isTarget) {
+                    nodeFill = '#10b981';
+                    nodeStroke = 'rgba(16,185,129,0.3)';
+                    nodeRadius = 3.2;
+                  }
 
-                    return (
-                      <g key={country}>
-                        {/* Pulse glow circle for source/target */}
-                        {(isSource || isTarget) && (
-                          <circle cx={cx} cy={cy} r={nodeRadius + 2.5} fill="none" stroke={nodeStroke} strokeWidth="1" className="animate-pulse" />
-                        )}
-                        <circle cx={cx} cy={cy} r={nodeRadius} fill={nodeFill} />
-                        {/* Small country codes */}
-                        <text 
-                          x={cx} 
-                          y={cy + 5.5} 
-                          textAnchor="middle" 
-                          fill={isSource ? '#ef4444' : isTarget ? '#10b981' : '#71717a'} 
-                          fontSize="3.8" 
-                          fontWeight="bold"
-                          className="font-sans"
-                        >
-                          {country.substring(0, 2).toUpperCase()}
-                        </text>
-                      </g>
-                    );
-                  })}
-                </svg>
-              </div>
+                  return (
+                    <g 
+                      key={country}
+                      className="cursor-pointer select-none group"
+                      onMouseDown={(e) => handleNodeMouseDown(country, e)}
+                      onMouseUp={(e) => handleNodeMouseUp(country, e)}
+                    >
+                      {/* Pulse glow circle for source/target or hover */}
+                      {(isSource || isTarget) ? (
+                        <circle cx={cx} cy={cy} r={nodeRadius + 2.5} fill="none" stroke={nodeStroke} strokeWidth="1" className="animate-pulse" />
+                      ) : (
+                        <circle cx={cx} cy={cy} r={nodeRadius + 2} fill="none" stroke="rgba(250,204,21,0)" strokeWidth="1" className="group-hover:stroke-yellow-500/30 group-hover:animate-ping" />
+                      )}
+                      <circle cx={cx} cy={cy} r={nodeRadius} fill={nodeFill} className="group-hover:fill-yellow-500 transition-colors duration-200" />
+                      <text 
+                        x={cx} 
+                        y={cy + 5.5} 
+                        textAnchor="middle" 
+                        fill={isSource ? '#ef4444' : isTarget ? '#10b981' : '#71717a'} 
+                        fontSize="3.8" 
+                        fontWeight="bold"
+                        className="font-sans select-none pointer-events-none"
+                      >
+                        {country.substring(0, 2).toUpperCase()}
+                      </text>
+                    </g>
+                  );
+                })}
+              </svg>
+            </div>
 
-              {/* Source/Target Margin detail row */}
-              <div className="flex justify-between items-center text-[8.5px] px-3 py-1.5 bg-black/[0.01] dark:bg-white/[0.01] border border-black/5 dark:border-white/5 rounded-sm font-mono font-bold">
-                <div>
-                  <span className="text-zinc-455 block text-[6.5px] font-sans">Source ({sourceCountry.substring(0,3).toUpperCase()})</span>
-                  <span className="text-rose-500">{sourceRegion.marginPct.toFixed(2)}% margin</span>
-                </div>
-                <ArrowRight size={10} className="text-zinc-400" />
-                <div className="text-right">
-                  <span className="text-zinc-455 block text-[6.5px] font-sans">Target ({targetCountry.substring(0,3).toUpperCase()})</span>
-                  <span className="text-emerald-500">{targetRegion.marginPct.toFixed(2)}% margin</span>
-                </div>
-              </div>
-
-              {/* Feasibility/Risk Indicator */}
-              <div className={`p-2 border rounded-sm text-center text-[9px] font-bold ${risk.class}`}>
-                {risk.label} (Feasibility Index: {feasibilityScore}/100)
-              </div>
-
-              {/* Dynamic parameters details */}
-              <div className="grid grid-cols-2 gap-2 text-[9px] font-semibold text-zinc-500">
-                <div className="p-2 bg-black/[0.01] dark:bg-white/[0.01] border border-black/5 dark:border-white/5 rounded-sm flex items-center gap-2">
-                  <Clock size={10} className="text-blue-500" />
+            {/* Conditionally render details underneath map */}
+            {sourceCountry !== targetCountry ? (
+              <>
+                {/* Source/Target Margin detail row */}
+                <div className="flex justify-between items-center text-[8.5px] px-3 py-1.5 bg-black/[0.01] dark:bg-white/[0.01] border border-black/5 dark:border-white/5 rounded-sm font-mono font-bold font-sans">
                   <div>
-                    <span className="text-[7px] text-zinc-400 uppercase font-bold block">Transit Lead Time</span>
-                    +{transitLeadTime} Days Delay
+                    <span className="text-zinc-455 block text-[6.5px] font-sans">Source ({sourceCountry.substring(0,3).toUpperCase()})</span>
+                    <span className="text-rose-500">{sourceRegion.marginPct.toFixed(2)}% margin</span>
+                  </div>
+                  <ArrowRight size={10} className="text-zinc-400" />
+                  <div className="text-right">
+                    <span className="text-zinc-455 block text-[6.5px] font-sans">Target ({targetCountry.substring(0,3).toUpperCase()})</span>
+                    <span className="text-emerald-500">{targetRegion.marginPct.toFixed(2)}% margin</span>
                   </div>
                 </div>
-                
-                <div className="p-2 bg-black/[0.01] dark:bg-white/[0.01] border border-black/5 dark:border-white/5 rounded-sm flex items-center gap-2">
-                  <Percent size={10} className="text-rose-500" />
-                  <div>
-                    <span className="text-[7px] text-zinc-400 uppercase font-bold block">Freight Drag</span>
-                    -{freightDrag}% margin
+
+                {/* Feasibility/Risk Indicator */}
+                <div className={`p-2 border rounded-sm text-center text-[9px] font-bold ${risk.class}`}>
+                  {risk.label} (Feasibility Index: {feasibilityScore}/100)
+                </div>
+
+                {/* Dynamic parameters details */}
+                <div className="grid grid-cols-2 gap-2 text-[9px] font-semibold text-zinc-500">
+                  <div className="p-2 bg-black/[0.01] dark:bg-white/[0.01] border border-black/5 dark:border-white/5 rounded-sm flex items-center gap-2">
+                    <Clock size={10} className="text-blue-500" />
+                    <div>
+                      <span className="text-[7px] text-zinc-400 uppercase font-bold block">Transit Lead Time</span>
+                      +{transitLeadTime} Days Delay
+                    </div>
+                  </div>
+                  
+                  <div className="p-2 bg-black/[0.01] dark:bg-white/[0.01] border border-black/5 dark:border-white/5 rounded-sm flex items-center gap-2">
+                    <Percent size={10} className="text-rose-500" />
+                    <div>
+                      <span className="text-[7px] text-zinc-400 uppercase font-bold block">Freight Drag</span>
+                      -{freightDrag}% margin
+                    </div>
                   </div>
                 </div>
+              </>
+            ) : (
+              <div className="p-3.5 bg-black/[0.01] dark:bg-white/[0.01] border border-dashed border-black/10 dark:border-white/10 rounded-sm text-center text-[8.5px] text-zinc-500 font-semibold leading-relaxed">
+                <AlertTriangle size={12} className="inline mr-1 text-acies-yellow animate-bounce" />
+                Click and drag between warehouse nodes (dots) or click two different nodes to configure route.
               </div>
-            </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center py-8 text-center opacity-40">
-              <AlertTriangle size={20} className="mb-2" />
-              <p className="text-[9px] uppercase font-extrabold tracking-widest">Awaiting Route Input</p>
-            </div>
-          )}
+            )}
+          </div>
         </div>
 
         {/* Step 3: Financial Net Impact */}
