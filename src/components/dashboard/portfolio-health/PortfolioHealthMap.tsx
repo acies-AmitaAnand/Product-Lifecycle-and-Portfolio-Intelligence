@@ -380,6 +380,356 @@ const LifecycleHealthPanel: React.FC<LifecycleHealthPanelProps> = ({ skusList, i
   );
 };
 
+interface OpportunitySku {
+  name: string;
+  cat: string;
+  rev: number;
+  margin: number;
+  growth: number;
+  penetration: number;
+  demand: number;
+  expansionPotential: number;
+  quadrant: 'investment' | 'leader' | 'speculative' | 'saturated';
+  rec: string;
+}
+
+interface GrowthOpportunityMapProps {
+  skusList: any[];
+  isDarkMode: boolean;
+  onSelectSku?: (sku: any) => void;
+  addToast?: (title: string, body: string, color: string) => void;
+}
+
+const getOpportunityData = (skusList: any[]): OpportunitySku[] => {
+  return skusList.map(s => {
+    let penetration = 50;
+    let demand = 50;
+    let expansionPotential = Math.round(s.rev * 0.35);
+    let rec = '';
+
+    if (s.name === 'BrandC Energy Drink') {
+      demand = 88; penetration = 24; expansionPotential = 42;
+      rec = 'High demand growth in APAC region with minimal retail penetration. Increase marketing spend +15% and expand distribution.';
+    } else if (s.name === 'BrandC Chips (Spicy)') {
+      demand = 82; penetration = 18; expansionPotential = 28;
+      rec = 'Strong local demand pull; low supermarket shelf placement. Accelerate wholesale distribution deals.';
+    } else if (s.name === 'BrandD Chocolate 100g') {
+      demand = 76; penetration = 32; expansionPotential = 22;
+      rec = 'High margins and rapid sales velocity; low penetration in Tier-2 cities. Boost localized promotions.';
+    } else if (s.name === 'Masala Puffs') {
+      demand = 79; penetration = 29; expansionPotential = 31;
+      rec = 'Snack trend indicator showing low penetration in Southern region. Scale distributor incentives.';
+    } else if (s.name === 'Coconut Water 330ml') {
+      demand = 81; penetration = 42; expansionPotential = 38;
+      rec = 'Organic health beverage segment showing low penetration in standard channels. Secure premium supermarket placements.';
+    } else if (s.name === 'Herbal Shampoo') {
+      demand = 92; penetration = 45; expansionPotential = 48;
+      rec = 'Category booming. Low general trade shelf penetration. Increase production allocation and scale store footprint.';
+    } else if (s.name === 'Laundry Pods Premium') {
+      demand = 85; penetration = 38; expansionPotential = 44;
+      rec = 'Eco-consumers driving high premium demand; low penetration in convenience stores. Pilot small-pack placements.';
+    } else if (s.name === 'Fabric Softener') {
+      demand = 22; penetration = 15; expansionPotential = 8;
+      rec = 'Low volume and poor category penetration. Rationalize or bundle as a freebie.';
+    } else if (s.name === 'Floor Cleaner') {
+      demand = 18; penetration = 20; expansionPotential = 6;
+      rec = 'Low margin, low penetration. Flagged as primary sunset candidate.';
+    } else if (s.name === 'Aloe Face Wash') {
+      demand = 28; penetration = 18; expansionPotential = 10;
+      rec = 'Underperforming skin care product. Re-evaluate formulation or phase out.';
+    } else if (s.name === 'BrandE Yogurt (Straw)') {
+      demand = 32; penetration = 25; expansionPotential = 9;
+      rec = 'Dairy complexity drag. Defer marketing spend and transition safety capital.';
+    } else if (s.name === 'Choco Wafers') {
+      demand = 38; penetration = 72; expansionPotential = 12;
+      rec = 'Mature product in saturated market with high promotional dependency (72%). Review pricing and promo caps.';
+    } else if (s.name === 'BrandB Yogurt 1kg') {
+      demand = 42; penetration = 65; expansionPotential = 14;
+      rec = 'Saturated dairy item. Shift production focus to higher-margin fresh cheese.';
+    } else if (s.name === 'Foam Face Wash') {
+      demand = 40; penetration = 60; expansionPotential = 11;
+      rec = 'High volume but low margins. Maintain baseline sales without additional promos.';
+    } else if (s.name === 'Mango Fizz 500ml') {
+      demand = 78; penetration = 82; expansionPotential = 15;
+      rec = 'Established leader. Protect shelf space and run seasonal bundle promotions.';
+    } else if (s.name === 'Dish Soap 1L') {
+      demand = 64; penetration = 68; expansionPotential = 18;
+      rec = 'Steady household demand. Keep production schedules synchronized.';
+    } else if (s.name === 'Oat Cookies') {
+      demand = 75; penetration = 72; expansionPotential = 22;
+      rec = 'Popular product with high penetration. Optimize packaging for freight efficiency.';
+    } else {
+      if (s.growth >= 0.10) {
+        demand = Math.round(55 + (s.growth * 100) % 35);
+        penetration = Math.round(15 + (s.rev) % 35);
+        rec = `Expanding category presence. Increase sales force focus to drive low penetration.`;
+      } else if (s.growth >= 0.0) {
+        demand = Math.round(45 + (s.growth * 100) % 25);
+        penetration = Math.round(50 + (s.rev) % 45);
+        rec = `Steady category performer. Protect margins and optimize production costs.`;
+      } else {
+        demand = Math.round(10 + (s.margin) % 35);
+        penetration = Math.round(55 + (s.rev) % 40);
+        rec = `Low growth or declining product. Limit marketing budget support.`;
+      }
+    }
+
+    let quadrant: 'investment' | 'leader' | 'speculative' | 'saturated' = 'speculative';
+    if (demand >= 50 && penetration < 50) {
+      quadrant = 'investment';
+    } else if (demand >= 50 && penetration >= 50) {
+      quadrant = 'leader';
+    } else if (demand < 50 && penetration < 50) {
+      quadrant = 'speculative';
+    } else {
+      quadrant = 'saturated';
+    }
+
+    return {
+      name: s.name,
+      cat: s.cat,
+      rev: s.rev,
+      margin: s.margin,
+      growth: s.growth,
+      penetration,
+      demand,
+      expansionPotential,
+      quadrant,
+      rec
+    };
+  });
+};
+
+const GrowthOpportunityMap: React.FC<GrowthOpportunityMapProps> = ({ skusList, isDarkMode, onSelectSku, addToast }) => {
+  const [activeQuad, setActiveQuad] = useState<'investment' | 'leader' | 'speculative' | 'saturated'>('investment');
+  
+  const oppData = getOpportunityData(skusList);
+  const filteredOppData = oppData.filter(x => x.quadrant === activeQuad);
+  
+  const accentColor = isDarkMode ? '#a78bfa' : '#6d28d9';
+  const gridStroke = isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
+  const tickColor = isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)';
+  const tooltipBg = isDarkMode ? '#1f1f1f' : '#fff';
+  const tooltipBorder = isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
+  const tooltipText = isDarkMode ? '#fff' : '#000';
+
+  const counts = {
+    investment: oppData.filter(x => x.quadrant === 'investment').length,
+    leader: oppData.filter(x => x.quadrant === 'leader').length,
+    speculative: oppData.filter(x => x.quadrant === 'speculative').length,
+    saturated: oppData.filter(x => x.quadrant === 'saturated').length,
+  };
+
+  const handleApproveInvestment = (skuName: string, potential: number) => {
+    if (addToast) {
+      addToast(
+        "Investment Approved",
+        `Mitigation plan & ₹${potential} Cr expansion budget successfully approved for ${skuName}.`,
+        "#10b981"
+      );
+    }
+  };
+
+  const getBubbleColor = (quad: string) => {
+    switch (quad) {
+      case 'investment': return '#8b5cf6';
+      case 'leader': return '#10b981';
+      case 'speculative': return '#f59e0b';
+      case 'saturated': return '#ef4444';
+      default: return '#6b7280';
+    }
+  };
+
+  return (
+    <div className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm space-y-4">
+      <div className="flex justify-between items-start pb-2 border-b border-black/5 dark:border-white/5 mb-3">
+        <div>
+          <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">AI Growth Opportunity Map</span>
+          <p className="text-[9px] text-zinc-550 dark:text-zinc-400 uppercase tracking-widest mt-0.5">
+            AI-detected expansion targets: High Demand & Low Penetration. Invest here to maximize incremental revenue.
+          </p>
+        </div>
+        <span className="text-[8px] font-bold uppercase tracking-wider text-[#8b5cf6] bg-[#8b5cf6]/10 px-2 py-0.5 rounded-full animate-pulse">
+          AI Investment Engine Active
+        </span>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        {/* LEFT COLUMN: SCATTER MAP */}
+        <div className="lg:col-span-7 space-y-2 relative">
+          <div className="h-80 relative">
+            <div className="absolute top-2 left-10 pointer-events-none text-[8px] font-bold uppercase tracking-wider text-purple-500/80 bg-purple-500/5 px-2 py-0.5 border border-purple-500/10 rounded-sm">
+              Investment Zone (High Priority)
+            </div>
+            <div className="absolute top-2 right-4 pointer-events-none text-[8px] font-bold uppercase tracking-wider text-emerald-500/80 bg-emerald-500/5 px-2 py-0.5 border border-emerald-500/10 rounded-sm">
+              Market Leader (Protect)
+            </div>
+            <div className="absolute bottom-10 left-10 pointer-events-none text-[8px] font-bold uppercase tracking-wider text-amber-500/80 bg-amber-500/5 px-2 py-0.5 border border-amber-500/10 rounded-sm">
+              Speculative (Niche)
+            </div>
+            <div className="absolute bottom-10 right-4 pointer-events-none text-[8px] font-bold uppercase tracking-wider text-red-500/80 bg-red-500/5 px-2 py-0.5 border border-red-500/10 rounded-sm">
+              Saturated (Optimize)
+            </div>
+
+            <ResponsiveContainer width="100%" height="100%">
+              <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: -20 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} />
+                <XAxis 
+                  type="number" 
+                  dataKey="penetration" 
+                  name="Penetration" 
+                  domain={[0, 100]} 
+                  tick={{ fill: tickColor, fontSize: 9 }} 
+                  label={{ value: 'Market Penetration (%) →', position: 'bottom', fill: tickColor, fontSize: 10, offset: 5 }} 
+                />
+                <YAxis 
+                  type="number" 
+                  dataKey="demand" 
+                  name="Demand Velocity" 
+                  domain={[0, 100]} 
+                  tick={{ fill: tickColor, fontSize: 9 }} 
+                  label={{ value: '← Market Demand / Velocity (%)', angle: -90, position: 'left', fill: tickColor, fontSize: 10, offset: 5 }} 
+                />
+                <ZAxis type="number" dataKey="expansionPotential" range={[100, 600]} />
+                <Tooltip 
+                  cursor={{ strokeDasharray: '3 3' }} 
+                  contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, color: tooltipText }}
+                  itemStyle={{ fontSize: 11 }}
+                  labelStyle={{ fontSize: 11, fontWeight: 'bold' }}
+                  formatter={(value: any, name: any, props: any) => {
+                    if (name === 'Penetration') return [`${value}%`, 'Penetration'];
+                    if (name === 'Demand Velocity') return [`${value}%`, 'Demand Velocity'];
+                    if (name === 'Expansion Potential') return [`₹${value} Cr`, 'Expansion Potential'];
+                    return [value, name];
+                  }}
+                />
+                <Scatter data={oppData}>
+                  {oppData.map((entry, index) => (
+                    <Cell 
+                      key={`cell-${index}`} 
+                      fill={getBubbleColor(entry.quadrant)} 
+                      className="cursor-pointer hover:opacity-85 transition-opacity"
+                      onClick={() => {
+                        const originalSku = SKUS.find(s => s.name === entry.name);
+                        if (originalSku && onSelectSku) {
+                          onSelectSku(originalSku);
+                        }
+                      }}
+                    />
+                  ))}
+                  <LabelList 
+                    dataKey="name" 
+                    position="top" 
+                    style={{ fill: 'rgba(156, 163, 175, 0.65)', fontSize: 7, pointerEvents: 'none', fontWeight: 'bold' }} 
+                    formatter={(val: string) => {
+                      const highlights = ['BrandC Energy Drink', 'BrandC Chips (Spicy)', 'Herbal Shampoo', 'Laundry Pods Premium'];
+                      return highlights.includes(val) ? val : '';
+                    }}
+                  />
+                </Scatter>
+              </ScatterChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* RIGHT COLUMN: SIDEBAR LIST */}
+        <div className="lg:col-span-5 space-y-4">
+          <div className="flex border-b border-black/10 dark:border-white/10 p-0.5 bg-black/5 dark:bg-white/5 rounded-sm">
+            {[
+              { id: 'investment', label: 'Invest', count: counts.investment, color: '#8b5cf6' },
+              { id: 'leader', label: 'Protect', count: counts.leader, color: '#10b981' },
+              { id: 'speculative', label: 'Niche', count: counts.speculative, color: '#f59e0b' },
+              { id: 'saturated', label: 'Optimize', count: counts.saturated, color: '#ef4444' }
+            ].map(t => (
+              <button
+                key={t.id}
+                type="button"
+                onClick={() => setActiveQuad(t.id as any)}
+                className={`flex-1 py-1.5 text-[8.5px] font-extrabold uppercase tracking-wider text-center rounded-sm transition-all cursor-pointer border-none flex items-center justify-center gap-1 ${
+                  activeQuad === t.id
+                    ? 'bg-white dark:bg-zinc-800 shadow-sm font-black text-acies-gray dark:text-white'
+                    : 'text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-350 bg-transparent'
+                }`}
+                style={{ borderTop: activeQuad === t.id ? `2px solid ${t.color}` : 'none' }}
+              >
+                <span>{t.label}</span>
+                <span className="text-[7.5px] opacity-60 px-1 py-0.2 rounded-full bg-black/5 dark:bg-white/10">
+                  {t.count}
+                </span>
+              </button>
+            ))}
+          </div>
+
+          <div className="space-y-2.5 max-h-[265px] overflow-y-auto pr-1 no-scrollbar">
+            {filteredOppData.map(item => (
+              <div 
+                key={item.name}
+                className="p-3 border border-black/10 dark:border-white/10 rounded-sm bg-zinc-50/50 dark:bg-white/5 hover:border-black/20 dark:hover:border-white/20 transition-all flex flex-col gap-2 relative group animate-fadeIn"
+              >
+                <div className="flex justify-between items-start gap-2">
+                  <div 
+                    onClick={() => {
+                      const originalSku = SKUS.find(s => s.name === item.name);
+                      if (originalSku && onSelectSku) {
+                        onSelectSku(originalSku);
+                      }
+                    }}
+                    className="cursor-pointer"
+                  >
+                    <h4 className="text-[11.5px] font-extrabold text-zinc-850 dark:text-zinc-150 group-hover:text-purple-500 transition-colors font-display">
+                      {item.name}
+                    </h4>
+                    <p className="text-[8.5px] text-zinc-400 dark:text-zinc-500 uppercase font-bold tracking-wider mt-0.5">
+                      {item.cat} • Margin: {item.margin}% • Growth: {(item.growth * 100).toFixed(0)}%
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-[9.5px] font-extrabold font-mono text-purple-500 dark:text-[#a78bfa]">
+                      +₹{item.expansionPotential} Cr
+                    </span>
+                    <p className="text-[7.5px] text-zinc-400 dark:text-zinc-500 uppercase tracking-widest font-bold mt-0.5">
+                      Potential
+                    </p>
+                  </div>
+                </div>
+
+                <p className="text-[9.5px] text-zinc-500 dark:text-zinc-400 leading-relaxed font-medium">
+                  {item.rec}
+                </p>
+
+                <div className="flex gap-2 justify-end pt-1">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const originalSku = SKUS.find(s => s.name === item.name);
+                      if (originalSku && onSelectSku) {
+                        onSelectSku(originalSku);
+                      }
+                    }}
+                    className="px-2 py-1 border border-black/10 dark:border-white/10 text-zinc-500 dark:text-zinc-400 hover:bg-black/5 dark:hover:bg-white/5 rounded-sm text-[8.5px] font-bold uppercase tracking-wider cursor-pointer bg-transparent outline-none"
+                  >
+                    Review Metrics
+                  </button>
+                  {item.quadrant === 'investment' && (
+                    <button
+                      type="button"
+                      onClick={() => handleApproveInvestment(item.name, item.expansionPotential)}
+                      className="px-2 py-1 bg-[#6d28d9] dark:bg-[#a78bfa] text-white dark:text-zinc-950 hover:opacity-90 rounded-sm text-[8.5px] font-extrabold uppercase tracking-wider cursor-pointer border-none flex items-center gap-1 outline-none"
+                    >
+                      <Plus size={10} />
+                      Approve Investment
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // ══════════════════════════════════════════════════════════════════════════════
 // VP COMMAND CENTER SUB-COMPONENT
 // ══════════════════════════════════════════════════════════════════════════════
@@ -1043,6 +1393,16 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean; onAuditClick?: (metricNam
         </div>
       </div>
 
+      {/* AI Growth Opportunity Map */}
+      <div className="mt-6">
+        <GrowthOpportunityMap 
+          skusList={SKUS} 
+          isDarkMode={isDarkMode} 
+          onSelectSku={setSelectedSkuForModal} 
+          addToast={addToast} 
+        />
+      </div>
+
       {/* Floating Corner Toasts Container */}
       <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none max-w-sm">
         {toasts.map(t => (
@@ -1474,6 +1834,7 @@ export const PortfolioHealthMap: React.FC<PortfolioHealthMapProps> = ({ role, is
           { id: 'ph-pareto', label: 'Revenue Analysis' },
           { id: 'ph-channel', label: 'Channel Performance' },
           { id: 'ph-sim', label: 'Rationalization Sim' },
+          { id: 'ph-growth', label: 'Growth Opportunity Map' },
         ].map(st => (
           <button
             key={st.id}
@@ -2252,6 +2613,20 @@ export const PortfolioHealthMap: React.FC<PortfolioHealthMapProps> = ({ role, is
             </div>
           </div>
 
+        </div>
+      )}
+
+      {/* ────────────────────────────────────────────────────────────────────────
+          SUB-TAB 5: GROWTH OPPORTUNITY MAP
+          ──────────────────────────────────────────────────────────────────────── */}
+      {activeSubTab === 'ph-growth' && (
+        <div className="space-y-6">
+          <GrowthOpportunityMap 
+            skusList={filteredSKUs} 
+            isDarkMode={isDarkMode} 
+            onSelectSku={setSelectedSkuForModal} 
+            addToast={addToast} 
+          />
         </div>
       )}
 
