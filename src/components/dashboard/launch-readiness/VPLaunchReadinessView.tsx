@@ -349,25 +349,25 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
           </div>
 
           {/* 4 KPI Cards */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <div className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 p-3 rounded-sm hover:bg-black/[0.01] dark:hover:bg-white/[0.01] transition-all">
-              <p className="text-[9px] font-bold uppercase tracking-wider text-zinc-400">Active pipeline SKUs</p>
-              <h4 className="text-xl font-display font-extrabold text-zinc-850 dark:text-zinc-150 mt-1 leading-none">{activePipelineSKUs}</h4>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5">
+            <div className="bg-zinc-100/80 dark:bg-zinc-900/60 border border-black/5 dark:border-white/5 p-4 rounded-xl hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition-all">
+              <p className="text-[10px] font-bold text-zinc-400">Active pipeline SKUs</p>
+              <h4 className="text-2xl font-display font-extrabold text-zinc-850 dark:text-white mt-1.5 leading-none">{activePipelineSKUs}</h4>
             </div>
 
-            <div className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 p-3 rounded-sm hover:bg-black/[0.01] dark:hover:bg-white/[0.01] transition-all">
-              <p className="text-[9px] font-bold uppercase tracking-wider text-zinc-400">In development+</p>
-              <h4 className="text-xl font-display font-extrabold text-zinc-850 dark:text-zinc-150 mt-1 leading-none">{inDevelopmentPlus}</h4>
+            <div className="bg-zinc-100/80 dark:bg-zinc-900/60 border border-black/5 dark:border-white/5 p-4 rounded-xl hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition-all">
+              <p className="text-[10px] font-bold text-zinc-400">In development+</p>
+              <h4 className="text-2xl font-display font-extrabold text-zinc-850 dark:text-white mt-1.5 leading-none">{inDevelopmentPlus}</h4>
             </div>
 
-            <div className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 p-3 rounded-sm hover:bg-black/[0.01] dark:hover:bg-white/[0.01] transition-all">
-              <p className="text-[9px] font-bold uppercase tracking-wider text-zinc-400">Near launch</p>
-              <h4 className="text-xl font-display font-extrabold text-zinc-850 dark:text-zinc-150 mt-1 leading-none">{nearLaunchCount}</h4>
+            <div className="bg-zinc-100/80 dark:bg-zinc-900/60 border border-black/5 dark:border-white/5 p-4 rounded-xl hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition-all">
+              <p className="text-[10px] font-bold text-zinc-400">Near launch</p>
+              <h4 className="text-2xl font-display font-extrabold text-zinc-850 dark:text-white mt-1.5 leading-none">{nearLaunchCount}</h4>
             </div>
 
-            <div className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 p-3 rounded-sm hover:bg-black/[0.01] dark:hover:bg-white/[0.01] transition-all">
-              <p className="text-[9px] font-bold uppercase tracking-wider text-zinc-400">Launched</p>
-              <h4 className="text-xl font-display font-extrabold text-zinc-850 dark:text-zinc-150 mt-1 leading-none">{launchedCount}</h4>
+            <div className="bg-zinc-100/80 dark:bg-zinc-900/60 border border-black/5 dark:border-white/5 p-4 rounded-xl hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition-all">
+              <p className="text-[10px] font-bold text-zinc-400">Launched</p>
+              <h4 className="text-2xl font-display font-extrabold text-zinc-850 dark:text-white mt-1.5 leading-none">{launchedCount}</h4>
             </div>
           </div>
 
@@ -389,14 +389,14 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
           </div>
 
           {/* Legend */}
-          <div className="flex flex-wrap items-center gap-4 text-[9px] text-zinc-550 dark:text-zinc-450 mt-2 pl-4">
+          <div className="flex flex-wrap items-center gap-4 text-[10px] text-zinc-550 dark:text-zinc-400 mt-3 pl-4">
             <div className="flex items-center gap-1.5">
               <span className="w-2.5 h-2.5 rounded-sm bg-[#634bf6]" />
-              <span className="font-bold uppercase tracking-wider">Early stage (Ideation–Testing)</span>
+              <span className="font-semibold text-zinc-650 dark:text-zinc-300">Early stage (Ideation - Testing)</span>
             </div>
             <div className="flex items-center gap-1.5">
               <span className="w-2.5 h-2.5 rounded-sm bg-[#2563eb]" />
-              <span className="font-bold uppercase tracking-wider">Late stage (Regulatory–Launched)</span>
+              <span className="font-semibold text-zinc-650 dark:text-zinc-300">Late stage (Regulatory - Launched)</span>
             </div>
           </div>
         </div>
