@@ -2,6 +2,9 @@
 
 Welcome to the **Portfolio Intelligence** codebase. This guide serves as a comprehensive Knowledge Transfer (KT) document to help you hit the ground running. It outlines the directory structure, technology stack, design system, core tab modules, and state sharing mechanics.
 
+> [!NOTE]
+> **Objective & Audience Context**: This dashboard is built as a premium, high-fidelity client demo representative of a finished enterprise product. The primary objective is to wow potential clients, showcase advanced capabilities (such as AI simulations, real-time demand transference, and supply chain graphs), and build absolute confidence in our technical and visual design execution.
+
 ---
 
 ## 1. Tech Stack & Architecture
