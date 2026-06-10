@@ -239,6 +239,7 @@ export const TABS = [
   { id: 5, name: 'Signals Board' },
   { id: 6, name: 'Top-Down Drilldown' },
   { id: 7, name: 'Agent Orchestrator' },
+  { id: 8, name: 'SKU Assortment' },
 ];
 
 export const SKUS = [

@@ -7,12 +7,14 @@ import React, { useState } from 'react';
 import { 
   Activity, Check, RefreshCw, Sparkles, CreditCard, Briefcase, Truck, X,
   TrendingUp, AlertTriangle, ShieldCheck, Info, DollarSign, Globe, Layers, ArrowRight,
-  Eye, Printer, Download, FileText
+  Eye, Printer, Download, FileText, Lock, CheckCircle2
 } from 'lucide-react';
 import { SKUS } from '../../../constants/data';
 import { BusinessCaseAdvisor } from './BusinessCaseAdvisor';
 
 interface ActionRoutingPanelProps {
+  role: string;
+  auditLog: any[];
   hasScored: boolean;
   pairRisk: number;
   riskVerdict: string;
@@ -50,6 +52,8 @@ interface ActionRoutingPanelProps {
 }
 
 export const ActionRoutingPanel: React.FC<ActionRoutingPanelProps> = ({
+  role,
+  auditLog,
   hasScored,
   pairRisk,
   riskVerdict,
@@ -88,6 +92,13 @@ export const ActionRoutingPanel: React.FC<ActionRoutingPanelProps> = ({
 
   // Calendar deconfliction state
   const [calendarDeconflicted, setCalendarDeconflicted] = useState(false);
+
+  const canRoleExecuteTeam = (role: string, teamKey: string): boolean => {
+    const key = teamKey.toLowerCase().replace(' ', '');
+    if (role === 'Pricing and Margin Partner') return key === 'pricing';
+    if (role === 'Product Manager') return key === 'product' || key === 'supplychain' || key === 'supply';
+    return false;
+  };
 
 
   // Find SKU details for calculations
@@ -890,6 +901,7 @@ export const ActionRoutingPanel: React.FC<ActionRoutingPanelProps> = ({
             const isCompleted = !!(completedSteps && completedSteps[stepKey]);
             const isExpanded = expandedStep === si;
             const isExecuting = executingStep === stepKey;
+            const canExecute = canRoleExecuteTeam(role, activeTeamKey);
 
             return (
               <div key={si} className={`transition-colors duration-150 ${isExpanded ? 'bg-black/[0.01] dark:bg-white/[0.01]' : ''}`}>
@@ -1136,23 +1148,30 @@ export const ActionRoutingPanel: React.FC<ActionRoutingPanelProps> = ({
                     <div className="flex gap-2">
                       {isCompleted ? (
                         <div className="flex gap-2">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const isShortlistStep = activeTeamKey === 'product' && si === 0 && isHigh;
-                              const isFreezeStep = activeTeamKey === 'supplychain' && si === 0 && isHigh;
-                              
-                              const undoAction = () => {
-                                if (isShortlistStep) unshortlistSku(skuA);
-                                if (isFreezeStep) unfreezeSkuReplenishment(skuA);
-                              };
+                          {!canExecute ? (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-1 text-[9px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/5 border border-emerald-500/10 rounded-lg">
+                              <CheckCircle2 size={10} />
+                              <span>Verified & Signed Off</span>
+                            </span>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const isShortlistStep = activeTeamKey === 'product' && si === 0 && isHigh;
+                                const isFreezeStep = activeTeamKey === 'supplychain' && si === 0 && isHigh;
+                                
+                                const undoAction = () => {
+                                  if (isShortlistStep) unshortlistSku(skuA);
+                                  if (isFreezeStep) unfreezeSkuReplenishment(skuA);
+                                };
 
-                              undoStep(si, step.label, undoAction);
-                            }}
-                            className="px-3 py-1 text-[9px] font-black border border-red-500/20 text-red-500 bg-red-500/5 hover:bg-red-500/10 rounded-lg cursor-pointer transition border-none"
-                          >
-                            Undo execution
-                          </button>
+                                undoStep(si, step.label, undoAction);
+                              }}
+                              className="px-3 py-1 text-[9px] font-black border border-red-500/20 text-red-500 bg-red-500/5 hover:bg-red-500/10 rounded-lg cursor-pointer transition border-none"
+                            >
+                              Undo execution
+                            </button>
+                          )}
                           {(() => {
                             const docType = getDocTypeForStep(activeTeamKey, si);
                             if (!docType) return null;
@@ -1168,6 +1187,15 @@ export const ActionRoutingPanel: React.FC<ActionRoutingPanelProps> = ({
                             );
                           })()}
                         </div>
+                      ) : !canExecute ? (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 text-[9px] font-bold text-amber-600 dark:text-amber-400 bg-amber-500/5 border border-amber-500/10 rounded-lg">
+                          <Lock size={10} />
+                          <span>
+                            {activeTeamKey === 'pricing' 
+                              ? 'Awaiting Pricing Partner' 
+                              : 'Awaiting Product Manager'}
+                          </span>
+                        </span>
                       ) : (
                         <button
                           type="button"
@@ -1231,6 +1259,10 @@ export const ActionRoutingPanel: React.FC<ActionRoutingPanelProps> = ({
           tescoStatus={tescoStatus}
           costcoStatus={costcoStatus}
           isSafetyStockRaised={isSafetyStockRaised}
+          role={role}
+          hasVpSignedOff={auditLog ? auditLog.some(log => log.actionLabel === 'Executive Sign-Off' && log.skuA === skuA && log.skuB === skuB) : false}
+          isCaseReady={blendedPct === 100}
+          logAction={logAction}
         />
       </div>
 

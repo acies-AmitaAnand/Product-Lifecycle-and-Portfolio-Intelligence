@@ -20,6 +20,10 @@ interface BusinessCaseAdvisorProps {
   tescoStatus: string;
   costcoStatus: string;
   isSafetyStockRaised: boolean;
+  role: string;
+  hasVpSignedOff: boolean;
+  isCaseReady: boolean;
+  logAction?: (team: string, stepLabel: string, details: string, rationale: string) => void;
 }
 
 export const BusinessCaseAdvisor: React.FC<BusinessCaseAdvisorProps> = ({
@@ -36,6 +40,10 @@ export const BusinessCaseAdvisor: React.FC<BusinessCaseAdvisorProps> = ({
   tescoStatus,
   costcoStatus,
   isSafetyStockRaised,
+  role,
+  hasVpSignedOff,
+  isCaseReady,
+  logAction,
 }) => {
   return (
     <div className="lg:col-span-5 space-y-5">
@@ -71,7 +79,7 @@ export const BusinessCaseAdvisor: React.FC<BusinessCaseAdvisorProps> = ({
             <span className="text-base font-black text-zinc-800 dark:text-zinc-100 block">
               ₹{totalExitCost.toFixed(0)}L
             </span>
-            <span className="text-[7.5px] text-zinc-455 dark:text-zinc-500 block font-bold uppercase">
+            <span className="text-[7.5px] text-zinc-450 dark:text-zinc-500 block font-bold uppercase">
               Write-offs + markdowns
             </span>
           </div>
@@ -80,7 +88,7 @@ export const BusinessCaseAdvisor: React.FC<BusinessCaseAdvisorProps> = ({
             <span className="text-base font-black text-emerald-500 block">
               ₹{annualSavingsLakhs.toFixed(0)}L
             </span>
-            <span className="text-[7.5px] text-zinc-455 dark:text-zinc-500 block font-bold uppercase">
+            <span className="text-[7.5px] text-zinc-450 dark:text-zinc-500 block font-bold uppercase">
               Margin uplift + SC savings
             </span>
           </div>
@@ -108,7 +116,7 @@ export const BusinessCaseAdvisor: React.FC<BusinessCaseAdvisorProps> = ({
 
       {/* Volume Transference Map */}
       <div className="p-4 bg-white dark:bg-[#1a1a24] border border-black/10 dark:border-white/10 rounded-xl space-y-3 shadow-sm">
-        <span className="text-[8.5px] font-black uppercase tracking-wider text-zinc-455 block">Variant Substitution Rate</span>
+        <span className="text-[8.5px] font-black uppercase tracking-wider text-zinc-450 block">Variant Substitution Rate</span>
         
         <div className="space-y-3.5">
           <div className="space-y-1">
@@ -120,7 +128,7 @@ export const BusinessCaseAdvisor: React.FC<BusinessCaseAdvisorProps> = ({
               <div className="bg-purple-500 h-full" style={{ width: `${transferenceRate}%` }} />
               <div className="bg-red-500/20 h-full" style={{ width: `${100 - transferenceRate}%` }} />
             </div>
-            <div className="flex justify-between text-[7.5px] font-bold text-zinc-455">
+            <div className="flex justify-between text-[7.5px] font-bold text-zinc-450">
               <span>₹{transferenceVolume} Cr preserved</span>
               <span>₹{leakageVolume} Cr category leak ({100 - transferenceRate}%)</span>
             </div>
@@ -130,7 +138,7 @@ export const BusinessCaseAdvisor: React.FC<BusinessCaseAdvisorProps> = ({
 
       {/* Retailer Delisting Notice Checklist */}
       <div className="p-4 bg-white dark:bg-[#1a1a24] border border-black/10 dark:border-white/10 rounded-xl space-y-3 shadow-sm">
-        <span className="text-[8.5px] font-black uppercase tracking-wider text-zinc-455 block">Global Retailer Alignment</span>
+        <span className="text-[8.5px] font-black uppercase tracking-wider text-zinc-450 block">Global Retailer Alignment</span>
         
         <div className="divide-y divide-black/5 dark:divide-white/5 text-[9px] font-bold">
           <div className="flex justify-between py-2 items-center">
@@ -154,7 +162,7 @@ export const BusinessCaseAdvisor: React.FC<BusinessCaseAdvisorProps> = ({
           <div className="flex justify-between py-2 items-center">
             <span className="text-zinc-600 dark:text-zinc-300">Costco Wholesale Review</span>
             <span className={`px-2 py-0.5 rounded text-[7.5px] font-black uppercase ${
-              costcoStatus === 'In Negotiation' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-zinc-500/10 text-zinc-455 font-black'
+              costcoStatus === 'In Negotiation' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-zinc-500/10 text-zinc-450 font-black'
             }`}>{costcoStatus}</span>
           </div>
         </div>
@@ -163,7 +171,7 @@ export const BusinessCaseAdvisor: React.FC<BusinessCaseAdvisorProps> = ({
       {/* Supply Chain Runway */}
       <div className="p-4 bg-white dark:bg-[#1a1a24] border border-black/10 dark:border-white/10 rounded-xl space-y-3 shadow-sm">
         <span className="text-[8.5px] font-black uppercase tracking-wider text-zinc-455 block">Supply Run-down Runway</span>
-        <div className="bg-black/5 dark:bg-white/5 p-3 rounded-lg text-[9px] font-bold space-y-1.5 text-zinc-455 font-mono">
+        <div className="bg-black/5 dark:bg-white/5 p-3 rounded-lg text-[9px] font-bold space-y-1.5 text-zinc-450 font-mono">
           <div className="flex justify-between">
             <span>Phase-out Period:</span>
             <span className="text-zinc-850 dark:text-zinc-200">{exitDateDays} Days</span>
@@ -180,6 +188,54 @@ export const BusinessCaseAdvisor: React.FC<BusinessCaseAdvisorProps> = ({
           </div>
         </div>
       </div>
+
+      {/* VP Executive Sign-Off Section */}
+      {role === 'VP Product Management' && (
+        <div className="p-4 bg-purple-500/10 border border-purple-500/20 rounded-xl space-y-3.5 shadow-sm">
+          <div className="flex justify-between items-center">
+            <span className="text-[8.5px] font-black uppercase tracking-wider text-purple-700 dark:text-purple-400">Executive Authorization</span>
+            <span className={`px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest ${
+              hasVpSignedOff 
+                ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' 
+                : 'bg-amber-500/10 text-amber-500 border border-amber-500/20'
+            }`}>
+              {hasVpSignedOff ? 'AUTHORIZED' : 'PENDING'}
+            </span>
+          </div>
+
+          <p className="text-[8.5px] text-zinc-450 dark:text-zinc-500 leading-normal font-sans">
+            Review the generated verification certificates in the ledger/vault. Once all 10 checklist steps are verified, authorize the sunset directive.
+          </p>
+
+          <button
+            type="button"
+            disabled={!isCaseReady || hasVpSignedOff}
+            onClick={() => {
+              if (logAction) {
+                logAction(
+                  'product',
+                  'Executive Sign-Off',
+                  'FINAL AUTHORIZATION APPROVED',
+                  'VP Product Management signed off on final rationalization and sunset schedule. DC depletion phase-out locks activated.'
+                );
+              }
+            }}
+            className={`w-full py-2 px-3 rounded-lg text-xs font-black uppercase tracking-wider transition shadow-sm border-none cursor-pointer flex items-center justify-center gap-1.5 ${
+              hasVpSignedOff
+                ? 'bg-emerald-600 text-white cursor-default'
+                : isCaseReady
+                  ? 'bg-purple-600 hover:bg-purple-700 text-white'
+                  : 'bg-black/5 dark:bg-white/5 text-zinc-400 dark:text-zinc-650 cursor-not-allowed'
+            }`}
+          >
+            {hasVpSignedOff ? (
+              <span>👑 Authorized & Signed Off</span>
+            ) : (
+              <span>👑 Authorize Final Sunset</span>
+            )}
+          </button>
+        </div>
+      )}
     </div>
   );
 };
