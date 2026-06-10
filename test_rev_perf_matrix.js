@@ -12,43 +12,27 @@ async function run() {
   // Forward console messages
   page.on('console', msg => console.log('PAGE LOG:', msg.text()));
 
-  // Navigate to PM role on Portfolio Health tab
-  console.log("Navigating to Product Manager Portfolio Health View...");
-  await page.goto('http://localhost:3000/#tab=1&role=Product+Manager', { waitUntil: 'networkidle2' });
+  // ==========================================
+  // Test Case 1: VP View Matrix Verification
+  // ==========================================
+  console.log("Navigating to VP Product Management View...");
+  await page.goto('http://localhost:3000/#tab=1&role=VP+Product+Management', { waitUntil: 'networkidle2' });
   await new Promise(r => setTimeout(r, 2000));
 
-  // Click on "Revenue vs Performance" sub-tab
-  console.log("Clicking on 'Revenue vs Performance' sub-tab...");
-  const clickedSubTab = await page.evaluate(() => {
-    const buttons = Array.from(document.querySelectorAll('button'));
-    const subTabBtn = buttons.find(btn => btn.innerText.toUpperCase().trim() === 'REVENUE VS PERFORMANCE');
-    if (subTabBtn) {
-      subTabBtn.click();
-      return true;
-    }
-    return false;
-  });
-  console.log(`[TEST 1] Clicked sub-tab: ${clickedSubTab}`);
-  if (!clickedSubTab) {
-    throw new Error("Could not find or click 'Revenue vs Performance' sub-tab");
-  }
-  await new Promise(r => setTimeout(r, 1500));
-
-  // Verify matrix title is rendered
-  const hasTitle = await page.evaluate(() => {
+  // Verify matrix title is rendered in VP view
+  const hasTitleVP = await page.evaluate(() => {
     const spans = Array.from(document.querySelectorAll('span'));
     return spans.some(s => s.innerText && s.innerText.toUpperCase().includes("REVENUE VS. PERFORMANCE MATRIX"));
   });
-  console.log(`[TEST 2] Revenue vs. Performance Matrix title rendered: ${hasTitle}`);
-  if (!hasTitle) {
-    throw new Error("Revenue vs. Performance Matrix title not found");
+  console.log(`[TEST 1] Revenue vs. Performance Matrix rendered in VP View: ${hasTitleVP}`);
+  if (!hasTitleVP) {
+    throw new Error("Revenue vs. Performance Matrix not found in VP View");
   }
 
-  // Click on the first SKU card in the list (default High Perf: Mango Fizz 500ml or Oat Cookies etc.)
-  console.log("Clicking first SKU card to open SKU Details Modal...");
-  const openedModal = await page.evaluate(() => {
+  // Click on first SKU card (Mango Fizz 500ml or Oat Cookies)
+  console.log("Clicking SKU card to open SKU Details Modal in VP view...");
+  const openedModalVP = await page.evaluate(() => {
     const headings = Array.from(document.querySelectorAll('h4'));
-    // Find the first heading that matches one of the high performers, e.g., MANGO FIZZ 500ML
     const heading = headings.find(h => h.innerText && h.innerText.toUpperCase().includes('MANGO FIZZ 500ML') || h.innerText.toUpperCase().includes('OAT COOKIES'));
     if (heading) {
       heading.click();
@@ -56,27 +40,14 @@ async function run() {
     }
     return false;
   });
-  console.log(`[TEST 3] Opened SKU Details modal: ${openedModal}`);
-  if (!openedModal) {
-    throw new Error("Could not click on first SKU card");
+  console.log(`[TEST 2] Opened SKU Details modal in VP view: ${openedModalVP}`);
+  if (!openedModalVP) {
+    throw new Error("Could not click on first SKU card in VP view");
   }
   await new Promise(r => setTimeout(r, 1500));
 
-  // Verify modal is open
-  const modalTitle = await page.evaluate(() => {
-    const modalContainers = Array.from(document.querySelectorAll('div.fixed.inset-0'));
-    const modalContainer = modalContainers.find(el => el.innerText && el.innerText.toUpperCase().includes("QTD REVENUE"));
-    if (!modalContainer) return 'None';
-    const header = modalContainer.querySelector('h2');
-    return header ? header.innerText.toUpperCase().trim() : 'None';
-  });
-  console.log(`[TEST 4] Modal SKU Title: ${modalTitle}`);
-  if (modalTitle === 'NONE') {
-    throw new Error("SKU Details modal failed to load metrics");
-  }
-
   // Close SKU details modal
-  console.log("Closing SKU Details Modal...");
+  console.log("Closing SKU Details Modal in VP view...");
   await page.evaluate(() => {
     const buttons = Array.from(document.querySelectorAll('button'));
     const closeBtn = buttons.find(btn => btn.innerText.toUpperCase().trim() === 'CLOSE ANALYSIS');
@@ -84,9 +55,9 @@ async function run() {
   });
   await new Promise(r => setTimeout(r, 1000));
 
-  // Authorize Strategy and verify Toast
-  console.log("Clicking 'Authorize Strategy' button...");
-  const toastMessage = await page.evaluate(async () => {
+  // Click 'Authorize Strategy' button and verify Toast in VP view
+  console.log("Clicking 'Authorize Strategy' button in VP view...");
+  const toastMessageVP = await page.evaluate(async () => {
     const buttons = Array.from(document.querySelectorAll('button'));
     const authBtn = buttons.find(btn => btn.innerText.toUpperCase().includes("AUTHORIZE STRATEGY"));
     if (authBtn) {
@@ -98,16 +69,65 @@ async function run() {
     }
     return 'Authorize button not found';
   });
-  console.log(`[TEST 5] Toast notification output: ${toastMessage}`);
-  if (toastMessage === 'Toast not found' || toastMessage === 'Authorize button not found') {
-    throw new Error(`Failed to authorize strategy or get toast: ${toastMessage}`);
+  console.log(`[TEST 3] Toast notification output in VP view: ${toastMessageVP}`);
+  if (toastMessageVP === 'Toast not found' || toastMessageVP === 'Authorize button not found') {
+    throw new Error(`Failed to authorize strategy or get toast in VP view: ${toastMessageVP}`);
   }
 
-  // Save screenshot of matrix view showing toast to scratch
+  // Save screenshot of VP view matrix to scratch
+  await page.screenshot({ path: 'C:\\Users\\Sree Vyshnavi\\.gemini\\antigravity\\scratch\\screenshot_rev_perf_vp.png' });
+  console.log("Saved VP view screenshot to scratch folder");
+
+  // Save screenshot of VP view matrix to brain artifact folder
+  await page.screenshot({ path: 'C:\\Users\\Sree Vyshnavi\\.gemini\\antigravity\\brain\\6470fd70-a4a4-4b87-a99d-d8ddeb36d56a\\screenshot_rev_perf_vp.png' });
+  console.log("Saved VP view screenshot to brain artifact folder");
+
+  // ==========================================
+  // Test Case 2: PM View Sub-tab Navigation
+  // ==========================================
+  console.log("Switching role to Product Manager...");
+  await page.evaluate(() => {
+    const selects = Array.from(document.querySelectorAll('select'));
+    const roleSelect = selects.find(sel => Array.from(sel.options).some(opt => opt.value === 'Product Manager'));
+    if (roleSelect) {
+      roleSelect.value = 'Product Manager';
+      roleSelect.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+  });
+  await new Promise(r => setTimeout(r, 2000));
+
+  // Click on "Revenue vs Performance" sub-tab
+  console.log("Clicking on 'Revenue vs Performance' sub-tab in PM view...");
+  const clickedSubTab = await page.evaluate(() => {
+    const buttons = Array.from(document.querySelectorAll('button'));
+    const subTabBtn = buttons.find(btn => btn.innerText.toUpperCase().trim() === 'REVENUE VS PERFORMANCE');
+    if (subTabBtn) {
+      subTabBtn.click();
+      return true;
+    }
+    return false;
+  });
+  console.log(`[TEST 4] Clicked sub-tab in PM view: ${clickedSubTab}`);
+  if (!clickedSubTab) {
+    throw new Error("Could not find or click 'Revenue vs Performance' sub-tab in PM view");
+  }
+  await new Promise(r => setTimeout(r, 1500));
+
+  // Verify matrix title is rendered in PM view
+  const hasTitlePM = await page.evaluate(() => {
+    const spans = Array.from(document.querySelectorAll('span'));
+    return spans.some(s => s.innerText && s.innerText.toUpperCase().includes("REVENUE VS. PERFORMANCE MATRIX"));
+  });
+  console.log(`[TEST 5] Revenue vs. Performance Matrix rendered in PM View: ${hasTitlePM}`);
+  if (!hasTitlePM) {
+    throw new Error("Revenue vs. Performance Matrix not found in PM View");
+  }
+
+  // Save screenshot of PM view matrix to scratch
   await page.screenshot({ path: 'C:\\Users\\Sree Vyshnavi\\.gemini\\antigravity\\scratch\\screenshot_rev_perf_pm.png' });
   console.log("Saved PM view screenshot to scratch folder");
 
-  // Save screenshot of matrix view showing toast to brain artifact folder
+  // Save screenshot of PM view matrix to brain artifact folder
   await page.screenshot({ path: 'C:\\Users\\Sree Vyshnavi\\.gemini\\antigravity\\brain\\6470fd70-a4a4-4b87-a99d-d8ddeb36d56a\\screenshot_rev_perf_pm.png' });
   console.log("Saved PM view screenshot to brain artifact folder");
 

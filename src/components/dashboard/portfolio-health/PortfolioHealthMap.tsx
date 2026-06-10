@@ -1880,6 +1880,16 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean; onAuditClick?: (metricNam
         />
       </div>
 
+      {/* Revenue vs. Performance Matrix */}
+      <div className="mt-6">
+        <RevenuePerformanceMatrix 
+          skusList={SKUS} 
+          isDarkMode={isDarkMode} 
+          onSelectSku={setSelectedSkuForModal} 
+          addToast={addToast} 
+        />
+      </div>
+
       {/* Floating Corner Toasts Container */}
       <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none max-w-sm">
         {toasts.map(t => (
