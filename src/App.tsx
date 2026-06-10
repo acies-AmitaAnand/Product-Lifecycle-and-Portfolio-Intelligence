@@ -431,6 +431,7 @@ export default function App() {
   const [isAgentWidgetVisible, setIsAgentWidgetVisible] = useState<boolean>(true);
   const [agentMessageInput, setAgentMessageInput] = useState<string>('');
   const [isAgentTyping, setIsAgentTyping] = useState<boolean>(false);
+  const [isExploreOpen, setIsExploreOpen] = useState<boolean>(false);
   const [agentChatHistory, setAgentChatHistory] = useState<Record<number, Array<{ sender: 'user' | 'agent', text: string }>>>({
     1: [{ sender: 'agent', text: 'Hello! I am the Portfolio Agent. I am monitoring the health of all 102 SKUs on this tab. Let me know if you would like me to compile complexity metrics or highlight low-performing segments!' }],
     2: [{ sender: 'agent', text: 'Hi, I am the Supply Chain Agent. Sourcing and lead time modeling is active. Sourcing delay on BrandD Yogurt detected. How can I assist you with launch timelines?' }],
@@ -550,7 +551,7 @@ export default function App() {
 
           {/* Main Content Area */}
           <main className="flex-1 min-w-0">
-            {activeTab !== 0 && !(activeTab === 3 && isProfitabilitySimulatorOpen) && !(activeTab === 4 && role === 'VP Product Management') && (
+            {activeTab !== 0 && !(activeTab === 3 && isProfitabilitySimulatorOpen) && !(activeTab === 4 && role === 'VP Product Management') && !(activeTab === 5 && isExploreOpen) && (
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                 <div>
                   <h2 className="text-xl font-display leading-tight text-acies-gray dark:text-white">{tabs[activeTab]?.name || 'Unknown Module'}</h2>
@@ -721,7 +722,7 @@ export default function App() {
                 return 'grid-cols-2 md:grid-cols-4 lg:grid-cols-8';
               })();
 
-              if (tabKpis.length === 0 || (activeTab === 3 && isProfitabilitySimulatorOpen)) return null;
+              if (tabKpis.length === 0 || (activeTab === 3 && isProfitabilitySimulatorOpen) || (activeTab === 5 && isExploreOpen)) return null;
 
               return (
                 <div className={`grid gap-3 mb-6 ${gridClass}`}>
@@ -781,7 +782,7 @@ export default function App() {
                   />
                 )}
                 {activeTab === 4 && <SKURationalization role={role} isDarkMode={isDarkMode} setActiveTab={setActiveTab} />}
-                {activeTab === 5 && <SignalsBoard role={role} setActiveTab={setActiveTab} isDarkMode={isDarkMode} />}
+                {activeTab === 5 && <SignalsBoard role={role} setActiveTab={setActiveTab} isDarkMode={isDarkMode} onExploreToggle={setIsExploreOpen} />}
                 {activeTab === 6 && <TopDownDrilldown isDarkMode={isDarkMode} role={role} />}
                 {activeTab === 7 && <AgentOrchestrator isDarkMode={isDarkMode} role={role} />}
                 {activeTab < 0 || activeTab > 7 ? (

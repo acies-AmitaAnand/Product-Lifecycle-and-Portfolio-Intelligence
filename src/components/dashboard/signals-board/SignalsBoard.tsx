@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { 
   MessageSquare, AlertCircle, AlertTriangle, Info, Plus, Check, Play, Inbox, Mail, Send,
-  Filter, RefreshCw, Download, Zap, TrendingUp, HelpCircle, Activity, Globe, MapPin, ArrowUpRight, BarChart2, ShieldAlert, Smile, ChevronRight
+  Filter, RefreshCw, Download, Zap, TrendingUp, HelpCircle, Activity, Globe, MapPin, ArrowUpRight, BarChart2, ShieldAlert, Smile, ChevronRight,
+  ArrowLeft, CheckCircle2, X, Brain, User, Users, Clock, Sparkles
 } from 'lucide-react';
 import { 
   ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid, Legend,
@@ -12,6 +13,7 @@ import { EmailComposerModal } from '../portfolio-health/EmailComposerModal';
 import { SuccessFeedbackModal } from '../portfolio-health/SuccessFeedbackModal';
 import { ResolveSignalModal } from './ResolveSignalModal';
 import { AIPredictionModal } from './AIPredictionModal';
+import { ExploreSignalDetailModal, ExploreSignal } from './ExploreSignalDetailModal';
 
 const RECIPIENT_TITLES: Record<string, string> = {
   'ananya.sen@aciesglobal.com': 'VP Finance',
@@ -27,6 +29,7 @@ interface SignalsBoardProps {
   role: Role;
   setActiveTab: (tab: number) => void;
   isDarkMode: boolean;
+  onExploreToggle?: (isOpen: boolean) => void;
 }
 
 interface Signal {
@@ -49,9 +52,9 @@ interface InboxMessage {
   read: boolean;
 }
 
-export const SignalsBoard: React.FC<SignalsBoardProps> = ({ role, setActiveTab, isDarkMode }) => {
+export const SignalsBoard: React.FC<SignalsBoardProps> = ({ role, setActiveTab, isDarkMode, onExploreToggle }) => {
   if (role === 'VP Product Management') {
-    return <VPSignalsBoardView isDarkMode={isDarkMode} setActiveTab={setActiveTab} />;
+    return <VPSignalsBoardView isDarkMode={isDarkMode} setActiveTab={setActiveTab} onExploreToggle={onExploreToggle} />;
   }
   const accentColor = isDarkMode ? '#a78bfa' : '#6d28d9';
   // Accordion guide
@@ -453,8 +456,7 @@ export const SignalsBoard: React.FC<SignalsBoardProps> = ({ role, setActiveTab, 
 };
 
 // ==========================================
-// VP Signals Board View Component & Mock Data
-// ==========================================
+// VP Signals Board View
 
 export interface VPSignal {
   id: string;
@@ -467,22 +469,1154 @@ export interface VPSignal {
   detail: string;
   ack: boolean;
   refCode: string;
+  trigger: string;
+  rectification: string;
 }
 
 export const VP_SIGNALS_DATA: VPSignal[] = [
-  { id: 'S01', title: 'Demand spike in APAC Beverages', category: 'Beverages', region: 'APAC', type: 'Opportunity', severity: 'critical', impact: '$1.2M Revenue Opportunity', detail: 'Beverages volume trending +18% YoY in APAC. Sourcing buffers are currently insufficient to cover this demand shift.', ack: false, refCode: 'BEV-APAC-01' },
-  { id: 'S02', title: 'Packaging Material Shortage', category: 'Snacks', region: 'EMEA', type: 'Risk', severity: 'critical', impact: '15d Launch Delay', detail: 'Organic packaging supplier in Germany locked down. BrandC Biscuits Eco launch target at risk.', ack: false, refCode: 'SNC-EMEA-02' },
-  { id: 'S03', title: 'Competitor price reduction', category: 'Snacks', region: 'EMEA', type: 'Competitor', severity: 'warning', impact: 'Market Share Risk', detail: 'Competitor B cut price of Wafers by 10% in Europe. Category gross margin target under pressure.', ack: false, refCode: 'COMP-EMEA-03' },
-  { id: 'S04', title: 'Social sentiment decline', category: 'Personal Care', region: 'Americas', type: 'Sentiment', severity: 'warning', impact: 'Brand Equity Risk', detail: 'Social mentions for Personal Care lines dropped by 14% post-artwork revision. Packaging aesthetics cited as key factor.', ack: false, refCode: 'SENT-AMER-04' },
-  { id: 'S05', title: 'Raw material shortage', category: 'Household', region: 'India', type: 'Supply', severity: 'critical', impact: '$800K Revenue Risk', detail: 'Active surfactant supplier constraint in domestic market. Alternate local validation recommended.', ack: false, refCode: 'SUPP-IND-05' },
-  { id: 'S06', title: 'Product Cannibalization Alert', category: 'Beverages', region: 'India', type: 'Portfolio', severity: 'warning', impact: 'Margin Leakage', detail: 'Mango Fizz 250ml and 500ml variants show -0.62 promotional correlation. Variant shelf rationalization required.', ack: false, refCode: 'PORT-IND-06' },
-  { id: 'S07', title: 'NPS Score Decline', category: 'Snacks', region: 'EMEA', type: 'Sentiment', severity: 'info', impact: 'Customer Satisfaction Drop', detail: 'Snacks segment NPS fell from 74 to 71 in Europe due to recent logistics delays. Core product quality scores stable.', ack: false, refCode: 'SENT-EMEA-07' },
-  { id: 'S08', title: 'Competitor launch in India', category: 'Beverages', region: 'India', type: 'Competitor', severity: 'info', impact: 'Market Competitiveness', detail: 'Rival brand launched Organic Green Tea SKU in West region. Pricing aligns with our mid-tier line.', ack: false, refCode: 'COMP-IND-08' },
-  { id: 'S09', title: 'Logistics bottleneck at port', category: 'Personal Care', region: 'APAC', type: 'Supply', severity: 'warning', impact: '10d Lead Time Extension', detail: 'APAC port gridlock causing shipment lag on personal care materials. Pre-positioned buffer stock recommended.', ack: false, refCode: 'SUPP-APAC-09' },
-  { id: 'S10', title: 'Growing market demand shift', category: 'Household', region: 'Americas', type: 'Opportunity', severity: 'warning', impact: '$600K Revenue Opportunity', detail: 'Americas household category demand increased 24% in South region. Eco-friendly line under-distributed.', ack: false, refCode: 'OPP-AMER-10' }
+  { 
+    id: 'S01', 
+    title: 'Demand spike in APAC Beverages', 
+    category: 'Beverages', 
+    region: 'APAC', 
+    type: 'Opportunity', 
+    severity: 'critical', 
+    impact: '$1.2M Revenue Opportunity', 
+    detail: 'Beverages volume trending +18% YoY in APAC. Sourcing buffers are currently insufficient to cover this demand shift.', 
+    ack: false, 
+    refCode: 'BEV-APAC-01',
+    trigger: 'A sharp 18% YoY volume spike in Q2 consumer consumption tracking across major APAC retail networks.',
+    rectification: 'Re-route 15,000 units of safety stock from Western warehouses to Vapi Hub and expand peak packaging throughput.'
+  },
+  { 
+    id: 'S02', 
+    title: 'Packaging Material Shortage', 
+    category: 'Snacks', 
+    region: 'EMEA', 
+    type: 'Risk', 
+    severity: 'critical', 
+    impact: '15d Launch Delay', 
+    detail: 'Organic packaging supplier in Germany locked down. BrandC Biscuits Eco launch target at risk.', 
+    ack: false, 
+    refCode: 'SNC-EMEA-02',
+    trigger: 'Sudden local environmental regulatory hold and supplier factory lockdown at German eco-carton supplier.',
+    rectification: 'Onboard pre-qualified regional packaging vendor in Poland and fast-track quality verification loops.'
+  },
+  { 
+    id: 'S03', 
+    title: 'Competitor price reduction', 
+    category: 'Snacks', 
+    region: 'EMEA', 
+    type: 'Competitor', 
+    severity: 'warning', 
+    impact: 'Market Share Risk', 
+    detail: 'Competitor B cut price of Wafers by 10% in Europe. Category gross margin target under pressure.', 
+    ack: false, 
+    refCode: 'COMP-EMEA-03',
+    trigger: 'Competitor B initiated an aggressive 10% price promotion across discount grocery channels in EU supermarkets.',
+    rectification: 'Trigger a cross-category bundle campaign (Yogurt + BrandC Cookies) to shield customer grocery basket value.'
+  },
+  { 
+    id: 'S04', 
+    title: 'Social sentiment decline', 
+    category: 'Personal Care', 
+    region: 'Americas', 
+    type: 'Sentiment', 
+    severity: 'warning', 
+    impact: 'Brand Equity Risk', 
+    detail: 'Social mentions for Personal Care lines dropped by 14% post-artwork revision. Packaging aesthetics cited as key factor.', 
+    ack: false, 
+    refCode: 'SENT-AMER-04',
+    trigger: 'Negative online reviews and social media mentions spike citing poor ergonomics and artwork changes on new personal care bottles.',
+    rectification: 'Revert bottle packaging layout to classic artwork template and schedule target consumer feedback focus groups.'
+  },
+  { 
+    id: 'S05', 
+    title: 'Raw material shortage', 
+    category: 'Household', 
+    region: 'India', 
+    type: 'Supply', 
+    severity: 'critical', 
+    impact: '$800K Revenue Risk', 
+    detail: 'Active surfactant supplier constraint in domestic market. Alternate local validation recommended.', 
+    ack: false, 
+    refCode: 'SUPP-IND-05',
+    trigger: 'Primary chemical raw materials processing line breakdown at our domestic supplier in Western India.',
+    rectification: 'Qualify and onboard backup regional raw materials manufacturer in Gujarat within 10 days to fill inventory gap.'
+  },
+  { 
+    id: 'S06', 
+    title: 'Product Cannibalization Alert', 
+    category: 'Beverages', 
+    region: 'India', 
+    type: 'Portfolio', 
+    severity: 'warning', 
+    impact: 'Margin Leakage', 
+    detail: 'Mango Fizz 250ml and 500ml variants show -0.62 promotional correlation. Variant shelf rationalization required.', 
+    ack: false, 
+    refCode: 'PORT-IND-06',
+    trigger: 'Overlapping promotional cycles showing high cross-substitution (-0.62 correlation) between 250ml and 500ml variants.',
+    rectification: 'Consolidate promotional funding onto the 500ml high-margin pack size and phase out overlapping 250ml discount runs.'
+  },
+  { 
+    id: 'S07', 
+    title: 'NPS Score Decline', 
+    category: 'Snacks', 
+    region: 'EMEA', 
+    type: 'Sentiment', 
+    severity: 'info', 
+    impact: 'Customer Satisfaction Drop', 
+    detail: 'Snacks segment NPS fell from 74 to 71 in Europe due to recent logistics delays. Core product quality scores stable.', 
+    ack: false, 
+    refCode: 'SENT-EMEA-07',
+    trigger: 'Extended shipping logistics port bottlenecks in Rotterdam causing 5-day delivery delays to major retail stores.',
+    rectification: 'Pre-position finished goods buffer stock at secondary warehouse in Germany to stabilize localized supply rates.'
+  },
+  { 
+    id: 'S08', 
+    title: 'Competitor launch in India', 
+    category: 'Beverages', 
+    region: 'India', 
+    type: 'Competitor', 
+    severity: 'info', 
+    impact: 'Market Competitiveness', 
+    detail: 'Rival brand launched Organic Green Tea SKU in West region. Pricing aligns with our mid-tier line.', 
+    ack: false, 
+    refCode: 'COMP-IND-08',
+    trigger: 'Competitor launched a new Organic Green Tea SKU in Western region supermarkets, matching our pricing structure.',
+    rectification: 'Enhance regional shelf-display visibility and coordinate a co-marketing campaign highlighting our local packaging origin.'
+  },
+  { 
+    id: 'S09', 
+    title: 'Logistics bottleneck at port', 
+    category: 'Personal Care', 
+    region: 'APAC', 
+    type: 'Supply', 
+    severity: 'warning', 
+    impact: '10d Lead Time Extension', 
+    detail: 'APAC port gridlock causing shipment lag on personal care materials. Pre-positioned buffer stock recommended.', 
+    ack: false, 
+    refCode: 'SUPP-APAC-09',
+    trigger: 'Major maritime cargo transit gridlock and customs clearance backlog at the Shanghai port hubs.',
+    rectification: 'Divert upcoming raw materials shipments to secondary ports and pre-position buffer stock at the local hub.'
+  },
+  { 
+    id: 'S10', 
+    title: 'Growing market demand shift', 
+    category: 'Household', 
+    region: 'Americas', 
+    type: 'Opportunity', 
+    severity: 'warning', 
+    impact: '$600K Revenue Opportunity', 
+    detail: 'Americas household category demand increased 24% in South region. Eco-friendly line under-distributed.', 
+    ack: false, 
+    refCode: 'OPP-AMER-10',
+    trigger: 'Sustained 24% consumer demand surge for biodegradable cleaning products in Southern Americas retail stores.',
+    rectification: 'Expand regional distribution network agreements to place eco-friendly household detergents in 120 new outlets.'
+  }
 ];
 
-const VPSignalsBoardView: React.FC<{ isDarkMode: boolean; setActiveTab: (tab: number) => void }> = ({ isDarkMode, setActiveTab }) => {
+interface CompetitiveIntelligenceModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  intelIdx: number;
+}
+
+const CompetitiveIntelligenceModal: React.FC<CompetitiveIntelligenceModalProps> = ({
+  isOpen,
+  onClose,
+  intelIdx
+}) => {
+  if (!isOpen) return null;
+
+  const [activeModalTab, setActiveModalTab] = useState<'comparison' | 'projection'>('comparison');
+
+  const intelData = [
+    {
+      title: 'Rival Pricing Cut',
+      category: 'Snacks',
+      competitorName: 'Competitor B (Rival Wafers)',
+      ourProduct: 'BrandC Cookies (Snacks)',
+      summary: 'Competitor wafers price dropped by 10% in EU supermarkets, driving volume growth away from our mid-tier cookie lines.',
+      metrics: [
+        { param: 'Retail Pricing', rival: '€1.80', ours: '€2.00', winner: 'rival', note: 'Rival is 10% cheaper' },
+        { param: 'Monthly Sales Growth', rival: '+24% YoY', ours: '+2% YoY', winner: 'rival', note: 'Rival volume surge' },
+        { param: 'Customer Rating', rival: '4.3 / 5.0', ours: '4.5 / 5.0', winner: 'ours', note: 'Our quality is preferred' },
+        { param: 'Distribution Coverage', rival: '85%', ours: '78%', winner: 'rival', note: 'Rival has better retail penetration' }
+      ],
+      aiRecommendation: 'Trigger a cross-category bundle campaign (e.g. BrandD Yogurt + BrandC Cookies at €2.50) to protect basket share. Avoid direct margin degradation via a price match; instead, deploy localized supermarket end-cap displays to raise distribution visibility to 85%.'
+    },
+    {
+      title: 'Competitor Launch',
+      category: 'Beverages',
+      competitorName: 'GreenLife Soy (Rival)',
+      ourProduct: 'BrandA Premium Energy (Beverages)',
+      summary: 'GreenLife launched a premium Organic Soy Drink in APAC with aggressive sustainability-themed marketing.',
+      metrics: [
+        { param: 'Retail Pricing', rival: '$2.80', ours: '$2.50', winner: 'ours', note: 'Our product is more affordable' },
+        { param: 'Customer Rating', rival: '4.7 / 5.0', ours: '4.1 / 5.0', winner: 'rival', note: 'Rival has high quality perception' },
+        { param: 'Organic Certified', rival: 'Yes', ours: 'No', winner: 'rival', note: 'Rival targets eco-conscious niche' },
+        { param: 'Distribution Coverage', rival: '40%', ours: '85%', winner: 'ours', note: 'We have massive distribution advantage' }
+      ],
+      aiRecommendation: 'Formulate an organic-certified brand line extension for BrandA within 90 days. Leverage our existing 85% distribution footprint to place it on shelves immediately, preempting the competitor before they can expand their retail network.'
+    },
+    {
+      title: 'Distribution Surge',
+      category: 'Personal Care',
+      competitorName: 'GlowHerb Brands',
+      ourProduct: 'BrandE Organic Shampoo (Personal Care)',
+      summary: 'Rival brand GlowHerb secured 80% shelf targets in West India supermarkets, gaining high visibility.',
+      metrics: [
+        { param: 'Retail Pricing', rival: '₹120', ours: '₹150', winner: 'rival', note: 'Rival targets mass market pricing' },
+        { param: 'Customer Rating', rival: '4.0 / 5.0', ours: '4.4 / 5.0', winner: 'ours', note: 'Our formula is rated significantly higher' },
+        { param: 'Distribution Coverage', rival: '80%', ours: '55%', winner: 'rival', note: 'Rival has superior retail reach' },
+        { param: 'Supermarket Shelf Visibility', rival: '90% (Premium End-cap)', ours: '40% (Bottom shelf)', winner: 'rival', note: 'Rival purchased premium placements' }
+      ],
+      aiRecommendation: 'Restructure channel margins for West India distributors to incentivize retail placement. Secure co-marketing contracts for eye-level shelf placements in top 50 high-volume grocery locations in Gujarat and Maharashtra.'
+    }
+  ];
+
+  const forecastData = [
+    {
+      title: 'Post-AI Projected Improvements',
+      ourProduct: 'BrandC Cookies (Snacks)',
+      implementation: 'Co-category bundle (BrandD Yogurt + BrandC Cookies at €2.50) & end-cap displays.',
+      comparisons: [
+        { metric: 'Monthly Sales Growth', before: '+2% YoY', after: '+18% YoY', delta: '+16.0% Growth', status: 'better' },
+        { metric: 'Distribution Coverage', before: '78%', after: '85%', delta: '+7.0% Coverage', status: 'better' },
+        { metric: 'Gross Margin Rate', before: '42%', after: '40%', delta: '-2.0% (Stable)', status: 'neutral' },
+        { metric: 'Supermarket Visibility', before: 'Bottom Shelf', after: 'Premium End-cap', delta: 'Prominent Shift', status: 'better' }
+      ]
+    },
+    {
+      title: 'Post-AI Projected Improvements',
+      ourProduct: 'BrandA Premium Energy (Beverages)',
+      implementation: 'Launch BrandA Organic extension on 85% distribution footprint within 90 days.',
+      comparisons: [
+        { metric: 'Organic Certified Status', before: 'Non-Organic', after: 'USDA Organic', delta: 'New Segment Entry', status: 'better' },
+        { metric: 'Eco-conscious Rating', before: '4.1 / 5.0', after: '4.7 / 5.0', delta: '+0.6 Quality Rating', status: 'better' },
+        { metric: 'Distribution Coverage', before: '85% (Unused Eco)', after: '85% (Eco Placed)', delta: 'Instant Placement', status: 'better' },
+        { metric: 'Monthly Revenue Growth', before: '+5% YoY', after: '+22% YoY', delta: '+17.0% Growth', status: 'better' }
+      ]
+    },
+    {
+      title: 'Post-AI Projected Improvements',
+      ourProduct: 'BrandE Organic Shampoo (Personal Care)',
+      implementation: 'Restructure channel margins + co-marketing shelf contracts for top 50 outlets.',
+      comparisons: [
+        { metric: 'Distribution Coverage', before: '55%', after: '82%', delta: '+27.0% Coverage', status: 'better' },
+        { metric: 'Shelf Visibility Placement', before: 'Bottom Shelf', after: 'Eye-level End-cap', delta: 'Premium Shelf Placement', status: 'better' },
+        { metric: 'Monthly Sales Volume', before: '12,000 units', after: '28,000 units', delta: '+16,000 units', status: 'better' },
+        { metric: 'Regional Category Share', before: '14%', after: '29%', delta: '+15.0% Share', status: 'better' }
+      ]
+    }
+  ];
+
+  const data = intelData[intelIdx] || intelData[0];
+  const forecast = forecastData[intelIdx] || forecastData[0];
+
+  return (
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[60] flex items-center justify-center p-4">
+      <div className="w-full max-w-2xl bg-white dark:bg-zinc-900 border border-black/10 dark:border-white/15 p-6 rounded shadow-2xl flex flex-col gap-5 text-xs max-h-[90vh] overflow-y-auto">
+        
+        {/* Header */}
+        <div className="flex justify-between items-center border-b border-black/15 dark:border-white/15 pb-3">
+          <div className="flex items-center gap-2 text-[#6d28d9] dark:text-[#a78bfa]">
+            <TrendingUp size={18} />
+            <div>
+              <span className="text-[10px] font-extrabold uppercase tracking-widest opacity-60">Competitive Intelligence Analysis</span>
+              <h3 className="text-[15px] font-display font-bold text-zinc-800 dark:text-zinc-100 leading-tight">
+                {data.title} ({data.category})
+              </h3>
+            </div>
+          </div>
+          <button 
+            onClick={onClose}
+            className="p-1 hover:bg-black/5 dark:hover:bg-white/5 rounded text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 cursor-pointer border-none bg-transparent"
+          >
+            <X size={16} />
+          </button>
+        </div>
+
+        {/* Overview Details */}
+        <div className="space-y-1.5 p-3.5 rounded bg-zinc-50 dark:bg-zinc-800 border border-black/5 dark:border-white/5 text-zinc-600 dark:text-zinc-300">
+          <p className="text-[10.5px] leading-relaxed">
+            <strong>Market Intel:</strong> {data.summary}
+          </p>
+        </div>
+        {activeModalTab === 'comparison' && (
+          <div className="space-y-5 animate-fade-in">
+            {/* Head-to-Head Comparison Table */}
+            <div className="space-y-2.5">
+              <span className="text-[9.5px] font-bold uppercase tracking-wider text-zinc-450 dark:text-zinc-400 block">
+                Metric Performance Breakdown
+              </span>
+              <div className="border border-black/10 dark:border-white/10 rounded overflow-hidden">
+                <table className="w-full text-left border-collapse text-[10px]">
+                  <thead>
+                    <tr className="bg-zinc-100 dark:bg-zinc-800 text-zinc-500 uppercase tracking-wider text-[8px] border-b border-black/10 dark:border-white/10">
+                      <th className="p-2.5 font-bold">Parameter</th>
+                      <th className="p-2.5 font-bold text-[#ef4444] dark:text-red-400">{data.competitorName}</th>
+                      <th className="p-2.5 font-bold text-[#10b981] dark:text-emerald-400">{data.ourProduct}</th>
+                      <th className="p-2.5 font-bold">Winner</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-black/5 dark:divide-white/5">
+                    {data.metrics.map((m, idx) => {
+                      const isRivalWinner = m.winner === 'rival';
+                      const winnerLabel = isRivalWinner ? 'Competitor' : 'Us';
+                      const winnerCol = isRivalWinner ? 'text-red-500 bg-red-500/5 dark:bg-red-500/10' : 'text-emerald-500 bg-emerald-500/5 dark:bg-emerald-500/10';
+
+                      return (
+                        <tr key={idx} className="hover:bg-black/[0.01] dark:hover:bg-white/2 transition-colors">
+                          <td className="p-2.5 font-semibold text-zinc-700 dark:text-zinc-300">{m.param}</td>
+                          <td className={`p-2.5 font-bold ${isRivalWinner ? 'text-red-500' : 'text-zinc-500'}`}>{m.rival}</td>
+                          <td className={`p-2.5 font-bold ${!isRivalWinner ? 'text-emerald-500' : 'text-zinc-500'}`}>{m.ours}</td>
+                          <td className="p-2.5">
+                            <span className={`px-2 py-0.5 rounded-sm font-bold text-[8px] uppercase tracking-wider ${winnerCol}`}>
+                              {winnerLabel}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* AI Recommendations Banner */}
+            <div className="space-y-2.5 p-4 rounded bg-[#5850ec]/5 border border-[#5850ec]/15">
+              <div className="flex items-center gap-1.5 text-zinc-800 dark:text-zinc-100">
+                <Sparkles size={14} className="text-[#5850ec] dark:text-indigo-400 animate-pulse" />
+                <h5 className="font-bold uppercase tracking-wider text-[10.5px]">AI Recommendation: Optimize Our Product</h5>
+              </div>
+              <p className="text-[11px] text-zinc-650 dark:text-zinc-300 leading-relaxed pl-5 relative">
+                <span className="absolute left-0 top-0 text-[#6d28d9] dark:text-[#a78bfa] font-bold">💡</span>
+                {data.aiRecommendation}
+              </p>
+              <div className="pl-5 pt-1.5">
+                <button
+                  type="button"
+                  onClick={() => setActiveModalTab('projection')}
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-[#5850ec] hover:bg-[#4f46e5] text-white text-[9px] font-extrabold uppercase tracking-widest rounded-sm transition-all cursor-pointer border-none shadow-sm shadow-indigo-500/20"
+                >
+                  <Sparkles size={10} className="animate-pulse" />
+                  Simulate Improvement with AI Solution
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Tab 2: AI Simulation Projections */}
+        {activeModalTab === 'projection' && (
+          <div className="space-y-5 animate-fade-in">
+            {/* Implementation Strategy */}
+            <div className="bg-emerald-500/5 dark:bg-emerald-500/10 border border-emerald-500/15 p-3.5 rounded">
+              <span className="text-[8px] font-extrabold text-[#10b981] dark:text-[#a78bfa] uppercase tracking-widest block">Proposed Optimization Strategy</span>
+              <p className="text-[10.5px] font-semibold text-zinc-700 dark:text-zinc-300 mt-0.5 leading-relaxed">
+                {forecast.implementation}
+              </p>
+            </div>
+
+            {/* Before vs After Projections Table */}
+            <div className="space-y-2.5">
+              <span className="text-[9px] font-bold uppercase tracking-wider text-zinc-450 dark:text-zinc-550 block">
+                Simulated Metric Improvements (Before vs After)
+              </span>
+              <div className="border border-black/10 dark:border-white/10 rounded overflow-hidden">
+                <table className="w-full text-left border-collapse text-[10px]">
+                  <thead>
+                    <tr className="bg-zinc-100 dark:bg-zinc-800 text-zinc-500 uppercase tracking-wider text-[8px] border-b border-black/10 dark:border-white/10">
+                      <th className="p-2.5 font-bold">Metric Parameter</th>
+                      <th className="p-2.5 font-bold text-zinc-500">Current (Before)</th>
+                      <th className="p-2.5 font-bold text-[#10b981] dark:text-emerald-450">Simulated (After)</th>
+                      <th className="p-2.5 font-bold text-right">Projected Delta</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-black/5 dark:divide-white/5">
+                    {forecast.comparisons.map((item, idx) => {
+                      const isNeutral = item.status === 'neutral';
+                      return (
+                        <tr key={idx} className="hover:bg-black/[0.01] dark:hover:bg-white/2 transition-colors">
+                          <td className="p-2.5 font-semibold text-zinc-700 dark:text-zinc-300">{item.metric}</td>
+                          <td className="p-2.5 font-mono text-zinc-500">{item.before}</td>
+                          <td className="p-2.5 font-mono font-bold text-emerald-500">{item.after}</td>
+                          <td className={`p-2.5 font-mono font-extrabold text-right ${isNeutral ? 'text-zinc-400' : 'text-[#10b981]'}`}>
+                            {item.delta}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Explainer Note */}
+            <p className="text-[9px] text-zinc-400 dark:text-zinc-555 leading-normal italic">
+              *Projections are generated via our AI Simulation Engine using dynamic consumer elasticity modeling and historical supermarket lift values.
+            </p>
+          </div>
+        )}
+
+        {/* Footer */}
+        <div className="flex justify-between items-center border-t border-black/15 dark:border-white/15 pt-3.5">
+          <span className="text-[9px] text-zinc-500 dark:text-zinc-555 font-mono font-bold uppercase">Competitor Audit Log</span>
+          <div className="flex items-center gap-2">
+            {activeModalTab === 'projection' && (
+              <button 
+                type="button"
+                onClick={() => setActiveModalTab('comparison')}
+                className="px-3.5 py-2 bg-transparent hover:bg-black/5 dark:hover:bg-white/5 text-zinc-600 dark:text-zinc-300 text-[9px] font-extrabold uppercase tracking-widest rounded-sm border border-zinc-250 dark:border-zinc-700 transition-all cursor-pointer"
+              >
+                ← Back to Comparison
+              </button>
+            )}
+            <button 
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 bg-acies-gray hover:bg-acies-yellow hover:text-acies-gray text-white text-[9px] font-extrabold uppercase tracking-widest rounded-sm transition-all cursor-pointer border-none"
+            >
+              Acknowledge & Close
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  );
+};
+
+interface RegionalAlertsModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  region: string;
+  signals: VPSignal[];
+}
+
+const getAlertExplainer = (id: string) => {
+  switch (id) {
+    case 'S01':
+      return {
+        owner: 'Ananya Sen (VP Finance)',
+        timeline: '48 Hours',
+        outcome: 'Covers the 12-day gap; recovers $420k potential revenue loss.',
+        checklist: [
+          'Verify Western region inventory levels and confirm safety stock buffers.',
+          'Initiate emergency freight transfer authorization from domestic warehouses.',
+          'Update Vapi Hub warehouse management system for incoming expedited transit.'
+        ]
+      };
+    case 'S02':
+      return {
+        owner: 'Priya Sharma (Product Manager)',
+        timeline: '5 Days',
+        outcome: 'Saves the Organic snacks launch target; reduces launch delay by 10 days.',
+        checklist: [
+          'Onboard Poland eco-carton supplier in ERP system.',
+          'Request fast-track quality verification sample testing.',
+          'Deploy secondary container freight route to secure carton supply.'
+        ]
+      };
+    case 'S03':
+      return {
+        owner: 'Vikram Solanki (QC Manager & Logistics Lead)',
+        timeline: '3 Days',
+        outcome: 'Protects EU sales volumes; expected category volume preservation of 95%.',
+        checklist: [
+          'Configure promotional bundle parameters in trade billing systems.',
+          'Deploy point-of-sale marketing flyers in partner retail stores.',
+          'Monitor margin dilution index across discount channels daily.'
+        ]
+      };
+    case 'S04':
+      return {
+        owner: 'Amit Verma (NPD Lead)',
+        timeline: '10 Days',
+        outcome: 'Restores brand equity; stabilizes Q2 net sentiment score back to +42.',
+        checklist: [
+          'Instruct packaging engineering to halt printing of modified artwork.',
+          'Retrieve and deploy legacy artwork plates to active print lines.',
+          'Schedule consumer panel research focus group to test ergonomic preferences.'
+        ]
+      };
+    case 'S05':
+      return {
+        owner: 'Rajendra Patel (Vapi Hub Director)',
+        timeline: '10 Days',
+        outcome: 'Ensures continued production runtime; preserves $800k revenue.',
+        checklist: [
+          'Issue emergency supplier audit request for Gujarat chemical facility.',
+          'Execute technical lab verification on sample surfactant raw batches.',
+          'Establish contract terms matching base wholesale procurement limits.'
+        ]
+      };
+    case 'S06':
+      return {
+        owner: 'Priya Sharma (Product Manager)',
+        timeline: '7 Days',
+        outcome: 'Boosts net category gross margin by +2.4 percentage points.',
+        checklist: [
+          'De-authorize discount schedule for 250ml variant in supermarket promotional logs.',
+          'Redirect trade spend budgets onto high-margin 500ml pack size.',
+          'Monitor net category volume run-rate post discount consolidation.'
+        ]
+      };
+    case 'S07':
+      return {
+        owner: 'Vikram Solanki (QC & Logistics Lead)',
+        timeline: '4 Days',
+        outcome: 'Stabilizes regional supply rates; restores customer delivery satisfaction index.',
+        checklist: [
+          'Secure 150 pallet spaces in the German regional buffer warehouse.',
+          'Initiate transfer of snacks category stock to pre-position reserves.',
+          'Coordinate with logistics agents to bypass port delays via truck freight.'
+        ]
+      };
+    case 'S08':
+      return {
+        owner: 'Karan Johar (Retail Relations Director)',
+        timeline: '5 Days',
+        outcome: 'Defends market share; preserves category placement index.',
+        checklist: [
+          'Secure premium end-cap display placement contracts with major West India grocers.',
+          'Launch local regional marketing banners highlighting organic provenance.',
+          'Distribute wholesale discount coupons to trade managers.'
+        ]
+      };
+    case 'S09':
+      return {
+        owner: 'Rajendra Patel (Vapi Hub Director)',
+        timeline: '6 Days',
+        outcome: 'Bypasses cargo transit gridlock; prevents assembly line downtime.',
+        checklist: [
+          'Redirect container bookings from Shanghai port to Ningbo terminals.',
+          'Deploy express customs clearance agent to expedite current shipping holds.',
+          'Utilize road freight buffers to bridge regional inventory levels.'
+        ]
+      };
+    case 'S10':
+      return {
+        owner: 'Karan Johar (Retail Relations Director)',
+        timeline: '14 Days',
+        outcome: 'Captures $600k revenue potential; expands retail footprint.',
+        checklist: [
+          'Draft distribution agreements for eco-friendly household products with retail networks.',
+          'Authorize allocation shift of finished household detergent stock to South region.',
+          'Coordinate shelf promotion setup with regional store managers.'
+        ]
+      };
+    default:
+      return {
+        owner: 'Operations Coordinator',
+        timeline: '7 Days',
+        outcome: 'Stabilizes localized supply variance metrics.',
+        checklist: [
+          'Audit current safety buffers and cargo logs.',
+          'Coordinate emergency response review call with category leads.',
+          'Dispatch advisory report to all field stakeholders.'
+        ]
+      };
+  }
+};
+
+const getTriggerVal = (sig: VPSignal) => {
+  if (sig.trigger && sig.trigger.trim() !== '') return sig.trigger;
+  switch (sig.id) {
+    case 'S01': return 'A sharp 18% YoY volume spike in Q2 consumer consumption tracking across major APAC retail networks.';
+    case 'S02': return 'Sudden local environmental regulatory hold and supplier factory lockdown at German eco-carton supplier.';
+    case 'S03': return 'Competitor B initiated an aggressive 10% price promotion across discount grocery channels in EU supermarkets.';
+    case 'S04': return 'Negative online reviews and social media mentions spike citing poor ergonomics and artwork changes on new personal care bottles.';
+    case 'S05': return 'Primary chemical raw materials processing line breakdown at our domestic supplier in Western India.';
+    case 'S06': return 'Overlapping promotional cycles showing high cross-substitution (-0.62 correlation) between 250ml and 500ml variants.';
+    case 'S07': return 'Extended shipping logistics port bottlenecks in Rotterdam causing 5-day delivery delays to major retail stores.';
+    case 'S08': return 'Competitor launched a new Organic Green Tea SKU in Western region supermarkets, matching our pricing structure.';
+    case 'S09': return 'Major maritime cargo transit gridlock and customs clearance backlog at the Shanghai port hubs.';
+    case 'S10': return 'Sustained 24% consumer demand surge for biodegradable cleaning products in Southern Americas retail stores.';
+    default: return 'Automated predictive threshold alert triggered by anomaly detection agent.';
+  }
+};
+
+const getRectificationVal = (sig: VPSignal) => {
+  if (sig.rectification && sig.rectification.trim() !== '') return sig.rectification;
+  switch (sig.id) {
+    case 'S01': return 'Re-route 15,000 units of safety stock from Western warehouses to Vapi Hub and expand peak packaging throughput.';
+    case 'S02': return 'Onboard pre-qualified regional packaging vendor in Poland and fast-track quality verification loops.';
+    case 'S03': return 'Trigger a cross-category bundle campaign (Yogurt + BrandC Cookies) to shield customer grocery basket value.';
+    case 'S04': return 'Revert bottle packaging layout to classic artwork template and schedule target consumer feedback focus groups.';
+    case 'S05': return 'Qualify and onboard backup regional raw materials manufacturer in Gujarat within 10 days to fill inventory gap.';
+    case 'S06': return 'Consolidate promotional funding onto the 500ml high-margin pack size and phase out overlapping 250ml discount runs.';
+    case 'S07': return 'Pre-position finished goods buffer stock at secondary warehouse in Germany to stabilize localized supply rates.';
+    case 'S10': return 'Expand regional distribution network agreements to place eco-friendly household detergents in 120 new outlets.';
+    default: return 'Initiate cross-functional alignment review and establish mitigation logistics.';
+  }
+};
+
+interface PortfolioDeepDiveModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  metricType: 'overlap' | 'innovation' | 'risk' | null;
+  isDarkMode: boolean;
+}
+
+const PortfolioDeepDiveModal: React.FC<PortfolioDeepDiveModalProps> = ({
+  isOpen,
+  onClose,
+  metricType,
+  isDarkMode
+}) => {
+  if (!isOpen || !metricType) return null;
+
+  const getMetricData = () => {
+    switch (metricType) {
+      case 'overlap':
+        return {
+          title: 'Beverages Overlap Ratio',
+          value: '0.68',
+          status: 'High Cannibalization',
+          statusColor: 'text-red-500 bg-red-500/10 border-red-500/20 dark:bg-red-500/5 dark:border-red-500/10',
+          gaugeColor: '#ef4444',
+          description: 'Measures the product/flavour similarity and customer base overlap across our active beverage SKUs. High overlap indicates that our variants are siphoning organic sales from each other rather than capturing new market share.',
+          details: [
+            { label: 'Primary Contributor', value: 'Mango Fizz 500ml vs 750ml' },
+            { label: 'Promo Correlation', value: '-0.62 (High Sales Cannibalization)' },
+            { label: 'Monthly Margin Drag', value: '~$1.2M estimated' },
+            { label: 'Customer Overlap', value: '74% shared audience' }
+          ],
+          aiRecommendations: [
+            'Consolidate duplicate pack sizes (e.g. phase out overlapping discount runs on the 750ml bottle and focus on the 500ml high-margin pack).',
+            'Reposition variant branding: Align Mango Fizz Sugar-Free specifically toward health-conscious young adults and the Classic variant for family sharing.',
+            'Establish non-overlapping promotional calendars siphoning SKUs to avoid co-depleting organic demand.'
+          ],
+          chartData: [
+            { name: 'W1', 'Mango Fizz 500ml': 420, 'Mango Fizz 750ml': 380, 'Net Organic': 580 },
+            { name: 'W2', 'Mango Fizz 500ml': 460, 'Mango Fizz 750ml': 320, 'Net Organic': 560 },
+            { name: 'W3', 'Mango Fizz 500ml': 510, 'Mango Fizz 750ml': 290, 'Net Organic': 540 },
+            { name: 'W4', 'Mango Fizz 500ml': 550, 'Mango Fizz 750ml': 260, 'Net Organic': 550 }
+          ]
+        };
+      case 'innovation':
+        return {
+          title: 'Innovation Volume Share',
+          value: '34%',
+          status: 'Target > 30% (Outperforming)',
+          statusColor: 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20 dark:bg-emerald-500/5 dark:border-emerald-500/10',
+          gaugeColor: '#10b981',
+          description: 'Tracks the percentage of total sales volume generated by product lines introduced within the last 18 months. Achieving 34% demonstrates rapid consumer adoption and strong market traction for our NPDs.',
+          details: [
+            { label: 'Leading Launch', value: 'Eco-Pack Mineral Water (BrandF)' },
+            { label: 'NPD Adoption Rate', value: '14.2% MoM volume growth' },
+            { label: 'Active Innovation SKUs', value: '18 products' },
+            { label: 'Contribution to Margin', value: '+3.1% gross margin expansion' }
+          ],
+          aiRecommendations: [
+            'Increase production capacity allocation by 15% for the top-performing Eco-Pack SKU to preempt potential stockouts.',
+            'Onboard a domestic secondary supplier in Gujarat to reduce raw material transit time from 28 days to 10 days.',
+            'Deploy targeted digital programmatic ad campaigns focusing on the Eco-Pack packaging sustainability claims in metros.'
+          ],
+          chartData: [
+            { name: 'Jan', 'New Products': 28, 'Core Portfolio': 72 },
+            { name: 'Feb', 'New Products': 30, 'Core Portfolio': 70 },
+            { name: 'Mar', 'New Products': 32, 'Core Portfolio': 68 },
+            { name: 'Apr', 'New Products': 31, 'Core Portfolio': 69 },
+            { name: 'May', 'New Products': 33, 'Core Portfolio': 67 },
+            { name: 'Jun', 'New Products': 34, 'Core Portfolio': 66 }
+          ]
+        };
+      case 'risk':
+        return {
+          title: 'Portfolio Health Risk Index',
+          value: '0.44',
+          status: 'Moderate Risk Profile',
+          statusColor: 'text-amber-500 bg-amber-500/10 border-amber-500/20 dark:bg-amber-500/5 dark:border-amber-500/10',
+          gaugeColor: '#f59e0b',
+          description: 'A composite health index scoring the catalog\'s structural risks. Factors include raw materials complexity, single-source dependency, promotional reliance, and supply lead-time volatility.',
+          details: [
+            { label: 'Primary Risk Driver', value: 'Promo dependency (72% on snacks)' },
+            { label: 'Average Lead Time', value: '24.5 days (Target < 15 days)' },
+            { label: 'SKU Complexity Count', value: '42 low-velocity SKUs' },
+            { label: 'Revenue Under Volatility', value: '$4.2M exposure' }
+          ],
+          aiRecommendations: [
+            'Retire the bottom 10% low-velocity, high-complexity SKUs (e.g. low-margin floor cleaners) to free up warehouse capacity.',
+            'Renegotiate wholesale agreements for ingredients to transition snack lines from promo-reliant pricing to everyday low pricing (EDLP).',
+            'Pre-position ingredient buffers at primary regional hubs to compress procurement lead time by 30%.'
+          ],
+          chartData: [
+            { name: 'Jan', 'Margin Leakage': 2.4, 'Supply Bottleneck': 1.8, 'Promo Reliance': 3.5 },
+            { name: 'Feb', 'Margin Leakage': 2.3, 'Supply Bottleneck': 1.9, 'Promo Reliance': 3.4 },
+            { name: 'Mar', 'Margin Leakage': 2.1, 'Supply Bottleneck': 2.2, 'Promo Reliance': 3.6 },
+            { name: 'Apr', 'Margin Leakage': 1.9, 'Supply Bottleneck': 2.5, 'Promo Reliance': 3.2 },
+            { name: 'May', 'Margin Leakage': 1.8, 'Supply Bottleneck': 2.8, 'Promo Reliance': 3.1 },
+            { name: 'Jun', 'Margin Leakage': 1.7, 'Supply Bottleneck': 2.4, 'Promo Reliance': 3.0 }
+          ]
+        };
+      default:
+        return null;
+    }
+  };
+
+  const data = getMetricData();
+  if (!data) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[60] flex items-center justify-center p-4">
+      <div className="w-full max-w-2xl bg-white dark:bg-zinc-900 border border-black/10 dark:border-white/15 p-6 rounded shadow-2xl flex flex-col gap-5 text-xs max-h-[90vh] overflow-y-auto">
+        
+        {/* Header */}
+        <div className="flex justify-between items-center border-b border-black/15 dark:border-white/15 pb-3">
+          <div className="flex items-center gap-2">
+            <Activity size={18} className="text-[#6d28d9] dark:text-[#a78bfa]" />
+            <div>
+              <span className="text-[10px] font-extrabold uppercase tracking-widest text-zinc-400">System Metric Deep Dive</span>
+              <h3 className="text-[15px] font-display font-bold text-zinc-800 dark:text-zinc-100 leading-tight">
+                {data.title}
+              </h3>
+            </div>
+          </div>
+          <button 
+            onClick={onClose}
+            className="p-1 hover:bg-black/5 dark:hover:bg-white/5 rounded text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 cursor-pointer border-none bg-transparent"
+          >
+            <X size={16} />
+          </button>
+        </div>
+
+        {/* Overview */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+          <div className="md:col-span-4 flex flex-col items-center p-4 bg-zinc-50 dark:bg-zinc-800/40 rounded border border-black/5 dark:border-white/5">
+            <svg viewBox="0 0 120 70" className="w-24 h-14">
+              <path
+                d="M 15 60 A 45 45 0 0 1 105 60"
+                fill="none"
+                stroke={isDarkMode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.06)"}
+                strokeWidth="10"
+                strokeLinecap="round"
+              />
+              <path
+                d="M 15 60 A 45 45 0 0 1 105 60"
+                fill="none"
+                stroke={data.gaugeColor}
+                strokeWidth="10"
+                strokeLinecap="round"
+                strokeDasharray={141.37}
+                strokeDashoffset={141.37 * (1 - (metricType === 'innovation' ? 0.34 : metricType === 'overlap' ? 0.68 : 0.44))}
+              />
+            </svg>
+            <span className="text-2xl font-display font-extrabold mt-1" style={{ color: data.gaugeColor }}>{data.value}</span>
+            <span className={`px-2.5 py-0.5 rounded-full text-[8.5px] font-bold uppercase tracking-wider mt-1.5 border ${data.statusColor}`}>
+              {data.status}
+            </span>
+          </div>
+          <div className="md:col-span-8 space-y-2">
+            <h4 className="text-[11px] font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider">Metric Definition & Context</h4>
+            <p className="text-zinc-500 dark:text-zinc-400 leading-relaxed text-[10.5px]">
+              {data.description}
+            </p>
+          </div>
+        </div>
+
+        {/* Details Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="p-4 bg-zinc-50 dark:bg-zinc-800/40 rounded border border-black/5 dark:border-white/5 space-y-3">
+            <h4 className="text-[10px] font-bold text-zinc-700 dark:text-zinc-350 uppercase tracking-wider border-b border-black/5 dark:border-white/5 pb-1">Key Diagnostic Metrics</h4>
+            <div className="space-y-2">
+              {data.details.map((d, i) => (
+                <div key={i} className="flex justify-between items-center text-[10px]">
+                  <span className="text-zinc-400">{d.label}</span>
+                  <span className="font-bold text-zinc-750 dark:text-zinc-200">{d.value}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="p-4 bg-zinc-50 dark:bg-zinc-800/40 rounded border border-black/5 dark:border-white/5 space-y-3">
+            <h4 className="text-[10px] font-bold text-[#6d28d9] dark:text-[#a78bfa] uppercase tracking-wider border-b border-black/5 dark:border-white/5 pb-1 flex items-center gap-1">
+              <Brain size={12} />
+              AI Strategic Recommendations
+            </h4>
+            <ul className="list-disc pl-4 space-y-1.5 text-zinc-500 dark:text-zinc-400 text-[10px] leading-relaxed">
+              {data.aiRecommendations.map((r, i) => (
+                <li key={i}>{r}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        {/* Chart */}
+        <div className="p-4 bg-zinc-50 dark:bg-zinc-800/40 rounded border border-black/5 dark:border-white/5 space-y-3">
+          <h4 className="text-[10px] font-bold text-zinc-700 dark:text-zinc-350 uppercase tracking-wider border-b border-black/5 dark:border-white/5 pb-1">Performance Trend & Simulations</h4>
+          <div className="h-44">
+            <ResponsiveContainer width="100%" height="100%">
+              {metricType === 'overlap' ? (
+                <AreaChart data={data.chartData as any} margin={{ left: -25, right: 5, top: 10, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke={isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'} vertical={false} />
+                  <XAxis dataKey="name" tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 9 }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 9 }} axisLine={false} tickLine={false} />
+                  <Tooltip contentStyle={{ backgroundColor: isDarkMode ? '#1f1f1f' : '#fff', border: isDarkMode ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.1)', color: isDarkMode ? '#fff' : '#000', fontSize: 9 }} />
+                  <Legend wrapperStyle={{ fontSize: 9 }} />
+                  <Area type="monotone" dataKey="Mango Fizz 500ml" stroke="#ef4444" fill="rgba(239, 68, 68, 0.1)" strokeWidth={1.5} />
+                  <Area type="monotone" dataKey="Mango Fizz 750ml" stroke="#f59e0b" fill="rgba(245, 158, 11, 0.1)" strokeWidth={1.5} />
+                  <Area type="monotone" dataKey="Net Organic" stroke="#10b981" fill="rgba(16, 185, 129, 0.1)" strokeWidth={2} strokeDasharray="4 4" />
+                </AreaChart>
+              ) : metricType === 'innovation' ? (
+                <BarChart data={data.chartData as any} margin={{ left: -25, right: 5, top: 10, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke={isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'} vertical={false} />
+                  <XAxis dataKey="name" tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 9 }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 9 }} axisLine={false} tickLine={false} />
+                  <Tooltip contentStyle={{ backgroundColor: isDarkMode ? '#1f1f1f' : '#fff', border: isDarkMode ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.1)', color: isDarkMode ? '#fff' : '#000', fontSize: 9 }} />
+                  <Legend wrapperStyle={{ fontSize: 9 }} />
+                  <Bar dataKey="New Products" stackId="a" fill="#10b981" />
+                  <Bar dataKey="Core Portfolio" stackId="a" fill={isDarkMode ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.15)'} />
+                </BarChart>
+              ) : (
+                <LineChart data={data.chartData as any} margin={{ left: -25, right: 5, top: 10, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke={isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'} vertical={false} />
+                  <XAxis dataKey="name" tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 9 }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 9 }} axisLine={false} tickLine={false} />
+                  <Tooltip contentStyle={{ backgroundColor: isDarkMode ? '#1f1f1f' : '#fff', border: isDarkMode ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.1)', color: isDarkMode ? '#fff' : '#000', fontSize: 9 }} />
+                  <Legend wrapperStyle={{ fontSize: 9 }} />
+                  <Line type="monotone" dataKey="Margin Leakage" stroke="#ef4444" strokeWidth={1.5} dot={false} />
+                  <Line type="monotone" dataKey="Supply Bottleneck" stroke="#3b82f6" strokeWidth={1.5} dot={false} />
+                  <Line type="monotone" dataKey="Promo Reliance" stroke="#f59e0b" strokeWidth={1.5} dot={false} />
+                </LineChart>
+              )}
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="flex justify-end pt-2 border-t border-black/10 dark:border-white/10">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 bg-acies-gray hover:bg-acies-yellow hover:text-acies-gray text-white text-[9px] font-extrabold uppercase tracking-widest rounded-sm transition-all cursor-pointer border-none"
+          >
+            Close Deep Dive
+          </button>
+        </div>
+
+      </div>
+    </div>
+  );
+};
+
+const RegionalAlertsModal: React.FC<RegionalAlertsModalProps> = ({
+  isOpen,
+  onClose,
+  region,
+  signals
+}) => {
+  const [selectedAlertId, setSelectedAlertId] = useState<string | null>(null);
+
+  useEffect(() => {
+    setSelectedAlertId(null);
+  }, [region, isOpen]);
+
+  if (!isOpen) return null;
+
+  // Filter unresolved alerts for the region
+  const regionAlerts = signals.filter(s => s.region === region && !s.ack);
+  
+  // Sort by severity (critical first, then warning, then info)
+  const sortedRegionAlerts = [...regionAlerts].sort((a, b) => {
+    const sevWeight = { critical: 3, warning: 2, info: 1 };
+    return (sevWeight[b.severity] || 0) - (sevWeight[a.severity] || 0);
+  });
+
+  if (selectedAlertId) {
+    const sig = signals.find(s => s.id === selectedAlertId);
+    if (sig) {
+      const explainer = getAlertExplainer(sig.id);
+      const triggerText = getTriggerVal(sig);
+      const solutionText = getRectificationVal(sig);
+      const indicatorBg = sig.severity === 'critical' ? 'bg-red-500/10 text-red-500 border-red-500/20' : sig.severity === 'warning' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' : 'bg-blue-500/10 text-blue-500 border-blue-500/20';
+
+      return (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[60] flex items-center justify-center p-4">
+          <div className="w-full max-w-2xl bg-white dark:bg-zinc-900 border border-black/10 dark:border-white/15 p-6 rounded shadow-2xl flex flex-col gap-5 text-xs max-h-[90vh] overflow-y-auto">
+            
+            {/* Header */}
+            <div className="flex justify-between items-center border-b border-black/15 dark:border-white/15 pb-3">
+              <div className="flex items-center gap-3">
+                <button 
+                  onClick={() => setSelectedAlertId(null)}
+                  className="flex items-center gap-1 text-zinc-500 hover:text-[#5850ec] dark:hover:text-indigo-400 font-bold cursor-pointer border-none bg-transparent outline-none transition-colors text-xs"
+                >
+                  <ArrowLeft size={14} />
+                  <span>Back</span>
+                </button>
+                <span className="text-zinc-300 dark:text-zinc-750">|</span>
+                <div className="flex items-center gap-1.5 text-[#6d28d9] dark:text-[#a78bfa]">
+                  <Brain size={18} className="fill-[#6d28d9]/10" />
+                  <span className="text-[10px] font-extrabold uppercase tracking-widest opacity-60">AI Alert Explainer</span>
+                </div>
+              </div>
+              <button 
+                onClick={onClose}
+                className="p-1 hover:bg-black/5 dark:hover:bg-white/5 rounded text-zinc-400 hover:text-zinc-650 dark:hover:text-zinc-200 cursor-pointer border-none bg-transparent"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            {/* Hero Alert Details */}
+            <div className={`p-4 rounded border flex justify-between items-center ${indicatorBg}`}>
+              <div>
+                <span className="text-[8px] font-bold uppercase tracking-widest opacity-75">{sig.refCode} · {sig.type}</span>
+                <h4 className="text-sm font-bold text-zinc-800 dark:text-white">
+                  {sig.title}
+                </h4>
+                <p className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-0.5 leading-snug">
+                  {sig.detail}
+                </p>
+              </div>
+              <div className="text-right shrink-0">
+                <span className="text-[8px] font-bold uppercase tracking-widest block opacity-75">Projected Impact</span>
+                <span className="text-sm font-mono font-extrabold block">
+                  {sig.impact}
+                </span>
+              </div>
+            </div>
+
+            {/* Explanation Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              
+              {/* Why (Underlying Drivers) */}
+              <div className="space-y-2.5 p-3.5 rounded bg-zinc-50/50 dark:bg-white/5 border border-black/5 dark:border-white/10">
+                <div className="flex items-center gap-1.5 text-zinc-700 dark:text-zinc-200">
+                  <AlertTriangle size={14} className="text-orange-500" />
+                  <h5 className="font-bold uppercase tracking-wider text-[10px]">Why was this triggered?</h5>
+                </div>
+                <div className="text-zinc-600 dark:text-zinc-300 leading-relaxed text-[11px]">
+                  <p>{triggerText}</p>
+                </div>
+              </div>
+
+              {/* How to Solve */}
+              <div className="space-y-2.5 p-3.5 rounded bg-emerald-500/5 dark:bg-emerald-500/10 border border-emerald-500/15">
+                <div className="flex items-center gap-1.5 text-zinc-700 dark:text-zinc-200">
+                  <Sparkles size={14} className="text-[#5850ec] dark:text-indigo-400 animate-pulse" />
+                  <h5 className="font-bold uppercase tracking-wider text-[10px] text-emerald-600 dark:text-emerald-450">How can it be solved?</h5>
+                </div>
+                <div className="text-zinc-600 dark:text-zinc-300 leading-relaxed text-[11px]">
+                  <p>{solutionText}</p>
+                </div>
+              </div>
+
+            </div>
+
+            {/* Execution Checklist Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-5 border-t border-black/5 dark:border-white/10 pt-4">
+              {/* Checklist */}
+              <div className="md:col-span-3 space-y-3">
+                <span className="text-[9.5px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 block">
+                  Mitigation Action Steps
+                </span>
+                <ul className="space-y-2 list-none pl-0">
+                  {explainer.checklist.map((step, sIdx) => (
+                    <li key={sIdx} className="flex gap-2.5 text-[11px] text-zinc-650 dark:text-zinc-300 leading-relaxed bg-zinc-50/40 dark:bg-white/2 p-2.5 rounded border border-black/2 dark:border-white/2 hover:border-black/5 dark:hover:border-white/5 transition-all">
+                      <CheckCircle2 size={14} className="text-emerald-500 shrink-0 mt-0.5" />
+                      <span>{step}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Parameter Sidebar */}
+              <div className="md:col-span-2 space-y-4">
+                <span className="text-[9.5px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 block">
+                  Ownership & Timeline
+                </span>
+                <div className="space-y-3.5 bg-zinc-50 dark:bg-zinc-900/50 p-3.5 rounded border border-black/5 dark:border-white/5">
+                  <div className="space-y-0.5">
+                    <span className="text-[8.5px] font-bold uppercase tracking-wider text-zinc-450 dark:text-zinc-500 flex items-center gap-1">
+                      <User size={12} className="text-zinc-400" /> Assigned Owner
+                    </span>
+                    <p className="text-[11px] font-bold text-zinc-700 dark:text-zinc-200">
+                      {explainer.owner}
+                    </p>
+                  </div>
+                  
+                  <div className="space-y-0.5 border-t border-black/5 dark:border-white/5 pt-2.5">
+                    <span className="text-[8.5px] font-bold uppercase tracking-wider text-zinc-450 dark:text-zinc-500 flex items-center gap-1">
+                      <Clock size={12} className="text-zinc-400" /> Expected Lead Time
+                    </span>
+                    <p className="text-[11px] font-bold text-[#6d28d9] dark:text-[#a78bfa] font-mono">
+                      {explainer.timeline}
+                    </p>
+                  </div>
+
+                  <div className="space-y-0.5 border-t border-black/5 dark:border-white/5 pt-2.5">
+                    <span className="text-[8.5px] font-bold uppercase tracking-wider text-zinc-450 dark:text-zinc-500 flex items-center gap-1">
+                      <TrendingUp size={12} className="text-zinc-400" /> Expected Outcome
+                    </span>
+                    <p className="text-[10.5px] font-bold text-emerald-600 dark:text-emerald-450 leading-normal font-mono">
+                      {explainer.outcome}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="flex justify-between items-center border-t border-black/15 dark:border-white/15 pt-3.5">
+              <button 
+                onClick={() => setSelectedAlertId(null)}
+                className="px-3.5 py-2 bg-transparent hover:bg-black/5 dark:hover:bg-white/5 text-zinc-655 dark:text-zinc-300 text-[9px] font-extrabold uppercase tracking-widest rounded-sm border border-zinc-250 dark:border-zinc-700 transition-all cursor-pointer"
+              >
+                ← Back to Summary
+              </button>
+              
+              <button 
+                onClick={onClose}
+                className="px-4 py-2 bg-acies-gray hover:bg-acies-yellow hover:text-acies-gray text-white text-[9px] font-extrabold uppercase tracking-widest rounded-sm transition-all cursor-pointer border-none"
+              >
+                Acknowledge & Close
+              </button>
+            </div>
+
+          </div>
+        </div>
+      );
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[60] flex items-center justify-center p-4">
+      <div className="w-full max-w-3xl bg-white dark:bg-zinc-900 border border-black/10 dark:border-white/15 p-6 rounded shadow-2xl flex flex-col gap-5 text-xs max-h-[90vh] overflow-y-auto">
+        
+        {/* Header */}
+        <div className="flex justify-between items-center border-b border-black/15 dark:border-white/15 pb-3">
+          <div className="flex items-center gap-2 text-[#6d28d9] dark:text-[#a78bfa]">
+            <Globe size={18} className="fill-[#6d28d9]/10" />
+            <div>
+              <span className="text-[10px] font-extrabold uppercase tracking-widest opacity-60">{region} Regional Alerts</span>
+              <h3 className="text-[15px] font-display font-bold text-zinc-800 dark:text-zinc-100 leading-tight">
+                Alert Triggers & Rectification Summary
+              </h3>
+            </div>
+          </div>
+          <button 
+            onClick={onClose}
+            className="p-1 hover:bg-black/5 dark:hover:bg-white/5 rounded text-zinc-400 hover:text-zinc-650 dark:hover:text-zinc-200 cursor-pointer border-none bg-transparent"
+          >
+            <X size={16} />
+          </button>
+        </div>
+
+        {/* Overview Banner */}
+        <div className="bg-[#6d28d9]/5 dark:bg-[#a78bfa]/5 border border-[#6d28d9]/10 dark:border-[#a78bfa]/10 p-3.5 rounded text-[11px] text-zinc-600 dark:text-zinc-300 leading-relaxed">
+          This summary outlines active operational alerts detected in the <strong className="text-zinc-800 dark:text-white">{region}</strong> region. Click an alert below to view its AI predictive analysis, trigger drivers, and step-by-step mitigation plans.
+        </div>
+
+        {/* Alerts Registry details inside Modal */}
+        <div className="space-y-3">
+          <div className="space-y-4 max-h-[45vh] overflow-y-auto pr-1">
+            {sortedRegionAlerts.length > 0 ? (
+              sortedRegionAlerts.map(sig => {
+                const borderCol = sig.severity === 'critical' ? 'border-red-500/30' : sig.severity === 'warning' ? 'border-amber-500/30' : 'border-blue-500/30';
+                const indicatorBg = sig.severity === 'critical' ? 'bg-red-500/10 text-red-500' : sig.severity === 'warning' ? 'bg-amber-500/10 text-amber-500' : 'bg-blue-500/10 text-blue-500';
+                const triggerText = getTriggerVal(sig);
+                const solutionText = getRectificationVal(sig);
+                
+                return (
+                  <div 
+                    key={sig.id} 
+                    onClick={() => setSelectedAlertId(sig.id)}
+                    className={`p-4 border-l-2 ${borderCol} border border-black/5 dark:border-white/5 rounded bg-zinc-50/20 dark:bg-white/2 space-y-3.5 transition-all duration-200 hover:scale-[1.01] hover:shadow-md hover:bg-black/[0.02] dark:hover:bg-white/5 cursor-pointer`}
+                  >
+                    
+                    {/* Upper Meta Details */}
+                    <div className="flex justify-between items-start gap-3">
+                      <div className="space-y-1 min-w-0">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <span className="font-mono text-[8.5px] font-bold text-[#6d28d9] dark:text-[#a78bfa] bg-[#6d28d9]/5 dark:bg-[#a78bfa]/5 px-1.5 py-0.5 rounded">
+                            {sig.refCode}
+                          </span>
+                          <span className="text-zinc-350 dark:text-zinc-600">•</span>
+                          <h4 className="text-[12px] font-bold text-zinc-800 dark:text-zinc-150 leading-tight">
+                            {sig.title}
+                          </h4>
+                          <span className="text-[8px] font-extrabold px-1.5 py-0.5 bg-black/5 dark:bg-white/10 rounded-sm opacity-55">
+                            {sig.type}
+                          </span>
+                        </div>
+                        <p className="text-[10px] text-zinc-500 dark:text-zinc-400 leading-relaxed pt-0.5">
+                          {sig.detail}
+                        </p>
+                      </div>
+
+                      <div className="shrink-0 text-right space-y-1">
+                        <span className={`text-[8px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-sm inline-block ${indicatorBg}`}>
+                          {sig.impact}
+                        </span>
+                        <span className="text-[8px] font-semibold text-zinc-400 dark:text-zinc-550 uppercase tracking-widest font-mono block">
+                          Cat: {sig.category}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Trigger and Solution Summary */}
+                    <div className="mt-2.5 pt-2 border-t border-black/[0.04] dark:border-white/[0.04] space-y-1.5 text-[10px] leading-relaxed">
+                      <p className="text-zinc-600 dark:text-zinc-350">
+                        <strong className="text-orange-600 dark:text-orange-400 uppercase tracking-wider text-[8px] mr-1.5">Trigger:</strong>
+                        {triggerText}
+                      </p>
+                      <p className="text-zinc-600 dark:text-zinc-350">
+                        <strong className="text-emerald-650 dark:text-emerald-400 uppercase tracking-wider text-[8px] mr-1.5">Solution:</strong>
+                        {solutionText}
+                      </p>
+                    </div>
+
+                    {/* AI Prediction Explainer Prompt */}
+                    <div className="pt-2 border-t border-black/[0.02] dark:border-white/[0.02] flex justify-between items-center text-[9px] text-[#6d28d9] dark:text-[#a78bfa] font-bold">
+                      <span className="flex items-center gap-1">
+                        <Sparkles size={10} className="animate-pulse" /> AI Predictor Explainer Available
+                      </span>
+                      <span className="uppercase tracking-widest hover:underline flex items-center gap-0.5">
+                        View Analysis <ChevronRight size={10} />
+                      </span>
+                    </div>
+
+                  </div>
+                );
+              })
+            ) : (
+              <div className="text-center py-12 space-y-2">
+                <p className="text-[20px]">🎉</p>
+                <p className="text-[11px] text-zinc-500 font-bold">All alerts resolved for the {region} Region!</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="flex justify-between items-center border-t border-black/15 dark:border-white/15 pt-3.5">
+          <div className="flex items-center gap-1.5 text-[9px] text-zinc-400 font-mono font-bold">
+            <ShieldAlert size={12} className="text-zinc-500" />
+            <span>REGIONAL ALERT SUMMARY</span>
+          </div>
+          <button 
+            onClick={onClose}
+            className="px-4 py-2 bg-acies-gray hover:bg-acies-yellow hover:text-acies-gray text-white text-[9px] font-extrabold uppercase tracking-widest rounded-sm transition-all cursor-pointer border-none"
+          >
+            Close Summary
+          </button>
+        </div>
+
+      </div>
+    </div>
+  );
+};
+
+
+const VPSignalsBoardView: React.FC<{ 
+  isDarkMode: boolean; 
+  setActiveTab: (tab: number) => void;
+  onExploreToggle?: (isOpen: boolean) => void;
+}> = ({ isDarkMode, setActiveTab, onExploreToggle }) => {
   const [signals, setSignals] = useState<VPSignal[]>(VP_SIGNALS_DATA);
   const [filterRegion, setFilterRegion] = useState('All');
   const [filterCategory, setFilterCategory] = useState('All');
@@ -504,8 +1638,17 @@ const VPSignalsBoardView: React.FC<{ isDarkMode: boolean; setActiveTab: (tab: nu
     channel: 'email' | 'message';
   } | null>(null);
   const [trendsTimeframe, setTrendsTimeframe] = useState<'weekly' | 'monthly'>('weekly');
+  const [npsTimeframe, setNpsTimeframe] = useState<'weekly' | 'monthly'>('monthly');
   const [aiPredictionOpen, setAiPredictionOpen] = useState(false);
   const [activePredictionType, setActivePredictionType] = useState<'stockout' | 'elasticity' | 'margin' | 'demand' | null>(null);
+  const [selectedAlertRegion, setSelectedAlertRegion] = useState<string | null>(null);
+  const [selectedCompIntelIdx, setSelectedCompIntelIdx] = useState<number | null>(null);
+  const [selectedPortfolioBlock, setSelectedPortfolioBlock] = useState<'overlap' | 'innovation' | 'risk' | null>(null);
+  const [marketSignalsView, setMarketSignalsView] = useState<'grid' | 'table'>('grid');
+  const [exploreFilter, setExploreFilter] = useState<'All' | 'Risk' | 'Growth' | 'Competition' | 'Supply'>('All');
+  const [showExplorePage, setShowExplorePage] = useState(false);
+  const [explorePageView, setExplorePageView] = useState<'grid' | 'table'>('grid');
+  const [selectedExploreSignal, setSelectedExploreSignal] = useState<ExploreSignal | null>(null);
 
   useEffect(() => {
     const updateTime = () => {
@@ -516,6 +1659,12 @@ const VPSignalsBoardView: React.FC<{ isDarkMode: boolean; setActiveTab: (tab: nu
     const interval = setInterval(updateTime, 1000);
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    if (onExploreToggle) {
+      onExploreToggle(showExplorePage);
+    }
+  }, [showExplorePage, onExploreToggle]);
 
   const addToast = (title: string, body: string, color: string) => {
     const id = Date.now().toString();
@@ -606,6 +1755,26 @@ const VPSignalsBoardView: React.FC<{ isDarkMode: boolean; setActiveTab: (tab: nu
     { name: 'Jun', Beverages: 79, Snacks: 74, PersonalCare: 71, Household: 75 }
   ];
 
+  const npsTrendsWeeklyData = [
+    { name: 'W1', Beverages: 76, Snacks: 71, PersonalCare: 69, Household: 72 },
+    { name: 'W2', Beverages: 77, Snacks: 72, PersonalCare: 70, Household: 73 },
+    { name: 'W3', Beverages: 78, Snacks: 73, PersonalCare: 69, Household: 74 },
+    { name: 'W4', Beverages: 79, Snacks: 74, PersonalCare: 71, Household: 75 }
+  ];
+
+  const activeNpsData = npsTimeframe === 'weekly' ? npsTrendsWeeklyData : npsTrendsData;
+
+  // Market signals explore data
+  const exploreSignals = [
+    { id: 1, type: 'Risk', title: 'Price sensitivity rising', desc: 'Consumer trade-down accelerating in Q2', urgency: 85, urgencyLabel: 'High', action: 'Trigger a cross-category bundle campaign (Snacks + Beverages) to protect volume.' },
+    { id: 2, type: 'Growth', title: 'Health segment up', desc: '+19% YoY, outpacing core', urgency: 60, urgencyLabel: 'Medium', action: 'Formulate health-aligned brand line extension (BrandA Sugar-Free) in 90 days.' },
+    { id: 3, type: 'Competition', title: 'New entrants: 4', desc: '2 direct, 2 adjacent SKUs launched', urgency: 75, urgencyLabel: 'High', action: 'Deploy localized supermarket end-cap display campaign to raise retail distribution to 85%.' },
+    { id: 4, type: 'Supply', title: 'Supply constraints', desc: 'Raw material lead times +3 wks', urgency: 95, urgencyLabel: 'Critical', action: 'Onboard domestic secondary ingredient supplier in Gujarat to shorten lead time.' },
+    { id: 5, type: 'Growth', title: 'Export opportunity', desc: 'APAC demand signal strong', urgency: 35, urgencyLabel: 'Low', action: 'Allocate 15% extra manufacturing capacity to Eco-Pack mineral water for APAC.' }
+  ];
+
+  const filteredExplore = exploreSignals.filter(s => exploreFilter === 'All' || s.type === s.type && s.type === exploreFilter);
+
   // Heatmap metrics
   const regionList = ['APAC', 'EMEA', 'Americas', 'India'];
   const getAlertLoad = (reg: string) => {
@@ -618,17 +1787,225 @@ const VPSignalsBoardView: React.FC<{ isDarkMode: boolean; setActiveTab: (tab: nu
 
   return (
     <div className="space-y-6">
-      
-      {/* AI Summary Banner */}
-      <div className="p-4 bg-gradient-to-r from-purple-500/10 to-indigo-500/10 border-l-4 border-purple-500 dark:border-purple-400 rounded-r shadow-sm flex items-start gap-3">
-        <Zap size={16} className="text-[#6d28d9] dark:text-[#a78bfa] fill-purple-500/20 shrink-0 mt-0.5" />
-        <div className="space-y-0.5">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-[#6d28d9] dark:text-[#a78bfa]">🤖 AI Intelligence Summary</p>
-          <p className="text-[11px] font-medium leading-relaxed text-zinc-700 dark:text-zinc-300">
-            3 high-risk launches detected this week. APAC demand growth is trending positively (+18% YoY in Beverages). Sell-through decline detected in Americas Snacks. Immediate vendor validation recommended for German packing lines.
-          </p>
+      {showExplorePage ? (
+        <div className="space-y-6 animate-fadeIn">
+          {/* Header with back button */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 px-4 py-2 rounded-sm shadow-sm">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setShowExplorePage(false)}
+                className="p-1 hover:bg-black/5 dark:hover:bg-white/5 rounded text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white cursor-pointer border-none bg-transparent flex items-center justify-center transition-colors"
+              >
+                <ArrowLeft size={14} />
+              </button>
+              <div>
+                <span className="text-[8.5px] font-extrabold uppercase tracking-widest text-[#6d28d9] dark:text-[#a78bfa]">Market Recommendations</span>
+                <h2 className="text-sm font-display font-bold text-zinc-805 dark:text-zinc-105 leading-tight mt-0.5">VP-Ready Signals Board</h2>
+              </div>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="text-[8px] font-mono text-zinc-400">Last updated: {lastRefreshed}</span>
+            </div>
+          </div>
+
+          {/* Explore view body */}
+          <div className="bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-6 rounded-sm shadow-sm space-y-6">
+            {/* Heading Block */}
+            <div className="space-y-1 pb-3 border-b border-black/5 dark:border-white/5">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Interactive Signal Filter</span>
+              <p className="text-[9.5px] text-zinc-550 dark:text-zinc-400 mt-0.5">Filter the urgency signals to isolate key decision areas.</p>
+            </div>
+
+            {/* Filters & View Toggles Row */}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-2">
+              {/* Filter bar */}
+              <div className="flex flex-wrap gap-1.5">
+                {(['All', 'Risk', 'Growth', 'Competition', 'Supply'] as const).map(f => (
+                  <button
+                    key={f}
+                    onClick={() => setExploreFilter(f)}
+                    className={`px-4 py-2 rounded text-[11px] font-bold uppercase tracking-wider transition-all cursor-pointer border-none ${
+                      exploreFilter === f
+                        ? 'bg-[#6d28d9] dark:bg-[#a78bfa] text-white shadow-sm'
+                        : 'bg-black/5 dark:bg-white/5 text-zinc-550 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white'
+                    }`}
+                  >
+                    {f}
+                  </button>
+                ))}
+              </div>
+
+              {/* Grid & Table toggle buttons (in right corner) */}
+              <div className="flex bg-black/5 dark:bg-white/5 p-0.5 rounded border border-black/5 dark:border-white/10 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setExplorePageView('grid')}
+                  className={`px-2.5 py-0.5 text-[8.5px] font-bold uppercase tracking-wider rounded-sm transition-all border-none cursor-pointer outline-none ${
+                    explorePageView === 'grid'
+                      ? 'bg-[#5850ec] text-white shadow-sm'
+                      : `bg-transparent text-zinc-550 hover:text-zinc-805 dark:text-zinc-400 dark:hover:text-white`
+                  }`}
+                >
+                  Grid
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setExplorePageView('table')}
+                  className={`px-2.5 py-0.5 text-[8.5px] font-bold uppercase tracking-wider rounded-sm transition-all border-none cursor-pointer outline-none ${
+                    explorePageView === 'table'
+                      ? 'bg-[#5850ec] text-white shadow-sm'
+                      : `bg-transparent text-zinc-550 hover:text-zinc-805 dark:text-zinc-400 dark:hover:text-white`
+                  }`}
+                >
+                  Table
+                </button>
+              </div>
+            </div>
+
+            {/* Signals list */}
+            {explorePageView === 'grid' ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {filteredExplore.map(s => {
+                  const colorHex = s.type === 'Risk' || s.type === 'Supply'
+                    ? (s.urgency > 80 ? '#ef4444' : '#f59e0b')
+                    : (s.type === 'Growth' ? '#10b981' : '#3b82f6');
+                  
+                  const typeBadgeColor = s.type === 'Risk'
+                    ? 'bg-red-500/10 text-red-650 dark:text-red-400 border-red-500/25'
+                    : s.type === 'Supply'
+                    ? 'bg-amber-500/10 text-amber-650 dark:text-amber-400 border-amber-500/25'
+                    : s.type === 'Growth'
+                    ? 'bg-emerald-500/10 text-emerald-655 dark:text-emerald-400 border-emerald-500/25'
+                    : 'bg-blue-500/10 text-blue-650 dark:text-blue-400 border-blue-500/25';
+
+                  return (
+                    <div 
+                      key={s.id} 
+                      onClick={() => setSelectedExploreSignal(s)}
+                      className="p-4 bg-black/[0.01] dark:bg-white/5 border border-black/5 dark:border-white/10 rounded hover:scale-[1.01] hover:shadow-md hover:border-[#6d28d9]/35 transition-all space-y-3 flex flex-col justify-between cursor-pointer"
+                    >
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-start gap-4">
+                          <div className="min-w-0 space-y-1">
+                            <h4 className="text-[12px] font-bold text-zinc-805 dark:text-zinc-155 flex items-center gap-2 flex-wrap">
+                              {s.title}
+                              <span className={`text-[8.5px] font-extrabold uppercase px-1.5 py-0.5 rounded border ${typeBadgeColor}`}>
+                                {s.type}
+                              </span>
+                            </h4>
+                            <p className="text-[10px] text-zinc-550 dark:text-zinc-400 leading-relaxed">{s.desc}</p>
+                          </div>
+
+                          {/* Urgency priority bar */}
+                          <div className="flex flex-col gap-1 w-20 shrink-0">
+                            <div className="flex justify-between text-[8px] font-extrabold uppercase">
+                              <span className="text-zinc-400">Urgency</span>
+                              <span style={{ color: colorHex }}>{s.urgency}%</span>
+                            </div>
+                            <div className="w-full h-1 bg-black/5 dark:bg-white/10 rounded-full overflow-hidden">
+                              <div className="h-full rounded-full" style={{ width: `${s.urgency}%`, backgroundColor: colorHex }} />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Inline Recommended Action */}
+                      <div className="pt-3 border-t border-black/[0.04] dark:border-white/[0.04] bg-[#6d28d9]/[0.02] dark:bg-[#a78bfa]/[0.01] p-2 rounded-sm">
+                        <p className="text-[10px] text-zinc-800 dark:text-zinc-200 leading-relaxed">
+                          <strong className="text-[8.5px] uppercase tracking-wider text-[#6d28d9] dark:text-[#a78bfa] mr-2 font-extrabold">Recommended Action:</strong>
+                          {s.action}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              // Table view of explore signals
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="border-b border-black/10 dark:border-white/10 text-[9px] font-bold uppercase tracking-wider text-zinc-400">
+                      <th className="py-2 pb-1.5 font-bold w-1/4">Signal</th>
+                      <th className="py-2 pb-1.5 font-bold w-1/4">Urgency</th>
+                      <th className="py-2 pb-1.5 font-bold w-2/4">Recommended Action</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-black/[0.03] dark:divide-white/[0.03] text-[10.5px]">
+                    {filteredExplore.map(s => {
+                      const colorHex = s.type === 'Risk' || s.type === 'Supply'
+                        ? (s.urgency > 80 ? '#ef4444' : '#f59e0b')
+                        : (s.type === 'Growth' ? '#10b981' : '#3b82f6');
+                      
+                      const typeBadgeColor = s.type === 'Risk'
+                        ? 'bg-red-500/10 text-red-650 dark:text-red-400 border-red-500/25'
+                        : s.type === 'Supply'
+                        ? 'bg-amber-500/10 text-amber-650 dark:text-amber-400 border-amber-500/25'
+                        : s.type === 'Growth'
+                        ? 'bg-emerald-500/10 text-emerald-650 dark:text-emerald-400 border-emerald-500/25'
+                        : 'bg-blue-500/10 text-blue-650 dark:text-blue-400 border-blue-500/25';
+
+                      return (
+                        <tr 
+                          key={s.id} 
+                          onClick={() => setSelectedExploreSignal(s)}
+                          className="hover:bg-black/[0.01] dark:hover:bg-white/[0.01] transition-colors cursor-pointer"
+                        >
+                          <td className="py-3 font-bold text-zinc-800 dark:text-zinc-200 pr-4">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span>{s.title}</span>
+                              <span className={`text-[7.5px] font-extrabold uppercase px-1.5 py-0.5 rounded border ${typeBadgeColor}`}>
+                                {s.type}
+                              </span>
+                            </div>
+                            <p className="text-[9.5px] text-zinc-400 font-medium mt-0.5">{s.desc}</p>
+                          </td>
+                          <td className="py-3 pr-4">
+                            <div className="flex flex-col gap-1 w-24">
+                              <div className="flex justify-between text-[7.5px] font-extrabold uppercase">
+                                <span className="text-zinc-400">Urgency</span>
+                                <span style={{ color: colorHex }}>{s.urgency}%</span>
+                              </div>
+                              <div className="w-full h-1 bg-black/5 dark:bg-white/10 rounded-full overflow-hidden">
+                                <div className="h-full rounded-full" style={{ width: `${s.urgency}%`, backgroundColor: colorHex }} />
+                              </div>
+                            </div>
+                          </td>
+                          <td className="py-3 text-zinc-800 dark:text-zinc-200">
+                            <div className="bg-[#6d28d9]/[0.02] dark:bg-[#a78bfa]/[0.01] border border-black/[0.02] dark:border-white/[0.02] p-2 rounded-sm max-w-lg">
+                              {s.action}
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            {/* Action CTAs */}
+            <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t border-black/5 dark:border-white/5">
+              <button
+                onClick={() => addToast('Scenario Simulation Started', 'Opening AI sandbox to model price & supply scenarios...', '#10b981')}
+                className="px-5 py-2.5 bg-acies-gray hover:bg-acies-yellow hover:text-acies-gray text-white border-none rounded text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center gap-1.5"
+              >
+                <span>Simulate scenarios</span>
+                <Play size={11} />
+              </button>
+              <button
+                onClick={() => addToast('Board Exported', 'Strategic market signals report compiled and downloaded.', '#3b82f6')}
+                className="px-5 py-2.5 border border-black/10 dark:border-white/15 hover:bg-black/5 dark:hover:bg-white/5 rounded text-[10px] font-bold text-zinc-700 dark:text-zinc-350 transition-all flex items-center justify-center gap-1.5 cursor-pointer bg-transparent uppercase tracking-wider"
+              >
+                <span>Export board summary</span>
+                <Download size={11} />
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
+      ) : (
+        <>
+      
 
       {/* Top Filter Bar */}
       <div className="flex flex-col xl:flex-row justify-between items-stretch xl:items-center gap-4 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 px-5 py-3.5 rounded-sm shadow-sm">
@@ -791,6 +2168,18 @@ const VPSignalsBoardView: React.FC<{ isDarkMode: boolean; setActiveTab: (tab: nu
                           </span>
                         </h4>
                         <p className="text-[10px] text-zinc-500 dark:text-zinc-400 leading-relaxed mt-1">{sig.detail}</p>
+                        
+                        {/* Trigger and Solution Summary */}
+                        <div className="mt-2 space-y-1.5 pl-2 border-l border-black/10 dark:border-white/10 text-[9.5px] leading-relaxed">
+                          <p className="text-zinc-600 dark:text-zinc-400">
+                            <strong className="text-orange-600 dark:text-orange-400 uppercase tracking-wider text-[8px] mr-1.5">Trigger:</strong>
+                            {sig.trigger}
+                          </p>
+                          <p className="text-zinc-600 dark:text-zinc-400">
+                            <strong className="text-emerald-650 dark:text-emerald-400 uppercase tracking-wider text-[8px] mr-1.5">Solution:</strong>
+                            {sig.rectification}
+                          </p>
+                        </div>
                       </div>
 
                       <span className={`text-[8px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-sm whitespace-nowrap ${indicatorBg}`}>
@@ -891,13 +2280,20 @@ const VPSignalsBoardView: React.FC<{ isDarkMode: boolean; setActiveTab: (tab: nu
             <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Market Signals Alert Map</span>
             <span className="text-[8px] font-bold uppercase tracking-wider text-zinc-400">Alert loading by region</span>
           </div>
-
           <div className="grid grid-cols-2 gap-4 pt-1">
             {regionList.map(reg => {
               const count = getAlertLoad(reg);
-              const color = count >= 3 ? 'border-red-500/35 text-red-500 bg-red-500/5' : count >= 1 ? 'border-amber-500/35 text-amber-500 bg-amber-500/5' : 'border-emerald-500/35 text-emerald-500 bg-emerald-500/5';
+              const color = count >= 3 
+                ? 'border-red-500/35 text-red-500 bg-red-500/5 hover:border-red-500/55 hover:bg-red-500/10' 
+                : count >= 1 
+                  ? 'border-amber-500/35 text-amber-500 bg-amber-500/5 hover:border-amber-500/55 hover:bg-amber-500/10' 
+                  : 'border-emerald-500/35 text-emerald-500 bg-emerald-500/5 hover:border-emerald-500/55 hover:bg-emerald-500/10';
               return (
-                <div key={reg} className={`p-4 border rounded-sm flex flex-col justify-between h-24 relative overflow-hidden ${color}`}>
+                <div 
+                  key={reg} 
+                  onClick={() => setSelectedAlertRegion(reg)}
+                  className={`p-4 border rounded-sm flex flex-col justify-between h-24 relative overflow-hidden cursor-pointer select-none transition-all duration-200 hover:scale-[1.02] hover:shadow-md ${color}`}
+                >
                   <Globe size={40} className="absolute -right-2 -bottom-2 opacity-5" />
                   <span className="text-[9px] font-bold uppercase tracking-wider opacity-60">{reg} Region</span>
                   <div className="flex items-baseline gap-1 mt-1">
@@ -1011,50 +2407,125 @@ const VPSignalsBoardView: React.FC<{ isDarkMode: boolean; setActiveTab: (tab: nu
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
         
         {/* Portfolio Health & Saturation Dials */}
-        <div className="xl:col-span-6 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm space-y-4">
+        <div className="xl:col-span-7 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm space-y-4">
           <div className="flex justify-between items-center pb-2 border-b border-black/5 dark:border-white/5">
             <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Portfolio Saturation & Cannibalization</span>
             <span className="text-[8px] font-bold uppercase tracking-wider text-zinc-400">System metrics</span>
           </div>
 
-          <div className="space-y-4 pt-1">
-            {/* Saturation progress */}
-            <div className="space-y-1">
-              <div className="flex justify-between text-[10px] font-bold">
-                <span className="text-zinc-500">Beverages Overlap Ratio</span>
-                <span className="text-red-500 font-mono">0.68 (High Cannibalization)</span>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1">
+            {/* Card 1: Beverages Overlap Ratio */}
+            <div 
+              onClick={() => setSelectedPortfolioBlock('overlap')}
+              className="bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 p-4 rounded-sm flex flex-col items-center text-center space-y-2 cursor-pointer hover:scale-[1.02] hover:shadow-md hover:border-purple-500/35 transition-all select-none"
+            >
+              <div className="relative">
+                <svg viewBox="0 0 120 70" className="w-28 h-16">
+                  {/* Background track */}
+                  <path
+                    d="M 15 60 A 45 45 0 0 1 105 60"
+                    fill="none"
+                    stroke={isDarkMode ? "rgba(239, 68, 68, 0.15)" : "rgba(239, 68, 68, 0.1)"}
+                    strokeWidth="8"
+                    strokeLinecap="round"
+                  />
+                  {/* Filled track for 0.68 */}
+                  <path
+                    d="M 15 60 A 45 45 0 0 1 105 60"
+                    fill="none"
+                    stroke="#ef4444"
+                    strokeWidth="8"
+                    strokeLinecap="round"
+                    strokeDasharray={141.37}
+                    strokeDashoffset={141.37 * (1 - 0.68)}
+                  />
+                </svg>
               </div>
-              <div className="w-full h-1.5 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
-                <div className="h-full bg-red-500 rounded-full" style={{ width: '68%' }} />
+              <div className="space-y-0.5">
+                <span className="text-xl font-display font-extrabold text-red-500 block leading-none">0.68</span>
+                <span className="text-[10px] font-bold text-zinc-550 dark:text-zinc-400 block">Beverages overlap ratio</span>
               </div>
+              <span className="px-2.5 py-0.5 rounded-full text-[8.5px] font-bold uppercase tracking-wider bg-red-500/10 text-red-650 dark:text-red-400 border border-red-500/20">
+                High cannibalization
+              </span>
             </div>
 
-            {/* Growth Score */}
-            <div className="space-y-1">
-              <div className="flex justify-between text-[10px] font-bold">
-                <span className="text-zinc-500">Innovation Volume Share</span>
-                <span className="text-emerald-500 font-mono">34% (Target &gt; 30%)</span>
+            {/* Card 2: Innovation Volume Share */}
+            <div 
+              onClick={() => setSelectedPortfolioBlock('innovation')}
+              className="bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 p-4 rounded-sm flex flex-col items-center text-center space-y-2 cursor-pointer hover:scale-[1.02] hover:shadow-md hover:border-purple-500/35 transition-all select-none"
+            >
+              <div className="relative">
+                <svg viewBox="0 0 120 70" className="w-28 h-16">
+                  {/* Background track */}
+                  <path
+                    d="M 15 60 A 45 45 0 0 1 105 60"
+                    fill="none"
+                    stroke={isDarkMode ? "rgba(16, 185, 129, 0.15)" : "rgba(16, 185, 129, 0.1)"}
+                    strokeWidth="8"
+                    strokeLinecap="round"
+                  />
+                  {/* Filled track for 34% (0.34) */}
+                  <path
+                    d="M 15 60 A 45 45 0 0 1 105 60"
+                    fill="none"
+                    stroke="#10b981"
+                    strokeWidth="8"
+                    strokeLinecap="round"
+                    strokeDasharray={141.37}
+                    strokeDashoffset={141.37 * (1 - 0.34)}
+                  />
+                </svg>
               </div>
-              <div className="w-full h-1.5 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
-                <div className="h-full bg-emerald-500 rounded-full" style={{ width: '34%' }} />
+              <div className="space-y-0.5">
+                <span className="text-xl font-display font-extrabold text-emerald-555 dark:text-emerald-500 block leading-none">34%</span>
+                <span className="text-[10px] font-bold text-zinc-555 dark:text-zinc-400 block">Innovation volume share</span>
               </div>
+              <span className="px-2.5 py-0.5 rounded-full text-[8.5px] font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-650 dark:text-emerald-400 border border-emerald-500/20">
+                Target &gt; 30%
+              </span>
             </div>
 
-            {/* Sku Saturation */}
-            <div className="space-y-1">
-              <div className="flex justify-between text-[10px] font-bold">
-                <span className="text-zinc-500">Portfolio Health Risk Index</span>
-                <span className="text-amber-500 font-mono">0.44 (Moderate risk)</span>
+            {/* Card 3: Portfolio Health Risk Index */}
+            <div 
+              onClick={() => setSelectedPortfolioBlock('risk')}
+              className="bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 p-4 rounded-sm flex flex-col items-center text-center space-y-2 cursor-pointer hover:scale-[1.02] hover:shadow-md hover:border-purple-500/35 transition-all select-none"
+            >
+              <div className="relative">
+                <svg viewBox="0 0 120 70" className="w-28 h-16">
+                  {/* Background track */}
+                  <path
+                    d="M 15 60 A 45 45 0 0 1 105 60"
+                    fill="none"
+                    stroke={isDarkMode ? "rgba(245, 158, 11, 0.15)" : "rgba(245, 158, 11, 0.1)"}
+                    strokeWidth="8"
+                    strokeLinecap="round"
+                  />
+                  {/* Filled track for 0.44 */}
+                  <path
+                    d="M 15 60 A 45 45 0 0 1 105 60"
+                    fill="none"
+                    stroke="#f59e0b"
+                    strokeWidth="8"
+                    strokeLinecap="round"
+                    strokeDasharray={141.37}
+                    strokeDashoffset={141.37 * (1 - 0.44)}
+                  />
+                </svg>
               </div>
-              <div className="w-full h-1.5 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
-                <div className="h-full bg-amber-500 rounded-full" style={{ width: '44%' }} />
+              <div className="space-y-0.5">
+                <span className="text-xl font-display font-extrabold text-amber-500 block leading-none">0.44</span>
+                <span className="text-[10px] font-bold text-zinc-555 dark:text-zinc-400 block">Portfolio health risk index</span>
               </div>
+              <span className="px-2.5 py-0.5 rounded-full text-[8.5px] font-bold uppercase tracking-wider bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                Moderate risk
+              </span>
             </div>
           </div>
         </div>
 
         {/* Competitive Intelligence Signals */}
-        <div className="xl:col-span-6 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm space-y-4">
+        <div className="xl:col-span-5 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm space-y-4">
           <div className="flex justify-between items-center pb-2 border-b border-black/5 dark:border-white/5">
             <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Competitive Intelligence</span>
             <span className="text-[8px] font-bold uppercase tracking-wider text-zinc-400">Market activity ticker</span>
@@ -1066,12 +2537,21 @@ const VPSignalsBoardView: React.FC<{ isDarkMode: boolean; setActiveTab: (tab: nu
               { label: 'Competitor Launch', body: 'Alternative premium soy drink introduced in APAC region.', time: '3h ago', cat: 'Beverages' },
               { label: 'Distribution Surge', body: 'Rival personal care brand secured 80% shelf targets in West India.', time: '5h ago', cat: 'Personal Care' }
             ].map((c, i) => (
-              <div key={i} className="flex justify-between items-start gap-4 p-2 bg-black/[0.01] dark:bg-white/5 rounded border border-black/5 dark:border-white/5 text-[11px]">
-                <div className="min-w-0">
-                  <p className="font-bold text-zinc-800 dark:text-zinc-200">{c.label} · <span className="text-[8px] font-bold uppercase px-1 bg-black/10 dark:bg-white/10 rounded">{c.cat}</span></p>
+              <div 
+                key={i} 
+                onClick={() => setSelectedCompIntelIdx(i)}
+                className="flex justify-between items-start gap-4 p-3 bg-black/[0.01] dark:bg-white/5 rounded border border-black/5 dark:border-white/5 text-[11px] cursor-pointer hover:border-purple-500/35 hover:bg-black/[0.02] dark:hover:bg-white/5 hover:scale-[1.01] transition-all"
+              >
+                <div className="min-w-0 space-y-1">
+                  <p className="font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-1.5 flex-wrap">
+                    {c.label} · <span className="text-[8px] font-bold uppercase px-1 bg-black/10 dark:bg-white/10 rounded">{c.cat}</span>
+                  </p>
                   <p className="text-[10px] text-zinc-500 mt-0.5 leading-snug">{c.body}</p>
+                  <span className="text-[8.5px] text-[#6d28d9] dark:text-[#a78bfa] font-bold uppercase mt-1 flex items-center gap-1">
+                    <Sparkles size={10} className="animate-pulse" /> AI Comparison Available
+                  </span>
                 </div>
-                <span className="text-[8.5px] font-mono text-zinc-400 whitespace-nowrap">{c.time}</span>
+                <span className="text-[8.5px] font-mono text-zinc-400 whitespace-nowrap shrink-0">{c.time}</span>
               </div>
             ))}
           </div>
@@ -1085,13 +2565,40 @@ const VPSignalsBoardView: React.FC<{ isDarkMode: boolean; setActiveTab: (tab: nu
         {/* Customer Sentiment NPS Meter */}
         <div className="xl:col-span-5 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm space-y-4">
           <div className="flex justify-between items-center pb-2 border-b border-black/5 dark:border-white/5">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Customer NPS Sentiment</span>
-            <span className="text-[8px] font-bold uppercase tracking-wider text-zinc-400">Target Score: &gt; 70</span>
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Customer NPS Sentiment</span>
+              <p className="text-[8px] font-bold uppercase tracking-wider text-zinc-400 mt-0.5">Target Score: &gt; 70</p>
+            </div>
+            
+            <div className="flex bg-black/5 dark:bg-white/5 p-0.5 rounded border border-black/5 dark:border-white/10 shrink-0">
+              <button
+                type="button"
+                onClick={() => setNpsTimeframe('weekly')}
+                className={`px-2 py-0.5 text-[8.5px] font-bold uppercase tracking-wider rounded-sm transition-all border-none cursor-pointer outline-none ${
+                  npsTimeframe === 'weekly'
+                    ? 'bg-[#5850ec] text-white shadow-sm'
+                    : `bg-transparent text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white`
+                }`}
+              >
+                Weekly
+              </button>
+              <button
+                type="button"
+                onClick={() => setNpsTimeframe('monthly')}
+                className={`px-2 py-0.5 text-[8.5px] font-bold uppercase tracking-wider rounded-sm transition-all border-none cursor-pointer outline-none ${
+                  npsTimeframe === 'monthly'
+                    ? 'bg-[#5850ec] text-white shadow-sm'
+                    : `bg-transparent text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white`
+                }`}
+              >
+                Monthly
+              </button>
+            </div>
           </div>
 
           <div className="h-56">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={npsTrendsData} margin={{ left: -25, right: 5, top: 10, bottom: 5 }}>
+              <LineChart data={activeNpsData} margin={{ left: -25, right: 5, top: 10, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke={isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'} vertical={false} />
                 <XAxis dataKey="name" tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 9 }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 9 }} axisLine={false} tickLine={false} />
@@ -1109,53 +2616,172 @@ const VPSignalsBoardView: React.FC<{ isDarkMode: boolean; setActiveTab: (tab: nu
           </div>
         </div>
 
-        {/* Supply Chain & Operational Signals */}
-        <div className="xl:col-span-7 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm space-y-4">
-          <div className="flex justify-between items-center pb-2 border-b border-black/5 dark:border-white/5">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Supply Chain & Operations Alerts</span>
-            <span className="text-[8px] font-bold uppercase tracking-wider text-red-500">Critical delays</span>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            
-            {/* Box 1 */}
-            <div className="p-3 border border-[#ef4444]/20 rounded bg-red-500/5 flex flex-col justify-between">
-              <div>
-                <span className="text-[8px] font-bold uppercase tracking-widest text-red-500 bg-red-500/10 px-2 py-0.5 rounded-full">Sourcing Blocked</span>
-                <h5 className="text-xs font-bold text-zinc-805 dark:text-zinc-155 mt-2">Organic Milk Supplier Lag</h5>
-                <p className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-1 leading-snug">
-                  Lead times for German dairy vendor extended by <span className="font-bold text-red-500">14 days</span>. Sourcing bottleneck flagged.
-                </p>
+        {/* Market Signals Card */}
+        <div className="xl:col-span-7 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm flex flex-col justify-between min-h-[350px]">
+          <div className="space-y-3.5">
+            <div className="flex justify-between items-center pb-2 border-b border-black/5 dark:border-white/5">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Market signals</span>
+              
+              <div className="flex bg-black/5 dark:bg-white/5 p-0.5 rounded border border-black/5 dark:border-white/10 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setMarketSignalsView('grid')}
+                  className={`px-2 py-0.5 text-[8.5px] font-bold uppercase tracking-wider rounded-sm transition-all border-none cursor-pointer outline-none ${
+                    marketSignalsView === 'grid'
+                      ? 'bg-[#5850ec] text-white shadow-sm'
+                      : `bg-transparent text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white`
+                  }`}
+                >
+                  Grid
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setMarketSignalsView('table')}
+                  className={`px-2 py-0.5 text-[8.5px] font-bold uppercase tracking-wider rounded-sm transition-all border-none cursor-pointer outline-none ${
+                    marketSignalsView === 'table'
+                      ? 'bg-[#5850ec] text-white shadow-sm'
+                      : `bg-transparent text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white`
+                  }`}
+                >
+                  Table
+                </button>
               </div>
-              <button 
-                onClick={() => addToast('Vendor Onboarded', 'Secured contract with backup dairy supplier.', '#10b981')}
-                className="mt-3 py-1 bg-red-500/10 hover:bg-red-500 hover:text-white border border-red-500/35 text-red-500 rounded-sm text-[8px] font-bold uppercase tracking-wider transition-all cursor-pointer font-sans"
-              >
-                Onboard Domestic Supplier
-              </button>
             </div>
 
-            {/* Box 2 */}
-            <div className="p-3 border border-[#f59e0b]/20 rounded bg-amber-500/5 flex flex-col justify-between">
-              <div>
-                <span className="text-[8px] font-bold uppercase tracking-widest text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded-full">Logistic Delay</span>
-                <h5 className="text-xs font-bold text-zinc-805 dark:text-zinc-155 mt-2">APAC Shipping Freight Grid</h5>
-                <p className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-1 leading-snug">
-                  Marine shipping cargo gridlocks delaying ingredient import. Lead time extended +10 days.
-                </p>
-              </div>
-              <button 
-                onClick={() => addToast('Freight Air-routed', 'Expedited air cargo approved for urgent batches.', '#10b981')}
-                className="mt-3 py-1 bg-amber-500/10 hover:bg-amber-500 hover:text-white border border-amber-500/35 text-amber-500 rounded-sm text-[8px] font-bold uppercase tracking-wider transition-all cursor-pointer font-sans"
-              >
-                Approve Air Cargo Freight
-              </button>
-            </div>
+            {marketSignalsView === 'grid' ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1">
+                {/* Item 1 */}
+                <div className="flex items-center gap-3.5 p-3 bg-black/[0.01] dark:bg-white/5 border border-black/5 dark:border-white/5 rounded-sm">
+                  <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 bg-red-500/10 text-red-500 dark:text-red-400 border border-red-500/10">
+                    <AlertTriangle size={15} />
+                  </div>
+                  <div className="min-w-0">
+                    <h5 className="text-[11.5px] font-bold text-zinc-805 dark:text-zinc-155 leading-none">Price sensitivity rising</h5>
+                    <p className="text-[9.5px] text-zinc-500 dark:text-zinc-400 mt-1 leading-tight">Consumer trade-down accelerating in Q2</p>
+                  </div>
+                </div>
 
+                {/* Item 2 */}
+                <div className="flex items-center gap-3.5 p-3 bg-black/[0.01] dark:bg-white/5 border border-black/5 dark:border-white/5 rounded-sm">
+                  <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 bg-emerald-500/10 text-emerald-500 dark:text-emerald-400 border border-emerald-500/10">
+                    <TrendingUp size={15} />
+                  </div>
+                  <div className="min-w-0">
+                    <h5 className="text-[11.5px] font-bold text-zinc-805 dark:text-zinc-155 leading-none">Health segment up</h5>
+                    <p className="text-[9.5px] text-zinc-500 dark:text-zinc-400 mt-1 leading-tight">+19% YoY, outpacing core</p>
+                  </div>
+                </div>
+
+                {/* Item 3 */}
+                <div className="flex items-center gap-3.5 p-3 bg-black/[0.01] dark:bg-white/5 border border-black/5 dark:border-white/5 rounded-sm">
+                  <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 bg-blue-500/10 text-blue-500 dark:text-blue-400 border border-blue-500/10">
+                    <Users size={15} />
+                  </div>
+                  <div className="min-w-0">
+                    <h5 className="text-[11.5px] font-bold text-zinc-805 dark:text-zinc-155 leading-none">New entrants: 4</h5>
+                    <p className="text-[9.5px] text-zinc-500 dark:text-zinc-400 mt-1 leading-tight">2 direct, 2 adjacent SKUs launched</p>
+                  </div>
+                </div>
+
+                {/* Item 4 */}
+                <div className="flex items-center gap-3.5 p-3 bg-black/[0.01] dark:bg-white/5 border border-black/5 dark:border-white/5 rounded-sm">
+                  <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/10">
+                    <Inbox size={15} />
+                  </div>
+                  <div className="min-w-0">
+                    <h5 className="text-[11.5px] font-bold text-zinc-805 dark:text-zinc-155 leading-none">Supply constraints</h5>
+                    <p className="text-[9.5px] text-zinc-500 dark:text-zinc-400 mt-1 leading-tight">Raw material lead times +3 wks</p>
+                  </div>
+                </div>
+
+                {/* Item 5 */}
+                <div className="flex items-center gap-3.5 p-3 bg-black/[0.01] dark:bg-white/5 border border-black/5 dark:border-white/5 rounded-sm sm:col-span-2 sm:max-w-[50%] sm:mx-auto sm:w-full">
+                  <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 bg-emerald-500/10 text-emerald-500 dark:text-emerald-400 border border-emerald-500/10">
+                    <Globe size={15} />
+                  </div>
+                  <div className="min-w-0">
+                    <h5 className="text-[11.5px] font-bold text-zinc-805 dark:text-zinc-155 leading-none">Export opportunity</h5>
+                    <p className="text-[9.5px] text-zinc-500 dark:text-zinc-400 mt-1 leading-tight">APAC demand signal strong</p>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="overflow-x-auto pt-1">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="border-b border-black/10 dark:border-white/10 text-[9px] font-bold uppercase tracking-wider text-zinc-400">
+                      <th className="py-2 pb-1.5 font-bold">Signal</th>
+                      <th className="py-2 pb-1.5 font-bold">Category</th>
+                      <th className="py-2 pb-1.5 font-bold">Impact / Details</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-black/[0.03] dark:divide-white/[0.03] text-[10.5px]">
+                    {/* Row 1 */}
+                    <tr>
+                      <td className="py-2.5 flex items-center gap-2 font-bold text-zinc-800 dark:text-zinc-200">
+                        <AlertTriangle size={13} className="text-red-500" />
+                        Price sensitivity rising
+                      </td>
+                      <td className="py-2.5 text-red-500 font-bold uppercase text-[9px]">High Risk</td>
+                      <td className="py-2.5 text-zinc-500 dark:text-zinc-400">Consumer trade-down accelerating in Q2</td>
+                    </tr>
+                    {/* Row 2 */}
+                    <tr>
+                      <td className="py-2.5 flex items-center gap-2 font-bold text-zinc-800 dark:text-zinc-200">
+                        <TrendingUp size={13} className="text-emerald-500" />
+                        Health segment up
+                      </td>
+                      <td className="py-2.5 text-emerald-500 font-bold uppercase text-[9px]">Growth Opportunity</td>
+                      <td className="py-2.5 text-zinc-500 dark:text-zinc-400">+19% YoY, outpacing core</td>
+                    </tr>
+                    {/* Row 3 */}
+                    <tr>
+                      <td className="py-2.5 flex items-center gap-2 font-bold text-zinc-800 dark:text-zinc-200">
+                        <Users size={13} className="text-blue-500" />
+                        New entrants: 4
+                      </td>
+                      <td className="py-2.5 text-blue-500 font-bold uppercase text-[9px]">Market Alert</td>
+                      <td className="py-2.5 text-zinc-500 dark:text-zinc-400">2 direct, 2 adjacent SKUs launched</td>
+                    </tr>
+                    {/* Row 4 */}
+                    <tr>
+                      <td className="py-2.5 flex items-center gap-2 font-bold text-zinc-800 dark:text-zinc-200">
+                        <Inbox size={13} className="text-amber-500" />
+                        Supply constraints
+                      </td>
+                      <td className="py-2.5 text-amber-500 font-bold uppercase text-[9px]">Sourcing Risk</td>
+                      <td className="py-2.5 text-zinc-500 dark:text-zinc-400">Raw material lead times +3 wks</td>
+                    </tr>
+                    {/* Row 5 */}
+                    <tr>
+                      <td className="py-2.5 flex items-center gap-2 font-bold text-zinc-800 dark:text-zinc-200">
+                        <Globe size={13} className="text-emerald-500" />
+                        Export opportunity
+                      </td>
+                      <td className="py-2.5 text-emerald-500 font-bold uppercase text-[9px]">Global Opportunity</td>
+                      <td className="py-2.5 text-zinc-500 dark:text-zinc-400">APAC demand signal strong</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
-        </div>
+
+          <button
+            onClick={() => {
+              setShowExplorePage(true);
+              addToast('Opening Explore Page', 'Opening dedicated VP-ready signals board.', '#3b82f6');
+            }}
+            className="w-full mt-4 py-2 border border-black/10 dark:border-white/15 hover:bg-black/5 dark:hover:bg-white/5 rounded text-[10px] font-bold text-zinc-700 dark:text-zinc-350 transition-all flex items-center justify-center gap-1.5 cursor-pointer bg-transparent"
+          >
+            <span>Explore</span>
+            <ArrowUpRight size={13} className="shrink-0" />
+          </button>
 
       </div>
+    </div>
+        </>
+      )}
 
       {/* Floating Corner Toasts Container */}
       <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none max-w-sm">
@@ -1247,6 +2873,41 @@ const VPSignalsBoardView: React.FC<{ isDarkMode: boolean; setActiveTab: (tab: nu
           setActivePredictionType(null);
         }}
         predictionType={activePredictionType}
+      />
+
+      {/* Regional Alerts Summary Modal */}
+      {selectedAlertRegion && (
+        <RegionalAlertsModal 
+          isOpen={!!selectedAlertRegion}
+          onClose={() => setSelectedAlertRegion(null)}
+          region={selectedAlertRegion}
+          signals={signals}
+        />
+      )}
+
+      {/* Competitive Intelligence Comparison Modal */}
+      {selectedCompIntelIdx !== null && (
+        <CompetitiveIntelligenceModal 
+          isOpen={selectedCompIntelIdx !== null}
+          onClose={() => setSelectedCompIntelIdx(null)}
+          intelIdx={selectedCompIntelIdx}
+        />
+      )}
+
+      {/* Portfolio Deep Dive Modal */}
+      <PortfolioDeepDiveModal
+        isOpen={selectedPortfolioBlock !== null}
+        onClose={() => setSelectedPortfolioBlock(null)}
+        metricType={selectedPortfolioBlock}
+        isDarkMode={isDarkMode}
+      />
+
+      {/* Explore Signal Detail Modal */}
+      <ExploreSignalDetailModal
+        isOpen={selectedExploreSignal !== null}
+        signal={selectedExploreSignal}
+        onClose={() => setSelectedExploreSignal(null)}
+        isDarkMode={isDarkMode}
       />
 
     </div>

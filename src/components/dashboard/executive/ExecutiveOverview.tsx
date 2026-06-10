@@ -908,6 +908,20 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
   return (
     <div className="space-y-4">
       
+      {/* Inline Refresh Options */}
+      <div className="flex justify-end items-center gap-3 py-0.5">
+        <span className="text-[8.5px] font-bold uppercase tracking-widest opacity-40 text-zinc-500 dark:text-zinc-400">
+          {lastRefreshed}
+        </span>
+        <button 
+          onClick={handleRefresh}
+          className="flex items-center gap-1 px-2.5 py-1 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-acies-gray dark:text-white text-[8.5px] font-bold uppercase tracking-widest hover:bg-acies-yellow hover:text-acies-gray transition-all cursor-pointer rounded-sm"
+        >
+          <RefreshCw size={9} className="animate-spin-slow" />
+          Refresh Data
+        </button>
+      </div>
+
       {/* KPI Cards Strip */}
       <div className={`grid grid-cols-1 sm:grid-cols-2 ${role === 'VP Product Management' ? 'lg:grid-cols-3' : 'lg:grid-cols-4'} gap-3`}>
         {kpis.map((k, i) => {
@@ -966,20 +980,6 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
             </div>
           );
         })}
-      </div>
-
-      {/* Inline Refresh Options */}
-      <div className="flex justify-end items-center gap-3 py-0.5">
-        <span className="text-[8.5px] font-bold uppercase tracking-widest opacity-40 text-zinc-500 dark:text-zinc-400">
-          {lastRefreshed}
-        </span>
-        <button 
-          onClick={handleRefresh}
-          className="flex items-center gap-1 px-2.5 py-1 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-acies-gray dark:text-white text-[8.5px] font-bold uppercase tracking-widest hover:bg-acies-yellow hover:text-acies-gray transition-all cursor-pointer rounded-sm"
-        >
-          <RefreshCw size={9} className="animate-spin-slow" />
-          Refresh Data
-        </button>
       </div>
 
       {role !== 'VP Product Management' && alertsBlock}
@@ -1247,17 +1247,6 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
           <h3 className="text-[11px] font-bold uppercase tracking-widest pb-2 border-b border-black/5 dark:border-white/5 mb-2 flex items-center justify-between gap-1.5">
             <div className="flex items-center gap-2">
               <span>Top SKU Performance</span>
-              <button
-                onClick={() => {
-                  (window as any).__scrollToDirectory = true;
-                  window.location.hash = 'product-directory-section';
-                  setActiveTab(4);
-                }}
-                className="text-[8.5px] font-bold tracking-widest text-[#6d28d9] dark:text-[#a78bfa] hover:text-indigo-500 dark:hover:text-indigo-300 hover:underline cursor-pointer border-none bg-transparent flex items-center gap-1 transition-colors normal-case ml-2"
-                title="View All SKUs in SKU Rationalization Command Desk"
-              >
-                (View All SKUs &rarr;)
-              </button>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-[7.5px] font-extrabold opacity-40 uppercase">By Revenue</span>
@@ -1382,6 +1371,20 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
               </div>
             </div>
           )}
+
+          {/* View All SKUs button at the bottom */}
+          <button
+            onClick={() => {
+              (window as any).__scrollToDirectory = true;
+              window.location.hash = 'product-directory-section';
+              setActiveTab(4);
+            }}
+            className="w-full mt-2.5 py-1.5 border border-black/10 dark:border-white/15 hover:bg-black/5 dark:hover:bg-white/5 rounded text-[9.5px] font-bold text-zinc-705 dark:text-zinc-350 transition-all flex items-center justify-center gap-1 cursor-pointer bg-transparent shrink-0"
+            title="View All SKUs in SKU Rationalization Command Desk"
+          >
+            <span>View All SKUs</span>
+            <span className="text-[11px]">&rarr;</span>
+          </button>
         </div>
 
         {/* Top Customer Insights List */}
