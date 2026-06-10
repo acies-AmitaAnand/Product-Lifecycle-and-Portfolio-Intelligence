@@ -52,7 +52,7 @@ const safeSetItem = (key: string, value: string) => {
 const getHashParam = (key: string): string | null => {
   try {
     const hash = window.location.hash || '#';
-    const params = new URLSearchParams(hash.substring(1));
+    const params = new URLSearchParams(hash.substring(1).replace(/\+/g, '%20'));
     return params.get(key);
   } catch (e) {
     return null;
