@@ -7,3 +7,6 @@ coverage/
 .env*
 !.env.example
 .vercel
+debug_blank.js
+get_full_html.js
+

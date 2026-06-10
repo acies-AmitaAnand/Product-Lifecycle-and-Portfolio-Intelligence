@@ -4,7 +4,11 @@
  */
 
 import React, { useState } from 'react';
-import { Activity, Check, RefreshCw, Sparkles, CreditCard, Briefcase, Truck, X } from 'lucide-react';
+import { 
+  Activity, Check, RefreshCw, Sparkles, CreditCard, Briefcase, Truck, X,
+  TrendingUp, AlertTriangle, ShieldCheck, Info, DollarSign, Globe, Layers, ArrowRight
+} from 'lucide-react';
+import { SKUS } from '../../../constants/data';
 
 interface ActionRoutingPanelProps {
   hasScored: boolean;
@@ -71,6 +75,48 @@ export const ActionRoutingPanel: React.FC<ActionRoutingPanelProps> = ({
   // Exit date state
   const [exitDateDays, setExitDateDays] = useState(60);
 
+  // Find SKU details for calculations
+  const pairKey = `${skuA}|${skuB}`;
+  const sA = SKUS.find(s => s.name === skuA) || SKUS[0];
+  const sB = SKUS.find(s => s.name === skuB) || SKUS[1];
+  const revA = sA ? sA.rev : 10;
+  const marginA = sA ? sA.margin : 35;
+  const marginB = sB ? sB.margin : 40;
+
+  // 1. Transference & Leakage
+  const transferenceRate = Math.round(pairRisk * 100);
+  const transferenceVolume = parseFloat((revA * (transferenceRate / 100)).toFixed(2));
+  const leakageVolume = parseFloat((revA - transferenceVolume).toFixed(2));
+
+  // 2. Margin differential uplift + complexity savings (5% of SKU A rev)
+  const marginDiffUplift = transferenceVolume * ((marginB - marginA) / 100);
+  const complexitySavings = revA * 0.05;
+  const annualSavingsLakhs = Math.round((marginDiffUplift + complexitySavings) * 100);
+
+  // 3. Dynamic Exit Costs (decrease as exitDateDays increases)
+  const inventoryWriteoff = (revA * 10) * Math.max(0.02, 0.8 - (exitDateDays / 150));
+  const packagingObsolescence = (revA * 2) * Math.max(0.05, 1.1 - (exitDateDays / 100));
+  const markdownCost = (revA * 3) * Math.max(0.1, 1.2 - (exitDateDays / 120));
+  
+  const totalExitCost = Math.round(inventoryWriteoff + packagingObsolescence + markdownCost);
+
+  // 4. Payback Period
+  const monthlySavings = annualSavingsLakhs / 12;
+  const paybackMonths = parseFloat((totalExitCost / (monthlySavings || 1)).toFixed(1));
+
+  // 5. Retailer Notice Checklist Status
+  const productTeamKey = 'product';
+  const supplyTeamKey = 'supplychain';
+  const isCapacityAudited = !!(completedSteps && completedSteps[`${pairKey}|${productTeamKey}|1`]);
+  const isSunsetDrafted = !!(completedSteps && completedSteps[`${pairKey}|${productTeamKey}|2`]);
+  const isReplenishmentFrozen = !!(completedSteps && completedSteps[`${pairKey}|${supplyTeamKey}|0`]);
+  const isSafetyStockRaised = !!(completedSteps && completedSteps[`${pairKey}|${supplyTeamKey}|1`]);
+  
+  const walmartStatus = isSunsetDrafted ? 'Delisted' : 'Notice Pending';
+  const targetStatus = isReplenishmentFrozen ? 'Delisted' : 'Notice Pending';
+  const tescoStatus = isSunsetDrafted && isReplenishmentFrozen ? 'Delisted' : 'In Run-down';
+  const costcoStatus = isCapacityAudited ? 'In Negotiation' : 'Notice Pending';
+
   if (!hasScored) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center gap-3 bg-white dark:bg-acies-offwhite rounded-xl border border-black/10 dark:border-white/10">
@@ -83,7 +129,6 @@ export const ActionRoutingPanel: React.FC<ActionRoutingPanelProps> = ({
     );
   }
 
-  const pairKey = `${skuA}|${skuB}`;
   const isHigh = pairRisk > 0.5;
   const isMod  = pairRisk > 0.25 && pairRisk <= 0.5;
 
@@ -315,8 +360,14 @@ export const ActionRoutingPanel: React.FC<ActionRoutingPanelProps> = ({
         />
       </div>
 
-      {/* Team selection Grid */}
-      <div className="grid gap-px rounded-xl overflow-hidden bg-black/10 dark:bg-white/10" style={{ gridTemplateColumns: `repeat(${routing.length}, 1fr)` }}>
+      {/* Two-Column Responsive Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        
+        {/* Left Column: Team selection & Workflow Steps */}
+        <div className="lg:col-span-7 space-y-6">
+
+          {/* Team selection Grid */}
+          <div className="grid gap-px rounded-xl overflow-hidden bg-black/10 dark:bg-white/10" style={{ gridTemplateColumns: `repeat(${routing.length}, 1fr)` }}>
         {routing.map((team, ti) => {
           const isActive = ti === teamIdx;
           const tKey = team.shortName.toLowerCase().replace(' ', '');
@@ -681,7 +732,155 @@ export const ActionRoutingPanel: React.FC<ActionRoutingPanelProps> = ({
               </div>
             );
           })}
+          </div>
         </div>
+      </div>
+
+        {/* Right Column: Category & Financial Business Case Advisor */}
+        <div className="lg:col-span-5 space-y-5">
+          {/* Advisor Header */}
+          <div className="p-4 bg-purple-500/5 border border-purple-500/10 rounded-xl space-y-1">
+            <h4 className="text-[10px] font-black uppercase text-purple-600 dark:text-purple-400 tracking-wider flex items-center gap-1.5 font-sans">
+              <Globe size={11} className="stroke-[2.5]" />
+              <span>Category Business Case Advisor</span>
+            </h4>
+            <p className="text-[8.5px] font-medium text-zinc-450 dark:text-zinc-500 leading-normal font-sans">
+              Continuous simulations evaluating substitutions, obsolescence costs, and retailer notice runways.
+            </p>
+          </div>
+
+          {/* Payback Card */}
+          <div className="p-4 bg-white dark:bg-[#1a1a24] border border-black/10 dark:border-white/10 rounded-xl space-y-3.5 shadow-sm">
+            <div className="flex justify-between items-center">
+              <span className="text-[8.5px] font-black uppercase tracking-wider text-zinc-450">Payback Feasibility</span>
+              <span className={`px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest ${
+                paybackMonths < 9 
+                  ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' 
+                  : paybackMonths <= 18 
+                    ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20' 
+                    : 'bg-red-500/10 text-red-500 border border-red-500/20'
+              }`}>
+                {paybackMonths < 12 ? 'RECOMMENDED' : 'EVALUATE'}
+              </span>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <span className="text-[8px] font-bold text-zinc-400 uppercase tracking-widest block">Exit Cost Burden</span>
+                <span className="text-base font-black text-zinc-800 dark:text-zinc-100 block">
+                  ₹{totalExitCost.toFixed(0)}L
+                </span>
+                <span className="text-[7.5px] text-zinc-450 dark:text-zinc-500 block font-bold uppercase">
+                  Write-offs + markdowns
+                </span>
+              </div>
+              <div className="space-y-1">
+                <span className="text-[8px] font-bold text-zinc-400 uppercase tracking-widest block">Annual Savings</span>
+                <span className="text-base font-black text-emerald-500 block">
+                  ₹{annualSavingsLakhs.toFixed(0)}L
+                </span>
+                <span className="text-[7.5px] text-zinc-450 dark:text-zinc-500 block font-bold uppercase">
+                  Margin uplift + SC savings
+                </span>
+              </div>
+            </div>
+
+            {/* Payback speed progress */}
+            <div className="pt-2 border-t border-black/5 dark:border-white/5 space-y-1.5">
+              <div className="flex justify-between text-[8px] font-black uppercase text-zinc-450">
+                <span>Exit Payback Speed</span>
+                <span className="text-purple-500 font-extrabold">{paybackMonths} Months</span>
+              </div>
+              <div className="w-full bg-black/5 dark:bg-white/5 h-1.5 rounded-full overflow-hidden">
+                <div 
+                  className={`h-full transition-all duration-300 ${
+                    paybackMonths < 9 ? 'bg-emerald-500' : paybackMonths <= 18 ? 'bg-amber-500' : 'bg-red-500'
+                  }`}
+                  style={{ width: `${Math.min(100, (paybackMonths / 24) * 100)}%` }}
+                />
+              </div>
+              <p className="text-[8.5px] text-zinc-450 leading-relaxed font-semibold italic mt-1 font-sans">
+                * Payback calculations automatically factor run-down optimization over {exitDateDays} days.
+              </p>
+            </div>
+          </div>
+
+          {/* Volume Transference Map */}
+          <div className="p-4 bg-white dark:bg-[#1a1a24] border border-black/10 dark:border-white/10 rounded-xl space-y-3 shadow-sm">
+            <span className="text-[8.5px] font-black uppercase tracking-wider text-zinc-450 block">Variant Substitution Rate</span>
+            
+            <div className="space-y-3.5">
+              <div className="space-y-1">
+                <div className="flex justify-between text-[8.5px] font-bold">
+                  <span className="text-acies-gray dark:text-zinc-300">Transferred to Sibling ({skuB ? skuB.split(' ')[0] : ''})</span>
+                  <span className="text-purple-600 dark:text-purple-400 font-black">{transferenceRate}%</span>
+                </div>
+                <div className="w-full bg-black/5 dark:bg-white/5 h-2 rounded overflow-hidden flex">
+                  <div className="bg-purple-500 h-full" style={{ width: `${transferenceRate}%` }} />
+                  <div className="bg-red-500/20 h-full" style={{ width: `${100 - transferenceRate}%` }} />
+                </div>
+                <div className="flex justify-between text-[7.5px] font-bold text-zinc-450">
+                  <span>₹{transferenceVolume} Cr preserved</span>
+                  <span>₹{leakageVolume} Cr category leak ({100 - transferenceRate}%)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Retailer Delisting Notice Checklist */}
+          <div className="p-4 bg-white dark:bg-[#1a1a24] border border-black/10 dark:border-white/10 rounded-xl space-y-3 shadow-sm">
+            <span className="text-[8.5px] font-black uppercase tracking-wider text-zinc-450 block">Global Retailer Alignment</span>
+            
+            <div className="divide-y divide-black/5 dark:divide-white/5 text-[9px] font-bold">
+              <div className="flex justify-between py-2 items-center">
+                <span className="text-zinc-600 dark:text-zinc-300">Walmart US SKU Listing</span>
+                <span className={`px-2 py-0.5 rounded text-[7.5px] font-black uppercase ${
+                  walmartStatus === 'Delisted' ? 'bg-emerald-500/10 text-emerald-500 font-black' : 'bg-amber-500/10 text-amber-500 font-black'
+                }`}>{walmartStatus}</span>
+              </div>
+              <div className="flex justify-between py-2 items-center">
+                <span className="text-zinc-600 dark:text-zinc-300">Target Corp De-listing</span>
+                <span className={`px-2 py-0.5 rounded text-[7.5px] font-black uppercase ${
+                  targetStatus === 'Delisted' ? 'bg-emerald-500/10 text-emerald-500 font-black' : 'bg-amber-500/10 text-amber-500 font-black'
+                }`}>{targetStatus}</span>
+              </div>
+              <div className="flex justify-between py-2 items-center">
+                <span className="text-zinc-600 dark:text-zinc-300">Tesco PLC Notice</span>
+                <span className={`px-2 py-0.5 rounded text-[7.5px] font-black uppercase ${
+                  tescoStatus === 'Delisted' ? 'bg-emerald-500/10 text-emerald-500 font-black' : 'bg-blue-500/10 text-blue-500 font-black'
+                }`}>{tescoStatus}</span>
+              </div>
+              <div className="flex justify-between py-2 items-center">
+                <span className="text-zinc-600 dark:text-zinc-300">Costco Wholesale Review</span>
+                <span className={`px-2 py-0.5 rounded text-[7.5px] font-black uppercase ${
+                  costcoStatus === 'In Negotiation' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-zinc-500/10 text-zinc-450 font-black'
+                }`}>{costcoStatus}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Supply Chain Runway */}
+          <div className="p-4 bg-white dark:bg-[#1a1a24] border border-black/10 dark:border-white/10 rounded-xl space-y-3 shadow-sm">
+            <span className="text-[8.5px] font-black uppercase tracking-wider text-zinc-450 block">Supply Run-down Runway</span>
+            <div className="bg-black/5 dark:bg-white/5 p-3 rounded-lg text-[9px] font-bold space-y-1.5 text-zinc-450 font-mono">
+              <div className="flex justify-between">
+                <span>Phase-out Period:</span>
+                <span className="text-zinc-850 dark:text-zinc-200">{exitDateDays} Days</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Remaining Packaging Runway:</span>
+                <span className="text-purple-650 dark:text-purple-400">{Math.round(exitDateDays * 0.08)} weeks of supply</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Supply Transition Risk:</span>
+                <span className={isSafetyStockRaised ? 'text-emerald-500' : 'text-amber-500'}>
+                  {isSafetyStockRaised ? 'Minimal (Sibling safety raised)' : 'Medium (Raise sibling buffer)'}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
 
       {/* Footer */}
