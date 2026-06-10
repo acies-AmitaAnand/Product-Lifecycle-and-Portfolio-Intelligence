@@ -557,21 +557,21 @@ const InvestmentMarginMap: React.FC<InvestmentMarginMapProps> = ({ skusList, isD
         {/* LEFT COLUMN: SCATTER MAP */}
         <div className="lg:col-span-7 space-y-2 relative">
           <div className="h-80 relative">
-            <div className="absolute top-2 left-10 pointer-events-none text-[8px] font-bold uppercase tracking-wider text-emerald-500/80 bg-emerald-500/5 px-2 py-0.5 border border-emerald-500/10 rounded-sm">
+            <div className="absolute top-6 left-16 pointer-events-none text-[8px] font-bold uppercase tracking-wider text-emerald-500/80 bg-emerald-500/5 px-2 py-0.5 border border-emerald-500/10 rounded-sm">
               Quick Wins (High Priority)
             </div>
-            <div className="absolute top-2 right-4 pointer-events-none text-[8px] font-bold uppercase tracking-wider text-purple-500/80 bg-purple-500/5 px-2 py-0.5 border border-purple-500/10 rounded-sm">
+            <div className="absolute top-6 right-6 pointer-events-none text-[8px] font-bold uppercase tracking-wider text-purple-500/80 bg-purple-500/5 px-2 py-0.5 border border-purple-500/10 rounded-sm">
               Strategic Bets (Scale)
             </div>
-            <div className="absolute bottom-10 left-10 pointer-events-none text-[8px] font-bold uppercase tracking-wider text-amber-500/80 bg-amber-500/5 px-2 py-0.5 border border-amber-500/10 rounded-sm">
+            <div className="absolute top-[200px] left-16 pointer-events-none text-[8px] font-bold uppercase tracking-wider text-amber-500/80 bg-amber-500/5 px-2 py-0.5 border border-amber-500/10 rounded-sm">
               Niche / Tactical
             </div>
-            <div className="absolute bottom-10 right-4 pointer-events-none text-[8px] font-bold uppercase tracking-wider text-red-500/80 bg-red-500/5 px-2 py-0.5 border border-red-500/10 rounded-sm">
+            <div className="absolute top-[200px] right-6 pointer-events-none text-[8px] font-bold uppercase tracking-wider text-red-500/80 bg-red-500/5 px-2 py-0.5 border border-red-500/10 rounded-sm">
               Avoid / High Risk
             </div>
 
             <ResponsiveContainer width="100%" height="100%">
-              <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: -20 }}>
+              <ScatterChart margin={{ top: 20, right: 20, bottom: 40, left: 45 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} />
                 <ReferenceLine x={50} stroke={isDarkMode ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)'} strokeDasharray="5 5" />
                 <ReferenceLine y={50} stroke={isDarkMode ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)'} strokeDasharray="5 5" />
@@ -581,7 +581,7 @@ const InvestmentMarginMap: React.FC<InvestmentMarginMapProps> = ({ skusList, isD
                   name="Investment" 
                   domain={[0, 100]} 
                   tick={{ fill: tickColor, fontSize: 9 }} 
-                  label={{ value: 'Required Investment (₹ Cr) →', position: 'bottom', fill: tickColor, fontSize: 10, offset: 5 }} 
+                  label={{ value: 'Required Investment (₹ Cr) →', position: 'bottom', fill: tickColor, fontSize: 10, offset: 10 }} 
                 />
                 <YAxis 
                   type="number" 
@@ -589,7 +589,7 @@ const InvestmentMarginMap: React.FC<InvestmentMarginMapProps> = ({ skusList, isD
                   name="Return Margin" 
                   domain={[0, 100]} 
                   tick={{ fill: tickColor, fontSize: 9 }} 
-                  label={{ value: '← Return Margin (%)', angle: -90, position: 'left', fill: tickColor, fontSize: 10, offset: 5 }} 
+                  label={{ value: 'Return Margin (%)', angle: -90, position: 'left', fill: tickColor, fontSize: 10, offset: 15 }} 
                 />
                 <ZAxis type="number" dataKey="rev" range={[100, 600]} />
                 <Tooltip 
