@@ -254,6 +254,18 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
             tooltipBg={state.tooltipBg}
             tooltipBorder={state.tooltipBorder}
             tooltipText={state.tooltipText}
+            // new sunset parameters
+            sunsetTransferenceRate={state.sunsetTransferenceRate}
+            setSunsetTransferenceRate={state.setSunsetTransferenceRate}
+            sunsetSubstituteSkuName={state.sunsetSubstituteSkuName}
+            setSunsetSubstituteSkuName={state.setSunsetSubstituteSkuName}
+            sunsetSubstituteOptions={state.sunsetSubstituteOptions}
+            sunsetSubstituteSku={state.sunsetSubstituteSku}
+            transferredVolume={state.transferredVolume}
+            leakageVolume={state.leakageVolume}
+            complexitySavings={state.complexitySavings}
+            cannibalizationRelief={state.cannibalizationRelief}
+            netProfitImpact={state.netProfitImpact}
           />
 
           {/* PORTFOLIO INTELLIGENCE DIRECTORY */}

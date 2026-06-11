@@ -51,6 +51,19 @@ interface PLSimulatorSectionProps {
   tooltipBg: string;
   tooltipBorder: string;
   tooltipText: string;
+
+  // New sunset parameters
+  sunsetTransferenceRate: number;
+  setSunsetTransferenceRate: (val: number) => void;
+  sunsetSubstituteSkuName: string;
+  setSunsetSubstituteSkuName: (name: string) => void;
+  sunsetSubstituteOptions: any[];
+  sunsetSubstituteSku: any | null;
+  transferredVolume: number;
+  leakageVolume: number;
+  complexitySavings: number;
+  cannibalizationRelief: number;
+  netProfitImpact: number;
 }
 
 export const PLSimulatorSection: React.FC<PLSimulatorSectionProps> = ({
@@ -92,7 +105,20 @@ export const PLSimulatorSection: React.FC<PLSimulatorSectionProps> = ({
   tickColor,
   tooltipBg,
   tooltipBorder,
-  tooltipText
+  tooltipText,
+
+  // New sunset parameters
+  sunsetTransferenceRate,
+  setSunsetTransferenceRate,
+  sunsetSubstituteSkuName,
+  setSunsetSubstituteSkuName,
+  sunsetSubstituteOptions,
+  sunsetSubstituteSku,
+  transferredVolume,
+  leakageVolume,
+  complexitySavings,
+  cannibalizationRelief,
+  netProfitImpact
 }) => {
   const cannHaircut = cannibalizationRisk === 2 ? 0.18 : cannibalizationRisk === 1 ? 0.09 : 0.02;
 
@@ -189,13 +215,62 @@ export const PLSimulatorSection: React.FC<PLSimulatorSectionProps> = ({
               {/* Dynamic Inputs depending on tabs */}
               <div className="space-y-4 pt-2 border-t border-black/5 dark:border-white/5">
                 {simTab === 'remove' && (
-                  <div className="p-3 bg-red-500/[0.03] border border-red-500/10 rounded-lg text-[10.5px] leading-relaxed text-zinc-650 dark:text-zinc-300 font-semibold space-y-1">
-                    <span className="text-[8px] font-bold text-red-500 uppercase tracking-widest flex items-center gap-1">
-                      <AlertTriangle size={10} /> Discontinuation Parameter
-                    </span>
-                    <p>
-                      Discontinuing this product removes it from the active portfolio. The simulation models brand loyalty retention, safety stock freeing thresholds, and complexity relief margin benefits.
-                    </p>
+                  <div className="space-y-3">
+                    <div className="p-3 bg-red-500/[0.03] border border-red-500/10 rounded-lg text-[10.5px] leading-relaxed text-zinc-650 dark:text-zinc-300 font-semibold space-y-1">
+                      <span className="text-[8px] font-bold text-red-500 uppercase tracking-widest flex items-center gap-1">
+                        <AlertTriangle size={10} /> Discontinuation Parameter
+                      </span>
+                      <p>
+                        Discontinuing this product removes it from the active portfolio. The simulation models brand loyalty retention, safety stock freeing thresholds, and complexity relief margin benefits.
+                      </p>
+                    </div>
+
+                    <div className="flex flex-col gap-1.5 pt-2 border-t border-black/5 dark:border-white/5">
+                      <div className="flex items-center justify-between">
+                        <label className="text-[8.5px] font-black uppercase tracking-widest opacity-45">Substitute Product (newer/high-value)</label>
+                        {sunsetSubstituteSku && (
+                          <button 
+                            onClick={() => setSelectedSkuDetails(sunsetSubstituteSku)}
+                            className="text-[8px] text-[#8b5cf6] dark:text-purple-300 font-bold uppercase tracking-widest hover:underline cursor-pointer border-none bg-transparent outline-none animate-fadeIn"
+                          >
+                            Inspect Sibling ℹ®
+                          </button>
+                        )}
+                      </div>
+                      {sunsetSubstituteOptions.length > 0 ? (
+                        <select
+                          value={sunsetSubstituteSkuName}
+                          onChange={(e) => setSunsetSubstituteSkuName(e.target.value)}
+                          className="w-full bg-black/5 dark:bg-[#121214] border border-black/10 dark:border-white/10 rounded-lg p-2.5 text-xs font-bold text-acies-gray dark:text-white outline-none focus:border-acies-yellow"
+                        >
+                          {sunsetSubstituteOptions.map(s => (
+                            <option key={`subst-${s.name}`} value={s.name} className="dark:bg-[#1a1a24] text-xs font-semibold text-zinc-800 dark:text-white">
+                              {s.name} (₹{s.rev}Cr • Margin {s.margin}%)
+                            </option>
+                          ))}
+                        </select>
+                      ) : (
+                        <div className="text-xs text-zinc-400 font-bold p-2.5 bg-black/5 dark:bg-white/5 rounded-lg border border-black/10 dark:border-white/10">
+                          No substitute category siblings available.
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex flex-col gap-1 pt-2 border-t border-black/5 dark:border-white/5">
+                      <div className="flex justify-between text-[9px] font-bold uppercase tracking-wider text-zinc-500">
+                        <span>Redistribution / Transference Rate</span>
+                        <span className="text-acies-gray dark:text-white font-extrabold">{sunsetTransferenceRate}%</span>
+                      </div>
+                      <input 
+                        type="range"
+                        min="0"
+                        max="100"
+                        step="5"
+                        value={sunsetTransferenceRate}
+                        onChange={(e) => setSunsetTransferenceRate(parseInt(e.target.value))}
+                        className="w-full accent-purple-550 cursor-pointer h-1.5 rounded-lg bg-zinc-200 dark:bg-zinc-700 appearance-none"
+                      />
+                    </div>
                   </div>
                 )}
 
@@ -315,46 +390,120 @@ export const PLSimulatorSection: React.FC<PLSimulatorSectionProps> = ({
                 <div className="grid grid-cols-2 gap-3">
                   {simTab === 'remove' && (
                     <>
-                      <div className="bg-white dark:bg-[#1a1a24] p-3 rounded border border-black/5 dark:border-white/10 space-y-1 shadow-sm">
-                        <div className="text-[8px] font-black uppercase tracking-widest text-zinc-455">Revenue Shift</div>
-                        <div className="text-sm font-black text-red-500">₹{removeRevImpact} Cr</div>
-                        <div className="text-[7.5px] font-semibold text-red-500">{(removeRevImpact / (totalRev || 1) * 100).toFixed(1)}% portfolio</div>
-                        <div className="w-full h-1 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden mt-1">
-                          <div className="h-full bg-red-500" style={{ width: `${Math.min(100, Math.abs((selectedSku.rev / (totalRev || 1)) * 100))}%` }} />
+                      {/* Revenue Redistribution Ledger (Spans 2 columns) */}
+                      <div className="col-span-2 bg-white dark:bg-[#1a1a24] p-3.5 rounded-lg border border-black/5 dark:border-white/10 space-y-2.5 shadow-sm">
+                        <div className="flex justify-between items-center text-[9px] font-black uppercase text-zinc-400 tracking-wider">
+                          <span className="flex items-center gap-1">💰 Revenue Redistribution Ledger</span>
+                          <span className={`${removeRevImpact >= 0 ? 'text-emerald-500' : 'text-red-500'} font-extrabold`}>
+                            Net: ₹{removeRevImpact > 0 ? '+' : ''}{removeRevImpact} Cr
+                          </span>
+                        </div>
+                        <div className="divide-y divide-black/5 dark:divide-white/5 text-[10px] font-bold space-y-1.5 font-mono text-zinc-600 dark:text-zinc-350">
+                          <div className="flex justify-between pt-1">
+                            <span>Discontinued SKU Sales ({selectedSku.name.split(' ')[0]}):</span>
+                            <span className="text-red-500">₹-{selectedSku.rev} Cr</span>
+                          </div>
+                          {sunsetSubstituteSku && (
+                            <div className="flex justify-between pt-1.5">
+                              <span>Transferred to substitute ({sunsetSubstituteSku.name.split(' ')[0]}):</span>
+                              <span className="text-emerald-500">₹+{transferredVolume} Cr</span>
+                            </div>
+                          )}
+                          <div className="flex justify-between pt-1.5">
+                            <span>Cannibalization Relief (organic category boost):</span>
+                            <span className="text-blue-500">₹+{cannibalizationRelief} Cr</span>
+                          </div>
                         </div>
                       </div>
 
-                      <div className="bg-white dark:bg-[#1a1a24] p-3 rounded border border-black/5 dark:border-white/10 space-y-1 shadow-sm">
-                        <div className="text-[8px] font-black uppercase tracking-widest text-zinc-455">Margin Impact</div>
-                        <div className={`text-sm font-black ${removeMarginImpact >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
-                          {removeMarginImpact > 0 ? '+' : ''}{removeMarginImpact} pp
+                      {/* Operational complexity savings (1 column) */}
+                      <div className="bg-white dark:bg-[#1a1a24] p-3 rounded border border-black/5 dark:border-white/10 space-y-1 shadow-sm flex flex-col justify-between">
+                        <div>
+                          <div className="text-[8px] font-black uppercase tracking-widest text-zinc-455">Complexity Savings</div>
+                          <div className="text-sm font-black text-blue-500 mt-1">₹+{complexitySavings} Cr</div>
                         </div>
-                        <div className="text-[7.5px] font-semibold text-zinc-500">Portfolio gross shift</div>
-                        <div className="w-full h-1 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden mt-1">
-                          <div className={`h-full ${removeMarginImpact >= 0 ? 'bg-emerald-500' : 'bg-red-500'}`} style={{ width: `${Math.min(100, Math.abs(removeMarginImpact) * 20)}%` }} />
-                        </div>
-                      </div>
-
-                      <div className="bg-white dark:bg-[#1a1a24] p-3 rounded border border-black/5 dark:border-white/10 space-y-1 shadow-sm">
-                        <div className="text-[8px] font-black uppercase tracking-widest text-zinc-455">Loyalty Risk</div>
-                        <div className={`text-sm font-black ${selectedSku.val > 0.6 ? 'text-red-500' : 'text-emerald-500'}`}>
-                          {selectedSku.val > 0.6 ? 'Elevated' : 'Negligible'}
-                        </div>
-                        <div className="text-[7.5px] font-semibold text-zinc-500 truncate" title={removeCustImpact}>{removeCustImpact}</div>
-                        <div className="w-full h-1 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden mt-1">
-                          <div className={`h-full ${selectedSku.val > 0.6 ? 'bg-red-500' : 'bg-emerald-500'}`} style={{ width: `${selectedSku.val * 100}%` }} />
+                        <div className="text-[7.5px] font-semibold text-zinc-500 leading-tight">
+                          Frees {selectedSku.lead}d lead buffer · −{selectedSku.stockouts} stockout events · cuts overhead 4%
                         </div>
                       </div>
 
-                      <div className="bg-white dark:bg-[#1a1a24] p-3 rounded border border-black/5 dark:border-white/10 space-y-1 shadow-sm">
-                        <div className="text-[8px] font-black uppercase tracking-widest text-zinc-455">Operations Released</div>
-                        <div className="text-sm font-black text-blue-500">
-                          {selectedSku.cx > 0.6 ? 'High' : 'Moderate'}
+                      {/* Blended margin shift (1 column) */}
+                      <div className="bg-white dark:bg-[#1a1a24] p-3 rounded border border-black/5 dark:border-white/10 space-y-1 shadow-sm flex flex-col justify-between">
+                        <div>
+                          <div className="text-[8px] font-black uppercase tracking-widest text-zinc-455">Blended Margin Shift</div>
+                          <div className={`text-sm font-black mt-1 ${removeMarginImpact >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
+                            {removeMarginImpact > 0 ? '+' : ''}{removeMarginImpact} pp
+                          </div>
                         </div>
-                        <div className="text-[7.5px] font-semibold text-zinc-500 truncate" title={removeScImpact}>{removeScImpact}</div>
-                        <div className="w-full h-1 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden mt-1">
-                          <div className="h-full bg-blue-500" style={{ width: `${selectedSku.cx * 100}%` }} />
+                        <div className="text-[7.5px] font-semibold text-zinc-500 leading-tight">
+                          Blended catalog rate shifts due to higher substitute margin
                         </div>
+                      </div>
+
+                      {/* Absolute Profit Impact (Spans 2 columns) */}
+                      <div className={`col-span-2 p-3.5 rounded-lg border shadow-sm ${
+                        netProfitImpact >= 0 
+                          ? 'bg-emerald-500/5 border-emerald-500/20 text-emerald-800 dark:text-emerald-300' 
+                          : 'bg-red-500/5 border-red-500/20 text-red-800 dark:text-red-300'
+                      }`}>
+                        <div className="flex justify-between items-center text-[9px] font-black uppercase tracking-wider">
+                          <span>Absolute Profit Impact</span>
+                          <span className="text-[8px] font-bold">Transferred + Savings vs delisted</span>
+                        </div>
+                        <h5 className={`text-base font-display font-extrabold mt-1.5 ${netProfitImpact >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
+                          {netProfitImpact >= 0 ? '+' : ''}₹{netProfitImpact} Cr
+                        </h5>
+                        <p className="text-[8.5px] font-bold text-zinc-500 dark:text-zinc-400 mt-1 uppercase tracking-wide leading-normal">
+                          {netProfitImpact >= 0 
+                            ? '✨ Consolidation generates margin leverage. Demand redirected to more profitable sibling SKU.' 
+                            : '⚠️ Consolidation results in margin compression. Substitute SKU margin cannot offset category leakage.'}
+                        </p>
+                      </div>
+
+                      {/* Stacked Demand Redistribution Flow (Spans 2 columns) */}
+                      <div className="col-span-2 bg-white dark:bg-[#1a1a24] p-3.5 rounded-lg border border-black/5 dark:border-white/10 space-y-2 shadow-sm">
+                        <div className="flex justify-between items-center text-[9px] font-bold uppercase text-zinc-500">
+                          <span className="flex items-center gap-1">🔄 Scenario Demand Redistribution Flow</span>
+                        </div>
+                        {(() => {
+                          const totalSunsetVolume = selectedSku.rev + cannibalizationRelief;
+                          const trPct = Math.round((transferredVolume / totalSunsetVolume) * 100);
+                          const leakPct = Math.round(((leakageVolume * 0.6) / totalSunsetVolume) * 100);
+                          const defectPct = Math.round(((leakageVolume * 0.4) / totalSunsetVolume) * 100);
+                          const reliefPct = Math.max(0, 100 - trPct - leakPct - defectPct);
+                          return (
+                            <>
+                              <div className="h-3.5 w-full bg-black/10 dark:bg-white/10 rounded overflow-hidden flex text-[8.5px] font-black text-white shadow-inner">
+                                {trPct > 0 && (
+                                  <div style={{ width: `${trPct}%` }} className="bg-emerald-505 h-full flex items-center justify-center transition-all duration-300" title="Transferred to substitute">
+                                    {trPct >= 10 ? `${trPct}%` : ''}
+                                  </div>
+                                )}
+                                {reliefPct > 0 && (
+                                  <div style={{ width: `${reliefPct}%` }} className="bg-blue-500 h-full flex items-center justify-center transition-all duration-300" title="Cannibalization relief">
+                                    {reliefPct >= 10 ? `${reliefPct}%` : ''}
+                                  </div>
+                                )}
+                                {leakPct > 0 && (
+                                  <div style={{ width: `${leakPct}%` }} className="bg-red-500 h-full flex items-center justify-center transition-all duration-300" title="Competitor leakage">
+                                    {leakPct >= 10 ? `${leakPct}%` : ''}
+                                  </div>
+                                )}
+                                {defectPct > 0 && (
+                                  <div style={{ width: `${defectPct}%` }} className="bg-amber-500 h-full flex items-center justify-center transition-all duration-300" title="Category defection">
+                                    {defectPct >= 10 ? `${defectPct}%` : ''}
+                                  </div>
+                                )}
+                              </div>
+                              <div className="grid grid-cols-2 gap-x-2 gap-y-1 text-[7.5px] font-bold text-zinc-450 dark:text-zinc-500 uppercase mt-1">
+                                <span className="flex items-center gap-1">🟢 Transferred: ₹{transferredVolume} Cr ({trPct}%)</span>
+                                <span className="flex items-center gap-1">🔵 Relief: ₹{cannibalizationRelief} Cr ({reliefPct}%)</span>
+                                <span className="flex items-center gap-1">🔴 Leakage: ₹{(leakageVolume * 0.6).toFixed(1)} Cr ({leakPct}%)</span>
+                                <span className="flex items-center gap-1">🟡 Defection: ₹{(leakageVolume * 0.4).toFixed(1)} Cr ({defectPct}%)</span>
+                              </div>
+                            </>
+                          );
+                        })()}
                       </div>
                     </>
                   )}
@@ -508,27 +657,64 @@ export const PLSimulatorSection: React.FC<PLSimulatorSectionProps> = ({
                 </div>
               </div>
 
-              {/* Simulated AI Explanation Feed Banner */}
-              <div className="p-3.5 bg-acies-yellow/[0.03] dark:bg-white/[0.01] border border-black/10 dark:border-white/10 rounded-xl text-[10.5px] leading-relaxed text-zinc-550 dark:text-zinc-450 font-semibold relative flex gap-2 items-start">
-                <Cpu size={14} className="text-acies-yellow shrink-0 mt-0.5 animate-pulse" />
-                <div>
-                  {simTab === 'remove' && (
-                    <span>
-                      <strong>AI Reasoner Feedback:</strong> Discontinuing <strong>{selectedSku.name}</strong> eliminates {selectedSku.stockouts} annual stockouts and {(selectedSku.cx * 100).toFixed(0)}% complexity score from the catalog. {removeMarginImpact > 0 ? `Global portfolio margin improves by +${removeMarginImpact}pp.` : 'Be sure to monitor customer retention on substitute variants.'}
+              {/* Simulated AI Explanation Feed Banner or Advanced Sunset Justification */}
+              {simTab === 'remove' ? (
+                <div className="p-4 bg-purple-500/5 dark:bg-purple-950/10 border border-purple-500/15 dark:border-purple-500/20 rounded-xl space-y-3 shadow-sm animate-fadeIn">
+                  <div className="flex justify-between items-center border-b border-purple-500/15 pb-2">
+                    <span className="text-[10px] font-black uppercase tracking-wider text-purple-600 dark:text-purple-400 flex items-center gap-1 font-sans">
+                      <Sparkles size={11} className="animate-pulse text-purple-500" />
+                      AI Sunset Business Justification
                     </span>
-                  )}
-                  {simTab === 'price' && (
-                    <span>
-                      <strong>AI Reasoner Feedback:</strong> A pricing shift of <strong>{priceChange > 0 ? '+' : ''}{priceChange}%</strong> on <strong>{selectedSku.name}</strong> with a volume elasticity coefficient of {volumeElasticity}x is predicted to {revDelta > 0 ? 'increase' : 'decrease'} revenue by ₹{Math.abs(revDelta)} Cr and {newMargin > selectedSku.margin ? 'lift' : 'reduce'} margins to {newMargin}%.
+                    <span className={`px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest ${
+                      netProfitImpact >= 0 
+                        ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' 
+                        : 'bg-red-500/10 text-red-500 border border-red-500/20'
+                    }`}>
+                      {netProfitImpact >= 0 ? 'STRONG JUSTIFICATION' : 'EVALUATE RISKS'}
                     </span>
-                  )}
-                  {simTab === 'launch' && (
-                    <span>
-                      <strong>AI Reasoner Feedback:</strong> A new launch projected at ₹{projectedRevenue} Cr and {expectedMargin}% margin with a <strong>{cannRiskLabel}</strong> cannibalization rate is predicted to deliver ₹{netLaunchRev} Cr net portfolio revenue after cannibalization adjustments.
-                    </span>
-                  )}
+                  </div>
+
+                  <p className="text-[10.5px] text-zinc-850 dark:text-zinc-200 leading-relaxed font-black uppercase tracking-wide font-sans">
+                    <strong>Verdict:</strong> {netProfitImpact >= 0 
+                      ? `DELIST & MIGRATE ${selectedSku.name.split(' ')[0]} ➔ ${sunsetSubstituteSku ? sunsetSubstituteSku.name.split(' ')[0] : 'Sibling'}` 
+                      : `HOLD DISCONTINUATION / ADJUST PRICE`}
+                  </p>
+
+                  <div className="text-[9.5px] text-zinc-550 dark:text-zinc-400 space-y-2 leading-relaxed font-semibold">
+                    <p>
+                      <strong>Core Rationale:</strong> Sunsetting <strong className="text-zinc-700 dark:text-white">{selectedSku.name}</strong> eliminates a low-value, high-complexity variant ({selectedSku.cx * 100}% complexity score). 
+                      {sunsetSubstituteSku ? (
+                        <span>
+                          {" "}Migrating buyers to the higher-margin substitute <strong className="text-zinc-700 dark:text-white">{sunsetSubstituteSku.name}</strong> ({sunsetSubstituteSku.margin}% margin vs {selectedSku.margin}%) recaptures <strong className="text-emerald-505">₹{transferredVolume} Cr</strong> of revenue.
+                        </span>
+                      ) : null}
+                      {" "}This triggers a complexity cost savings of <strong className="text-blue-500">₹{complexitySavings} Cr</strong> and recovers <strong className="text-blue-500">₹{cannibalizationRelief} Cr</strong> in cannibalization relief on the substitute.
+                    </p>
+                    <p>
+                      <strong>Net Portfolio Impact:</strong> Total profit shifts by <strong className={netProfitImpact >= 0 ? 'text-emerald-500' : 'text-red-500'}>₹{netProfitImpact} Cr</strong> with a blended margin shift of <strong className={removeMarginImpact >= 0 ? 'text-emerald-500' : 'text-red-500'}>{removeMarginImpact > 0 ? '+' : ''}{removeMarginImpact}pp</strong>.
+                    </p>
+                    <p>
+                      <strong>Implementation Strategy:</strong> Issue 60-day notices to retail partners. Raise safety stock buffers by <strong className="text-purple-550">15%</strong> on substitute {sunsetSubstituteSku ? sunsetSubstituteSku.name.split(' ')[0] : 'sibling'} to capture shifted volume and prevent stockout leakages.
+                    </p>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className="p-3.5 bg-acies-yellow/[0.03] dark:bg-white/[0.01] border border-black/10 dark:border-white/10 rounded-xl text-[10.5px] leading-relaxed text-zinc-550 dark:text-zinc-450 font-semibold relative flex gap-2 items-start">
+                  <Cpu size={14} className="text-acies-yellow shrink-0 mt-0.5 animate-pulse" />
+                  <div>
+                    {simTab === 'price' && (
+                      <span>
+                        <strong>AI Reasoner Feedback:</strong> A pricing shift of <strong>{priceChange > 0 ? '+' : ''}{priceChange}%</strong> on <strong>{selectedSku.name}</strong> with a volume elasticity coefficient of {volumeElasticity}x is predicted to {revDelta > 0 ? 'increase' : 'decrease'} revenue by ₹{Math.abs(revDelta)} Cr and {newMargin > selectedSku.margin ? 'lift' : 'reduce'} margins to {newMargin}%.
+                      </span>
+                    )}
+                    {simTab === 'launch' && (
+                      <span>
+                        <strong>AI Reasoner Feedback:</strong> A new launch projected at ₹{projectedRevenue} Cr and {expectedMargin}% margin with a <strong>{cannRiskLabel}</strong> cannibalization rate is predicted to deliver ₹{netLaunchRev} Cr net portfolio revenue after cannibalization adjustments.
+                      </span>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

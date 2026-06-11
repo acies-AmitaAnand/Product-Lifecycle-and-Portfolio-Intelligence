@@ -175,10 +175,33 @@ export function useSkuRationalizationState(role: Role, isDarkMode: boolean) {
   const [btnText, setBtnText]                     = useState('⚡ Run Simulation');
   const [isSimulating, setIsSimulating]           = useState(false);
 
+  // Sunset SKU transference overrides
+  const [sunsetTransferenceRate, setSunsetTransferenceRate] = useState(60);
+  const [sunsetSubstituteSkuName, setSunsetSubstituteSkuName] = useState('');
+
   const selectedSku = useMemo(
     () => locationFilteredSkus.find(s => s.name === selectedSkuName) || locationFilteredSkus[0] || SKUS[0],
     [selectedSkuName, locationFilteredSkus]
   );
+
+  const sunsetSubstituteOptions = useMemo(() => {
+    if (!selectedSku) return [];
+    return locationFilteredSkus.filter(s => s.cat === selectedSku.cat && s.name !== selectedSku.name);
+  }, [selectedSku, locationFilteredSkus]);
+
+  useEffect(() => {
+    if (sunsetSubstituteOptions.length > 0) {
+      if (!sunsetSubstituteOptions.some(o => o.name === sunsetSubstituteSkuName)) {
+        setSunsetSubstituteSkuName(sunsetSubstituteOptions[0].name);
+      }
+    } else {
+      setSunsetSubstituteSkuName('');
+    }
+  }, [selectedSkuName, sunsetSubstituteOptions, sunsetSubstituteSkuName]);
+
+  const sunsetSubstituteSku = useMemo(() => {
+    return sunsetSubstituteOptions.find(o => o.name === sunsetSubstituteSkuName) || null;
+  }, [sunsetSubstituteSkuName, sunsetSubstituteOptions]);
 
   const totalRev = useMemo(
     () => locationFilteredSkus.reduce((s, k) => s + k.rev, 0),
@@ -212,9 +235,45 @@ export function useSkuRationalizationState(role: Role, isDarkMode: boolean) {
     }, 800);
   };
 
-  // Simulator derived values
-  const removeRevImpact    = -selectedSku.rev;
-  const removeMarginImpact = parseFloat((selectedSku.margin < 28 ? 0.4 : selectedSku.margin > 40 ? -0.2 : 0).toFixed(1));
+  // Advanced Simulator derived values for Sunset SKU
+  const transferredVolume = parseFloat((selectedSku.rev * (sunsetTransferenceRate / 100)).toFixed(1));
+  const leakageVolume     = parseFloat((selectedSku.rev * (1 - sunsetTransferenceRate / 100)).toFixed(1));
+  const complexitySavings = parseFloat((selectedSku.rev * 0.04).toFixed(1)); // 4% operational savings
+  const cannibalizationRelief = useMemo(() => {
+    if (!sunsetSubstituteSku) return 0;
+    return parseFloat((sunsetSubstituteSku.rev * 0.05 * selectedSku.cx).toFixed(1));
+  }, [sunsetSubstituteSku, selectedSku.cx]);
+
+  const netProfitImpact = useMemo(() => {
+    const delistedProfit = selectedSku.rev * (selectedSku.margin / 100);
+    const substituteMargin = sunsetSubstituteSku ? sunsetSubstituteSku.margin : 0;
+    const transferredProfit = transferredVolume * (substituteMargin / 100);
+    const reliefProfit = sunsetSubstituteSku ? (cannibalizationRelief * (substituteMargin / 100)) : 0;
+    return parseFloat((transferredProfit - delistedProfit + complexitySavings + reliefProfit).toFixed(2));
+  }, [selectedSku.rev, selectedSku.margin, transferredVolume, sunsetSubstituteSku, complexitySavings, cannibalizationRelief]);
+
+  const removeRevImpact = useMemo(() => {
+    // Net portfolio revenue shift = - discontinued + transferred + cannibalization relief
+    return parseFloat((-selectedSku.rev + transferredVolume + cannibalizationRelief).toFixed(1));
+  }, [selectedSku.rev, transferredVolume, cannibalizationRelief]);
+
+  const removeMarginImpact = useMemo(() => {
+    // Blended margin shift
+    const oldPortfolioProfit = locationFilteredSkus.reduce((sum, s) => sum + s.rev * (s.margin / 100), 0);
+    const delistedProfit = selectedSku.rev * (selectedSku.margin / 100);
+    const substituteMargin = sunsetSubstituteSku ? sunsetSubstituteSku.margin : 0;
+    const transferredProfit = transferredVolume * (substituteMargin / 100);
+    const reliefProfit = sunsetSubstituteSku ? (cannibalizationRelief * (substituteMargin / 100)) : 0;
+    
+    const newPortfolioProfit = oldPortfolioProfit - delistedProfit + transferredProfit + complexitySavings + reliefProfit;
+    const oldPortfolioRev = totalRev;
+    const newPortfolioRev = totalRev - selectedSku.rev + transferredVolume + cannibalizationRelief;
+    
+    const oldBlendedMargin = (oldPortfolioProfit / (oldPortfolioRev || 1)) * 100;
+    const newBlendedMargin = (newPortfolioProfit / (newPortfolioRev || 1)) * 100;
+    return parseFloat((newBlendedMargin - oldBlendedMargin).toFixed(2));
+  }, [locationFilteredSkus, selectedSku, sunsetSubstituteSku, transferredVolume, complexitySavings, cannibalizationRelief, totalRev]);
+
   const removeCustImpact   = selectedSku.val > 0.6 ? 'High — brand loyalists affected' : 'Low — high substitution rate';
   const removeScImpact     = `Frees ${selectedSku.lead}d lead buffer · −${selectedSku.stockouts} stockout events`;
   const volChange          = (priceChange * volumeElasticity) / 100;
@@ -571,6 +630,11 @@ export function useSkuRationalizationState(role: Role, isDarkMode: boolean) {
     volChange, newRev, revDelta, newMargin,
     cannRiskLabel, netLaunchRev,
     paretoData, matrixScatterData, groupedBarData,
+    // sunset state & calculations
+    sunsetTransferenceRate, setSunsetTransferenceRate,
+    sunsetSubstituteSkuName, setSunsetSubstituteSkuName,
+    sunsetSubstituteOptions, sunsetSubstituteSku,
+    transferredVolume, leakageVolume, complexitySavings, cannibalizationRelief, netProfitImpact,
     // analyst
     skuA, setSkuA,
     skuB, setSkuB,
