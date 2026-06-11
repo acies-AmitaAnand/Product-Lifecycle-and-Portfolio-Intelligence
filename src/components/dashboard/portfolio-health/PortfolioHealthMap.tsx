@@ -1332,7 +1332,7 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean; onAuditClick?: (metricNam
   });
   const [kpiFlash, setKpiFlash] = useState<Record<string, 'up' | 'dn' | null>>({});
 
-  // Listen to hashchange to support category deep-linking
+  // Listen to hashchange to support category and SKU deep-linking
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash || '#';
@@ -1346,6 +1346,14 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean; onAuditClick?: (metricNam
           setFilterCategory(matched);
         } else if (catParam.toLowerCase() === 'all') {
           setFilterCategory('All');
+        }
+      }
+
+      const skuParam = params.get('sku');
+      if (skuParam) {
+        const foundSku = SKUS.find(s => s.name.toLowerCase() === skuParam.toLowerCase());
+        if (foundSku) {
+          setSelectedSkuForModal(foundSku);
         }
       }
     };
@@ -2314,10 +2322,34 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean; onAuditClick?: (metricNam
       <SkuDetailsModal
         isOpen={!!selectedSkuForModal}
         sku={selectedSkuForModal}
-        onClose={() => setSelectedSkuForModal(null)}
+        onClose={() => {
+          setSelectedSkuForModal(null);
+          try {
+            const hash = window.location.hash || '#';
+            const params = new URLSearchParams(hash.substring(1).replace(/\+/g, '%20'));
+            if (params.has('sku')) {
+              params.delete('sku');
+              const newHash = params.toString();
+              window.history.replaceState(null, '', newHash ? '#' + newHash : ' ');
+            }
+          } catch (e) {
+            console.warn("Could not remove sku from URL hash:", e);
+          }
+        }}
         onRequestAction={(email, name, subject, body) => {
           openEmailComposer(email, name, subject, body);
           setSelectedSkuForModal(null);
+          try {
+            const hash = window.location.hash || '#';
+            const params = new URLSearchParams(hash.substring(1).replace(/\+/g, '%20'));
+            if (params.has('sku')) {
+              params.delete('sku');
+              const newHash = params.toString();
+              window.history.replaceState(null, '', newHash ? '#' + newHash : ' ');
+            }
+          } catch (e) {
+            console.warn("Could not remove sku from URL hash:", e);
+          }
         }}
       />
 
@@ -2380,7 +2412,7 @@ export const PortfolioHealthMap: React.FC<PortfolioHealthMapProps> = ({ role, is
 
   const [selectedSkuForModal, setSelectedSkuForModal] = useState<any>(null);
 
-  // Listen to hashchange to support subtab, category and minRev deep-linking
+  // Listen to hashchange to support subtab, category, minRev and SKU deep-linking
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash || '#';
@@ -2414,6 +2446,14 @@ export const PortfolioHealthMap: React.FC<PortfolioHealthMapProps> = ({ role, is
           setFilterCat('all');
           const res = SKUS.filter(s => s.rev >= currentMinRev);
           setFilteredSKUs(res);
+        }
+      }
+
+      const skuParam = params.get('sku');
+      if (skuParam) {
+        const foundSku = SKUS.find(s => s.name.toLowerCase() === skuParam.toLowerCase());
+        if (foundSku) {
+          setSelectedSkuForModal(foundSku);
         }
       }
     };
@@ -3535,7 +3575,20 @@ export const PortfolioHealthMap: React.FC<PortfolioHealthMapProps> = ({ role, is
       <SkuDetailsModal
         isOpen={!!selectedSkuForModal}
         sku={selectedSkuForModal}
-        onClose={() => setSelectedSkuForModal(null)}
+        onClose={() => {
+          setSelectedSkuForModal(null);
+          try {
+            const hash = window.location.hash || '#';
+            const params = new URLSearchParams(hash.substring(1).replace(/\+/g, '%20'));
+            if (params.has('sku')) {
+              params.delete('sku');
+              const newHash = params.toString();
+              window.history.replaceState(null, '', newHash ? '#' + newHash : ' ');
+            }
+          } catch (e) {
+            console.warn("Could not remove sku from URL hash:", e);
+          }
+        }}
         onRequestAction={(email, name, subject, body) => {
           addToast(
             'Action Plan Request Logged',
@@ -3543,6 +3596,17 @@ export const PortfolioHealthMap: React.FC<PortfolioHealthMapProps> = ({ role, is
             '#10b981'
           );
           setSelectedSkuForModal(null);
+          try {
+            const hash = window.location.hash || '#';
+            const params = new URLSearchParams(hash.substring(1).replace(/\+/g, '%20'));
+            if (params.has('sku')) {
+              params.delete('sku');
+              const newHash = params.toString();
+              window.history.replaceState(null, '', newHash ? '#' + newHash : ' ');
+            }
+          } catch (e) {
+            console.warn("Could not remove sku from URL hash:", e);
+          }
         }}
       />
 

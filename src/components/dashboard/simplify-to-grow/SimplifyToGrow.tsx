@@ -198,7 +198,7 @@ const FillBar: React.FC<{ value: number; max: number; color: string; label: stri
 const SkuFocusDrawer: React.FC<{
   sku: EnrichedSKU;
   onClose: () => void;
-  onNavigate: (tab: number) => void;
+  onNavigate: (tab: number, extraParams?: string) => void;
   isDarkMode: boolean;
   maxIppv: number;
 }> = ({ sku, onClose, onNavigate, isDarkMode, maxIppv }) => {
@@ -332,12 +332,12 @@ const SkuFocusDrawer: React.FC<{
 
           {/* Footer Actions */}
           <div className="p-5 border-t border-black/10 dark:border-white/10 bg-black/[0.02] dark:bg-white/[0.01] flex flex-wrap gap-2">
-            <button onClick={() => onNavigate(4)}
+            <button onClick={() => onNavigate(4, `view=simulator&simTab=remove&sku=${encodeURIComponent(sku.name)}`)}
               className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-wider text-white transition-all hover:opacity-90 shadow-md"
               style={{ backgroundColor: '#6366f1' }}>
               <Scissors size={12} /> Open Rationalization
             </button>
-            <button onClick={() => onNavigate(1)}
+            <button onClick={() => onNavigate(1, `subtab=ph-kpi&sku=${encodeURIComponent(sku.name)}`)}
               className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-wider text-white transition-all hover:opacity-90 shadow-md"
               style={{ backgroundColor: '#0ea5e9' }}>
               <Activity size={12} /> Portfolio Health
@@ -526,11 +526,10 @@ export const SimplifyToGrow: React.FC<Props> = ({ isDarkMode, setActiveTab }) =>
       <div className="relative overflow-hidden rounded-2xl border border-black/10 dark:border-white/10 bg-gradient-to-br from-indigo-600/10 via-purple-600/5 to-emerald-600/10 dark:from-indigo-900/30 dark:via-purple-900/20 dark:to-emerald-900/20 p-6">
         <div className="relative z-10 flex flex-col sm:flex-row sm:items-start justify-between gap-4">
           <div className="flex-1">
-            <div className="flex items-center gap-2 mb-1">
+            <div className="flex items-center gap-2 mb-1.5">
               <span className="text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-indigo-600/15 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
                 BAIN &amp; COMPANY FRAMEWORK
               </span>
-              <span className="text-[8px] text-zinc-500 font-bold uppercase tracking-wider">Beyond the Tail · CPG Simplification</span>
             </div>
             <h2 className="text-xl font-black text-acies-gray dark:text-white leading-tight">
               Simplify to Grow — Strategic Flywheel
@@ -538,23 +537,52 @@ export const SimplifyToGrow: React.FC<Props> = ({ isDarkMode, setActiveTab }) =>
             <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 max-w-lg">
               Re-investing to grow vs. merely cutting SKUs. Up to 5% sales uplift through consumer-led portfolio simplification.
             </p>
-            {/* Quick-nav pills */}
-            <div className="flex flex-wrap gap-2 mt-3">
-              {[
-                { label: `${badCount} Bad Complexity — Rationalise`, tab: 4, color: '#ef4444', icon: Scissors },
-                { label: 'Portfolio Health Map', tab: 1, color: '#0ea5e9', icon: Activity },
-                { label: 'Profitability Tree', tab: 3, color: '#f59e0b', icon: BarChart3 },
-                { label: 'SKU Assortment', tab: 8, color: '#a855f7', icon: Award },
-              ].map(nav => {
-                const NavIcon = nav.icon;
-                return (
-                  <button key={nav.label} onClick={() => handleNavigate(nav.tab)}
-                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[8px] font-black uppercase tracking-wider border transition-all hover:opacity-80"
-                    style={{ borderColor: `${nav.color}30`, backgroundColor: `${nav.color}10`, color: nav.color }}>
-                    <NavIcon size={9} /> {nav.label} <ArrowRight size={8} />
-                  </button>
-                );
-              })}
+            {/* Score Justification / Methodology explanation panel */}
+            <div className="mt-4 p-4 rounded-xl bg-white/5 border border-white/10 text-[9px] text-zinc-300 space-y-3 max-w-2xl animate-fadeIn">
+              <div className="font-extrabold uppercase tracking-widest text-[#f59e0b] flex items-center gap-1.5">
+                <Info size={12} className="stroke-[2.5]" /> Flywheel Score Justification & Live Computation
+              </div>
+              
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-black/25 p-3 rounded-lg border border-white/5">
+                <div>
+                  <span className="text-[10px] font-bold text-white uppercase tracking-wider">Formula & Average Calculation:</span>
+                  <div className="text-zinc-300 mt-1 font-mono text-[9.5px]">
+                    (Consumer + Retailer + Value Chain + E2E + Momentum) / 5
+                    <div className="mt-0.5 text-zinc-400">
+                      = ({pillars[0].score} + {pillars[1].score} + {pillars[2].score} + {pillars[3].score} + {pillars[4].score}) / 5 = <span className="text-emerald-450 dark:text-emerald-400 font-extrabold">{overallScore}</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="text-left sm:text-right shrink-0">
+                  <div className="text-[14px] font-black text-emerald-400">{overallScore}/100</div>
+                  <div className="text-[7px] text-zinc-450 uppercase font-black tracking-widest">Balanced Health Index</div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-2 pt-1 text-[8.5px]">
+                {pillars.map((p, idx) => {
+                  const P_Icon = p.icon;
+                  return (
+                    <div key={p.pillar} className="p-2 rounded-lg bg-white/[0.02] border border-white/5 flex flex-col justify-between gap-1.5 hover:bg-white/[0.04] transition-colors">
+                      <div className="flex items-center gap-1.5">
+                        <div className="p-1 rounded bg-white/5 shrink-0">
+                          <P_Icon size={10} style={{ color: p.color }} />
+                        </div>
+                        <span className="text-[7.5px] font-black uppercase tracking-wider truncate text-zinc-300" title={p.pillar}>
+                          Pillar {idx + 1}
+                        </span>
+                      </div>
+                      <div>
+                        <div className="text-xs font-black text-white">{p.score}/100</div>
+                        <div className="text-[7px] text-zinc-400 font-bold uppercase truncate" title={p.pillar}>{p.pillar}</div>
+                      </div>
+                      <div className="text-[7px] text-zinc-400 font-medium leading-tight pt-1.5 border-t border-white/5">
+                        Metric: <span className="font-extrabold text-white">{p.kpiValue}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </div>
           <div className="flex items-center gap-4 shrink-0">
@@ -747,7 +775,7 @@ export const SimplifyToGrow: React.FC<Props> = ({ isDarkMode, setActiveTab }) =>
                               style={{ backgroundColor: cfg.bg, color: cfg.color }}>{cfg.label}</span>
                           </td>
                           <td className="py-2 px-2 text-center">
-                            <button onClick={e => { e.stopPropagation(); handleNavigate(4); }}
+                            <button onClick={e => { e.stopPropagation(); handleNavigate(4, `view=simulator&simTab=remove&sku=${encodeURIComponent(sku.name)}`); }}
                               className="text-[7px] font-black text-indigo-500 hover:text-indigo-400 transition-colors flex items-center gap-0.5 mx-auto"
                               title="Open in SKU Rationalization">
                               <Scissors size={9} /> <ArrowRight size={8} />
