@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Filter, RefreshCw, Download, Zap, BarChart2, PieChart as PieIcon, Shield, ShieldAlert, DollarSign, Activity, Play, Check, AlertTriangle
+  Filter, RefreshCw, Download, Zap, BarChart2, PieChart as PieIcon, Shield, ShieldAlert, DollarSign, Activity, Play, Check, AlertTriangle, Rocket, TrendingUp, Grid, Table
 } from 'lucide-react';
 import { 
   ResponsiveContainer, BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -10,6 +10,7 @@ import {
 import { ResolveEscalationModal, VPEscalation } from './ResolveEscalationModal';
 import { EmailComposerModal } from '../portfolio-health/EmailComposerModal';
 import { SuccessFeedbackModal } from '../portfolio-health/SuccessFeedbackModal';
+import { AIPredictionModal } from '../signals-board/AIPredictionModal';
 
 const RECIPIENT_TITLES: Record<string, string> = {
   'ananya.sen@aciesglobal.com': 'VP Finance',
@@ -80,11 +81,14 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
   const [filterRisk, setFilterRisk] = useState('All');
   const [filterQuarter, setFilterQuarter] = useState('All');
   const [pipelineView, setPipelineView] = useState<'bar' | 'pie'>('bar');
+  const [predictionsView, setPredictionsView] = useState<'grid' | 'table'>('grid');
   const [localSimulateDelay, setLocalSimulateDelay] = useState(false);
   const simulateDelay = propSimulateDelay !== undefined ? propSimulateDelay : localSimulateDelay;
   const setSimulateDelay = propSetSimulateDelay !== undefined ? propSetSimulateDelay : setLocalSimulateDelay;
   const [lastRefreshed, setLastRefreshed] = useState('');
   const [toasts, setToasts] = useState<{ id: string; title: string; body: string; color: string }[]>([]);
+  const [isPredictionModalOpen, setIsPredictionModalOpen] = useState(false);
+  const [predictionModalType, setPredictionModalType] = useState<'stockout' | 'elasticity' | 'margin' | 'demand' | 'delay' | null>(null);
 
   useEffect(() => {
     const updateTime = () => {
@@ -398,8 +402,106 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
         </div>
       </div>
 
+      {/* Row 1: Executive Readiness Score (Top Section) */}
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
+        
+        {/* Left Circular Gauge Banner */}
+        <div className="xl:col-span-4 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm flex items-center justify-between relative overflow-hidden group">
+          <div className="absolute top-0 right-0 p-3 opacity-5 rotate-12 pointer-events-none text-[#6d28d9] dark:text-[#a78bfa]">
+            <Rocket size={100} />
+          </div>
+          
+          <div className="space-y-2">
+            <span className="text-[9px] font-bold uppercase tracking-widest text-[#6d28d9] dark:text-[#a78bfa]">Hero Metric</span>
+            <h3 className="text-sm font-display font-extrabold text-zinc-800 dark:text-zinc-200">Overall Launch Readiness</h3>
+            <p className="text-[10px] text-zinc-500 dark:text-zinc-400 leading-snug max-w-[200px]">
+              Average score across {totalLaunches} active pipeline SKUs.
+            </p>
+            <div className="flex items-center gap-1 text-[9px] font-bold text-emerald-500 mt-1">
+              <TrendingUp size={11} />
+              <span>+2.4% vs last week</span>
+            </div>
+          </div>
 
+          <div className="relative flex items-center justify-center shrink-0 w-28 h-28">
+            <svg className="w-28 h-28 transform -rotate-90">
+              <circle 
+                cx="56" 
+                cy="56" 
+                r={radius} 
+                className="text-black/5 dark:text-white/5" 
+                strokeWidth={strokeWidth} 
+                stroke="currentColor" 
+                fill="transparent" 
+              />
+              <circle 
+                cx="56" 
+                cy="56" 
+                r={radius} 
+                className="text-[#6d28d9] dark:text-[#a78bfa]" 
+                strokeWidth={strokeWidth} 
+                strokeDasharray={circumference} 
+                strokeDashoffset={strokeDashoffset} 
+                strokeLinecap="round" 
+                stroke="currentColor" 
+                fill="transparent" 
+              />
+            </svg>
+            <div className="absolute text-center">
+              <span className="text-xl font-display font-black text-zinc-850 dark:text-zinc-150">{overallReadiness}%</span>
+              <p className="text-[8px] uppercase tracking-widest text-zinc-400 font-bold leading-none mt-0.5">Ready</p>
+            </div>
+          </div>
+        </div>
 
+        {/* Right KPI Cards Grid */}
+        <div className="xl:col-span-8 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
+          
+          <div className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm flex flex-col justify-between h-28 hover:bg-black/[0.01] dark:hover:bg-white/[0.01] transition-all">
+            <p className="text-[8px] font-bold uppercase tracking-widest text-zinc-400">On Track</p>
+            <h4 className="text-2xl font-display font-extrabold text-emerald-500 leading-none">{onTrackCount}</h4>
+            <p className="text-[9px] text-zinc-400 font-semibold uppercase">Status: Optimal</p>
+          </div>
+
+          <div className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm flex flex-col justify-between h-28 hover:bg-black/[0.01] dark:hover:bg-white/[0.01] transition-all">
+            <p className="text-[8px] font-bold uppercase tracking-widest text-zinc-400">Delayed</p>
+            <h4 className="text-2xl font-display font-extrabold text-red-500 leading-none">{delayedCount}</h4>
+            <p className="text-[9px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">Needs Focus</p>
+          </div>
+
+          <div className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm flex flex-col justify-between h-28 hover:bg-black/[0.01] dark:hover:bg-white/[0.01] transition-all">
+            <p className="text-[8px] font-bold uppercase tracking-widest text-zinc-400">At Risk</p>
+            <h4 className="text-2xl font-display font-extrabold text-amber-500 leading-none">{atRiskCount}</h4>
+            <p className="text-[9px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">Watching</p>
+          </div>
+
+          <div className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm flex flex-col justify-between h-28 hover:bg-black/[0.01] dark:hover:bg-white/[0.01] transition-all">
+            <p className="text-[8px] font-bold uppercase tracking-widest text-zinc-400">Next 60 Days</p>
+            <h4 className="text-2xl font-display font-extrabold text-blue-500 leading-none">
+              {filteredProducts.filter(p => p.stage !== 'Launch Completed' && p.stage !== 'Ideation').length}
+            </h4>
+            <p className="text-[9px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">Readying</p>
+          </div>
+
+          <div className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm flex flex-col justify-between h-28 hover:bg-black/[0.01] dark:hover:bg-white/[0.01] transition-all">
+            <p className="text-[8px] font-bold uppercase tracking-widest text-zinc-400">Rev Exposure</p>
+            <h4 className="text-2xl font-display font-extrabold text-orange-500 leading-none">
+              ${revenueExposure.toFixed(1)}M
+            </h4>
+            <p className="text-[9px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">At-Risk/Delayed</p>
+          </div>
+
+          <div className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm flex flex-col justify-between h-28 hover:bg-black/[0.01] dark:hover:bg-white/[0.01] transition-all">
+            <p className="text-[8px] font-bold uppercase tracking-widest text-zinc-400">Market Coverage</p>
+            <h4 className="text-2xl font-display font-extrabold text-[#6d28d9] dark:text-[#a78bfa] leading-none">
+              {marketCoverage}%
+            </h4>
+            <p className="text-[9px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">Geo Readiness</p>
+          </div>
+
+        </div>
+
+      </div>
 
       {/* Row 2: Launch Pipeline Overview | Risk & Escalation Center */}
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
@@ -603,41 +705,168 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
         </div>
 
         <div className="xl:col-span-5 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm space-y-4">
-          <div className="flex items-center gap-2">
-            <Zap size={12} className="text-[#6d28d9] dark:text-[#a78bfa]" />
-            <span className="text-[10px] font-bold uppercase tracking-widest text-[#6d28d9] dark:text-[#a78bfa]">AI Predictions</span>
-          </div>
-          <div className="space-y-2 text-[9px]">
-            <div className="p-2 bg-purple-500/5 border border-purple-500/15 rounded-sm">
-              <p className="font-semibold mb-0.5">⚠️ BrandC Products: 78% delay probability</p>
-              <p className="text-zinc-500">Packaging sourcing constraint in EMEA</p>
+          <div className="flex justify-between items-center pb-2 border-b border-black/5 dark:border-white/5">
+            <div className="flex items-center gap-2">
+              <Zap size={12} className="text-[#6d28d9] dark:text-[#a78bfa]" />
+              <span className="text-[10px] font-bold uppercase tracking-widest text-[#6d28d9] dark:text-[#a78bfa]">AI Risk Predictions</span>
             </div>
-            <div className="p-2 bg-emerald-500/5 border border-emerald-500/15 rounded-sm">
-              <p className="font-semibold mb-0.5">💡 Recommendation: Domestic sourcing</p>
-              <p className="text-zinc-500">Recovers 12 days, saves $2.1M revenue risk</p>
+            <div className="flex items-center border border-black/10 dark:border-white/10 rounded-md overflow-hidden bg-black/5 dark:bg-white/5 p-0.5 shrink-0">
+              <button
+                type="button"
+                onClick={() => setPredictionsView('grid')}
+                className={`p-1.5 px-2 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm shrink-0 ${
+                  predictionsView === 'grid'
+                    ? 'bg-purple-600 text-white shadow-sm'
+                    : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 bg-transparent'
+                }`}
+                title="Grid View"
+              >
+                <Grid size={14} />
+              </button>
+              <button
+                type="button"
+                onClick={() => setPredictionsView('table')}
+                className={`p-1.5 px-2 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm shrink-0 ${
+                  predictionsView === 'table'
+                    ? 'bg-purple-600 text-white shadow-sm'
+                    : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 bg-transparent'
+                }`}
+                title="Table View"
+              >
+                <Table size={14} />
+              </button>
             </div>
           </div>
 
-          <div className="pt-3 border-t border-black/5 dark:border-white/5">
-            <button 
-              onClick={() => {
-                const state = !simulateDelay;
-                setSimulateDelay(state);
-                if (state) {
-                  addToast('Simulation Activated', 'APAC shipping delay applied.', '#ef4444');
-                } else {
-                  addToast('Simulation Deactivated', 'Standard metrics restored.', '#3b82f6');
-                }
-              }}
-              className={`w-full px-3 py-1.5 rounded-sm text-[9px] font-bold uppercase tracking-wider transition-all cursor-pointer ${
-                simulateDelay 
-                  ? 'bg-red-500 text-white hover:bg-red-600' 
-                  : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-300 dark:hover:bg-zinc-700'
-              }`}
-            >
-              {simulateDelay ? 'Stop Cargo Delay Sim' : 'Run Cargo Delay Simulation'}
-            </button>
-          </div>
+          {predictionsView === 'grid' ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-[9px]">
+              {/* Card 1: Sourcing Delay */}
+              <div 
+                onClick={() => { setPredictionModalType('delay'); setIsPredictionModalOpen(true); }}
+                className="p-3 bg-purple-500/5 hover:bg-purple-500/10 border border-purple-500/15 dark:border-purple-500/20 rounded-sm cursor-pointer hover:scale-[1.02] transition-all flex flex-col justify-between h-24"
+              >
+                <div>
+                  <p className="font-bold text-zinc-800 dark:text-zinc-200 text-[10px] leading-tight">⚠️ Sourcing Delay (EMEA)</p>
+                  <p className="text-[9px] text-zinc-550 dark:text-zinc-400 mt-1 line-clamp-2">BrandC Snacks packaging shortage at EMEA hub.</p>
+                </div>
+                <div className="flex items-center justify-between mt-2 pt-1 border-t border-black/5 dark:border-white/5">
+                  <span className="text-[8px] font-semibold text-purple-600 dark:text-purple-400 bg-purple-500/10 px-1.5 py-0.5 rounded-sm">78% Risk</span>
+                  <span className="text-[8px] font-bold text-zinc-700 dark:text-zinc-300">$2.1M Impact</span>
+                </div>
+              </div>
+
+              {/* Card 2: Stockout Risk */}
+              <div 
+                onClick={() => { setPredictionModalType('stockout'); setIsPredictionModalOpen(true); }}
+                className="p-3 bg-red-500/5 hover:bg-red-500/10 border border-red-500/15 dark:border-red-500/20 rounded-sm cursor-pointer hover:scale-[1.02] transition-all flex flex-col justify-between h-24"
+              >
+                <div>
+                  <p className="font-bold text-zinc-800 dark:text-zinc-200 text-[10px] leading-tight">🚨 Stockout Risk (APAC)</p>
+                  <p className="text-[9px] text-zinc-550 dark:text-zinc-400 mt-1 line-clamp-2">BrandA Energy buffer below safety limit at Vapi Hub.</p>
+                </div>
+                <div className="flex items-center justify-between mt-2 pt-1 border-t border-black/5 dark:border-white/5">
+                  <span className="text-[8px] font-semibold text-red-600 dark:text-red-400 bg-red-500/10 px-1.5 py-0.5 rounded-sm">92% Risk</span>
+                  <span className="text-[8px] font-bold text-zinc-700 dark:text-zinc-300">$1.5M Impact</span>
+                </div>
+              </div>
+
+              {/* Card 3: Margin Compression */}
+              <div 
+                onClick={() => { setPredictionModalType('margin'); setIsPredictionModalOpen(true); }}
+                className="p-3 bg-amber-500/5 hover:bg-amber-500/10 border border-amber-500/15 dark:border-amber-500/20 rounded-sm cursor-pointer hover:scale-[1.02] transition-all flex flex-col justify-between h-24"
+              >
+                <div>
+                  <p className="font-bold text-zinc-800 dark:text-zinc-200 text-[10px] leading-tight">📉 Margin Compression</p>
+                  <p className="text-[9px] text-zinc-550 dark:text-zinc-400 mt-1 line-clamp-2">BrandC Biscuits gross margin breach from discount dependence.</p>
+                </div>
+                <div className="flex items-center justify-between mt-2 pt-1 border-t border-black/5 dark:border-white/5">
+                  <span className="text-[8px] font-semibold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded-sm">81% Risk</span>
+                  <span className="text-[8px] font-bold text-zinc-700 dark:text-zinc-300">$0.9M Impact</span>
+                </div>
+              </div>
+
+              {/* Card 4: Demand Surge */}
+              <div 
+                onClick={() => { setPredictionModalType('demand'); setIsPredictionModalOpen(true); }}
+                className="p-3 bg-indigo-500/5 hover:bg-indigo-500/10 border border-indigo-500/15 dark:border-indigo-500/20 rounded-sm cursor-pointer hover:scale-[1.02] transition-all flex flex-col justify-between h-24"
+              >
+                <div>
+                  <p className="font-bold text-zinc-800 dark:text-zinc-200 text-[10px] leading-tight">⚡ Capacity Bottleneck (APAC)</p>
+                  <p className="text-[9px] text-zinc-550 dark:text-zinc-400 mt-1 line-clamp-2">BrandF Eco Water demand spike exceeding plant throughput.</p>
+                </div>
+                <div className="flex items-center justify-between mt-2 pt-1 border-t border-black/5 dark:border-white/5">
+                  <span className="text-[8px] font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 px-1.5 py-0.5 rounded-sm">88% Risk</span>
+                  <span className="text-[8px] font-bold text-zinc-700 dark:text-zinc-300">$1.2M Impact</span>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="overflow-y-auto overflow-x-auto h-[192px]">
+              <table className="w-full text-left text-[9px] border-collapse">
+                <thead>
+                  <tr className="border-b border-black/10 dark:border-white/10 text-zinc-400 font-bold uppercase tracking-wider">
+                    <th className="py-2 pb-1.5 font-semibold">Focus Area</th>
+                    <th className="py-2 pb-1.5 font-semibold text-center">Risk</th>
+                    <th className="py-2 pb-1.5 font-semibold text-right">Rev Impact</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-black/5 dark:divide-white/5 text-zinc-600 dark:text-zinc-400">
+                  <tr 
+                    onClick={() => { setPredictionModalType('delay'); setIsPredictionModalOpen(true); }}
+                    className="hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer transition-colors group"
+                  >
+                    <td className="py-1.5 pr-2 font-medium">
+                      <span className="text-zinc-850 dark:text-zinc-150 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors font-bold">⚠️ Sourcing Delay (EMEA)</span>
+                      <p className="text-[8px] text-zinc-400 font-normal mt-0.5">BrandC Snacks packaging bottleneck</p>
+                    </td>
+                    <td className="py-1.5 text-center">
+                      <span className="text-purple-600 dark:text-purple-400 font-bold bg-purple-500/10 px-1.5 py-0.5 rounded-sm">78% Risk</span>
+                    </td>
+                    <td className="py-1.5 text-right font-mono font-bold text-zinc-700 dark:text-zinc-300">$2.1M</td>
+                  </tr>
+                  <tr 
+                    onClick={() => { setPredictionModalType('stockout'); setIsPredictionModalOpen(true); }}
+                    className="hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer transition-colors group"
+                  >
+                    <td className="py-1.5 pr-2 font-medium">
+                      <span className="text-zinc-850 dark:text-zinc-150 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors font-bold">🚨 Stockout Risk (APAC)</span>
+                      <p className="text-[8px] text-zinc-400 font-normal mt-0.5">BrandA Energy low Vapi Hub buffers</p>
+                    </td>
+                    <td className="py-1.5 text-center">
+                      <span className="text-red-600 dark:text-red-400 font-bold bg-red-500/10 px-1.5 py-0.5 rounded-sm">92% Risk</span>
+                    </td>
+                    <td className="py-1.5 text-right font-mono font-bold text-zinc-700 dark:text-zinc-300">$1.5M</td>
+                  </tr>
+                  <tr 
+                    onClick={() => { setPredictionModalType('margin'); setIsPredictionModalOpen(true); }}
+                    className="hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer transition-colors group"
+                  >
+                    <td className="py-1.5 pr-2 font-medium">
+                      <span className="text-zinc-850 dark:text-zinc-150 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors font-bold">📉 Margin Compression</span>
+                      <p className="text-[8px] text-zinc-400 font-normal mt-0.5">BrandC Biscuits promo concentration</p>
+                    </td>
+                    <td className="py-1.5 text-center">
+                      <span className="text-amber-600 dark:text-amber-400 font-bold bg-amber-500/10 px-1.5 py-0.5 rounded-sm">81% Risk</span>
+                    </td>
+                    <td className="py-1.5 text-right font-mono font-bold text-zinc-700 dark:text-zinc-300">$0.9M</td>
+                  </tr>
+                  <tr 
+                    onClick={() => { setPredictionModalType('demand'); setIsPredictionModalOpen(true); }}
+                    className="hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer transition-colors group"
+                  >
+                    <td className="py-1.5 pr-2 font-medium">
+                      <span className="text-zinc-850 dark:text-zinc-150 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors font-bold">⚡ Capacity Bottleneck (APAC)</span>
+                      <p className="text-[8px] text-zinc-400 font-normal mt-0.5">BrandF Eco Water demand surge</p>
+                    </td>
+                    <td className="py-1.5 text-center">
+                      <span className="text-indigo-600 dark:text-indigo-400 font-bold bg-indigo-500/10 px-1.5 py-0.5 rounded-sm">88% Risk</span>
+                    </td>
+                    <td className="py-1.5 text-right font-mono font-bold text-zinc-700 dark:text-zinc-300">$1.2M</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </div>
 
@@ -918,6 +1147,13 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
           channel={successFeedback.channel}
         />
       )}
+
+      {/* AI Prediction Explainer Modal */}
+      <AIPredictionModal
+        isOpen={isPredictionModalOpen}
+        onClose={() => setIsPredictionModalOpen(false)}
+        predictionType={predictionModalType}
+      />
     </div>
   );
 };

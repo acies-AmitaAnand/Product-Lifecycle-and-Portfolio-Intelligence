@@ -4,7 +4,7 @@ import { X, Zap, Brain, TrendingUp, Sparkles, AlertTriangle, ShieldCheck, Activi
 interface AIPredictionModalProps {
   isOpen: boolean;
   onClose: () => void;
-  predictionType: 'stockout' | 'elasticity' | 'margin' | 'demand' | null;
+  predictionType: 'stockout' | 'elasticity' | 'margin' | 'demand' | 'delay' | null;
 }
 
 export const AIPredictionModal: React.FC<AIPredictionModalProps> = ({ isOpen, onClose, predictionType }) => {
@@ -19,6 +19,76 @@ export const AIPredictionModal: React.FC<AIPredictionModalProps> = ({ isOpen, on
   // Render properties depending on selected type
   const getModalContent = () => {
     switch (predictionType) {
+      case 'delay':
+        return {
+          title: 'Sourcing Delay Risk Assessment',
+          category: 'Sourcing Delay Warning',
+          categoryColor: 'text-amber-500 bg-amber-500/10 border-amber-500/20',
+          confidenceLabel: 'Delay Probability',
+          confidenceValue: '78% Prob.',
+          targetName: 'BrandC Products (Snacks)',
+          detailText: 'Sourcing delay likely in EMEA due to packaging material shortage.',
+          whyDrivers: [
+            { label: 'Packaging Sourcing Bottleneck', desc: 'Primary packaging supplier in EMEA reports raw paperboard shortage.' },
+            { label: 'Cargo Transit Congestion', desc: 'Average maritime shipping times between hubs increased by 9 days.' },
+            { label: 'Low Material Safety Stock', desc: 'Localized packaging material safety stock at EMEA hub is down to 3 days.' }
+          ],
+          howMethodology: {
+            model: 'Random Forest classifier for supply chain bottleneck analysis combined with an LSTM network for forecasting.',
+            inputs: 'Sourcing capacity indexes, transit logs, lead times, and factory runtime records.',
+            key: 'EMEA-DELAY-V2.4'
+          },
+          recommendations: [
+            {
+              urgency: 'Immediate',
+              bg: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20',
+              title: 'Domestic Sourcing',
+              desc: 'Qualify and onboard local packaging vendors to recover 12 days and save $2.1M revenue risk.',
+              detailed: {
+                owner: 'Sourcing & Procurement Director',
+                timeline: '15 Days',
+                impact: 'Recovers 12 days of lead time; mitigates $2.1M revenue risk.',
+                checklist: [
+                  'Request sample runs from qualified local suppliers in India and APAC.',
+                  'Perform fast-track quality and compliance validation of alternative material.',
+                  'Draft short-term purchasing order to cover active Q2 packaging gaps.'
+                ]
+              }
+            },
+            {
+              urgency: 'Medium-Term',
+              bg: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
+              title: 'Air Freight Backup',
+              desc: 'Expedite a critical batch of packaging materials via air freight to bridge the transition gap.',
+              detailed: {
+                owner: 'Logistics Operations Lead',
+                timeline: '3 Days',
+                impact: 'Reduces transit time by 18 days, securing immediate production line schedule.',
+                checklist: [
+                  'Obtain budget clearance for emergency air freight transit.',
+                  'Coordinate pick-up and customs priority clearing at hubs.',
+                  'Schedule factory production shift to receive and process incoming cargo.'
+                ]
+              }
+            },
+            {
+              urgency: 'Strategic',
+              bg: 'bg-purple-500/10 text-purple-500 border-purple-500/20',
+              title: 'Multi-vendor Contracts',
+              desc: 'Transition to a multi-source supplier agreement where no single vendor controls >60% volume.',
+              detailed: {
+                owner: 'VP Global Procurement',
+                timeline: '30 Days',
+                impact: 'Reduces future sourcing bottleneck risks by 75%.',
+                checklist: [
+                  'Identify and shortlist two secondary verified global vendors.',
+                  'Negotiate parallel SLA agreements with active volume-shifting clauses.',
+                  'Conduct quarterly reviews of vendor capacities and buffer stocks.'
+                ]
+              }
+            }
+          ]
+        };
       case 'stockout':
         return {
           title: 'Stockout Risk Assessment',
