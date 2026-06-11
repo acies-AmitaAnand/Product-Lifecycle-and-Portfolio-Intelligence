@@ -1770,7 +1770,8 @@ const VPSignalsBoardView: React.FC<{
     { id: 2, type: 'Growth', title: 'Health segment up', desc: '+19% YoY, outpacing core', urgency: 60, urgencyLabel: 'Medium', action: 'Formulate health-aligned brand line extension (BrandA Sugar-Free) in 90 days.' },
     { id: 3, type: 'Competition', title: 'New entrants: 4', desc: '2 direct, 2 adjacent SKUs launched', urgency: 75, urgencyLabel: 'High', action: 'Deploy localized supermarket end-cap display campaign to raise retail distribution to 85%.' },
     { id: 4, type: 'Supply', title: 'Supply constraints', desc: 'Raw material lead times +3 wks', urgency: 95, urgencyLabel: 'Critical', action: 'Onboard domestic secondary ingredient supplier in Gujarat to shorten lead time.' },
-    { id: 5, type: 'Growth', title: 'Export opportunity', desc: 'APAC demand signal strong', urgency: 35, urgencyLabel: 'Low', action: 'Allocate 15% extra manufacturing capacity to Eco-Pack mineral water for APAC.' }
+    { id: 5, type: 'Growth', title: 'Export opportunity', desc: 'APAC demand signal strong', urgency: 35, urgencyLabel: 'Low', action: 'Allocate 15% extra manufacturing capacity to Eco-Pack mineral water for APAC.' },
+    { id: 6, type: 'Growth', title: 'Online channel growth', desc: 'D2C grocery sales +24%', urgency: 70, urgencyLabel: 'Medium', action: 'Optimize e-commerce product listings and bundle offers for online retailers.' }
   ];
 
   const filteredExplore = exploreSignals.filter(s => exploreFilter === 'All' || s.type === s.type && s.type === exploreFilter);
@@ -2695,13 +2696,24 @@ const VPSignalsBoardView: React.FC<{
                 </div>
 
                 {/* Item 5 */}
-                <div className="flex items-center gap-3.5 p-3 bg-black/[0.01] dark:bg-white/5 border border-black/5 dark:border-white/5 rounded-sm sm:col-span-2 sm:max-w-[50%] sm:mx-auto sm:w-full">
+                <div className="flex items-center gap-3.5 p-3 bg-black/[0.01] dark:bg-white/5 border border-black/5 dark:border-white/5 rounded-sm">
                   <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 bg-emerald-500/10 text-emerald-500 dark:text-emerald-400 border border-emerald-500/10">
                     <Globe size={15} />
                   </div>
                   <div className="min-w-0">
                     <h5 className="text-[11.5px] font-bold text-zinc-805 dark:text-zinc-155 leading-none">Export opportunity</h5>
                     <p className="text-[9.5px] text-zinc-500 dark:text-zinc-400 mt-1 leading-tight">APAC demand signal strong</p>
+                  </div>
+                </div>
+
+                {/* Item 6 */}
+                <div className="flex items-center gap-3.5 p-3 bg-black/[0.01] dark:bg-white/5 border border-black/5 dark:border-white/5 rounded-sm">
+                  <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 bg-purple-500/10 text-purple-500 dark:text-purple-400 border border-purple-500/10">
+                    <Sparkles size={15} />
+                  </div>
+                  <div className="min-w-0">
+                    <h5 className="text-[11.5px] font-bold text-zinc-805 dark:text-zinc-155 leading-none">Online channel growth</h5>
+                    <p className="text-[9.5px] text-zinc-500 dark:text-zinc-400 mt-1 leading-tight">D2C grocery sales +24%</p>
                   </div>
                 </div>
               </div>
@@ -2760,6 +2772,15 @@ const VPSignalsBoardView: React.FC<{
                       </td>
                       <td className="py-2.5 text-emerald-500 font-bold uppercase text-[9px]">Global Opportunity</td>
                       <td className="py-2.5 text-zinc-500 dark:text-zinc-400">APAC demand signal strong</td>
+                    </tr>
+                    {/* Row 6 */}
+                    <tr>
+                      <td className="py-2.5 flex items-center gap-2 font-bold text-zinc-800 dark:text-zinc-200">
+                        <Sparkles size={13} className="text-purple-500" />
+                        Online channel growth
+                      </td>
+                      <td className="py-2.5 text-purple-500 font-bold uppercase text-[9px]">Growth Opportunity</td>
+                      <td className="py-2.5 text-zinc-500 dark:text-zinc-400">D2C grocery sales +24%</td>
                     </tr>
                   </tbody>
                 </table>
