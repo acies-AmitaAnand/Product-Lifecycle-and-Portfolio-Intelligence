@@ -104,7 +104,7 @@ export const AssortmentKPICards: React.FC<AssortmentKPICardsProps> = ({ role, on
             onClick={() => onAuditClick && onAuditClick(kpi.label)}
             onMouseEnter={() => setHoveredCardIdx(idx)}
             onMouseLeave={() => setHoveredCardIdx(null)}
-            className={`glass-card bg-white dark:bg-white/5 border p-4 rounded-sm shadow-sm flex flex-col justify-between h-36 group cursor-pointer hover:bg-black/[0.01] dark:hover:bg-white/[0.01] transition-all relative select-none ${
+            className={`glass-card bg-white dark:bg-white/5 border p-3 rounded-sm shadow-sm flex flex-col justify-between h-[115px] group cursor-pointer hover:bg-black/[0.01] dark:hover:bg-white/[0.01] transition-all relative select-none ${
               isHighlighted
                 ? 'border-acies-yellow/80 bg-white/90 dark:bg-white/10'
                 : 'border-black/10 dark:border-white/10'
@@ -114,7 +114,7 @@ export const AssortmentKPICards: React.FC<AssortmentKPICardsProps> = ({ role, on
               <div className="absolute top-[1.5px] left-[1.5px] right-[1.5px] h-[2px] rounded-t-sm bg-acies-yellow animate-pulse" />
             )}
 
-            <div className="flex justify-between items-start mb-1">
+            <div className="flex justify-between items-start mb-0.5">
               <div className="min-w-0 pr-1">
                 <p className="text-[9px] font-bold uppercase tracking-wider text-zinc-400 truncate flex items-center gap-1">
                   {kpi.label}
@@ -158,7 +158,7 @@ export const AssortmentKPICards: React.FC<AssortmentKPICardsProps> = ({ role, on
             </div>
 
             {/* Sparkline chart */}
-            <div className="h-[28px] my-1.5 opacity-85 group-hover:opacity-100 transition-opacity">
+            <div className="h-[22px] my-1 opacity-85 group-hover:opacity-100 transition-opacity">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={kpi.hist.map((val, i) => ({ i, val }))} margin={{ top: 0, bottom: 0, left: 0, right: 0 }}>
                   <YAxis domain={['auto', 'auto']} hide />
@@ -174,7 +174,7 @@ export const AssortmentKPICards: React.FC<AssortmentKPICardsProps> = ({ role, on
               </ResponsiveContainer>
             </div>
 
-            <div className="text-[9px] font-bold uppercase tracking-wider mt-1 flex justify-between items-center">
+            <div className="text-[9px] font-bold uppercase tracking-wider mt-0.5 flex justify-between items-center">
               <span className={getTrendColor(kpi)}>{deltaText}</span>
               <span 
                 className={`flex items-center gap-1 text-[7px] font-bold uppercase tracking-widest text-acies-yellow transition-opacity duration-200 ${
