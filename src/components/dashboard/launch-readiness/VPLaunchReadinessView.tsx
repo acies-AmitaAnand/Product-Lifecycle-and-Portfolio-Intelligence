@@ -209,8 +209,8 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
 
   const activePipelineSKUs = filteredProducts.length;
   const launchedCount = pipelineCounts.Launch;
-  const nearLaunchCount = pipelineCounts['Pre-market'] + pipelineCounts.Launch;
-  const inDevelopmentPlus = activePipelineSKUs - nearLaunchCount;
+  const nearLaunchCount = pipelineCounts['Pre-market'];
+  const inDevelopmentPlus = pipelineCounts.Ideation + pipelineCounts.Development + pipelineCounts.Testing;
 
   const pipelineChartData = [
     { name: 'Ideation', count: pipelineCounts.Ideation, fill: '#b4aceb' },
@@ -571,7 +571,7 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
             <div 
               onClick={() => setSelectedStageSKUs({
                 title: 'Near launch SKUs',
-                skus: filteredProducts.filter(p => p.stage === 'Pre-market' || p.stage === 'Launch')
+                skus: filteredProducts.filter(p => p.stage === 'Pre-market')
               })}
               className="bg-zinc-100/80 dark:bg-zinc-900/60 border border-black/5 dark:border-white/5 p-4 rounded-xl hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98]"
             >
