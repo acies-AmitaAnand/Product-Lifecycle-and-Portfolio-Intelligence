@@ -500,9 +500,7 @@ const getInvestmentMarginData = (skusList: any[]): InvestmentMarginSku[] => {
 };
 
 const InvestmentMarginMap: React.FC<InvestmentMarginMapProps> = ({ skusList, isDarkMode, onSelectSku, addToast }) => {
-  const [activeQuad, setActiveQuad] = useState<'quickwin' | 'strategic' | 'niche' | 'avoid'>('quickwin');
-  const [viewMode, setViewMode] = useState<'quadrant' | 'category'>('quadrant');
-  const [activeCat, setActiveCat] = useState<string>('Beverages');
+  const [viewMode] = useState<'quadrant' | 'category'>('quadrant');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   
   const oppData = getInvestmentMarginData(skusList);
@@ -511,16 +509,7 @@ const InvestmentMarginMap: React.FC<InvestmentMarginMapProps> = ({ skusList, isD
     ? oppData 
     : oppData.filter(x => x.cat === categoryFilter);
 
-  const filteredOppData = (viewMode === 'quadrant'
-    ? oppData.filter(x => x.quadrant === activeQuad)
-    : oppData.filter(x => x.cat === activeCat)
-  ).filter(x => categoryFilter === 'all' || x.cat === categoryFilter);
-
-  useEffect(() => {
-    if (categoryFilter !== 'all') {
-      setActiveCat(categoryFilter);
-    }
-  }, [categoryFilter]);
+  const filteredOppData = oppData.filter(x => categoryFilter === 'all' || x.cat === categoryFilter);
   
   const accentColor = isDarkMode ? '#a78bfa' : '#6d28d9';
   const gridStroke = isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
@@ -534,20 +523,7 @@ const InvestmentMarginMap: React.FC<InvestmentMarginMapProps> = ({ skusList, isD
     'Household': '#ED93B1'
   };
 
-  const counts = {
-    quickwin: oppData.filter(x => x.quadrant === 'quickwin' && (categoryFilter === 'all' || x.cat === categoryFilter)).length,
-    strategic: oppData.filter(x => x.quadrant === 'strategic' && (categoryFilter === 'all' || x.cat === categoryFilter)).length,
-    niche: oppData.filter(x => x.quadrant === 'niche' && (categoryFilter === 'all' || x.cat === categoryFilter)).length,
-    avoid: oppData.filter(x => x.quadrant === 'avoid' && (categoryFilter === 'all' || x.cat === categoryFilter)).length,
-  };
 
-  const catCounts = {
-    'Beverages': oppData.filter(x => x.cat === 'Beverages').length,
-    'Snacks': oppData.filter(x => x.cat === 'Snacks').length,
-    'Personal Care': oppData.filter(x => x.cat === 'Personal Care').length,
-    'Dairy': oppData.filter(x => x.cat === 'Dairy').length,
-    'Household': oppData.filter(x => x.cat === 'Household').length,
-  };
 
   const handleApproveInvestment = (skuName: string, potential: number) => {
     if (addToast) {
@@ -713,61 +689,6 @@ const InvestmentMarginMap: React.FC<InvestmentMarginMapProps> = ({ skusList, isD
 
         {/* RIGHT COLUMN: SIDEBAR LIST */}
         <div className="lg:col-span-5 space-y-4">
-          <div className="flex border-b border-black/10 dark:border-white/10 p-0.5 bg-black/5 dark:bg-white/5 rounded-sm">
-            {viewMode === 'quadrant' ? (
-              [
-                { id: 'quickwin', label: 'Quick Wins', count: counts.quickwin, color: '#10b981' },
-                { id: 'strategic', label: 'Strategic', count: counts.strategic, color: '#8b5cf6' },
-                { id: 'niche', label: 'Niche', count: counts.niche, color: '#f59e0b' },
-                { id: 'avoid', label: 'Avoid', count: counts.avoid, color: '#ef4444' }
-              ].map(t => (
-                <button
-                  key={t.id}
-                  type="button"
-                  onClick={() => setActiveQuad(t.id as any)}
-                  className={`flex-1 py-1.5 text-[8.5px] font-extrabold uppercase tracking-wider text-center rounded-sm transition-all cursor-pointer border-none flex items-center justify-center gap-1 ${
-                    activeQuad === t.id
-                      ? 'bg-white dark:bg-zinc-800 shadow-sm font-black text-acies-gray dark:text-white'
-                      : 'text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-350 bg-transparent'
-                  }`}
-                  style={{ borderTop: activeQuad === t.id ? `2px solid ${t.color}` : 'none' }}
-                >
-                  <span>{t.label}</span>
-                  <span className="text-[7.5px] opacity-60 px-1 py-0.2 rounded-full bg-black/5 dark:bg-white/10">
-                    {t.count}
-                  </span>
-                </button>
-              ))
-            ) : (
-              [
-                { id: 'Beverages', label: 'Bev.', count: catCounts['Beverages'], color: '#7C3AED' },
-                { id: 'Snacks', label: 'Snack', count: catCounts['Snacks'], color: '#10b981' },
-                { id: 'Personal Care', label: 'Pers.', count: catCounts['Personal Care'], color: '#185FA5' },
-                { id: 'Dairy', label: 'Dairy', count: catCounts['Dairy'], color: '#854F0B' },
-                { id: 'Household', label: 'House.', count: catCounts['Household'], color: '#ED93B1' }
-              ].map(t => (
-                <button
-                  key={t.id}
-                  type="button"
-                  onClick={() => {
-                    setActiveCat(t.id);
-                    setCategoryFilter(t.id);
-                  }}
-                  className={`flex-1 py-1.5 text-[8px] font-extrabold uppercase tracking-wider text-center rounded-sm transition-all cursor-pointer border-none flex items-center justify-center gap-0.5 ${
-                    activeCat === t.id
-                      ? 'bg-white dark:bg-zinc-800 shadow-sm font-black text-acies-gray dark:text-white'
-                      : 'text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-350 bg-transparent'
-                  }`}
-                  style={{ borderTop: activeCat === t.id ? `2px solid ${t.color}` : 'none' }}
-                >
-                  <span>{t.label}</span>
-                  <span className="text-[7px] opacity-60 px-1 py-0.2 rounded-full bg-black/5 dark:bg-white/10">
-                    {t.count}
-                  </span>
-                </button>
-              ))
-            )}
-          </div>
 
           <div className="space-y-2.5 max-h-[265px] overflow-y-auto pr-1 no-scrollbar animate-fadeIn">
             {filteredOppData.map(item => (
@@ -898,9 +819,7 @@ const getRevPerfData = (skusList: any[]): RevPerfSku[] => {
 };
 
 const RevenuePerformanceMatrix: React.FC<RevenuePerformanceMatrixProps> = ({ skusList, isDarkMode, onSelectSku, addToast }) => {
-  const [activeQuad, setActiveQuad] = useState<'high_performer' | 'underperformer' | 'hidden_growth' | 'attention'>('high_performer');
-  const [viewMode, setViewMode] = useState<'quadrant' | 'category'>('quadrant');
-  const [activeCat, setActiveCat] = useState<string>('Beverages');
+  const [viewMode] = useState<'quadrant' | 'category'>('quadrant');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   
   const oppData = getRevPerfData(skusList);
@@ -909,16 +828,7 @@ const RevenuePerformanceMatrix: React.FC<RevenuePerformanceMatrixProps> = ({ sku
     ? oppData 
     : oppData.filter(x => x.cat === categoryFilter);
 
-  const filteredOppData = (viewMode === 'quadrant'
-    ? oppData.filter(x => x.quadrant === activeQuad)
-    : oppData.filter(x => x.cat === activeCat)
-  ).filter(x => categoryFilter === 'all' || x.cat === categoryFilter);
-
-  useEffect(() => {
-    if (categoryFilter !== 'all') {
-      setActiveCat(categoryFilter);
-    }
-  }, [categoryFilter]);
+  const filteredOppData = oppData.filter(x => categoryFilter === 'all' || x.cat === categoryFilter);
   
   const accentColor = isDarkMode ? '#a78bfa' : '#6d28d9';
   const gridStroke = isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
@@ -932,20 +842,7 @@ const RevenuePerformanceMatrix: React.FC<RevenuePerformanceMatrixProps> = ({ sku
     'Household': '#ED93B1'
   };
 
-  const counts = {
-    high_performer: oppData.filter(x => x.quadrant === 'high_performer' && (categoryFilter === 'all' || x.cat === categoryFilter)).length,
-    underperformer: oppData.filter(x => x.quadrant === 'underperformer' && (categoryFilter === 'all' || x.cat === categoryFilter)).length,
-    hidden_growth: oppData.filter(x => x.quadrant === 'hidden_growth' && (categoryFilter === 'all' || x.cat === categoryFilter)).length,
-    attention: oppData.filter(x => x.quadrant === 'attention' && (categoryFilter === 'all' || x.cat === categoryFilter)).length,
-  };
 
-  const catCounts = {
-    'Beverages': oppData.filter(x => x.cat === 'Beverages').length,
-    'Snacks': oppData.filter(x => x.cat === 'Snacks').length,
-    'Personal Care': oppData.filter(x => x.cat === 'Personal Care').length,
-    'Dairy': oppData.filter(x => x.cat === 'Dairy').length,
-    'Household': oppData.filter(x => x.cat === 'Household').length,
-  };
 
   const handleAuthorizeStrategy = (skuName: string, quadrant: string) => {
     if (addToast) {
@@ -1129,61 +1026,6 @@ const RevenuePerformanceMatrix: React.FC<RevenuePerformanceMatrixProps> = ({ sku
 
         {/* RIGHT COLUMN: SIDEBAR LIST */}
         <div className="lg:col-span-5 space-y-4">
-          <div className="flex border-b border-black/10 dark:border-white/10 p-0.5 bg-black/5 dark:bg-white/5 rounded-sm">
-            {viewMode === 'quadrant' ? (
-              [
-                { id: 'high_performer', label: 'High Perf.', count: counts.high_performer, color: '#10b981' },
-                { id: 'underperformer', label: 'Underperf.', count: counts.underperformer, color: '#f59e0b' },
-                { id: 'hidden_growth', label: 'Hidden Gr.', count: counts.hidden_growth, color: '#8b5cf6' },
-                { id: 'attention', label: 'Attention', count: counts.attention, color: '#ef4444' }
-              ].map(t => (
-                <button
-                  key={t.id}
-                  type="button"
-                  onClick={() => setActiveQuad(t.id as any)}
-                  className={`flex-1 py-1.5 text-[8px] font-extrabold uppercase tracking-wider text-center rounded-sm transition-all cursor-pointer border-none flex items-center justify-center gap-0.5 ${
-                    activeQuad === t.id
-                      ? 'bg-white dark:bg-zinc-800 shadow-sm font-black text-acies-gray dark:text-white'
-                      : 'text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-350 bg-transparent'
-                  }`}
-                  style={{ borderTop: activeQuad === t.id ? `2px solid ${t.color}` : 'none' }}
-                >
-                  <span>{t.label}</span>
-                  <span className="text-[7px] opacity-60 px-1 py-0.2 rounded-full bg-black/5 dark:bg-white/10">
-                    {t.count}
-                  </span>
-                </button>
-              ))
-            ) : (
-              [
-                { id: 'Beverages', label: 'Bev.', count: catCounts['Beverages'], color: '#7C3AED' },
-                { id: 'Snacks', label: 'Snack', count: catCounts['Snacks'], color: '#10b981' },
-                { id: 'Personal Care', label: 'Pers.', count: catCounts['Personal Care'], color: '#185FA5' },
-                { id: 'Dairy', label: 'Dairy', count: catCounts['Dairy'], color: '#854F0B' },
-                { id: 'Household', label: 'House.', count: catCounts['Household'], color: '#ED93B1' }
-              ].map(t => (
-                <button
-                  key={t.id}
-                  type="button"
-                  onClick={() => {
-                    setActiveCat(t.id);
-                    setCategoryFilter(t.id);
-                  }}
-                  className={`flex-1 py-1.5 text-[8px] font-extrabold uppercase tracking-wider text-center rounded-sm transition-all cursor-pointer border-none flex items-center justify-center gap-0.5 ${
-                    activeCat === t.id
-                      ? 'bg-white dark:bg-zinc-800 shadow-sm font-black text-acies-gray dark:text-white'
-                      : 'text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-350 bg-transparent'
-                  }`}
-                  style={{ borderTop: activeCat === t.id ? `2px solid ${t.color}` : 'none' }}
-                >
-                  <span>{t.label}</span>
-                  <span className="text-[7px] opacity-60 px-1 py-0.2 rounded-full bg-black/5 dark:bg-white/10">
-                    {t.count}
-                  </span>
-                </button>
-              ))
-            )}
-          </div>
 
           <div className="space-y-2.5 max-h-[265px] overflow-y-auto pr-1 no-scrollbar animate-fadeIn">
             {filteredOppData.map(item => (
