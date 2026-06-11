@@ -22,16 +22,16 @@ export const AIPredictionModal: React.FC<AIPredictionModalProps> = ({ isOpen, on
       case 'delay':
         return {
           title: 'Sourcing Delay Risk Assessment',
-          category: 'Sourcing Delay Warning',
+          category: 'Launch Sourcing Delay',
           categoryColor: 'text-amber-500 bg-amber-500/10 border-amber-500/20',
           confidenceLabel: 'Delay Probability',
           confidenceValue: '78% Prob.',
           targetName: 'BrandC Products (Snacks)',
-          detailText: 'Sourcing delay likely in EMEA due to packaging material shortage.',
+          detailText: 'Delayed initial launch batch likely in EMEA due to packaging material sourcing bottleneck.',
           whyDrivers: [
-            { label: 'Packaging Sourcing Bottleneck', desc: 'Primary packaging supplier in EMEA reports raw paperboard shortage.' },
-            { label: 'Cargo Transit Congestion', desc: 'Average maritime shipping times between hubs increased by 9 days.' },
-            { label: 'Low Material Safety Stock', desc: 'Localized packaging material safety stock at EMEA hub is down to 3 days.' }
+            { label: 'Launch Sourcing Bottleneck', desc: 'Primary packaging supplier in EMEA reports raw paperboard shortage for new layout.' },
+            { label: 'Cargo Transit Congestion', desc: 'Average maritime shipping times between plant and launch hub increased by 9 days.' },
+            { label: 'Low Material Safety Stock', desc: 'Initial pilot packaging material safety stock at EMEA hub is down to 3 days.' }
           ],
           howMethodology: {
             model: 'Random Forest classifier for supply chain bottleneck analysis combined with an LSTM network for forecasting.',
@@ -43,7 +43,7 @@ export const AIPredictionModal: React.FC<AIPredictionModalProps> = ({ isOpen, on
               urgency: 'Immediate',
               bg: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20',
               title: 'Domestic Sourcing',
-              desc: 'Qualify and onboard local packaging vendors to recover 12 days and save $2.1M revenue risk.',
+              desc: 'Qualify and onboard local packaging vendors to recover 12 days and save $2.1M launch revenue risk.',
               detailed: {
                 owner: 'Sourcing & Procurement Director',
                 timeline: '15 Days',
@@ -59,7 +59,7 @@ export const AIPredictionModal: React.FC<AIPredictionModalProps> = ({ isOpen, on
               urgency: 'Medium-Term',
               bg: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
               title: 'Air Freight Backup',
-              desc: 'Expedite a critical batch of packaging materials via air freight to bridge the transition gap.',
+              desc: 'Expedite a critical batch of packaging materials via air freight to bridge the launch transition gap.',
               detailed: {
                 owner: 'Logistics Operations Lead',
                 timeline: '3 Days',
@@ -75,7 +75,7 @@ export const AIPredictionModal: React.FC<AIPredictionModalProps> = ({ isOpen, on
               urgency: 'Strategic',
               bg: 'bg-purple-500/10 text-purple-500 border-purple-500/20',
               title: 'Multi-vendor Contracts',
-              desc: 'Transition to a multi-source supplier agreement where no single vendor controls >60% volume.',
+              desc: 'Transition to a multi-source supplier agreement for future launch packaging materials.',
               detailed: {
                 owner: 'VP Global Procurement',
                 timeline: '30 Days',
@@ -91,17 +91,17 @@ export const AIPredictionModal: React.FC<AIPredictionModalProps> = ({ isOpen, on
         };
       case 'stockout':
         return {
-          title: 'Stockout Risk Assessment',
-          category: 'Stockout Warning',
+          title: 'Launch Supply Shortage Assessment',
+          category: 'Launch Inventory Deficit',
           categoryColor: 'text-red-500 bg-red-500/10 border-red-500/20',
-          confidenceLabel: 'Confidence Score',
+          confidenceLabel: 'Shortage Probability',
           confidenceValue: '92% Prob.',
           targetName: 'BrandA Premium Energy (Drink)',
-          detailText: 'Stock exhaustion likely in 12 days due to surge in Q2 APAC demand.',
+          detailText: 'Pre-launch inventory safety buffer is below threshold for APAC regional launch.',
           whyDrivers: [
-            { label: 'APAC Volume Surge', desc: 'Q2 regional demand trends show a sharp 18% YoY volume spike.' },
-            { label: 'Critically Low Buffer', desc: 'Sourcing buffers at the Vapi Hub are down to under 5 days of safety stock.' },
-            { label: 'Supplier Lead Time Lag', desc: 'Sourced active material lead time is 35 days (2.5x higher than normal benchmarks).' }
+            { label: 'Launch Buffer Deficit', desc: 'Initial pre-launch batch allocation at Vapi Hub is 25% below the safe launch threshold.' },
+            { label: 'Expedited Lead Time Lag', desc: 'Supplier turnaround for emergency replenishment lead time is 35 days.' },
+            { label: 'Distributor Placement Load', desc: 'Pre-orders from key retail partners exceed initial production run by 18%.' }
           ],
           howMethodology: {
             model: 'Hybrid LSTM (Long Short-Term Memory) Neural Network paired with an XGBoost regressor model.',
@@ -112,12 +112,12 @@ export const AIPredictionModal: React.FC<AIPredictionModalProps> = ({ isOpen, on
             {
               urgency: 'Immediate',
               bg: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20',
-              title: 'Route Safety Stock',
-              desc: 'Divert 15,000 units of domestic Western safety reserves to the APAC hub to immediately cover the 12-day stockout gap.',
+              title: 'Route Launch Reserve',
+              desc: 'Divert 15,000 units of domestic Western safety reserves to the APAC hub to immediately cover the launch stock deficit.',
               detailed: {
                 owner: 'Regional Logistics Manager',
                 timeline: '48 Hours',
-                impact: 'Covers the 12-day gap; recovers $420k potential revenue loss.',
+                impact: 'Covers the launch inventory gap; recovers $420k potential revenue loss.',
                 checklist: [
                   'Verify Western region inventory levels and confirm safety stock buffers.',
                   'Initiate emergency freight transfer authorization from domestic warehouses.',
@@ -129,7 +129,7 @@ export const AIPredictionModal: React.FC<AIPredictionModalProps> = ({ isOpen, on
               urgency: 'Medium-Term',
               bg: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
               title: 'Onboard Local Vendor',
-              desc: 'Activate backup domestic suppliers with a shorter 10-day lead time to reduce reliance on the European supply bottleneck.',
+              desc: 'Activate backup domestic suppliers with a shorter 10-day lead time to secure supply during launch.',
               detailed: {
                 owner: 'Head of Procurement',
                 timeline: '10 Days',
@@ -144,8 +144,8 @@ export const AIPredictionModal: React.FC<AIPredictionModalProps> = ({ isOpen, on
             {
               urgency: 'Strategic',
               bg: 'bg-purple-500/10 text-purple-500 border-purple-500/20',
-              title: 'Promo Moderation',
-              desc: 'Temporarily scale down regional marketing campaigns to slow run-rate consumption while manufacturing catches up.',
+              title: 'Launch Promo Moderation',
+              desc: 'Temporarily scale down regional pre-launch marketing campaigns to slow run-rate consumption.',
               detailed: {
                 owner: 'APAC Marketing Coordinator',
                 timeline: '24 Hours',
@@ -161,17 +161,17 @@ export const AIPredictionModal: React.FC<AIPredictionModalProps> = ({ isOpen, on
         };
       case 'elasticity':
         return {
-          title: 'Cross-Elasticity Analysis',
-          category: 'Price Elasticity',
+          title: 'Counter-Launch Price War Assessment',
+          category: 'Launch Market Share Risk',
           categoryColor: 'text-amber-500 bg-amber-500/10 border-amber-500/20',
-          confidenceLabel: 'Sales Impact',
+          confidenceLabel: 'Market Share Impact',
           confidenceValue: '74% Impact',
           targetName: 'BrandD Yogurt Drink (Dairy)',
-          detailText: 'Competitor wafers price cuts will trigger a 14% volume drop in EU.',
+          detailText: 'Competitor pricing cuts on substitute lines threatening initial launch market share in EU.',
           whyDrivers: [
-            { label: 'Competitor Price Cut', desc: 'Competitor B cut price of their Wafers line by 10% in EU supermarkets.' },
-            { label: 'Cross-Promotion Elasticity', desc: 'Historical scan data shows a high cross-promotion correlation of -0.62.' },
-            { label: 'Aisle Placement Overlap', desc: 'High substitution propensity observed due to shared supermarket shelf layouts.' }
+            { label: 'Competitor Launch Block', desc: 'Competitor B dropped adjacent wafer prices by 10% specifically to block our new launch shelf space.' },
+            { label: 'High Substitution Elasticity', desc: 'Historical scan data shows a high cross-promotion correlation of -0.62 for launch brands.' },
+            { label: 'Retail Shelf Placement Overlap', desc: 'High substitution propensity observed due to shared supermarket launch display planograms.' }
           ],
           howMethodology: {
             model: 'Mixed-Effects Linear Regression pricing model coupled with a Random Forest categorization engine.',
@@ -183,7 +183,7 @@ export const AIPredictionModal: React.FC<AIPredictionModalProps> = ({ isOpen, on
               urgency: 'Immediate',
               bg: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20',
               title: 'Trigger Bundle Promo',
-              desc: 'Launch a pre-approved cross-category coupon bundling Yogurt with BrandC cookies to maintain shelf volume targets.',
+              desc: 'Launch a pre-approved cross-category coupon bundling new Yogurt with BrandC cookies to maintain launch targets.',
               detailed: {
                 owner: 'Trade Marketing Lead',
                 timeline: '3 Days',
@@ -199,7 +199,7 @@ export const AIPredictionModal: React.FC<AIPredictionModalProps> = ({ isOpen, on
               urgency: 'Medium-Term',
               bg: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
               title: 'Display Re-routing',
-              desc: 'Relocate display units away from the snacks section and place them in the organic breakfast aisle to capture high-margin traffic.',
+              desc: 'Relocate display units away from the snacks section and place them in organic breakfast aisle to secure launch visibility.',
               detailed: {
                 owner: 'Category Manager (EU)',
                 timeline: '5 Days',
@@ -231,17 +231,17 @@ export const AIPredictionModal: React.FC<AIPredictionModalProps> = ({ isOpen, on
         };
       case 'margin':
         return {
-          title: 'Margin Compression Diagnosis',
-          category: 'Margin Leakage Warning',
+          title: 'Launch Cost Overrun Assessment',
+          category: 'Launch Budget Deficit',
           categoryColor: 'text-red-500 bg-red-500/10 border-red-500/20',
-          confidenceLabel: 'Breach Probability',
+          confidenceLabel: 'Overrun Probability',
           confidenceValue: '81% Prob.',
           targetName: 'BrandC Biscuits (Snacks)',
-          detailText: 'Gross margins likely to breach the 30% hurdle threshold due to high promo dependence.',
+          detailText: 'Initial packaging setup, tooling, and launch marketing costs projected to exceed budget by 24%.',
           whyDrivers: [
-            { label: 'Promo Sales Concentration', desc: 'Over 68% of BrandC Biscuits sales revenue is driven by promotional discount cycles.' },
-            { label: 'Commodity Cost Inflation', desc: 'Base raw ingredient cost (organic wheat, cocoa solids) rose by 12% in Europe.' },
-            { label: 'Distributor Terms Leakage', desc: 'Retailer co-investment rates are above the budgeted threshold, standing at 22% of gross sales.' }
+            { label: 'Tooling & Mold Setup Costs', desc: 'Initial production mold tooling setup at EMEA contract packager ran 35% over estimates.' },
+            { label: 'Launch Marketing Spend', desc: 'Expedited retail slotting fees and slot placement spending exceeded budget by 12%.' },
+            { label: 'Raw Material Surcharge', desc: 'Spot-buy price surcharges on short-notice organic ingredients added 22% to launch COGS.' }
           ],
           howMethodology: {
             model: 'Linear regression pricing elasticity model combined with a gradient boosting classifier for discount margin degradation.',
@@ -252,8 +252,8 @@ export const AIPredictionModal: React.FC<AIPredictionModalProps> = ({ isOpen, on
             {
               urgency: 'Immediate',
               bg: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20',
-              title: 'Cap Co-investment',
-              desc: 'Restructure the co-investment contract with the primary distributor to cap promotion funding at 15%.',
+              title: 'Cap Launch Expenses',
+              desc: 'Restructure active service contracts with local design and packing vendors to cap launch setup fees.',
               detailed: {
                 owner: 'Finance Controller',
                 timeline: '5 Days',
@@ -268,8 +268,8 @@ export const AIPredictionModal: React.FC<AIPredictionModalProps> = ({ isOpen, on
             {
               urgency: 'Medium-Term',
               bg: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
-              title: 'Protect Basket Margin',
-              desc: 'Implement a new bundle pricing strategy pairing Biscuits with BrandE Organic Cheese to protect basket margin.',
+              title: 'Optimize Pack Layout',
+              desc: 'Change outer box graphics and dimensions to reduce print plate tooling setup costs.',
               detailed: {
                 owner: 'Portfolio Strategist',
                 timeline: '7 Days',
@@ -302,17 +302,17 @@ export const AIPredictionModal: React.FC<AIPredictionModalProps> = ({ isOpen, on
       case 'demand':
       default:
         return {
-          title: 'Sourcing Bottleneck Analysis',
-          category: 'Demand Shift Warning',
+          title: 'Pilot Production Bottleneck Analysis',
+          category: 'Launch Production Risk',
           categoryColor: 'text-indigo-500 bg-indigo-500/10 border-indigo-500/20',
-          confidenceLabel: 'Exhaustion Probability',
+          confidenceLabel: 'Bottleneck Probability',
           confidenceValue: '88% Prob.',
           targetName: 'BrandF Eco-Pack Water (Beverages)',
-          detailText: 'Sourcing capacity constraint will trigger a stockout in APAC by Q3 due to +18% demand.',
+          detailText: 'Manufacturing line qualification and regulatory certification delays at the APAC production plant.',
           whyDrivers: [
-            { label: 'High Capacity Utilization', desc: 'Eco-friendly packaging lines are running at 94% capacity utilization with no backup lines.' },
-            { label: 'Consumer Trend Shift', desc: 'Customer sentiment logs show a 14% increase in sustainability search metrics on key sites.' },
-            { label: 'Finnish Sourcing Delays', desc: 'Shipping container lead times from primary paperboard suppliers in Finland increased to 45 days.' }
+            { label: 'Line Qualification Delay', desc: 'Eco-pack bottling line calibration running 14 days behind schedule.' },
+            { label: 'Regulatory Permit Backlog', desc: 'Local state environmental certification processing delayed by 2 weeks.' },
+            { label: 'Pilot Run Waste Rate', desc: 'Initial pilot batch trial runs report an elevated 12% scrap/waste rate.' }
           ],
           howMethodology: {
             model: 'Random Forest classifier for supply chain bottleneck analysis combined with an LSTM network for forecasting.',
@@ -323,8 +323,8 @@ export const AIPredictionModal: React.FC<AIPredictionModalProps> = ({ isOpen, on
             {
               urgency: 'Immediate',
               bg: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20',
-              title: 'Onboard India Vendor',
-              desc: 'Qualify and validate a backup regional eco-materials supplier in India within the next 15 days.',
+              title: 'Accelerate Line Setup',
+              desc: 'Contract emergency line engineers from India to finish qualification within 15 days.',
               detailed: {
                 owner: 'VP of Supply Chain',
                 timeline: '15 Days',

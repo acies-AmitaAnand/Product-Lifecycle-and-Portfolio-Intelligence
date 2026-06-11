@@ -2328,12 +2328,12 @@ const VPSignalsBoardView: React.FC<{
             >
               <div>
                 <div className="flex justify-between items-center text-[9px] font-bold uppercase text-zinc-450 dark:text-zinc-550">
-                  <span>Stockout Warning</span>
+                  <span>Launch Supply Shortage</span>
                   <span className="text-red-500">92% Prob.</span>
                 </div>
                 <h5 className="text-xs font-bold text-zinc-800 dark:text-zinc-200 mt-1">BrandA Premium Energy</h5>
                 <p className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-1 leading-snug">
-                  Stock exhaustion likely in <span className="font-bold text-red-500">12 days</span> due to surge in Q2 APAC demand.
+                  Pre-launch safety buffer at Vapi Hub is <span className="font-bold text-red-500">below threshold</span> for regional launch.
                 </p>
               </div>
             </div>
@@ -2348,12 +2348,12 @@ const VPSignalsBoardView: React.FC<{
             >
               <div>
                 <div className="flex justify-between items-center text-[9px] font-bold uppercase text-zinc-450 dark:text-zinc-550">
-                  <span>Price Elasticity</span>
+                  <span>Counter-Launch Price War</span>
                   <span className="text-amber-500">74% Impact</span>
                 </div>
                 <h5 className="text-xs font-bold text-zinc-800 dark:text-zinc-200 mt-1">BrandD Yogurt Drink</h5>
                 <p className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-1 leading-snug">
-                  Competitor wafers price cuts will trigger a <span className="font-bold text-amber-500">14% volume drop</span> in EU.
+                  Competitor wafer price cuts designed to <span className="font-bold text-amber-500">block shelf placements</span> of new launch in EU.
                 </p>
               </div>
             </div>
@@ -2368,12 +2368,12 @@ const VPSignalsBoardView: React.FC<{
             >
               <div>
                 <div className="flex justify-between items-center text-[9px] font-bold uppercase text-zinc-450 dark:text-zinc-550">
-                  <span>Margin Compression</span>
+                  <span>Launch Cost Overrun</span>
                   <span className="text-red-500">81% Prob.</span>
                 </div>
                 <h5 className="text-xs font-bold text-zinc-800 dark:text-zinc-200 mt-1">BrandC Biscuits</h5>
                 <p className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-1 leading-snug">
-                  Gross margins likely to breach the <span className="font-bold text-red-500">30% hurdle</span> due to promo dependency in EU.
+                  Initial mold tooling and launch marketing costs projected to <span className="font-bold text-red-500">exceed budget by 24%</span>.
                 </p>
               </div>
             </div>
@@ -2388,12 +2388,12 @@ const VPSignalsBoardView: React.FC<{
             >
               <div>
                 <div className="flex justify-between items-center text-[9px] font-bold uppercase text-zinc-450 dark:text-zinc-550">
-                  <span>Demand Bottleneck</span>
+                  <span>Pilot Production Delay</span>
                   <span className="text-indigo-500">88% Prob.</span>
                 </div>
                 <h5 className="text-xs font-bold text-zinc-800 dark:text-zinc-200 mt-1">BrandF Eco-Pack Water</h5>
                 <p className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-1 leading-snug">
-                  Sourcing capacity constraint will trigger a <span className="font-bold text-indigo-500">stockout in APAC</span> by Q3.
+                  Manufacturing validation line and regulatory permit backlog <span className="font-bold text-indigo-500">delaying pilot run</span> in APAC.
                 </p>
               </div>
             </div>
