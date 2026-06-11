@@ -20,6 +20,7 @@ import { CannibalizationAnalystView } from './CannibalizationAnalystView';
 import { useSkuRationalizationState } from './useSkuRationalizationState';
 import { ActionRoutingPanel } from './ActionRoutingPanel';
 import { getDocumentTemplates } from './documentTemplates';
+import { SimplifyToGrow } from '../simplify-to-grow/SimplifyToGrow';
 
 // Re-export constants and pure functions to prevent breaking sibling imports
 export { srClassify, SR_CLASSES, getSkuLocation } from './skuConstants';
@@ -332,7 +333,20 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
         />
       )}
 
-
+      {/* WORKSPACE VIEW 3: SIMPLIFY TO GROW */}
+      {state.activeView === 'simplify' && (
+        <SimplifyToGrow
+          role={role}
+          isDarkMode={isDarkMode}
+          setActiveTab={(tabId) => {
+            if (tabId === 4) {
+              state.setActiveView('simulator');
+            } else if (setActiveTab) {
+              setActiveTab(tabId);
+            }
+          }}
+        />
+      )}
 
       {/* ⑥ CROSS-FUNCTIONAL ACTIONS & AUDIT LOG LEDGER */}
       <div className="space-y-3 pt-6 border-t border-black/5 dark:border-white/5">

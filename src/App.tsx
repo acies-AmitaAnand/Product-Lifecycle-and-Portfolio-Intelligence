@@ -925,8 +925,7 @@ export default function App() {
                 {activeTab === 6 && <TopDownDrilldown isDarkMode={isDarkMode} role={role} />}
                 {activeTab === 7 && <AgentOrchestrator isDarkMode={isDarkMode} role={role} />}
                 {activeTab === 8 && <AssortmentOverview role={role} isDarkMode={isDarkMode} onAuditClick={setActiveAuditMetric} />}
-                {activeTab === 9 && <SimplifyToGrow role={role} isDarkMode={isDarkMode} setActiveTab={setActiveTab} />}
-                {activeTab < 0 || activeTab > 9 ? (
+                {activeTab < 0 || activeTab > 8 ? (
                   <div className="flex flex-col items-center justify-center min-h-[550px] glass-card">
                     <div className="w-16 h-16 rounded-full bg-acies-yellow/10 flex items-center justify-center mb-6">
                       <Zap size={32} className="text-acies-yellow" />
@@ -976,11 +975,11 @@ export default function App() {
         </div>
       </footer>
 
-      {/* Floating Agent Assistant Widget */}
-      {((activeTab >= 1 && activeTab <= 6) || activeTab === 8 || activeTab === 9) && isAgentWidgetVisible && (() => {
-        const thoughtsData = getAgentThoughtsForTab(activeTab);
+      {((activeTab >= 1 && activeTab <= 6) || activeTab === 8) && isAgentWidgetVisible && (() => {
+        const currentAgentId = activeTab === 4 && safeGetItem('sku_rationalization_active_view') === 'simplify' ? 9 : activeTab;
+        const thoughtsData = getAgentThoughtsForTab(currentAgentId);
         if (!thoughtsData) return null;
-        const chatHistory = agentChatHistory[activeTab] || [];
+        const chatHistory = agentChatHistory[currentAgentId] || [];
 
         const handleSendMessage = (e: React.FormEvent) => {
           e.preventDefault();
@@ -990,7 +989,7 @@ export default function App() {
           // Add user message
           setAgentChatHistory(prev => ({
             ...prev,
-            [activeTab]: [...(prev[activeTab] || []), { sender: 'user', text: userMsg }]
+            [currentAgentId]: [...(prev[currentAgentId] || []), { sender: 'user', text: userMsg }]
           }));
           setAgentMessageInput('');
           setIsAgentTyping(true);
@@ -1003,7 +1002,7 @@ export default function App() {
             const lowerMsg = userMsg.toLowerCase();
             if (lowerMsg.includes('help') || lowerMsg.includes('what can you do') || lowerMsg.includes('capabilities')) {
               replyText = `I specialize in ${thoughtsData.role}. On this tab, my key observations are: ${thoughtsData.thoughts.join(' ')}`;
-            } else if (activeTab === 8) {
+            } else if (currentAgentId === 8) {
               if (lowerMsg.includes('area') || lowerMsg.includes('region') || lowerMsg.includes('country') || lowerMsg.includes('category')) {
                 replyText = `Here is the top performing SKU per area:
 • Beverages: BrandF Water (₹17.03 Cr)
@@ -1024,7 +1023,7 @@ Geographically, Italy's top seller is BrandF Water, while Spain is led by BrandC
               } else {
                 replyText = `As the Assortment Agent, I am monitoring SKU counts, regional margin gaps, and substitution risks. Ask me about the 'best performing SKU', 'Netherlands margin gap', 'long-tail burden', or 'cannibalization correlation'.`;
               }
-            } else if (activeTab === 1) {
+            } else if (currentAgentId === 1) {
               if (lowerMsg.includes('worst') || lowerMsg.includes('dairy') || lowerMsg.includes('drag')) {
                 replyText = `Dairy is currently our biggest drag with 27.78% margin dilution. The supplier fragmentation index stands at 1.20, which is well above our 1.0 benchmark.`;
               } else if (lowerMsg.includes('count') || lowerMsg.includes('skus') || lowerMsg.includes('size')) {
@@ -1032,29 +1031,42 @@ Geographically, Italy's top seller is BrandF Water, while Spain is led by BrandC
               } else {
                 replyText = `I am tracking portfolio complexity and mix. Ask me about 'Dairy margin dilution', 'supplier fragmentation index', or 'active SKU counts'.`;
               }
-            } else if (activeTab === 2) {
+            } else if (currentAgentId === 2) {
               if (lowerMsg.includes('delay') || lowerMsg.includes('yogurt') || lowerMsg.includes('sourcing')) {
                 replyText = `We have a sourcing delay on BrandD Organic Yogurt (+14 days lead time). We have simulated a raw milk supplier shock and recommend holding 2.5 weeks of safety stock.`;
               } else {
                 replyText = `I am monitoring launch readiness gates. Ask me about 'sourcing delays', 'Yogurt lead times', or 'safety stock recommendations'.`;
               }
-            } else if (activeTab === 3) {
+            } else if (currentAgentId === 3) {
               if (lowerMsg.includes('dilution') || lowerMsg.includes('margin') || lowerMsg.includes('cogs')) {
                 replyText = `12 high-volume SKUs are diluting our gross margin from the 40.0% target to 38.53%. Cash runway is forecasted at 14.2 months, suggesting a structural pricing correction is needed.`;
               } else {
                 replyText = `I am analyzing cash flows and margin dilution. Ask me about 'margin dilution drivers', 'cogs inflation', or 'cash runway projections'.`;
               }
-            } else if (activeTab === 4) {
+            } else if (currentAgentId === 4) {
               if (lowerMsg.includes('rationalize') || lowerMsg.includes('sunset') || lowerMsg.includes('prune')) {
                 replyText = `Removing all 35 'Rationalize' candidate SKUs will free up safety stock capital from $246M to $142M (saving 42.2%), but introduces a 27.08% revenue tail risk.`;
               } else {
                 replyText = `I optimize catalog complexity and inventory buffers. Ask me about 'rationalization candidates', 'safety stock capital savings', or 'revenue tail risk'.`;
               }
-            } else if (activeTab === 5) {
+            } else if (currentAgentId === 5) {
               if (lowerMsg.includes('stockout') || lowerMsg.includes('leakage') || lowerMsg.includes('softener')) {
                 replyText = `Fabric Softener has 7 critical stockout events, causing $42k in revenue leakage. We recommend reviewing multi-currency transfer pricing compliance as well.`;
               } else {
                 replyText = `I audit compliance, stockouts, and ledger health. Ask me about 'Fabric Softener stockouts' or 'revenue leakage'.`;
+              }
+            } else if (currentAgentId === 9) {
+              if (lowerMsg.includes('hidden') || lowerMsg.includes('cost') || lowerMsg.includes('burden') || lowerMsg.includes('p&l') || lowerMsg.includes('downtime')) {
+                replyText = `Based on the Bain Simplify to Grow flywheel:
+• Total Hidden Supply Chain Cost is ₹84.8L.
+• Household category carries the highest hidden cost burden of ₹24.2L (production downtime ₹12L, transport ₹7.2L, waste ₹5L).
+• Fabric Softener is our worst performer, costing ₹1.45L in production downtime alone.`;
+              } else if (lowerMsg.includes('ippv') || lowerMsg.includes('penetration') || lowerMsg.includes('variety') || lowerMsg.includes('best') || lowerMsg.includes('top')) {
+                replyText = `Under the 'Consumer-Right' pillar, BrandB Chips is our top performer with 78% household penetration and an IPPV score of 100.0. We have 4 Good Variety SKUs that we should protect and invest in.`;
+              } else if (lowerMsg.includes('bad complexity') || lowerMsg.includes('prune') || lowerMsg.includes('eliminate') || lowerMsg.includes('candidates')) {
+                replyText = `We have identified 8 Bad Complexity SKUs in the portfolio (IPPV < 30 and Complexity > 0.50). Pruning these will improve our flywheel score and eliminate up to ₹32.4L in hidden operational costs.`;
+              } else {
+                replyText = `I am the Simplification Agent. Ask me about 'hidden cost burden', 'worst performers by downtime', 'IPPV rankings', or 'Bad Complexity SKUs'.`;
               }
             } else if (lowerMsg.includes('simulate') || lowerMsg.includes('change') || lowerMsg.includes('run') || lowerMsg.includes('scenario') || lowerMsg.includes('driver')) {
               replyText = `Understood. Multi-variable simulation and scenario adjustment is managed centrally. Please navigate to the Agent Orchestrator (Tab 7) to trigger macro scenarios like Inflation Shock or Freight Delays.`;
@@ -1064,7 +1076,7 @@ Geographically, Italy's top seller is BrandF Water, while Spain is led by BrandC
 
             setAgentChatHistory(prev => ({
               ...prev,
-              [activeTab]: [...(prev[activeTab] || []), { sender: 'agent', text: replyText }]
+              [currentAgentId]: [...(prev[currentAgentId] || []), { sender: 'agent', text: replyText }]
             }));
           }, 1200);
         };

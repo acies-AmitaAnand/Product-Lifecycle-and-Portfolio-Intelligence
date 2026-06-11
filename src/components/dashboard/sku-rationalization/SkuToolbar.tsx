@@ -9,12 +9,11 @@
 import React from 'react';
 import { Check, MapPin, HelpCircle } from 'lucide-react';
 import { Role } from '../../../types/dashboard';
-
 interface SkuToolbarProps {
   role: Role;
   isDarkMode: boolean;
-  activeView: 'simulator' | 'analyst';
-  setActiveView: (v: 'simulator' | 'analyst') => void;
+  activeView: 'simulator' | 'analyst' | 'simplify';
+  setActiveView: (v: 'simulator' | 'analyst' | 'simplify') => void;
   selectedLocation: string;
   setSelectedLocation: (l: string) => void;
   refreshTime: string;
@@ -33,12 +32,10 @@ export const SkuToolbar: React.FC<SkuToolbarProps> = ({
     { value: 'Americas', label: 'Americas' },
   ];
 
-  const switchView = (v: 'simulator' | 'analyst') => {
+  const switchView = (v: 'simulator' | 'analyst' | 'simplify') => {
     setActiveView(v);
     setSelectedAiClass(null);
   };
-
-  // ── VP Product Management variant ──────────────────────────────────────────
   if (role === 'VP Product Management') {
     return (
       <div className={`p-4 rounded-xl w-full border transition-colors duration-200 ${
@@ -54,10 +51,9 @@ export const SkuToolbar: React.FC<SkuToolbarProps> = ({
             </h2>
           </div>
 
-          {/* View switcher */}
           <div className="w-full md:flex-1 flex justify-start md:justify-center">
             <div className="flex items-center gap-2 shrink-0">
-              {(['simulator', 'analyst'] as const).map((id) => (
+              {(['simulator', 'analyst', 'simplify'] as const).map((id) => (
                 <button
                   key={id}
                   type="button"
@@ -68,7 +64,7 @@ export const SkuToolbar: React.FC<SkuToolbarProps> = ({
                       : 'bg-transparent border-black/15 dark:border-white/15 text-zinc-555 dark:text-zinc-400 hover:border-black/25 dark:hover:border-white/25 hover:text-zinc-800 dark:hover:text-zinc-200 hover:bg-black/5 dark:hover:bg-white/5'
                   }`}
                 >
-                  {id === 'simulator' ? 'Portfolio Simulator' : 'Cannibalisation Simulator'}
+                  {id === 'simulator' ? 'Portfolio Simulator' : id === 'analyst' ? 'Cannibalisation Simulator' : 'Simplify to Grow'}
                 </button>
               ))}
             </div>
@@ -119,18 +115,20 @@ export const SkuToolbar: React.FC<SkuToolbarProps> = ({
         <div>
           <div className="flex items-center gap-1.5">
             <h2 className="text-[12px] font-display font-extrabold uppercase tracking-wider text-acies-gray dark:text-white leading-none">
-              {activeView === 'simulator' ? 'SKU Rationalization Command Desk' : 'Cannibalization & Margin Audit'}
+              {activeView === 'simulator' ? 'SKU Rationalization Command Desk' : activeView === 'analyst' ? 'Cannibalization & Margin Audit' : 'Bain Simplify to Grow'}
             </h2>
             <div className="relative group/help">
               <HelpCircle size={12} className="text-zinc-400 hover:text-acies-yellow transition-colors cursor-help shrink-0" />
               <div className="absolute left-0 top-5 w-64 bg-zinc-900 border border-white/10 text-white text-[9px] p-2.5 rounded shadow-2xl z-50 pointer-events-none opacity-0 group-hover/help:opacity-100 transition-opacity duration-200 leading-relaxed">
                 <p className="font-bold mb-1 text-acies-yellow">
-                  {activeView === 'simulator' ? 'Simulation Workspace Guide:' : 'Audit Analyst Guide:'}
+                  {activeView === 'simulator' ? 'Simulation Workspace Guide:' : activeView === 'analyst' ? 'Audit Analyst Guide:' : 'Simplify to Grow Guide:'}
                 </p>
                 <p className="opacity-85">
                   {activeView === 'simulator'
                     ? 'Audit product assortments using AI segmentation, run multi-variable gross margin simulations, and analyze Pareto distributions to optimize tail-end catalog complexity.'
-                    : 'Model cross-product cannibalization coefficients, evaluate price-pack margin elasticity corridors, and identify high promotion dependency risks.'}
+                    : activeView === 'analyst'
+                      ? 'Model cross-product cannibalization coefficients, evaluate price-pack margin elasticity corridors, and identify high promotion dependency risks.'
+                      : 'Apply the Bain Beyond the Tail framework to de-average shared costs, identify Bad Complexity, and rank SKUs by Consumer-Right IPPV value.'}
                 </p>
               </div>
             </div>
@@ -140,14 +138,15 @@ export const SkuToolbar: React.FC<SkuToolbarProps> = ({
       </div>
 
       {/* Center: View switcher tabs */}
-      <div className="flex bg-black/5 dark:bg-white/5 p-0.5 rounded border border-black/5 dark:border-white/10 min-w-[340px]">
+      <div className="flex bg-black/5 dark:bg-white/5 p-0.5 rounded border border-black/5 dark:border-white/10 min-w-[450px]">
         {[
           { id: 'simulator', label: 'Portfolio Simulator Command' },
           { id: 'analyst',   label: 'Cannibalisation Simulator' },
+          { id: 'simplify',  label: 'Simplify to Grow' },
         ].map(tab => (
           <button
             key={tab.id}
-            onClick={() => switchView(tab.id as 'simulator' | 'analyst')}
+            onClick={() => switchView(tab.id as 'simulator' | 'analyst' | 'simplify')}
             className={`flex-1 py-1.5 text-[8.5px] font-bold uppercase tracking-wider rounded-sm transition-all border-none cursor-pointer text-center outline-none ${
               activeView === tab.id
                 ? 'bg-acies-yellow text-white dark:text-acies-gray font-extrabold shadow-sm shadow-black/10'

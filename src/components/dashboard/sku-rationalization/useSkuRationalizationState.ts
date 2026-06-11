@@ -28,11 +28,10 @@ export function useSkuRationalizationState(role: Role, isDarkMode: boolean) {
   const tooltipBorder = isDarkMode ? 'rgba(255,255,255,0.1)'  : 'rgba(0,0,0,0.1)';
   const tooltipText   = isDarkMode ? '#fff' : '#000';
 
-  // ── View & toolbar ─────────────────────────────────────────────────────────
-  const [activeView, setActiveView] = useState<'simulator' | 'analyst'>(() => {
+  const [activeView, setActiveView] = useState<'simulator' | 'analyst' | 'simplify'>(() => {
     try {
       const saved = localStorage.getItem('sku_rationalization_active_view');
-      if (saved === 'simulator' || saved === 'analyst') {
+      if (saved === 'simulator' || saved === 'analyst' || saved === 'simplify') {
         return saved;
       }
     } catch {}
@@ -50,7 +49,6 @@ export function useSkuRationalizationState(role: Role, isDarkMode: boolean) {
       localStorage.setItem('sku_rationalization_active_view', activeView);
     } catch {}
   }, [activeView]);
-
   // ── KPI cards ──────────────────────────────────────────────────────────────
   const kpis = useMemo(() => {
     const activeSkusCount = locationFilteredSkus.length;
