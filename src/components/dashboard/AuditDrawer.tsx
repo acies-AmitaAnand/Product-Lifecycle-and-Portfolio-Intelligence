@@ -103,7 +103,7 @@ const AUDIT_DATA: Record<string, AuditContent> = {
     ]
   },
   'Portfolio PCI': {
-    title: 'Portfolio Complexity Index (PCI)',
+    title: 'Portfolio Complexity',
     value: '0.5509',
     soWhat: 'The enterprise PCI is 0.5509 (target ≤ 0.42), heavily driven by supplier fragmentation (1.20) and SKU proliferation (1.02). This drives up inventory carrying costs by an estimated 20%.',
     action: 'Prune Supplier Overlap: Transition from 60 universal suppliers to specialized category clusters to break fragmentation.',
@@ -114,7 +114,7 @@ const AUDIT_DATA: Record<string, AuditContent> = {
       { name: 'promo_flag', type: 'float [DIRECT]', desc: 'Input for promo dependency index.' }
     ],
     formula: '\\text{PCI} = \\frac{1}{6} \\left( I_{\\text{Frag}} + I_{\\text{Prolif}} + I_{\\text{LowVel}} + I_{\\text{LeadTime}} + I_{\\text{Promo}} + I_{\\text{Vol}} \\right)',
-    formulaDescription: 'The Portfolio Complexity Index is the average of 6 normalized sub-indices reflecting operational complexity drivers.',
+    formulaDescription: 'Portfolio Complexity measures how complex our product catalog is based on factors like SKU counts, supplier fragmentation, and lead times.',
     assumptions: [
       'Equal Weighting: Assumes all six complexity sub-indices contribute equally to enterprise complexity.',
       'Baseline standards: Index baselines (e.g. 100 SKUs, 50 suppliers) are internal modeling benchmarks, not industry absolute maximums.'
@@ -178,7 +178,7 @@ const AUDIT_DATA: Record<string, AuditContent> = {
     ]
   },
   'Peak Stockout Freq.': {
-    title: 'Peak Stockout Freq.',
+    title: 'Total Stockouts',
     value: '440 events',
     soWhat: 'Peak stockouts (440 events) are heavily concentrated in Hypermarkets (15.9k events), highlighting a channel-specific distribution bottleneck rather than an overall stock shortage.',
     action: 'Priority Logistics Routing: Re-negotiate delivery SLAs and establish dedicated priority freight lanes specifically for the Hypermarket channel.',
@@ -186,7 +186,7 @@ const AUDIT_DATA: Record<string, AuditContent> = {
       { name: 'stock_out_flag', type: 'int [DIRECT]', desc: 'Binary flag (0/1) per transaction indicating a stockout occurred.' }
     ],
     formula: '\\text{Stockout Freq} = \\sum_{i=1}^{M} \\text{stock\\_out\\_flag}_i',
-    formulaDescription: 'The sum of all stockout occurrences across all transaction rows for the specified SKU or channel.',
+    formulaDescription: 'Total Stockouts measures the total number of times our products went completely out of stock across all sales channels.',
     assumptions: [
       'Unmet Demand: Assumes every stockout represents lost revenue (unmet demand), ignoring potential customer substitution behavior.'
     ],
@@ -278,7 +278,7 @@ const AUDIT_DATA: Record<string, AuditContent> = {
     ]
   },
   'Promo Erosion vs. Dependency': {
-    title: 'Promo Erosion vs. Dependency',
+    title: 'Promo Dependency',
     value: 'Portfolio Scatter Analysis',
     soWhat: 'Highlights SKUs with high trade promotion dependency that suffer from severe margin erosion. High dependency (>20%) coupled with high erosion (>10.0 score) indicates that promotions are cannibalizing baseline margins rather than driving incremental sales.',
     action: 'Review the trade promotion calendar. Cap maximum discount depths at 15% for high-erosion items (e.g. BrandC Toothpaste and BrandD Water) to reclaim base margins.',
@@ -288,7 +288,7 @@ const AUDIT_DATA: Record<string, AuditContent> = {
       { name: 'gross_margin', type: 'float [DIRECT]', desc: 'Resulting margin per promotional transaction compared to non-promo transactions.' }
     ],
     formula: '\\text{Promo Dependency} = \\frac{\\sum \\text{Sales}_{promo}}{\\sum \\text{Sales}_{total}} \\quad \\text{and} \\quad \\text{Margin Erosion} = \\text{Margin}_{non\\text{-}promo} - \\text{Margin}_{promo}',
-    formulaDescription: 'Promo Dependency is the ratio of promotional sales to total sales. Margin Erosion measures the difference in gross margin percentage between non-promional and promotional periods.',
+    formulaDescription: 'Promo Dependency is the percentage of total sales that come from promotions. Margin Erosion measures how much our profit margins drop during those promotions.',
     assumptions: [
       'Incremental volume limits: Assumes promotion-driven volume lift does not offset the margin rate erosion unless a specific elasticity threshold is met.'
     ],
@@ -351,7 +351,7 @@ const AUDIT_DATA: Record<string, AuditContent> = {
     ]
   },
   'Gross margin %': {
-    title: 'Gross margin %',
+    title: 'Gross Margin',
     value: '36.2%',
     soWhat: 'Average segment gross margin is 36.2%, compressed by deep promotional discounts on cookies and chips.',
     action: 'Cap promotional discount depths at 15% and enforce margin pricing corridors.',
@@ -360,7 +360,7 @@ const AUDIT_DATA: Record<string, AuditContent> = {
       { name: 'cogs', type: 'float [DIRECT]', desc: 'Cost of goods sold from supplier inventory.' }
     ],
     formula: 'GM\\% = \\frac{R - \\text{COGS}}{R} \\times 100',
-    formulaDescription: 'Calculates the percentage of revenue remaining after covering the direct costs of goods sold.',
+    formulaDescription: 'Gross Margin is the percentage of sales revenue remaining after paying for all direct product costs (such as ingredients and packaging).',
     assumptions: [
       'Inventory Valuation: Assumes FIFO inventory pricing methods are uniform across all regions.'
     ],
@@ -398,7 +398,7 @@ const AUDIT_DATA: Record<string, AuditContent> = {
     ]
   },
   'Revenue MTD': {
-    title: 'Revenue MTD',
+    title: 'Total Revenue',
     value: '₹851.2 Cr',
     soWhat: 'MTD revenue reaches ₹851.2 Cr, showing +8.4% growth compared to last month. Beverages continue to dominate, contributing 37.1% of total sales.',
     action: 'Reallocate logistics priority to high-demand beverage SKUs in APAC and EMEA to sustain volume.',
@@ -407,7 +407,7 @@ const AUDIT_DATA: Record<string, AuditContent> = {
       { name: 'date', type: 'date [DIRECT]', desc: 'Transaction timestamp to filter for the current month-to-date.' }
     ],
     formula: 'R_{\\text{MTD}} = \\sum_{i=1}^{M} \\text{net\\_sales}_i',
-    formulaDescription: 'Total portfolio MTD sales is the sum of all transaction records matching the current month-to-date filter.',
+    formulaDescription: 'Total Revenue is the total money earned from all product sales during the current month up to the current date.',
     assumptions: [
       'Current month alignment: Data is filtered dynamically to compare the current elapsed days of the month against the prior month same period.'
     ],
@@ -442,7 +442,7 @@ const AUDIT_DATA: Record<string, AuditContent> = {
     ]
   },
   'Portfolio SKUs': {
-    title: 'Portfolio SKUs',
+    title: 'Active SKUs',
     value: '127',
     soWhat: 'Portfolio contains 127 total active SKUs, recently optimized by sun-setting 3 low-value tail products.',
     action: 'Maintain category assortments and monitor baseline volume transfer to core hero SKUs.',
@@ -451,7 +451,7 @@ const AUDIT_DATA: Record<string, AuditContent> = {
       { name: 'status', type: 'string [DIRECT]', desc: 'Flag indicating if the SKU is active, pending, or discontinued.' }
     ],
     formula: 'N_{\\text{SKUs}} = \\text{Count}(\\text{sku\\_id}) \\quad \\text{where status} = \\text{\'active\'}',
-    formulaDescription: 'Sum of all unique product configurations marked as active in the master data ledger.',
+    formulaDescription: 'Active SKUs is the total count of unique product items that are currently active and available for sale in our catalog.',
     assumptions: [
       'Excludes temporary items: Promotional bundles and seasonal packs are omitted from the active baseline count.'
     ],
@@ -538,7 +538,7 @@ const AUDIT_DATA: Record<string, AuditContent> = {
     ]
   },
   'Total Active Signals': {
-    title: 'Total Active Signals',
+    title: 'Critical Alerts',
     value: '6',
     soWhat: 'A total of 6 critical operational signals are active, led by NPS drops in EMEA and cannibalization alerts in India.',
     action: 'Review signals queue and triage urgent tickets to respective category managers.',
@@ -547,7 +547,7 @@ const AUDIT_DATA: Record<string, AuditContent> = {
       { name: 'status', type: 'string [DIRECT]', desc: 'Flag marking the alert as active or archived.' }
     ],
     formula: 'S_{\\text{active}} = \\text{Count}(\\text{signal\\_id}) \\quad \\text{where status} = \\text{\'active\'}',
-    formulaDescription: 'Counts the sum of all active, unresolved alerts and notifications logged in the signals board.',
+    formulaDescription: 'Critical Alerts is the total number of urgent unresolved issues (like supply stockouts or margin drops) that need immediate action.',
     assumptions: [
       'Archived filter: Assumes signals marked as acknowledged or archived do not count towards the active executive list.'
     ],
@@ -676,7 +676,7 @@ const AUDIT_DATA: Record<string, AuditContent> = {
     ]
   },
   'Growth Rate': {
-    title: 'Growth Rate',
+    title: 'Revenue Growth',
     value: '8.4%',
     soWhat: 'The aggregate growth rate sits at 8.4%, slightly below the target threshold of 10.0%. Regional demand shifts in the Americas (-5.0%) drag overall progress, despite strong growth support from APAC (+7.6%) and EMEA (+2.0%).',
     action: 'Deploy targeted promotional support in the Americas and accelerate high-velocity launches to raise the velocity index.',
@@ -685,7 +685,7 @@ const AUDIT_DATA: Record<string, AuditContent> = {
       { name: 'fiscal_period', type: 'string [DERIVED]', desc: 'Derived period mapping for growth comparisons.' }
     ],
     formula: 'Growth = \\frac{R_{current} - R_{prior}}{R_{prior}} \\times 100',
-    formulaDescription: 'Growth rate is computed by taking the revenue difference between the current period and the prior matching period, divided by prior period revenue.',
+    formulaDescription: 'Revenue Growth measures the percentage change in our sales revenue compared to the same period in the previous year or month.',
     assumptions: [
       'Prior period alignment: Current month-to-date is compared with the exact matching days of the prior fiscal month.',
       'Symmetric parameters: New regional launches with no historical baselines are handled as starting from zero.'
@@ -944,7 +944,7 @@ const getConfidenceScore = (metric: string): number => {
 };
 
 const getMetricStatus = (metric: string) => {
-  const riskMetrics = ['Critical Alerts', 'Long-Tail SKU Burden', 'Rationalize Candidates', 'Revenue Tail Risk', 'Peak Stockout Freq', 'Total Active Signals', 'Long-Tail Burden Ratio', 'Cannibalization Risk Index'];
+  const riskMetrics = ['Critical Alerts', 'Long-Tail SKU Burden', 'Rationalize Candidates', 'Revenue Tail Risk', 'Peak Stockout Freq', 'Total Active Signals', 'Long-Tail Burden Ratio', 'Cannibalization Risk Index', 'Total Stockouts'];
   const isRisk = riskMetrics.includes(metric);
   return {
     label: isRisk ? 'ELEVATED RISK' : 'OPTIMAL / ON-TRACK',
@@ -967,6 +967,7 @@ const getMetricTrend = (metricName: string) => {
       return { value: '-3 SKUs MoM', isUp: false };
     case 'Portfolio SKU Count':
       return { value: '-3 SKUs rationalized', isUp: true };
+    case 'Revenue Growth':
     case 'Growth Rate':
       return { value: '-1.6pp vs target', isUp: false };
     case 'Orders — Today':
@@ -988,6 +989,9 @@ const getMetricTrend = (metricName: string) => {
       return { value: '-1.1% vs target', isUp: false };
     case 'Cannibalization Risk Index':
       return { value: 'High in Beverages', isUp: true };
+    case 'Total Stockouts':
+    case 'Peak Stockout Freq.':
+      return { value: '440 events MTD', isUp: true };
     default:
       return { value: '+0.5% MoM', isUp: true };
   }

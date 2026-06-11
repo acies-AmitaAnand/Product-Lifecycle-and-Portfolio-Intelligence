@@ -759,7 +759,7 @@ export default function App() {
                       highlight: ['VP Product Management']
                     },
                     {
-                      label: 'Gross margin %',
+                      label: 'Gross Margin',
                       value: '36.2%',
                       trend: 'up',
                       trendValue: '+1.1pp MTD',
@@ -775,7 +775,7 @@ export default function App() {
                       highlight: ['VP Product Management']
                     },
                     {
-                      label: 'Revenue MTD',
+                      label: 'Total Revenue',
                       value: '₹851.2 Cr',
                       trend: 'up',
                       trendValue: '+8.4% vs last month',
