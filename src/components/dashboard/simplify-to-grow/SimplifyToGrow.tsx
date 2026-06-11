@@ -411,7 +411,6 @@ export const SimplifyToGrow: React.FC<Props> = ({ isDarkMode, setActiveTab }) =>
   const [expandedPillar, setExpandedPillar] = useState<string | null>(null);
   const [hoveredCat, setHoveredCat] = useState<string | null>(null);
   const [costDriverFilter, setCostDriverFilter] = useState<'All' | 'downtime' | 'transport' | 'waste'>('All');
-  const [drilledCategory, setDrilledCategory] = useState<string | null>(null);
   const focusRef = useRef<HTMLDivElement>(null);
 
   const skus = useMemo(() => computeEnrichedSKUs(), []);
@@ -463,44 +462,6 @@ export const SimplifyToGrow: React.FC<Props> = ({ isDarkMode, setActiveTab }) =>
     });
   }, [skus]);
 
-  const chartData = useMemo(() => {
-    if (drilledCategory) {
-      const items = skus.filter(s => s.cat === drilledCategory);
-      return items.map(s => ({
-        name: s.name.replace('Brand ', '').replace('Category ', '').slice(0, 14),
-        fullName: s.name,
-        cat: s.cat,
-        productionDowntime: s.productionDowntimeCost,
-        transportOverhead: s.transportOverheadCost,
-        wasteWriteOff: s.wasteWriteOffCost,
-        totalHiddenCost: s.totalHiddenCost,
-        rawSku: s,
-      })).sort((a, b) => b.totalHiddenCost - a.totalHiddenCost).slice(0, 10);
-    }
-    return categories;
-  }, [drilledCategory, categories, skus]);
-
-  const handleSkuClick = useCallback((sku: { name: string }) => {
-    const fullSku = skus.find(s => s.name === sku.name);
-    setSelectedSku(fullSku || null);
-  }, [skus]);
-
-  const handleBarClick = useCallback((data: any) => {
-    if (!data) return;
-    const payload = data.activePayload ? data.activePayload[0].payload : data;
-    if (!drilledCategory) {
-      if (payload.cat) {
-        setDrilledCategory(payload.cat);
-        setSelectedCategory(payload.cat);
-      }
-    } else {
-      const sku = payload.rawSku;
-      if (sku) {
-        handleSkuClick(sku);
-      }
-    }
-  }, [drilledCategory, handleSkuClick, setSelectedCategory]);
-
   const radarData = pillars.map(p => ({ subject: p.pillar, score: p.score, fullMark: 100 }));
 
   const tick = isDarkMode ? '#a1a1aa' : '#52525b';
@@ -509,6 +470,11 @@ export const SimplifyToGrow: React.FC<Props> = ({ isDarkMode, setActiveTab }) =>
   const ttBorder = isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
   const scoreColor = overallScore >= 70 ? 'text-emerald-500' : overallScore >= 50 ? 'text-amber-500' : 'text-red-500';
   const scoreRingColor = overallScore >= 70 ? '#10b981' : overallScore >= 50 ? '#f59e0b' : '#ef4444';
+
+  const handleSkuClick = useCallback((sku: { name: string }) => {
+    const fullSku = skus.find(s => s.name === sku.name);
+    setSelectedSku(fullSku || null);
+  }, [skus]);
 
   const handleNavigate = useCallback((tab: number) => {
     setActiveTab(tab);
@@ -781,43 +747,22 @@ export const SimplifyToGrow: React.FC<Props> = ({ isDarkMode, setActiveTab }) =>
           <h3 className="text-xs font-bold uppercase tracking-widest text-amber-600 dark:text-amber-400">
             ③ Complexity P&amp;L — Three Hidden Cost Drivers
           </h3>
-          <span className="ml-auto text-[7px] font-bold uppercase tracking-wider text-zinc-400 px-2 py-0.5 rounded-full border border-black/10 dark:border-white/10">
-            ₹ Lakhs · {drilledCategory ? "Click a SKU bar to inspect" : "Click a category bar to drill down"}
-          </span>
+          <span className="ml-auto text-[7px] font-bold uppercase tracking-wider text-zinc-400 px-2 py-0.5 rounded-full border border-black/10 dark:border-white/10">₹ Lakhs · Click a category to filter</span>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <div className="lg:col-span-2 glass-card bg-white dark:bg-[#1a1a24] border border-black/10 dark:border-white/10 p-5 rounded-xl shadow-sm">
-            <div className="flex items-center justify-between mb-3">
-              <div>
-                <h4 className="text-[10px] font-bold uppercase tracking-widest text-acies-gray dark:text-white mb-0.5">
-                  {drilledCategory ? `Hidden Costs: ${drilledCategory} (Top 10 SKUs)` : 'Hidden Costs by Category'}
-                </h4>
-                <p className="text-[8px] text-zinc-450 font-bold uppercase tracking-wider">
-                  {drilledCategory 
-                    ? 'Click any SKU bar to open its Focus Drawer · Click Back to view all categories' 
-                    : 'Click a bar to drill down into category SKUs · Isolate drivers with the focus pills'
-                  }
-                </p>
-              </div>
-              {drilledCategory && (
-                <button
-                  onClick={() => { setDrilledCategory(null); setSelectedCategory(null); }}
-                  className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[8px] font-black uppercase tracking-wider bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 hover:bg-black/10 dark:hover:bg-white/10 text-zinc-655 dark:text-zinc-300 transition-all shadow-sm"
-                >
-                  ← Back to Categories
-                </button>
-              )}
-            </div>
+            <h4 className="text-[10px] font-bold uppercase tracking-widest text-acies-gray dark:text-white mb-1">Hidden Costs by Category</h4>
+            <p className="text-[8px] text-zinc-450 font-bold uppercase tracking-wider mb-3">Isolate specific cost drivers using the pills below · Click category bars/cards to filter IPPV table</p>
             
             {/* Cost Driver Selector Pills */}
             <div className="flex flex-wrap items-center gap-2 mb-4 bg-black/5 dark:bg-white/5 p-2 rounded-xl border border-black/5 dark:border-white/5">
               <span className="text-[7.5px] font-black uppercase tracking-widest text-zinc-450 dark:text-zinc-500 mr-2">Focus Cost Driver:</span>
               {[
-                { id: 'All', label: 'All Drivers (Stacked)', color: '#6b7280' },
-                { id: 'downtime', label: 'Production Downtime', color: '#ef4444' },
-                { id: 'transport', label: 'Transport Overhead', color: '#f59e0b' },
-                { id: 'waste', label: 'Waste & Write-off', color: '#8b5cf6' },
+                { id: 'All', label: 'All Drivers (Stacked)', color: '#6b7280', border: 'border-zinc-500/20' },
+                { id: 'downtime', label: 'Production Downtime', color: '#ef4444', border: 'border-red-500/20' },
+                { id: 'transport', label: 'Transport Overhead', color: '#f59e0b', border: 'border-amber-500/20' },
+                { id: 'waste', label: 'Waste & Write-off', color: '#8b5cf6', border: 'border-purple-500/20' },
               ].map(driver => (
                 <button
                   key={driver.id}
@@ -836,35 +781,16 @@ export const SimplifyToGrow: React.FC<Props> = ({ isDarkMode, setActiveTab }) =>
 
             <div className="h-52">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={chartData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
+                <BarChart data={categories} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke={grid} horizontal={false} vertical />
-                  <XAxis dataKey={drilledCategory ? "name" : "cat"} tick={{ fill: tick, fontSize: 7.5, fontWeight: 'bold' }} axisLine={false} tickLine={false} />
+                  <XAxis dataKey="cat" tick={{ fill: tick, fontSize: 8, fontWeight: 'bold' }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fill: tick, fontSize: 8 }} axisLine={false} tickLine={false} />
                   <Tooltip contentStyle={{ backgroundColor: ttBg, borderColor: ttBorder, fontSize: '9px' }}
                     formatter={(v: any, name: string) => [`₹${v}L`, name]}
                     content={({ active, payload, label }) => {
                       if (!active || !payload?.length) return null;
-                      
-                      if (drilledCategory) {
-                        const p = payload[0].payload;
-                        return (
-                          <div className="rounded-xl border p-3 text-[8.5px] shadow-xl" style={{ backgroundColor: ttBg, borderColor: ttBorder }}>
-                            <div className="font-black mb-1 text-acies-gray dark:text-white truncate max-w-[180px]">{p.fullName}</div>
-                            <div className="text-[7px] text-zinc-450 dark:text-zinc-500 font-bold uppercase tracking-wider mb-2">{p.cat}</div>
-                            {payload.map((pl: any) => (
-                              <div key={pl.name} className="flex justify-between gap-4 py-0.5">
-                                <span className="text-zinc-400 font-bold">{pl.name}</span>
-                                <span className="font-black" style={{ color: pl.fill }}>₹{pl.value}L</span>
-                              </div>
-                            ))}
-                            <div className="mt-2 pt-2 border-t border-black/5 dark:border-white/5 text-[7px] text-zinc-400 font-black">
-                              Click bar to inspect SKU details
-                            </div>
-                          </div>
-                        );
-                      }
-                      
                       const cat = categories.find(c => c.cat === label);
+                      
                       let worstSkuName = cat?.worstSku?.name;
                       let worstSkuCost = cat?.worstSku?.totalHiddenCost;
                       let culpritLabel = "Top Cost Culprit";
@@ -904,47 +830,47 @@ export const SimplifyToGrow: React.FC<Props> = ({ isDarkMode, setActiveTab }) =>
                   />
                   {costDriverFilter === 'All' && (
                     <>
-                      <Bar dataKey="productionDowntime" name="Production Downtime" stackId="a" fill="#ef4444" radius={[0,0,0,0]} barSize={drilledCategory ? 20 : 28}
-                        onClick={(data) => handleBarClick(data)}>
-                        {chartData.map((c: any) => (
-                          <Cell key={c.cat || c.name} fill="#ef4444" opacity={selectedCategory && !drilledCategory && selectedCategory !== c.cat ? 0.35 : 1} className="cursor-pointer" />
+                      <Bar dataKey="productionDowntime" name="Production Downtime" stackId="a" fill="#ef4444" radius={[0,0,0,0]} barSize={28}
+                        onClick={(data) => setSelectedCategory(prev => prev === data.cat ? null : data.cat)}>
+                        {categories.map(c => (
+                          <Cell key={c.cat} fill="#ef4444" opacity={selectedCategory && selectedCategory !== c.cat ? 0.35 : 1} className="cursor-pointer" />
                         ))}
                       </Bar>
-                      <Bar dataKey="transportOverhead" name="Transport Overhead" stackId="a" fill="#f59e0b" barSize={drilledCategory ? 20 : 28}
-                        onClick={(data) => handleBarClick(data)}>
-                        {chartData.map((c: any) => (
-                          <Cell key={c.cat || c.name} fill="#f59e0b" opacity={selectedCategory && !drilledCategory && selectedCategory !== c.cat ? 0.35 : 1} className="cursor-pointer" />
+                      <Bar dataKey="transportOverhead" name="Transport Overhead" stackId="a" fill="#f59e0b" barSize={28}
+                        onClick={(data) => setSelectedCategory(prev => prev === data.cat ? null : data.cat)}>
+                        {categories.map(c => (
+                          <Cell key={c.cat} fill="#f59e0b" opacity={selectedCategory && selectedCategory !== c.cat ? 0.35 : 1} className="cursor-pointer" />
                         ))}
                       </Bar>
-                      <Bar dataKey="wasteWriteOff" name="Waste & Write-off" stackId="a" fill="#8b5cf6" radius={[4,4,0,0]} barSize={drilledCategory ? 20 : 28}
-                        onClick={(data) => handleBarClick(data)}>
-                        {chartData.map((c: any) => (
-                          <Cell key={c.cat || c.name} fill="#8b5cf6" opacity={selectedCategory && !drilledCategory && selectedCategory !== c.cat ? 0.35 : 1} className="cursor-pointer" />
+                      <Bar dataKey="wasteWriteOff" name="Waste & Write-off" stackId="a" fill="#8b5cf6" radius={[4,4,0,0]} barSize={28}
+                        onClick={(data) => setSelectedCategory(prev => prev === data.cat ? null : data.cat)}>
+                        {categories.map(c => (
+                          <Cell key={c.cat} fill="#8b5cf6" opacity={selectedCategory && selectedCategory !== c.cat ? 0.35 : 1} className="cursor-pointer" />
                         ))}
                       </Bar>
                     </>
                   )}
                   {costDriverFilter === 'downtime' && (
-                    <Bar dataKey="productionDowntime" name="Production Downtime" fill="#ef4444" radius={[4,4,0,0]} barSize={drilledCategory ? 20 : 28}
-                      onClick={(data) => handleBarClick(data)}>
-                      {chartData.map((c: any) => (
-                        <Cell key={c.cat || c.name} fill="#ef4444" opacity={selectedCategory && !drilledCategory && selectedCategory !== c.cat ? 0.35 : 1} className="cursor-pointer" />
+                    <Bar dataKey="productionDowntime" name="Production Downtime" fill="#ef4444" radius={[4,4,0,0]} barSize={28}
+                      onClick={(data) => setSelectedCategory(prev => prev === data.cat ? null : data.cat)}>
+                      {categories.map(c => (
+                        <Cell key={c.cat} fill="#ef4444" opacity={selectedCategory && selectedCategory !== c.cat ? 0.35 : 1} className="cursor-pointer" />
                       ))}
                     </Bar>
                   )}
                   {costDriverFilter === 'transport' && (
-                    <Bar dataKey="transportOverhead" name="Transport Overhead" fill="#f59e0b" radius={[4,4,0,0]} barSize={drilledCategory ? 20 : 28}
-                      onClick={(data) => handleBarClick(data)}>
-                      {chartData.map((c: any) => (
-                        <Cell key={c.cat || c.name} fill="#f59e0b" opacity={selectedCategory && !drilledCategory && selectedCategory !== c.cat ? 0.35 : 1} className="cursor-pointer" />
+                    <Bar dataKey="transportOverhead" name="Transport Overhead" fill="#f59e0b" radius={[4,4,0,0]} barSize={28}
+                      onClick={(data) => setSelectedCategory(prev => prev === data.cat ? null : data.cat)}>
+                      {categories.map(c => (
+                        <Cell key={c.cat} fill="#f59e0b" opacity={selectedCategory && selectedCategory !== c.cat ? 0.35 : 1} className="cursor-pointer" />
                       ))}
                     </Bar>
                   )}
                   {costDriverFilter === 'waste' && (
-                    <Bar dataKey="wasteWriteOff" name="Waste & Write-off" fill="#8b5cf6" radius={[4,4,0,0]} barSize={drilledCategory ? 20 : 28}
-                      onClick={(data) => handleBarClick(data)}>
-                      {chartData.map((c: any) => (
-                        <Cell key={c.cat || c.name} fill="#8b5cf6" opacity={selectedCategory && !drilledCategory && selectedCategory !== c.cat ? 0.35 : 1} className="cursor-pointer" />
+                    <Bar dataKey="wasteWriteOff" name="Waste & Write-off" fill="#8b5cf6" radius={[4,4,0,0]} barSize={28}
+                      onClick={(data) => setSelectedCategory(prev => prev === data.cat ? null : data.cat)}>
+                      {categories.map(c => (
+                        <Cell key={c.cat} fill="#8b5cf6" opacity={selectedCategory && selectedCategory !== c.cat ? 0.35 : 1} className="cursor-pointer" />
                       ))}
                     </Bar>
                   )}
@@ -971,15 +897,7 @@ export const SimplifyToGrow: React.FC<Props> = ({ isDarkMode, setActiveTab }) =>
                 <div key={cat.cat}
                   className={`glass-card bg-white dark:bg-[#1a1a24] border rounded-xl p-3.5 shadow-sm cursor-pointer transition-all group ${isActive ? 'ring-2' : 'hover:shadow-md'}`}
                   style={{ borderColor: isActive ? `${CAT_COLORS[cat.cat]}40` : undefined, boxShadow: isActive ? `0 0 0 2px ${CAT_COLORS[cat.cat]}25` : undefined }}
-                  onClick={() => {
-                    if (selectedCategory === cat.cat) {
-                      setSelectedCategory(null);
-                      setDrilledCategory(null);
-                    } else {
-                      setSelectedCategory(cat.cat);
-                      setDrilledCategory(cat.cat);
-                    }
-                  }}
+                  onClick={() => setSelectedCategory(prev => prev === cat.cat ? null : cat.cat)}
                   onMouseEnter={() => setHoveredCat(cat.cat)}
                   onMouseLeave={() => setHoveredCat(null)}>
                   <div className="flex items-center justify-between mb-2">
