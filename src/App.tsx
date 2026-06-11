@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { 
-  Activity, Rocket, Layers, Scissors, MessageSquare, Zap, LayoutDashboard, Award, BarChart3, AlertOctagon, Home, Cpu, ChevronRight, Search
+  Activity, Rocket, Layers, Scissors, MessageSquare, Zap, LayoutDashboard, Award, BarChart3, AlertOctagon, Home, Cpu, ChevronRight, Search, TrendingUp
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -31,6 +31,7 @@ import { TopDownDrilldown } from './components/dashboard/drilldown/TopDownDrilld
 import { AgentOrchestrator } from './components/dashboard/orchestrator/AgentOrchestrator';
 import { SkuDetailsModal } from './components/dashboard/executive/SkuDetailsModal';
 import { AssortmentOverview } from './components/dashboard/assortment/AssortmentOverview';
+import { SimplifyToGrow } from './components/dashboard/simplify-to-grow/SimplifyToGrow';
 
 // Helper functions for safe localStorage & hash operations
 const safeGetItem = (key: string): string | null => {
@@ -82,6 +83,7 @@ const getTabDisplayName = (id: number, name: string): string => {
     case 6: return 'Top-Down Drill';
     case 7: return 'Agent Orchestrator';
     case 8: return 'SKU Assortment';
+    case 9: return 'Simplify Grow';
     default: return name;
   }
 };
@@ -185,6 +187,20 @@ const getAgentThoughtsForTab = (tabId: number) => {
           'Assortment Optimization Model loaded: 102 SKUs registered.',
           'Netherlands identified as immediate opportunity: lowest gross margin at 38.20% with smallest footprint (45 SKUs).',
           'Beverages category flagged for high cannibalization risk (internal promo correlation index at -0.62).'
+        ]
+      };
+    case 9:
+      return {
+        agent: 'Simplification Agent',
+        role: 'Bain Simplify to Grow Flywheel Analyst',
+        colorClass: 'text-indigo-550 dark:text-indigo-400 border-indigo-500/30 bg-indigo-500/5',
+        dotColor: 'bg-indigo-500',
+        borderColor: 'border-indigo-500/25',
+        bgColor: 'bg-indigo-500/5',
+        thoughts: [
+          'IPPV model loaded for 29 SKUs. Top performer: BrandB Chips (78% household penetration, IPPV 100).',
+          'Detected 8 Bad Complexity SKUs dragging portfolio flywheel score below 65.',
+          'Complexity P&L analysis complete: Household category carries highest hidden cost burden. Recommend value chain review.'
         ]
       };
     default:
@@ -552,7 +568,8 @@ export default function App() {
     4: [{ sender: 'agent', text: 'Hello, I am the Merchandiser Agent. Assortment planning and category sync is online. 35 "Rationalize" segment SKUs identified. How can I help optimize catalog complexity?' }],
     5: [{ sender: 'agent', text: 'Hi! I am the Controller Agent. Continuous Close auditing is active. Fabric Softener flagged with 7 stockout events. Let me know what compliance parameters to check.' }],
     6: [{ sender: 'agent', text: 'Greetings! I am the Scenario Agent. Macro simulation and target planning is ready. I can help configure target values across multiple time horizons.' }],
-    8: [{ sender: 'agent', text: 'Hello, I am the Assortment Agent. I can help optimize SKU density across regions, reduce long-tail burden, and model demand transference. What assortment scenario would you like to run?' }]
+    8: [{ sender: 'agent', text: 'Hello, I am the Assortment Agent. I can help optimize SKU density across regions, reduce long-tail burden, and model demand transference. What assortment scenario would you like to run?' }],
+    9: [{ sender: 'agent', text: 'Hello! I am the Simplification Agent. I have loaded the Bain Simplify to Grow flywheel for your portfolio. 8 Bad Complexity SKUs detected. Ready to walk you through IPPV rankings and the Complexity P&L breakdown.' }]
   });
 
 
@@ -588,6 +605,7 @@ export default function App() {
      if (tab.id === 6) icon = LayoutDashboard;
      if (tab.id === 7) icon = Cpu;
      if (tab.id === 8) icon = Award;
+     if (tab.id === 9) icon = TrendingUp;
      return { ...tab, icon };
   });
 
@@ -828,6 +846,9 @@ export default function App() {
                 if (activeTab === 8) {
                   return [];
                 }
+                if (activeTab === 9) {
+                  return [];
+                }
                 return KPIS;
               })();
 
@@ -904,7 +925,8 @@ export default function App() {
                 {activeTab === 6 && <TopDownDrilldown isDarkMode={isDarkMode} role={role} />}
                 {activeTab === 7 && <AgentOrchestrator isDarkMode={isDarkMode} role={role} />}
                 {activeTab === 8 && <AssortmentOverview role={role} isDarkMode={isDarkMode} onAuditClick={setActiveAuditMetric} />}
-                {activeTab < 0 || activeTab > 8 ? (
+                {activeTab === 9 && <SimplifyToGrow role={role} isDarkMode={isDarkMode} setActiveTab={setActiveTab} />}
+                {activeTab < 0 || activeTab > 9 ? (
                   <div className="flex flex-col items-center justify-center min-h-[550px] glass-card">
                     <div className="w-16 h-16 rounded-full bg-acies-yellow/10 flex items-center justify-center mb-6">
                       <Zap size={32} className="text-acies-yellow" />
@@ -955,7 +977,7 @@ export default function App() {
       </footer>
 
       {/* Floating Agent Assistant Widget */}
-      {((activeTab >= 1 && activeTab <= 6) || activeTab === 8) && isAgentWidgetVisible && (() => {
+      {((activeTab >= 1 && activeTab <= 6) || activeTab === 8 || activeTab === 9) && isAgentWidgetVisible && (() => {
         const thoughtsData = getAgentThoughtsForTab(activeTab);
         if (!thoughtsData) return null;
         const chatHistory = agentChatHistory[activeTab] || [];
@@ -1168,7 +1190,7 @@ Geographically, Italy's top seller is BrandF Water, while Spain is led by BrandC
       })()}
 
       {/* Floating Restore Button if hidden */}
-      {!isAgentWidgetVisible && ((activeTab >= 1 && activeTab <= 6) || activeTab === 8) && (
+      {!isAgentWidgetVisible && ((activeTab >= 1 && activeTab <= 6) || activeTab === 8 || activeTab === 9) && (
         <button
           type="button"
           onClick={() => {
