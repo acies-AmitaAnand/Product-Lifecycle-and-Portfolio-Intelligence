@@ -891,8 +891,21 @@ export const SimplifyToGrow: React.FC<Props> = ({ isDarkMode, setActiveTab }) =>
           </div>
 
           <div className="flex flex-col gap-2">
-            {[...categories].sort((a, b) => b.totalHiddenCost - a.totalHiddenCost).map(cat => {
+            {[...categories].sort((a, b) => {
+              if (costDriverFilter === 'downtime') return b.productionDowntime - a.productionDowntime;
+              if (costDriverFilter === 'transport') return b.transportOverhead - a.transportOverhead;
+              if (costDriverFilter === 'waste') return b.wasteWriteOff - a.wasteWriteOff;
+              return b.totalHiddenCost - a.totalHiddenCost;
+            }).map(cat => {
               const isActive = selectedCategory === cat.cat;
+              const catItems = isActive 
+                ? skus.filter(s => s.cat === cat.cat).sort((a, b) => {
+                    if (costDriverFilter === 'downtime') return b.productionDowntimeCost - a.productionDowntimeCost;
+                    if (costDriverFilter === 'transport') return b.transportOverheadCost - a.transportOverheadCost;
+                    if (costDriverFilter === 'waste') return b.wasteWriteOffCost - a.wasteWriteOffCost;
+                    return b.totalHiddenCost - a.totalHiddenCost;
+                  }).slice(0, 5)
+                : [];
               return (
                 <div key={cat.cat}
                   className={`glass-card bg-white dark:bg-[#1a1a24] border rounded-xl p-3.5 shadow-sm cursor-pointer transition-all group ${isActive ? 'ring-2' : 'hover:shadow-md'}`}
@@ -948,29 +961,73 @@ export const SimplifyToGrow: React.FC<Props> = ({ isDarkMode, setActiveTab }) =>
                     <span className="text-emerald-500">{cat.goodCount} Good</span>
                     <span className="text-zinc-300">·</span>
                     <span className="text-zinc-400">{cat.totalCount - cat.badCount - cat.goodCount} Neutral</span>
-                    {isActive && <span className="ml-auto text-[6.5px] uppercase tracking-widest font-black text-zinc-400">Filtering ↑ table</span>}
+                    {isActive && <span className="ml-auto text-[6.5px] uppercase tracking-widest font-black text-zinc-400">Expanded view</span>}
                   </div>
                   <div className="mt-2 h-1 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
-                    <div className="h-full rounded-full" style={{ width: `${Math.min((cat.totalHiddenCost / 25) * 100, 100)}%`, backgroundColor: CAT_COLORS[cat.cat] }} />
+                     <div className="h-full rounded-full" style={{ width: `${Math.min((cat.totalHiddenCost / 25) * 100, 100)}%`, backgroundColor: CAT_COLORS[cat.cat] }} />
                   </div>
-                  <div className="mt-2.5 pt-2 border-t border-black/5 dark:border-white/5 flex items-center justify-between text-[7px] font-bold text-zinc-450 dark:text-zinc-500">
-                    <span className="flex items-center gap-0.5">
-                      Top SKU: 
-                      <button 
-                        onClick={(e) => { e.stopPropagation(); handleSkuClick(cat.topSku); }}
-                        className="text-emerald-500 hover:underline truncate max-w-[65px] font-black">
-                        {cat.topSku.name}
-                      </button>
-                    </span>
-                    <span className="flex items-center gap-0.5">
-                      Worst: 
-                      <button 
-                        onClick={(e) => { e.stopPropagation(); handleSkuClick(cat.worstSku); }}
-                        className="text-red-500 hover:underline truncate max-w-[65px] font-black">
-                        {cat.worstSku.name}
-                      </button>
-                    </span>
-                  </div>
+                  
+                  {/* Expanded SKU List Drill-down */}
+                  {isActive && (
+                    <div className="mt-3 pt-3 border-t border-black/5 dark:border-white/5 space-y-2 animate-fadeIn">
+                      <div className="text-[7.5px] font-black uppercase tracking-widest text-zinc-450 dark:text-zinc-500 mb-1">
+                        {costDriverFilter === 'downtime' ? 'Top 5 Downtime Culprits' :
+                         costDriverFilter === 'transport' ? 'Top 5 Transport Culprits' :
+                         costDriverFilter === 'waste' ? 'Top 5 Waste Culprits' :
+                         'Top 5 Cost Culprits'} (Click to inspect)
+                      </div>
+                      <div className="space-y-1.5">
+                        {catItems.map((s, idx) => {
+                          const shownCost = costDriverFilter === 'downtime' ? s.productionDowntimeCost :
+                                            costDriverFilter === 'transport' ? s.transportOverheadCost :
+                                            costDriverFilter === 'waste' ? s.wasteWriteOffCost :
+                                            s.totalHiddenCost;
+                          return (
+                            <div
+                              key={s.name}
+                              onClick={(e) => { e.stopPropagation(); handleSkuClick(s); }}
+                              className="flex items-center gap-2 p-1.5 rounded-lg bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border border-black/5 dark:border-white/5 transition-all text-left group/sku-row cursor-pointer"
+                            >
+                              <span className="text-[7.5px] font-black w-3 text-zinc-400 font-mono">#{idx + 1}</span>
+                              <div className="flex-1 min-w-0">
+                                <div className="text-[8px] font-black text-acies-gray dark:text-zinc-200 truncate group-hover/sku-row:text-amber-500 transition-colors">
+                                  {s.name.replace('Brand ', '').replace('Category ', '')}
+                                </div>
+                                {/* Stacked cost breakdown bar */}
+                                <div className="flex h-1 bg-black/10 dark:bg-white/10 rounded-full overflow-hidden mt-1 max-w-[120px]">
+                                  <div style={{ width: `${(s.productionDowntimeCost / (s.totalHiddenCost || 1)) * 100}%`, backgroundColor: '#ef4444' }} />
+                                  <div style={{ width: `${(s.transportOverheadCost / (s.totalHiddenCost || 1)) * 100}%`, backgroundColor: '#f59e0b' }} />
+                                  <div style={{ width: `${(s.wasteWriteOffCost / (s.totalHiddenCost || 1)) * 100}%`, backgroundColor: '#8b5cf6' }} />
+                                </div>
+                              </div>
+                              <span className="text-[8px] font-black text-amber-500 shrink-0">₹{shownCost}L</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {!isActive && (
+                    <div className="mt-2.5 pt-2 border-t border-black/5 dark:border-white/5 flex items-center justify-between text-[7px] font-bold text-zinc-450 dark:text-zinc-500">
+                      <span className="flex items-center gap-0.5">
+                        Top SKU: 
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); handleSkuClick(cat.topSku); }}
+                          className="text-emerald-500 hover:underline truncate max-w-[65px] font-black">
+                          {cat.topSku.name}
+                        </button>
+                      </span>
+                      <span className="flex items-center gap-0.5">
+                        Worst: 
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); handleSkuClick(cat.worstSku); }}
+                          className="text-red-500 hover:underline truncate max-w-[65px] font-black">
+                          {cat.worstSku.name}
+                        </button>
+                      </span>
+                    </div>
+                  )}
                 </div>
               );
             })}
