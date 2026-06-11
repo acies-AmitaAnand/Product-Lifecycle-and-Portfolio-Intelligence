@@ -39,67 +39,63 @@ export const LaunchReadinessDashboard: React.FC<LaunchReadinessDashboardProps> =
   const [promoBudget, setPromoBudget] = useState(12);
   const [suppliers, setSuppliers] = useState(3);
   const [channels, setChannels] = useState(4);
+  const [stage, setStage] = useState<'Ideation' | 'Development' | 'Testing' | 'Pre-market' | 'Launch'>('Development');
+  const [budget, setBudget] = useState(1.2);
+  const [spent, setSpent] = useState(0.5);
 
   const [hasScored, setHasScored] = useState(false);
-  const [scoreResults, setScoreResults] = useState<any>(null);
+  const [isMitigated, setIsMitigated] = useState(false);
 
   // Accordion guide
   const [guideOpen, setGuideOpen] = useState(false);
 
+  // Reactive calculations
+  const baseMarketFit = Math.min(100, Math.round(projectedRev / 2 + grossMargin));
+  const baseSupplyReadiness = Math.min(100, Math.round(100 - (leadTime - 10) * 2.5 + suppliers * 3));
+  const baseMarginHealth = Math.min(100, Math.round(grossMargin * 2 - promoBudget * 0.8));
+  const baseChannelCoverage = Math.min(100, Math.round((channels / 6) * 100));
+  const baseRiskProfile = Math.min(100, Math.round(100 - promoBudget * 1.5 - Math.max(0, leadTime - 15) * 2));
+
+  // Mitigated values:
+  const simSpent = isMitigated ? parseFloat((spent * 1.15).toFixed(2)) : spent;
+  const simSupplyReadiness = isMitigated ? Math.min(100, baseSupplyReadiness + 15) : baseSupplyReadiness;
+  const simRiskProfile = isMitigated ? Math.min(100, baseRiskProfile + 20) : baseRiskProfile;
+
+  const currentScores = {
+    'Market Fit': baseMarketFit,
+    'Supply Readiness': simSupplyReadiness,
+    'Margin Health': baseMarginHealth,
+    'Channel Coverage': baseChannelCoverage,
+    'Risk Profile': simRiskProfile,
+  };
+
+  const currentAvg = Object.values(currentScores).reduce((a, b) => a + b, 0) / 5;
+
+  let currentVerdictTitle = '';
+  let currentVerdictColor = 'text-green-500 bg-green-500/10 border-green-500/20';
+  
+  if (currentAvg >= 75) {
+    currentVerdictTitle = '✅ Launch Ready — proceed to plan';
+    currentVerdictColor = 'text-green-500 bg-green-500/10 border-green-500/20';
+  } else if (currentAvg >= 50) {
+    currentVerdictTitle = '⚠️ Conditional — address gaps first';
+    currentVerdictColor = 'text-amber-500 bg-amber-500/10 border-amber-500/20';
+  } else {
+    currentVerdictTitle = '🚫 Not Ready — significant risks remain';
+    currentVerdictColor = 'text-red-500 bg-red-500/10 border-red-500/20';
+  }
+
+  // Milestones dynamic checklist (mitigation unblocks some tasks)
+  const currentMilestones = [
+    { title: 'Supplier Onboarding', status: (suppliers >= 2 || isMitigated) ? 'complete' : 'in-progress', progress: (suppliers >= 2 || isMitigated) ? 100 : 60, date: 'Week 2' },
+    { title: 'Channel Agreements', status: (channels >= 3 || isMitigated) ? 'complete' : 'in-progress', progress: (channels >= 3 || isMitigated) ? 100 : 75, date: 'Week 4' },
+    { title: 'Production Trials', status: grossMargin >= 35 ? 'complete' : 'blocked', progress: grossMargin >= 35 ? 100 : 40, date: 'Week 6' },
+    { title: 'Distribution Setup', status: 'in-progress', progress: isMitigated ? 95 : 85, date: 'Week 8' },
+    { title: 'Marketing Campaign', status: 'in-progress', progress: isMitigated ? 75 : 50, date: 'Week 10' },
+    { title: 'Launch Go-Live', status: 'in-progress', progress: 0, date: 'Week 12' },
+  ];
+
   const handleScoreLaunch = () => {
-    // Exact mathematical formula from vanilla prototype
-    const marketFit = Math.min(100, Math.round(projectedRev / 2 + grossMargin));
-    const supplyReadiness = Math.min(100, Math.round(100 - (leadTime - 10) * 2.5 + suppliers * 3));
-    const marginHealth = Math.min(100, Math.round(grossMargin * 2 - promoBudget * 0.8));
-    const channelCoverage = Math.min(100, Math.round((channels / 6) * 100));
-    const riskProfile = Math.min(100, Math.round(100 - promoBudget * 1.5 - Math.max(0, leadTime - 15) * 2));
-
-    const scores = {
-      'Market Fit': marketFit,
-      'Supply Readiness': supplyReadiness,
-      'Margin Health': marginHealth,
-      'Channel Coverage': channelCoverage,
-      'Risk Profile': riskProfile,
-    };
-
-    const avg = Object.values(scores).reduce((a, b) => a + b, 0) / 5;
-    
-    let verdictTitle = '';
-    let verdictIcon = CheckCircle2;
-    let verdictColor = 'text-green-500 bg-green-500/10 border-green-500/20';
-    
-    if (avg >= 75) {
-      verdictTitle = '✅ Launch Ready — proceed to plan';
-      verdictIcon = CheckCircle2;
-      verdictColor = 'text-green-500 bg-green-500/10 border-green-500/20';
-    } else if (avg >= 50) {
-      verdictTitle = '⚠️ Conditional — address gaps first';
-      verdictIcon = AlertTriangle;
-      verdictColor = 'text-amber-500 bg-amber-500/10 border-amber-500/20';
-    } else {
-      verdictTitle = '🚫 Not Ready — significant risks remain';
-      verdictIcon = XCircle;
-      verdictColor = 'text-red-500 bg-red-500/10 border-red-500/20';
-    }
-
-    // Milestones dynamic checklist
-    const milestones = [
-      { title: 'Supplier Onboarding', status: suppliers >= 2 ? 'complete' : 'in-progress', progress: suppliers >= 2 ? 100 : 60, date: 'Week 2' },
-      { title: 'Channel Agreements', status: channels >= 3 ? 'complete' : 'in-progress', progress: channels >= 3 ? 100 : 75, date: 'Week 4' },
-      { title: 'Production Trials', status: grossMargin >= 35 ? 'complete' : 'blocked', progress: grossMargin >= 35 ? 100 : 40, date: 'Week 6' },
-      { title: 'Distribution Setup', status: 'in-progress', progress: 85, date: 'Week 8' },
-      { title: 'Marketing Campaign', status: 'in-progress', progress: 50, date: 'Week 10' },
-      { title: 'Launch Go-Live', status: 'in-progress', progress: 0, date: 'Week 12' },
-    ];
-
-    setScoreResults({
-      scores,
-      average: avg,
-      verdictTitle,
-      verdictIcon,
-      verdictColor,
-      milestones
-    });
     setHasScored(true);
   };
 
@@ -112,12 +108,15 @@ export const LaunchReadinessDashboard: React.FC<LaunchReadinessDashboardProps> =
     setPromoBudget(12);
     setSuppliers(3);
     setChannels(4);
+    setStage('Development');
+    setBudget(1.2);
+    setSpent(0.5);
+    setIsMitigated(false);
     setHasScored(false);
-    setScoreResults(null);
   };
 
   // Recharts Radar data
-  const radarChartData = scoreResults ? Object.entries(scoreResults.scores).map(([key, val]) => {
+  const radarChartData = hasScored ? Object.entries(currentScores).map(([key, val]) => {
     // Benchmarks: Market Fit (68), Supply (72), Margin (65), Channel (75), Risk (70)
     const benchmarkMap: Record<string, number> = {
       'Market Fit': 68,
@@ -262,6 +261,40 @@ export const LaunchReadinessDashboard: React.FC<LaunchReadinessDashboardProps> =
               className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-sm p-2 text-xs font-semibold text-acies-gray dark:text-white outline-none"
             />
           </div>
+          <div className="flex flex-col gap-1">
+            <label className="text-[8px] font-bold uppercase tracking-widest opacity-40">Current Stage</label>
+            <select 
+              value={stage}
+              onChange={(e) => setStage(e.target.value as any)}
+              className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-sm p-2 text-xs font-semibold text-acies-gray dark:text-white outline-none cursor-pointer"
+            >
+              <option value="Ideation">Ideation</option>
+              <option value="Development">Development</option>
+              <option value="Testing">Testing</option>
+              <option value="Pre-market">Pre-market</option>
+              <option value="Launch">Launch</option>
+            </select>
+          </div>
+          <div className="flex flex-col gap-1">
+            <label className="text-[8px] font-bold uppercase tracking-widest opacity-40">Budget (₹ Cr)</label>
+            <input 
+              type="number" 
+              step="0.1"
+              value={budget}
+              onChange={(e) => setBudget(parseFloat(e.target.value) || 0)}
+              className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-sm p-2 text-xs font-semibold text-acies-gray dark:text-white outline-none"
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <label className="text-[8px] font-bold uppercase tracking-widest opacity-40">Spent (₹ Cr)</label>
+            <input 
+              type="number" 
+              step="0.1"
+              value={spent}
+              onChange={(e) => setSpent(parseFloat(e.target.value) || 0)}
+              className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-sm p-2 text-xs font-semibold text-acies-gray dark:text-white outline-none"
+            />
+          </div>
         </div>
         
         <div className="flex gap-2 mt-4 pt-4 border-t border-black/5 dark:border-white/5">
@@ -281,23 +314,23 @@ export const LaunchReadinessDashboard: React.FC<LaunchReadinessDashboardProps> =
       </div>
 
       {/* Results Section */}
-      {hasScored && scoreResults && (
+      {hasScored && (
         <div className="space-y-6">
           
           {/* Scoring Verdict Grid */}
           <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-5">
             <h4 className="text-xs font-bold uppercase tracking-widest pb-3 border-b border-black/5 dark:border-white/5 mb-4 flex items-center gap-2">
               Launch Readiness Score:
-              <span className={`text-[10px] font-extrabold px-3 py-0.5 rounded-sm ${scoreResults.verdictColor}`}>
-                {scoreResults.verdictTitle}
+              <span className={`text-[10px] font-extrabold px-3 py-0.5 rounded-sm ${currentVerdictColor}`}>
+                {currentVerdictTitle}
               </span>
               <span className="text-[9px] font-bold opacity-45 uppercase ml-auto">
-                Overall: {Math.round(scoreResults.average)}/100
+                Overall: {Math.round(currentAvg)}/100
               </span>
             </h4>
             
             <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-              {Object.entries(scoreResults.scores).map(([k, v]) => {
+              {Object.entries(currentScores).map(([k, v]) => {
                 const val = v as number;
                 const metricColor = val >= 70 ? 'text-green-500' : val >= 50 ? 'text-amber-500' : 'text-red-500';
                 return (
@@ -330,11 +363,187 @@ export const LaunchReadinessDashboard: React.FC<LaunchReadinessDashboardProps> =
             </div>
           </div>
 
+          {/* Cost & Risk Impact Analysis */}
+          {(() => {
+            const baselineAvg = (baseMarketFit + baseSupplyReadiness + baseMarginHealth + baseChannelCoverage + baseRiskProfile) / 5;
+            const baseRiskExposure = baselineAvg < 75 ? projectedRev : 0;
+            const simRiskExposure = currentAvg < 75 ? projectedRev : 0;
+
+            const miniChartData = [
+              {
+                name: 'Baseline',
+                'Spent Cost (₹ Cr)': spent,
+                'Risk Exposure (₹ Cr)': baseRiskExposure
+              },
+              {
+                name: 'Simulated',
+                'Spent Cost (₹ Cr)': simSpent,
+                'Risk Exposure (₹ Cr)': simRiskExposure
+              }
+            ];
+
+            return (
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-5 space-y-4">
+                    <h3 className="text-xs font-bold uppercase tracking-widest text-zinc-400">Cost & Risk Impact</h3>
+                    <div className="space-y-3.5">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="p-3 bg-black/5 dark:bg-white/5 rounded-sm">
+                          <span className="text-[8px] text-zinc-500 block uppercase">Project Budget</span>
+                          <span className="text-sm font-display font-extrabold text-zinc-800 dark:text-white mt-1 block font-mono">
+                            ₹{budget.toFixed(2)} Cr
+                          </span>
+                        </div>
+                        <div className="p-3 bg-black/5 dark:bg-white/5 rounded-sm">
+                          <span className="text-[8px] text-zinc-500 block uppercase">Spent Cost</span>
+                          <span className="text-sm font-display font-extrabold text-zinc-800 dark:text-white mt-1 block font-mono">
+                            ₹{spent.toFixed(2)} Cr
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="p-3.5 bg-black/5 dark:bg-white/5 rounded-sm space-y-1">
+                        <div className="flex justify-between text-[9px] font-bold">
+                          <span className="text-zinc-550 dark:text-zinc-400">Spent-to-Budget Ratio</span>
+                          <span className={spent > budget ? 'text-red-500' : 'text-emerald-500'}>
+                            {((spent / (budget || 1)) * 100).toFixed(0)}%
+                          </span>
+                        </div>
+                        <div className="w-full h-1.5 bg-black/10 dark:bg-white/10 rounded-full overflow-hidden">
+                          <div 
+                            className={`h-full rounded-full transition-all ${spent > budget ? 'bg-red-500' : 'bg-emerald-500'}`}
+                            style={{ width: `${Math.min(100, (spent / (budget || 1)) * 100)}%` }}
+                          />
+                        </div>
+                        {spent > budget && (
+                          <p className="text-[8px] text-red-500 font-bold mt-1">⚠️ Budget Overrun: Spent exceeds project budget by ₹{(spent - budget).toFixed(2)} Cr.</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-5 space-y-4">
+                    <h3 className="text-xs font-bold uppercase tracking-widest text-zinc-400">Risk Profile Analysis</h3>
+                    <div className="space-y-3">
+                      <div className="p-3 bg-black/5 dark:bg-white/5 rounded-sm">
+                        <span className="text-[8px] text-zinc-500 block uppercase">Revenue at Risk Exposure</span>
+                        <span className={`text-sm font-display font-extrabold ${baseRiskExposure > 0 ? 'text-red-500' : 'text-emerald-500'} mt-1 block font-mono`}>
+                          ₹{baseRiskExposure.toFixed(2)} Cr
+                        </span>
+                      </div>
+                      
+                      <div className="text-[9px] space-y-1.5">
+                        <p className="font-bold text-zinc-650 dark:text-zinc-350">Key Risk Drivers:</p>
+                        <ul className="list-disc pl-4 space-y-1 text-zinc-500">
+                          {leadTime > 15 && <li>Lead Time of {leadTime} days exceeds 15-day supply chain threshold.</li>}
+                          {suppliers < 2 && <li>Single supplier risk detected. Sourcing vulnerability flag.</li>}
+                          {promoBudget > 10 && <li>High promotion budget of {promoBudget}% pressures margin health.</li>}
+                          {grossMargin < 35 && <li>Gross Margin of {grossMargin}% is below average.</li>}
+                          {leadTime <= 15 && suppliers >= 2 && promoBudget <= 10 && grossMargin >= 35 && <li>No critical supply or cost risks detected.</li>}
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* SKU Risk Mitigation Simulator Card */}
+                <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-5 space-y-5">
+                  <div className="flex justify-between items-center pb-2 border-b border-black/5 dark:border-white/5">
+                    <div>
+                      <h3 className="text-xs font-bold uppercase tracking-widest text-zinc-400">SKU Risk Mitigation & Cost Simulator</h3>
+                      <p className="text-[9px] text-zinc-550 uppercase mt-0.5">Activate mitigation policies to balance risk reduction and cost slippage.</p>
+                    </div>
+                    <button
+                      onClick={() => setIsMitigated(!isMitigated)}
+                      className={`relative inline-flex h-5 w-10 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out outline-none ${
+                        isMitigated ? 'bg-emerald-500' : 'bg-zinc-300 dark:bg-zinc-700'
+                      }`}
+                      style={{ border: 'none' }}
+                    >
+                      <span
+                        className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${
+                          isMitigated ? 'translate-x-5' : 'translate-x-0'
+                        }`}
+                      />
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <div className="lg:col-span-5 space-y-3 text-[9px]">
+                      <div className="p-3 bg-black/5 dark:bg-white/5 rounded-sm">
+                        <span className="text-zinc-555 dark:text-zinc-400 block font-bold">Spent Cost Impact</span>
+                        <span className="font-bold font-mono text-zinc-750 dark:text-zinc-200">
+                          ₹{spent.toFixed(2)} Cr 
+                          {isMitigated && <span className="text-amber-500 font-bold ml-1">→ ₹{simSpent.toFixed(2)} Cr (+15% premium)</span>}
+                        </span>
+                      </div>
+                      
+                      <div className="p-3 bg-black/5 dark:bg-white/5 rounded-sm">
+                        <span className="text-zinc-555 dark:text-zinc-400 block font-bold">Overall Launch Readiness</span>
+                        <span className="font-bold font-mono text-zinc-750 dark:text-zinc-200">
+                          {Math.round((baseMarketFit + baseSupplyReadiness + baseMarginHealth + baseChannelCoverage + baseRiskProfile) / 5)}%
+                          {isMitigated && <span className="text-emerald-500 font-bold ml-1">→ {Math.round(currentAvg)}% (+15 points)</span>}
+                        </span>
+                      </div>
+
+                      <div className="p-3 bg-black/5 dark:bg-white/5 rounded-sm">
+                        <span className="text-zinc-555 dark:text-zinc-400 block font-bold">Risk Level Verdict</span>
+                        <span className="font-bold text-zinc-750 dark:text-zinc-200">
+                          {Math.round((baseMarketFit + baseSupplyReadiness + baseMarginHealth + baseChannelCoverage + baseRiskProfile) / 5) >= 75 ? 'Low' : Math.round((baseMarketFit + baseSupplyReadiness + baseMarginHealth + baseChannelCoverage + baseRiskProfile) / 5) >= 50 ? 'Medium' : 'High'}
+                          {isMitigated && <span className="text-emerald-500 font-bold ml-1">→ {currentAvg >= 75 ? 'Low' : currentAvg >= 50 ? 'Medium' : 'High'}</span>}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="lg:col-span-7 flex flex-col justify-between space-y-3">
+                      {/* Mini chart */}
+                      <div className="bg-black/5 dark:bg-white/5 p-3 rounded-sm">
+                        <span className="text-[9px] font-bold uppercase tracking-wider text-zinc-400 block mb-2">Spent Cost vs. Revenue Exposure Comparison</span>
+                        <div className="h-40">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={miniChartData} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
+                              <CartesianGrid strokeDasharray="3 3" stroke={isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'} vertical={false} />
+                              <XAxis dataKey="name" tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
+                              <YAxis tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
+                              <Tooltip contentStyle={{ backgroundColor: isDarkMode ? '#1f1f1f' : '#fff', border: isDarkMode ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.1)', color: isDarkMode ? '#fff' : '#000', fontSize: 9 }} />
+                              <Legend wrapperStyle={{ fontSize: 8, textTransform: 'uppercase' }} />
+                              <Bar dataKey="Spent Cost (₹ Cr)" fill="#a78bfa" radius={[1, 1, 0, 0]} barSize={24} />
+                              <Bar dataKey="Risk Exposure (₹ Cr)" fill="#ef4444" radius={[1, 1, 0, 0]} barSize={24} />
+                            </BarChart>
+                          </ResponsiveContainer>
+                        </div>
+                      </div>
+
+                      <div className="p-3 bg-purple-500/5 border border-purple-500/15 rounded-sm text-[9px] leading-relaxed text-zinc-555 dark:text-zinc-300 font-sans">
+                        {isMitigated ? (
+                          <p className="flex items-start gap-1">
+                            <Check size={11} className="text-emerald-500 shrink-0 mt-0.5" />
+                            <span>
+                              <strong>AI Recommendation:</strong> Mitigating risks incurs ₹{(simSpent - spent).toFixed(2)} Cr (+15%) overhead but successfully eliminates ₹{baseRiskExposure.toFixed(2)} Cr in revenue exposure, representing an efficient risk reduction strategy.
+                            </span>
+                          </p>
+                        ) : (
+                          <p className="flex items-start gap-1">
+                            <Info size={11} className="text-amber-500 shrink-0 mt-0.5" />
+                            <span>
+                              <strong>AI Forecast:</strong> Sourcing and logistics flags present ₹{baseRiskExposure.toFixed(2)} Cr in revenue risk. Toggle "Mitigation Protocol" to unblock supplier and distribution dependencies.
+                            </span>
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </>
+            );
+          })()}
+
           {/* Upcoming Milestone Gates */}
           <div className="space-y-3">
             <h3 className="text-xs font-bold uppercase tracking-widest pl-1">Launch Milestones Tracker</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {scoreResults.milestones.map((m: any, idx: number) => {
+              {currentMilestones.map((m: any, idx: number) => {
                 const borderCol = m.status === 'complete' ? 'border-green-500/30' : m.status === 'blocked' ? 'border-red-500/30' : 'border-amber-500/30';
                 const indicatorBg = m.status === 'complete' ? 'bg-green-500/20 text-green-500' : m.status === 'blocked' ? 'bg-red-500/20 text-red-500' : 'bg-amber-500/20 text-amber-500';
                 const progressBg = m.status === 'complete' ? 'bg-green-500' : m.status === 'blocked' ? 'bg-red-500' : 'bg-amber-500';

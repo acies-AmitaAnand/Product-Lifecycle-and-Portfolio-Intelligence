@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Filter, RefreshCw, Download, Zap, BarChart2, PieChart as PieIcon
+  Filter, RefreshCw, Download, Zap, BarChart2, PieChart as PieIcon, Shield, ShieldAlert, DollarSign, Activity, Play, Check, AlertTriangle
 } from 'lucide-react';
 import { 
   ResponsiveContainer, BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -26,7 +26,7 @@ interface VPLaunchProduct {
   category: string;
   brand: string;
   region: string;
-  stage: 'Ideation' | 'Development' | 'Testing' | 'Regulatory' | 'Production' | 'Market Ready' | 'Launch Completed';
+  stage: 'Ideation' | 'Development' | 'Testing' | 'Pre-market' | 'Launch';
   quarter: string;
   readiness: number;
   risk: 'High' | 'Medium' | 'Low';
@@ -37,31 +37,31 @@ interface VPLaunchProduct {
 }
 
 const VP_PRODUCTS: VPLaunchProduct[] = [
-  { id: 'LP01', name: 'BrandA Premium Energy', category: 'Beverages', brand: 'BrandA', region: 'APAC', stage: 'Market Ready', quarter: 'Q2 2026', readiness: 95, risk: 'Low', revExposure: 1.2, budget: 0.8, spent: 0.75, owner: 'John D.' },
-  { id: 'LP02', name: 'BrandB Chips Pro', category: 'Snacks', brand: 'BrandB', region: 'Americas', stage: 'Launch Completed', quarter: 'Q2 2026', readiness: 99, risk: 'Low', revExposure: 1.5, budget: 1.0, spent: 1.0, owner: 'Mike T.' },
+  { id: 'LP01', name: 'BrandA Premium Energy', category: 'Beverages', brand: 'BrandA', region: 'APAC', stage: 'Pre-market', quarter: 'Q2 2026', readiness: 95, risk: 'Low', revExposure: 1.2, budget: 0.8, spent: 0.75, owner: 'John D.' },
+  { id: 'LP02', name: 'BrandB Chips Pro', category: 'Snacks', brand: 'BrandB', region: 'Americas', stage: 'Launch', quarter: 'Q2 2026', readiness: 99, risk: 'Low', revExposure: 1.5, budget: 1.0, spent: 1.0, owner: 'Mike T.' },
   { id: 'LP03', name: 'BrandF Eco Water', category: 'Beverages', brand: 'BrandF', region: 'APAC', stage: 'Testing', quarter: 'Q2 2026', readiness: 88, risk: 'Low', revExposure: 0.9, budget: 0.6, spent: 0.55, owner: 'Dave P.' },
   { id: 'LP04', name: 'BrandD Yogurt Drink', category: 'Beverages', brand: 'BrandD', region: 'EMEA', stage: 'Testing', quarter: 'Q3 2026', readiness: 86, risk: 'Low', revExposure: 0.5, budget: 0.3, spent: 0.25, owner: 'Sarah K.' },
-  { id: 'LP05', name: 'BrandB Tortilla Chips', category: 'Snacks', brand: 'BrandB', region: 'Americas', stage: 'Production', quarter: 'Q2 2026', readiness: 88, risk: 'Low', revExposure: 1.1, budget: 0.7, spent: 0.65, owner: 'Mike T.' },
-  { id: 'LP06', name: 'BrandF Alkaline Water', category: 'Beverages', brand: 'BrandF', region: 'India', stage: 'Market Ready', quarter: 'Q2 2026', readiness: 97, risk: 'Low', revExposure: 0.4, budget: 0.3, spent: 0.28, owner: 'Dave P.' },
-  { id: 'LP07', name: 'BrandA Soy Milk', category: 'Beverages', brand: 'BrandA', region: 'APAC', stage: 'Production', quarter: 'Q3 2026', readiness: 90, risk: 'Low', revExposure: 0.8, budget: 0.5, spent: 0.48, owner: 'John D.' },
-  { id: 'LP08', name: 'BrandD Greek Yogurt', category: 'Snacks', brand: 'BrandD', region: 'India', stage: 'Launch Completed', quarter: 'Q2 2026', readiness: 99, risk: 'Low', revExposure: 1.3, budget: 0.8, spent: 0.8, owner: 'Sarah K.' },
+  { id: 'LP05', name: 'BrandB Tortilla Chips', category: 'Snacks', brand: 'BrandB', region: 'Americas', stage: 'Pre-market', quarter: 'Q2 2026', readiness: 88, risk: 'Low', revExposure: 1.1, budget: 0.7, spent: 0.65, owner: 'Mike T.' },
+  { id: 'LP06', name: 'BrandF Alkaline Water', category: 'Beverages', brand: 'BrandF', region: 'India', stage: 'Pre-market', quarter: 'Q2 2026', readiness: 97, risk: 'Low', revExposure: 0.4, budget: 0.3, spent: 0.28, owner: 'Dave P.' },
+  { id: 'LP07', name: 'BrandA Soy Milk', category: 'Beverages', brand: 'BrandA', region: 'APAC', stage: 'Pre-market', quarter: 'Q3 2026', readiness: 90, risk: 'Low', revExposure: 0.8, budget: 0.5, spent: 0.48, owner: 'John D.' },
+  { id: 'LP08', name: 'BrandD Greek Yogurt', category: 'Snacks', brand: 'BrandD', region: 'India', stage: 'Launch', quarter: 'Q2 2026', readiness: 99, risk: 'Low', revExposure: 1.3, budget: 0.8, spent: 0.8, owner: 'Sarah K.' },
   { id: 'LP09', name: 'BrandE Face Scrub', category: 'Personal Care', brand: 'BrandE', region: 'EMEA', stage: 'Testing', quarter: 'Q3 2026', readiness: 85, risk: 'Low', revExposure: 0.7, budget: 0.4, spent: 0.32, owner: 'Anna L.' },
   { id: 'LP10', name: 'BrandG Floor Wipes', category: 'Household', brand: 'BrandG', region: 'EMEA', stage: 'Testing', quarter: 'Q2 2026', readiness: 95, risk: 'Low', revExposure: 0.6, budget: 0.4, spent: 0.38, owner: 'Tom H.' },
   { id: 'LP11', name: 'BrandH Laundry Pods', category: 'Household', brand: 'BrandH', region: 'India', stage: 'Testing', quarter: 'Q3 2026', readiness: 88, risk: 'Low', revExposure: 1.2, budget: 0.8, spent: 0.6, owner: 'Vicky S.' },
-  { id: 'LP12', name: 'BrandH Fabric Sheets', category: 'Household', brand: 'BrandH', region: 'Americas', stage: 'Production', quarter: 'Q3 2026', readiness: 89, risk: 'Low', revExposure: 0.5, budget: 0.3, spent: 0.26, owner: 'Vicky S.' },
+  { id: 'LP12', name: 'BrandH Fabric Sheets', category: 'Household', brand: 'BrandH', region: 'Americas', stage: 'Pre-market', quarter: 'Q3 2026', readiness: 89, risk: 'Low', revExposure: 0.5, budget: 0.3, spent: 0.26, owner: 'Vicky S.' },
   { id: 'LP13', name: 'BrandB Potato Crisps', category: 'Snacks', brand: 'BrandB', region: 'APAC', stage: 'Testing', quarter: 'Q2 2026', readiness: 90, risk: 'Low', revExposure: 1.1, budget: 0.7, spent: 0.62, owner: 'Mike T.' },
-  { id: 'LP14', name: 'BrandE Hand Wash', category: 'Personal Care', brand: 'BrandE', region: 'APAC', stage: 'Production', quarter: 'Q4 2026', readiness: 85, risk: 'Low', revExposure: 0.9, budget: 0.5, spent: 0.45, owner: 'Anna L.' },
-  { id: 'LP15', name: 'BrandA Energy Gel', category: 'Beverages', brand: 'BrandA', region: 'EMEA', stage: 'Production', quarter: 'Q4 2026', readiness: 86, risk: 'Low', revExposure: 0.8, budget: 0.5, spent: 0.44, owner: 'John D.' },
-  { id: 'LP16', name: 'BrandE Hair Serum', category: 'Personal Care', brand: 'BrandE', region: 'India', stage: 'Market Ready', quarter: 'Q4 2026', readiness: 87, risk: 'Low', revExposure: 0.7, budget: 0.4, spent: 0.35, owner: 'Anna L.' },
+  { id: 'LP14', name: 'BrandE Hand Wash', category: 'Personal Care', brand: 'BrandE', region: 'APAC', stage: 'Pre-market', quarter: 'Q4 2026', readiness: 85, risk: 'Low', revExposure: 0.9, budget: 0.5, spent: 0.45, owner: 'Anna L.' },
+  { id: 'LP15', name: 'BrandA Energy Gel', category: 'Beverages', brand: 'BrandA', region: 'EMEA', stage: 'Pre-market', quarter: 'Q4 2026', readiness: 86, risk: 'Low', revExposure: 0.8, budget: 0.5, spent: 0.44, owner: 'John D.' },
+  { id: 'LP16', name: 'BrandE Hair Serum', category: 'Personal Care', brand: 'BrandE', region: 'India', stage: 'Pre-market', quarter: 'Q4 2026', readiness: 87, risk: 'Low', revExposure: 0.7, budget: 0.4, spent: 0.35, owner: 'Anna L.' },
   { id: 'LP17', name: 'BrandG Dish Spray', category: 'Household', brand: 'BrandG', region: 'APAC', stage: 'Development', quarter: 'Q4 2026', readiness: 85, risk: 'Low', revExposure: 0.9, budget: 0.6, spent: 0.4, owner: 'Tom H.' },
   { id: 'LP18', name: 'BrandH Iron Spray', category: 'Household', brand: 'BrandH', region: 'EMEA', stage: 'Ideation', quarter: 'Q4 2026', readiness: 82, risk: 'Low', revExposure: 0.4, budget: 0.3, spent: 0.1, owner: 'Vicky S.' },
-  { id: 'LP19', name: 'BrandD Organic Yogurt', category: 'Snacks', brand: 'BrandD', region: 'EMEA', stage: 'Production', quarter: 'Q3 2026', readiness: 74, risk: 'Medium', revExposure: 0.8, budget: 0.5, spent: 0.4, owner: 'Sarah K.' },
-  { id: 'LP20', name: 'BrandA Fruit Punch', category: 'Beverages', brand: 'BrandA', region: 'India', stage: 'Regulatory', quarter: 'Q3 2026', readiness: 65, risk: 'Medium', revExposure: 0.7, budget: 0.4, spent: 0.3, owner: 'John D.' },
+  { id: 'LP19', name: 'BrandD Organic Yogurt', category: 'Snacks', brand: 'BrandD', region: 'EMEA', stage: 'Pre-market', quarter: 'Q3 2026', readiness: 74, risk: 'Medium', revExposure: 0.8, budget: 0.5, spent: 0.4, owner: 'Sarah K.' },
+  { id: 'LP20', name: 'BrandA Fruit Punch', category: 'Beverages', brand: 'BrandA', region: 'India', stage: 'Pre-market', quarter: 'Q3 2026', readiness: 65, risk: 'Medium', revExposure: 0.7, budget: 0.4, spent: 0.3, owner: 'John D.' },
   { id: 'LP21', name: 'BrandB Pretzel Sticks', category: 'Snacks', brand: 'BrandB', region: 'EMEA', stage: 'Development', quarter: 'Q4 2026', readiness: 71, risk: 'Medium', revExposure: 0.6, budget: 0.4, spent: 0.2, owner: 'Mike T.' },
   { id: 'LP22', name: 'BrandE Body Lotion', category: 'Personal Care', brand: 'BrandE', region: 'Americas', stage: 'Development', quarter: 'Q4 2026', readiness: 62, risk: 'Medium', revExposure: 1.0, budget: 0.6, spent: 0.3, owner: 'Anna L.' },
-  { id: 'LP23', name: 'BrandG Glass Cleaner', category: 'Household', brand: 'BrandG', region: 'Americas', stage: 'Regulatory', quarter: 'Q3 2026', readiness: 60, risk: 'Medium', revExposure: 0.8, budget: 0.5, spent: 0.35, owner: 'Tom H.' },
+  { id: 'LP23', name: 'BrandG Glass Cleaner', category: 'Household', brand: 'BrandG', region: 'Americas', stage: 'Pre-market', quarter: 'Q3 2026', readiness: 60, risk: 'Medium', revExposure: 0.8, budget: 0.5, spent: 0.35, owner: 'Tom H.' },
   { id: 'LP24', name: 'BrandC Biscuits Eco', category: 'Snacks', brand: 'BrandC', region: 'EMEA', stage: 'Development', quarter: 'Q4 2026', readiness: 42, risk: 'High', revExposure: 2.1, budget: 1.2, spent: 0.6, owner: 'Lisa R.' },
-  { id: 'LP25', name: 'BrandC Chocolate Oats', category: 'Snacks', brand: 'BrandC', region: 'Americas', stage: 'Regulatory', quarter: 'Q4 2026', readiness: 48, risk: 'High', revExposure: 2.1, budget: 1.5, spent: 0.8, owner: 'Lisa R.' }
+  { id: 'LP25', name: 'BrandC Chocolate Oats', category: 'Snacks', brand: 'BrandC', region: 'Americas', stage: 'Pre-market', quarter: 'Q4 2026', readiness: 48, risk: 'High', revExposure: 2.1, budget: 1.5, spent: 0.8, owner: 'Lisa R.' }
 ];
 
 interface VPLaunchReadinessViewProps {
@@ -129,19 +129,33 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
     addToast('Escalation Resolved', `${title}: ${actionMsg}`, '#10b981');
   };
 
+  const [mitigatedStages, setMitigatedStages] = useState<string[]>([]);
+
   const processedProducts = VP_PRODUCTS.map(p => {
     let readiness = p.readiness;
     let risk = p.risk;
+    let spent = p.spent;
 
     if (simulateDelay && p.region === 'APAC') {
       readiness = Math.max(0, p.readiness - 15);
       risk = readiness < 50 ? 'High' : readiness < 75 ? 'Medium' : p.risk;
     }
 
+    if (mitigatedStages.includes(p.stage)) {
+      readiness = Math.min(100, readiness + 15);
+      if (risk === 'High') {
+        risk = 'Medium';
+      } else if (risk === 'Medium') {
+        risk = 'Low';
+      }
+      spent = parseFloat((spent * 1.15).toFixed(2));
+    }
+
     return {
       ...p,
       readiness,
-      risk
+      risk,
+      spent
     };
   });
 
@@ -184,25 +198,21 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
     Ideation: filteredProducts.filter(p => p.stage === 'Ideation').length,
     Development: filteredProducts.filter(p => p.stage === 'Development').length,
     Testing: filteredProducts.filter(p => p.stage === 'Testing').length,
-    Regulatory: filteredProducts.filter(p => p.stage === 'Regulatory').length,
-    Production: filteredProducts.filter(p => p.stage === 'Production').length,
-    'Market Ready': filteredProducts.filter(p => p.stage === 'Market Ready').length,
-    'Launched': filteredProducts.filter(p => p.stage === 'Launch Completed').length,
+    'Pre-market': filteredProducts.filter(p => p.stage === 'Pre-market').length,
+    Launch: filteredProducts.filter(p => p.stage === 'Launch').length,
   };
 
   const activePipelineSKUs = filteredProducts.length;
-  const launchedCount = pipelineCounts.Launched;
-  const nearLaunchCount = pipelineCounts['Market Ready'] + pipelineCounts.Launched;
+  const launchedCount = pipelineCounts.Launch;
+  const nearLaunchCount = pipelineCounts['Pre-market'] + pipelineCounts.Launch;
   const inDevelopmentPlus = activePipelineSKUs - nearLaunchCount;
 
   const pipelineChartData = [
     { name: 'Ideation', count: pipelineCounts.Ideation, fill: '#b4aceb' },
     { name: 'Development', count: pipelineCounts.Development, fill: '#8e7bf5' },
     { name: 'Testing', count: pipelineCounts.Testing, fill: '#634bf6' },
-    { name: 'Regulatory', count: pipelineCounts.Regulatory, fill: '#2563eb' },
-    { name: 'Production', count: pipelineCounts.Production, fill: '#1d4ed8' },
-    { name: 'Market Ready', count: pipelineCounts['Market Ready'], fill: '#1e3a8a' },
-    { name: 'Launched', count: pipelineCounts.Launched, fill: '#3b82f6' }
+    { name: 'Pre-market', count: pipelineCounts['Pre-market'], fill: '#2563eb' },
+    { name: 'Launch', count: pipelineCounts.Launch, fill: '#10b981' }
   ];
 
   const baseRadarData = [
@@ -248,6 +258,59 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
   const strokeWidth = 8;
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (overallReadiness / 100) * circumference;
+
+  const stagesList: ('Ideation' | 'Development' | 'Testing' | 'Pre-market' | 'Launch')[] = 
+    ['Ideation', 'Development', 'Testing', 'Pre-market', 'Launch'];
+
+  const simulatorChartData = stagesList.map(st => {
+    const baseProds = VP_PRODUCTS.map(p => {
+      let readiness = p.readiness;
+      let risk = p.risk;
+      let spent = p.spent;
+      if (simulateDelay && p.region === 'APAC') {
+        readiness = Math.max(0, p.readiness - 15);
+        risk = readiness < 50 ? 'High' : readiness < 75 ? 'Medium' : p.risk;
+      }
+      return { ...p, readiness, risk, spent };
+    }).filter(p => p.stage === st);
+
+    const simProds = processedProducts.filter(p => p.stage === st);
+
+    const baseCost = baseProds.reduce((sum, p) => sum + p.spent, 0);
+    const simCost = simProds.reduce((sum, p) => sum + p.spent, 0);
+
+    const baseRiskRev = baseProds.reduce((sum, p) => p.readiness < 75 ? sum + p.revExposure : sum, 0);
+    const simRiskRev = simProds.reduce((sum, p) => p.readiness < 75 ? sum + p.revExposure : sum, 0);
+
+    return {
+      stage: st,
+      'Base Cost (₹ Cr)': parseFloat(baseCost.toFixed(2)),
+      'Sim Cost (₹ Cr)': parseFloat(simCost.toFixed(2)),
+      'Base Risk Rev (₹ Cr)': parseFloat(baseRiskRev.toFixed(2)),
+      'Sim Risk Rev (₹ Cr)': parseFloat(simRiskRev.toFixed(2)),
+    };
+  });
+
+  const totalBaseSpent = VP_PRODUCTS.map(p => {
+    let spent = p.spent;
+    return spent;
+  }).reduce((sum, s) => sum + s, 0);
+
+  const totalSimSpent = processedProducts.reduce((sum, p) => sum + p.spent, 0);
+  const spentVariance = parseFloat((totalSimSpent - totalBaseSpent).toFixed(2));
+
+  const totalBaseExposure = VP_PRODUCTS.map(p => {
+    let readiness = p.readiness;
+    if (simulateDelay && p.region === 'APAC') {
+      readiness = Math.max(0, p.readiness - 15);
+    }
+    return { ...p, readiness };
+  }).reduce((sum, p) => p.readiness < 75 ? sum + p.revExposure : sum, 0);
+
+  const totalSimExposure = processedProducts.reduce((sum, p) => p.readiness < 75 ? sum + p.revExposure : sum, 0);
+  const exposureReduced = parseFloat((totalBaseExposure - totalSimExposure).toFixed(2));
+  const roiMitigation = spentVariance > 0 ? parseFloat((exposureReduced / spentVariance).toFixed(1)) : 0;
+
 
   const handleExport = () => {
     addToast('Report Export Initiated', 'Compiling PDF executive summary for launch pipeline.', '#3b82f6');
@@ -428,7 +491,7 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
                 </div>
                 <div className="flex items-center gap-1.5">
                   <span className="w-2.5 h-2.5 rounded-sm bg-[#2563eb]" />
-                  <span className="font-semibold text-zinc-650 dark:text-zinc-300">Late stage (Regulatory - Launched)</span>
+                  <span className="font-semibold text-zinc-650 dark:text-zinc-300">Late stage (Pre-market - Launch)</span>
                 </div>
               </div>
             </>
@@ -574,6 +637,184 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
             >
               {simulateDelay ? 'Stop Cargo Delay Sim' : 'Run Cargo Delay Simulation'}
             </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Risk & Cost Simulator Panel */}
+      <div className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-6 rounded-sm shadow-sm space-y-6">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-3 border-b border-black/5 dark:border-white/5">
+          <div>
+            <h3 className="text-xs font-bold uppercase tracking-widest text-zinc-400">Launch Pipeline Stage Risk & Cost Simulator</h3>
+            <p className="text-[10px] text-zinc-550 uppercase mt-1">Simulate activating risk mitigation protocols across launch stages to observe cost vs risk reduction trade-offs.</p>
+          </div>
+          <button
+            onClick={() => setMitigatedStages([])}
+            className="text-[9px] font-bold text-[#6d28d9] dark:text-[#a78bfa] uppercase border border-[#6d28d9]/35 dark:border-[#a78bfa]/35 bg-purple-500/5 hover:bg-[#6d28d9] hover:text-white px-2.5 py-1 rounded-sm cursor-pointer transition-all"
+          >
+            Reset Simulator
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
+          {/* Toggles Column */}
+          <div className="xl:col-span-5 space-y-3">
+            <span className="text-[9px] font-bold uppercase tracking-wider text-zinc-400 block mb-2">Mitigation Controls by Stage</span>
+            {stagesList.map(st => {
+              const isActive = mitigatedStages.includes(st);
+              const stageProds = processedProducts.filter(p => p.stage === st);
+              const totalProds = stageProds.length;
+              const highRiskProds = stageProds.filter(p => p.risk === 'High').length;
+              const medRiskProds = stageProds.filter(p => p.risk === 'Medium').length;
+              const lowRiskProds = stageProds.filter(p => p.risk === 'Low').length;
+
+              const baselineProds = VP_PRODUCTS.map(p => {
+                let readiness = p.readiness;
+                let risk = p.risk;
+                if (simulateDelay && p.region === 'APAC') {
+                  readiness = Math.max(0, p.readiness - 15);
+                  risk = readiness < 50 ? 'High' : readiness < 75 ? 'Medium' : p.risk;
+                }
+                return { ...p, readiness, risk };
+              }).filter(p => p.stage === st);
+
+              const baseRiskExposure = baselineProds.reduce((sum, p) => p.readiness < 75 ? sum + p.revExposure : sum, 0);
+              const simRiskExposure = stageProds.reduce((sum, p) => p.readiness < 75 ? sum + p.revExposure : sum, 0);
+
+              const baseSpent = baselineProds.reduce((sum, p) => sum + p.spent, 0);
+              const simSpent = stageProds.reduce((sum, p) => sum + p.spent, 0);
+
+              return (
+                <div 
+                  key={st} 
+                  className={`p-3.5 border rounded-sm transition-all ${
+                    isActive 
+                      ? 'border-[#6d28d9]/30 bg-[#6d28d9]/5' 
+                      : 'border-black/5 dark:border-white/5 bg-zinc-50/50 dark:bg-white/5'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="text-[11px] font-bold text-zinc-800 dark:text-zinc-200">{st}</h4>
+                      <p className="text-[9px] text-zinc-500 mt-0.5">{totalProds} SKUs · Risk: {highRiskProds}H, {medRiskProds}M, {lowRiskProds}L</p>
+                    </div>
+                    <button
+                      onClick={() => {
+                        if (isActive) {
+                          setMitigatedStages(prev => prev.filter(x => x !== st));
+                          addToast('Mitigation Deactivated', `${st} stage mitigation protocols disabled.`, '#3b82f6');
+                        } else {
+                          setMitigatedStages(prev => [...prev, st]);
+                          addToast('Mitigation Activated', `${st} stage mitigation protocols deployed.`, '#10b981');
+                        }
+                      }}
+                      className={`relative inline-flex h-5 w-10 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out outline-none ${
+                        isActive ? 'bg-emerald-500' : 'bg-zinc-350 dark:bg-zinc-700'
+                      }`}
+                      style={{ border: 'none' }}
+                    >
+                      <span
+                        className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${
+                          isActive ? 'translate-x-5' : 'translate-x-0'
+                        }`}
+                      />
+                    </button>
+                  </div>
+
+                  {/* Dynamic cost/risk display */}
+                  <div className="grid grid-cols-2 gap-4 mt-2.5 pt-2.5 border-t border-dashed border-black/5 dark:border-white/5 text-[9px]">
+                    <div>
+                      <span className="text-zinc-550 dark:text-zinc-400 block">Spent Cost Impact</span>
+                      <span className="font-bold font-mono text-zinc-750 dark:text-zinc-200">
+                        ₹{baseSpent.toFixed(2)} Cr 
+                        {isActive && <span className="text-amber-500 font-bold ml-1">→ ₹{simSpent.toFixed(2)} Cr (+15%)</span>}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-zinc-550 dark:text-zinc-400 block">Revenue Risk Exposure</span>
+                      <span className="font-bold font-mono text-zinc-750 dark:text-zinc-200">
+                        ₹{baseRiskExposure.toFixed(2)} Cr
+                        {isActive && (
+                          <span className={`${simRiskExposure < baseRiskExposure ? 'text-emerald-500' : 'text-zinc-500'} font-bold ml-1`}>
+                            → ₹{simRiskExposure.toFixed(2)} Cr
+                          </span>
+                        )}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Chart & Summary Column */}
+          <div className="xl:col-span-7 flex flex-col justify-between space-y-4">
+            {/* Chart Area */}
+            <div className="bg-zinc-50/50 dark:bg-white/5 border border-black/5 dark:border-white/5 p-4 rounded-sm">
+              <span className="text-[9px] font-bold uppercase tracking-wider text-zinc-400 block mb-3">Cost vs. Revenue Exposure (Baseline vs. Simulated)</span>
+              <div className="h-60">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={simulatorChartData} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke={isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'} vertical={false} />
+                    <XAxis dataKey="stage" tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
+                    <Tooltip contentStyle={{ backgroundColor: isDarkMode ? '#1f1f1f' : '#fff', border: isDarkMode ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.1)', color: isDarkMode ? '#fff' : '#000', fontSize: 9 }} />
+                    <Legend wrapperStyle={{ fontSize: 8, textTransform: 'uppercase', letterSpacing: '0.05em' }} />
+                    <Bar dataKey="Base Cost (₹ Cr)" fill="#a78bfa" radius={[1, 1, 0, 0]} barSize={10} />
+                    <Bar dataKey="Sim Cost (₹ Cr)" fill="#6d28d9" radius={[1, 1, 0, 0]} barSize={10} />
+                    <Bar dataKey="Base Risk Rev (₹ Cr)" fill="#fca5a5" radius={[1, 1, 0, 0]} barSize={10} />
+                    <Bar dataKey="Sim Risk Rev (₹ Cr)" fill="#ef4444" radius={[1, 1, 0, 0]} barSize={10} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+            {/* Summary Statistics Card */}
+            <div className="p-4 bg-zinc-150/70 dark:bg-zinc-900/60 border border-black/5 dark:border-white/5 rounded-xl space-y-4">
+              <span className="text-[9px] font-bold uppercase tracking-wider text-zinc-400 block">Simulation Summary & Impact ROI</span>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div>
+                  <span className="text-[8px] text-zinc-500 block uppercase">Total Cost Slippage</span>
+                  <span className="text-sm font-display font-extrabold text-zinc-800 dark:text-white mt-1 block font-mono">
+                    +₹{spentVariance.toFixed(2)} Cr
+                  </span>
+                </div>
+                <div>
+                  <span className="text-[8px] text-zinc-500 block uppercase">Risk Exposure Mitigated</span>
+                  <span className="text-sm font-display font-extrabold text-emerald-500 mt-1 block font-mono">
+                    ₹{exposureReduced.toFixed(2)} Cr
+                  </span>
+                </div>
+                <div>
+                  <span className="text-[8px] text-zinc-500 block uppercase">Mitigation ROI</span>
+                  <span className="text-sm font-display font-extrabold text-purple-500 mt-1 block font-mono">
+                    {roiMitigation.toFixed(1)}x
+                  </span>
+                </div>
+                <div>
+                  <span className="text-[8px] text-zinc-500 block uppercase">Overall Readiness</span>
+                  <span className="text-sm font-display font-extrabold text-blue-500 mt-1 block font-mono">
+                    {overallReadiness}%
+                  </span>
+                </div>
+              </div>
+
+              <div className="pt-2 border-t border-black/5 dark:border-white/5 text-[9px] text-zinc-500 leading-relaxed font-sans">
+                {mitigatedStages.length > 0 ? (
+                  <p className="flex items-start gap-1">
+                    <Check size={11} className="text-emerald-500 shrink-0 mt-0.5" />
+                    <span>
+                      Active protocols in <strong>{mitigatedStages.join(', ')}</strong> reduce revenue at risk by <strong>₹{exposureReduced.toFixed(2)} Cr</strong> at a spent cost slip of <strong>₹{spentVariance.toFixed(2)} Cr</strong>. This represents a net risk mitigation efficiency of <strong>{roiMitigation.toFixed(1)}x</strong>.
+                    </span>
+                  </p>
+                ) : (
+                  <p className="flex items-start gap-1">
+                    <Activity size={11} className="text-amber-500 shrink-0 mt-0.5" />
+                    <span>No mitigation protocols active. Toggle stage mitigation controls to simulate risk reduction policies.</span>
+                  </p>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </div>
