@@ -1246,20 +1246,20 @@ export const AuditDrawer: React.FC<AuditDrawerProps> = ({ activeMetric, close, i
             {/* Content Body */}
             <div className="flex-1 p-8 space-y-6">
               
-              {/* AI Synthesis Summary Card */}
+              {/* Metric Definition Card */}
               <div className="bg-gradient-to-r from-purple-50/50 to-indigo-50/50 dark:from-purple-950/20 dark:to-indigo-950/20 border border-purple-500/20 rounded-xl p-4.5 shadow-lg relative overflow-hidden group">
                 <div className="absolute top-0 right-0 w-28 h-28 bg-purple-500/5 blur-2xl pointer-events-none rounded-full" />
                 <div className="flex items-center justify-between mb-2.5">
                   <div className="flex items-center gap-1.5">
-                    <Sparkles size={11} className="text-purple-500 dark:text-purple-400 animate-pulse" />
-                    <span className="text-[8.5px] uppercase font-bold text-zinc-500 dark:text-zinc-300 tracking-wider">AI Executive Brief</span>
+                    <BookOpen size={11} className="text-purple-500 dark:text-purple-400" />
+                    <span className="text-[8.5px] uppercase font-bold text-zinc-500 dark:text-zinc-300 tracking-wider">Metric Definition</span>
                   </div>
                   <div className="bg-purple-500/10 border border-purple-500/30 text-[8.5px] font-bold text-purple-600 dark:text-purple-300 px-1.5 py-0.5 rounded">
-                    {getConfidenceScore(content.title)}% CONFIDENCE
+                    FORMULA VERIFIED
                   </div>
                 </div>
                 <p className="text-xs text-zinc-650 dark:text-zinc-300 leading-relaxed font-medium">
-                  {content.soWhat.split('.')[0]}. Enterprise intelligence suggests prioritizing: <span className="text-purple-600 dark:text-purple-300 font-semibold">{content.action.split(':')[0]}</span> as the recommended action plan.
+                  {content.formulaDescription}
                 </p>
               </div>
 
