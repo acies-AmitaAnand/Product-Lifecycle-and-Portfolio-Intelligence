@@ -935,7 +935,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
           return (
             <div 
               key={k.label} 
-              className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3.5 relative overflow-hidden transition-all hover:border-acies-yellow/50 cursor-pointer"
+              className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3 h-[115px] flex flex-col justify-between relative overflow-hidden transition-all hover:border-acies-yellow/50 cursor-pointer"
               onClick={() => {
                 console.log("KPI card clicked on Home:", k.label);
                 if (k.label === 'Total Revenue') onAuditClick('Total Revenue');
@@ -945,18 +945,20 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
               }}
             >
               <div className="absolute top-0 left-0 w-full h-1" style={{ backgroundColor: k.color }} />
-              <p className="text-[8.5px] font-bold uppercase tracking-widest opacity-40 mb-1.5">{k.label}</p>
-              <h3 className="text-xl font-display font-bold text-acies-gray dark:text-white leading-none mb-1.5">
-                {k.fmt(k.value)}
-              </h3>
-              <div className="flex items-center justify-between mt-3">
+              <div>
+                <p className="text-[8.5px] font-bold uppercase tracking-widest opacity-40 mb-0.5">{k.label}</p>
+                <h3 className="text-xl font-display font-bold text-acies-gray dark:text-white leading-none mb-0.5">
+                  {k.fmt(k.value)}
+                </h3>
+              </div>
+              <div className="flex items-center justify-between mt-0.5">
                 <span className={`text-[8px] font-extrabold uppercase tracking-widest px-1.5 py-0.5 rounded-sm flex items-center gap-1 ${trendColor}`}>
                   {trendIcon}
                   {Math.abs(k.trend)}{k.label === 'Total Revenue' ? ' Cr' : k.label === 'Gross Margin' ? 'pp' : ''} MoM
                 </span>
                 
                 {/* Micro Sparkline Chart */}
-                <div className="w-16 h-6">
+                <div className="w-16 h-[22px]">
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={k.sparkPoints}>
                       <defs>

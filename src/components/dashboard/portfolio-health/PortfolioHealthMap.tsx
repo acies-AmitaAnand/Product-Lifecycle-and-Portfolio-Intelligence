@@ -1802,9 +1802,9 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean; onAuditClick?: (metricNam
             <div 
               key={key} 
               onClick={() => onAuditClick?.(kpi.label)}
-              className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm flex flex-col justify-between h-36 group cursor-pointer hover:bg-black/[0.01] dark:hover:bg-white/[0.01] transition-all"
+              className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-3 rounded-sm shadow-sm flex flex-col justify-between h-[115px] group cursor-pointer hover:bg-black/[0.01] dark:hover:bg-white/[0.01] transition-all"
             >
-              <div className="flex justify-between items-start mb-1">
+              <div className="flex justify-between items-start mb-0.5">
                 <div className="min-w-0">
                   <p className="text-[9px] font-bold uppercase tracking-wider text-zinc-400 truncate">{kpi.label}</p>
                   <h3 className={`text-xl font-display font-extrabold text-zinc-850 dark:text-zinc-150 transition-colors duration-300 ${flashClass}`}>
@@ -1818,7 +1818,7 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean; onAuditClick?: (metricNam
               </div>
 
               {/* Sparkline chart */}
-              <div className="h-[28px] my-1.5 opacity-85 group-hover:opacity-100 transition-opacity">
+              <div className="h-[22px] my-1 opacity-85 group-hover:opacity-100 transition-opacity">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={kpi.hist.map((val, idx) => ({ idx, val }))} margin={{ top: 0, bottom: 0, left: 0, right: 0 }}>
                     <YAxis domain={['auto', 'auto']} hide />
@@ -1834,7 +1834,7 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean; onAuditClick?: (metricNam
                 </ResponsiveContainer>
               </div>
 
-              <div className="text-[9px] font-bold uppercase tracking-wider mt-1">
+              <div className="text-[9px] font-bold uppercase tracking-wider mt-0.5">
                 <span className={deltaColor}>{deltaText}</span>
               </div>
             </div>
