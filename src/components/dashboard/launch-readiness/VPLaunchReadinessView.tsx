@@ -90,7 +90,7 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
   const [toasts, setToasts] = useState<{ id: string; title: string; body: string; color: string }[]>([]);
   const [isPredictionModalOpen, setIsPredictionModalOpen] = useState(false);
   const [predictionModalType, setPredictionModalType] = useState<'stockout' | 'elasticity' | 'margin' | 'demand' | 'delay' | null>(null);
-  const [selectedStageSKUs, setSelectedStageSKUs] = useState<{ title: string; skus: VPLaunchProduct[] } | null>(null);
+  const [selectedStageSKUs, setSelectedStageSKUs] = useState<{ title: string; meaning?: string; skus: VPLaunchProduct[] } | null>(null);
 
   useEffect(() => {
     const updateTime = () => {
@@ -482,33 +482,68 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
         {/* Right KPI Cards Grid */}
         <div className="xl:col-span-8 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
           
-          <div className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm flex flex-col justify-between h-28 hover:bg-black/[0.01] dark:hover:bg-white/[0.01] transition-all">
+          <div 
+            onClick={() => setSelectedStageSKUs({
+              title: 'On Track Launches',
+              meaning: 'SKUs with a Launch Readiness Score of 75% or higher, indicating that all major activities (regulatory compliance, marketing plans, inventory routing) are progressing optimally with low risk of launch delay.',
+              skus: filteredProducts.filter(p => p.readiness >= 75)
+            })}
+            className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm flex flex-col justify-between h-28 hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98]"
+          >
             <p className="text-[8px] font-bold uppercase tracking-widest text-zinc-400">On Track</p>
             <h4 className="text-2xl font-display font-extrabold text-emerald-500 leading-none">{onTrackCount}</h4>
             <p className="text-[9px] text-zinc-400 font-semibold uppercase">Status: Optimal</p>
           </div>
 
-          <div className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm flex flex-col justify-between h-28 hover:bg-black/[0.01] dark:hover:bg-white/[0.01] transition-all">
+          <div 
+            onClick={() => setSelectedStageSKUs({
+              title: 'Delayed Launches',
+              meaning: 'SKUs with a Launch Readiness Score below 50%. These have encountered critical bottlenecks (such as severe supply chain delays or lack of regulatory approvals) and require immediate executive attention and mitigation.',
+              skus: filteredProducts.filter(p => p.readiness < 50)
+            })}
+            className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm flex flex-col justify-between h-28 hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98]"
+          >
             <p className="text-[8px] font-bold uppercase tracking-widest text-zinc-400">Delayed</p>
             <h4 className="text-2xl font-display font-extrabold text-red-500 leading-none">{delayedCount}</h4>
             <p className="text-[9px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">Needs Focus</p>
           </div>
 
-          <div className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm flex flex-col justify-between h-28 hover:bg-black/[0.01] dark:hover:bg-white/[0.01] transition-all">
+          <div 
+            onClick={() => setSelectedStageSKUs({
+              title: 'At Risk Launches',
+              meaning: 'SKUs with a Launch Readiness Score between 50% and 74%. These are demonstrating early warning signs or minor deviations from target timelines, requiring active supervision and preventative measures.',
+              skus: filteredProducts.filter(p => p.readiness >= 50 && p.readiness < 75)
+            })}
+            className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm flex flex-col justify-between h-28 hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98]"
+          >
             <p className="text-[8px] font-bold uppercase tracking-widest text-zinc-400">At Risk</p>
             <h4 className="text-2xl font-display font-extrabold text-amber-500 leading-none">{atRiskCount}</h4>
             <p className="text-[9px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">Watching</p>
           </div>
 
-          <div className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm flex flex-col justify-between h-28 hover:bg-black/[0.01] dark:hover:bg-white/[0.01] transition-all">
+          <div 
+            onClick={() => setSelectedStageSKUs({
+              title: 'Next 60 Days Pipeline',
+              meaning: 'SKUs currently in the active pipeline (Development, Testing, or Pre-market phases) scheduled to transition to market launch within the upcoming 60-day window.',
+              skus: filteredProducts.filter(p => p.stage !== 'Launch' && p.stage !== 'Ideation')
+            })}
+            className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm flex flex-col justify-between h-28 hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98]"
+          >
             <p className="text-[8px] font-bold uppercase tracking-widest text-zinc-400">Next 60 Days</p>
             <h4 className="text-2xl font-display font-extrabold text-blue-500 leading-none">
-              {filteredProducts.filter(p => p.stage !== 'Launch Completed' && p.stage !== 'Ideation').length}
+              {filteredProducts.filter(p => p.stage !== 'Launch' && p.stage !== 'Ideation').length}
             </h4>
             <p className="text-[9px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">Readying</p>
           </div>
 
-          <div className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm flex flex-col justify-between h-28 hover:bg-black/[0.01] dark:hover:bg-white/[0.01] transition-all">
+          <div 
+            onClick={() => setSelectedStageSKUs({
+              title: 'Revenue Exposure',
+              meaning: 'The total potential revenue at stake from launches that are currently Delayed or At Risk (Launch Readiness Score below 75%). This helps prioritize resource allocation based on financial impact.',
+              skus: filteredProducts.filter(p => p.readiness < 75)
+            })}
+            className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm flex flex-col justify-between h-28 hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98]"
+          >
             <p className="text-[8px] font-bold uppercase tracking-widest text-zinc-400">Rev Exposure</p>
             <h4 className="text-2xl font-display font-extrabold text-orange-500 leading-none">
               ${revenueExposure.toFixed(1)}M
@@ -516,7 +551,14 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
             <p className="text-[9px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">At-Risk/Delayed</p>
           </div>
 
-          <div className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm flex flex-col justify-between h-28 hover:bg-black/[0.01] dark:hover:bg-white/[0.01] transition-all">
+          <div 
+            onClick={() => setSelectedStageSKUs({
+              title: 'Market Coverage Scope',
+              meaning: 'Geographic deployment and readiness metric representing the percentage of target regions or distribution nodes that have successfully completed all pre-market requirements.',
+              skus: filteredProducts
+            })}
+            className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm flex flex-col justify-between h-28 hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98]"
+          >
             <p className="text-[8px] font-bold uppercase tracking-widest text-zinc-400">Market Coverage</p>
             <h4 className="text-2xl font-display font-extrabold text-[#6d28d9] dark:text-[#a78bfa] leading-none">
               {marketCoverage}%
@@ -781,17 +823,65 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
 
           <div className="h-56">
             {financialView === 'bar' ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={financialData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke={isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'} vertical={false} />
-                  <XAxis dataKey="name" tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 9 }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 9 }} axisLine={false} tickLine={false} />
-                  <Tooltip contentStyle={{ backgroundColor: isDarkMode ? '#1f1f1f' : '#fff', border: isDarkMode ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.1)' }} />
-                  <Bar dataKey="Proj Rev (₹ Cr)" fill="#3b82f6" />
-                  <Bar dataKey="Budget ($M)" fill="#8b5cf6" />
-                  <Bar dataKey="Spent ($M)" fill="#10b981" />
-                </BarChart>
-              </ResponsiveContainer>
+              <div className="flex flex-col h-full justify-start">
+                {/* Custom HTML Legend */}
+                <div className="flex flex-wrap items-center gap-4 text-[10px] text-zinc-550 dark:text-zinc-400 mb-2 pl-1">
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-2.5 h-2.5 rounded-sm bg-[#3b82f6]" />
+                    <span className="font-semibold text-zinc-650 dark:text-zinc-300">Revenue at risk</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-2.5 h-2.5 rounded-sm bg-[#8b5cf6]" />
+                    <span className="font-semibold text-zinc-650 dark:text-zinc-300">Mitigation cost</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-2.5 h-2.5 rounded-sm bg-[#10b981]" />
+                    <span className="font-semibold text-zinc-650 dark:text-zinc-300">Projected savings</span>
+                  </div>
+                </div>
+                <div className="flex-1 min-h-0">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                      data={financialData}
+                      layout="vertical"
+                      margin={{ top: 0, right: 10, left: 15, bottom: 0 }}
+                    >
+                      <CartesianGrid
+                        strokeDasharray="3 3"
+                        stroke={isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'}
+                        horizontal={false}
+                        vertical={true}
+                      />
+                      <XAxis
+                        type="number"
+                        domain={[0, 120]}
+                        ticks={[0, 20, 40, 60, 80, 100, 120]}
+                        tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 9 }}
+                        axisLine={false}
+                        tickLine={false}
+                      />
+                      <YAxis
+                        type="category"
+                        dataKey="name"
+                        tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 9 }}
+                        axisLine={false}
+                        tickLine={false}
+                        width={80}
+                      />
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: isDarkMode ? '#1f1f1f' : '#fff',
+                          border: isDarkMode ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.1)',
+                          color: isDarkMode ? '#fff' : '#000'
+                        }}
+                      />
+                      <Bar dataKey="Revenue at risk" fill="#3b82f6" radius={[0, 2, 2, 0]} />
+                      <Bar dataKey="Mitigation cost" fill="#8b5cf6" radius={[0, 2, 2, 0]} />
+                      <Bar dataKey="Projected savings" fill="#10b981" radius={[0, 2, 2, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
             ) : financialView === 'area' ? (
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={financialData} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
@@ -1350,6 +1440,15 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
 
             {/* Content List */}
             <div className="p-4 overflow-y-auto flex-1 space-y-3 max-h-[60vh] no-scrollbar">
+              {selectedStageSKUs.meaning && (
+                <div className="p-3 bg-blue-500/5 dark:bg-blue-500/10 border border-blue-500/10 dark:border-blue-500/20 rounded-md text-[10px] text-zinc-650 dark:text-zinc-350 leading-relaxed font-sans flex items-start gap-2 mb-3">
+                  <span className="text-[#3b82f6] text-xs font-bold mt-0.5">ℹ️</span>
+                  <div>
+                    <span className="font-extrabold text-zinc-700 dark:text-zinc-200 uppercase tracking-wider text-[9px] block mb-1">KPI Definition</span>
+                    {selectedStageSKUs.meaning}
+                  </div>
+                </div>
+              )}
               {selectedStageSKUs.skus.length > 0 ? (
                 <div className="border border-black/5 dark:border-white/10 rounded-sm overflow-hidden bg-zinc-50/30 dark:bg-white/5">
                   <table className="w-full text-left border-collapse text-[10px]">
