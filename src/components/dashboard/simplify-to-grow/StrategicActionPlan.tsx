@@ -39,6 +39,7 @@ interface StepDef {
   icon: React.ElementType;
   routeTab: number;
   routeLabel: string;
+  extraParams?: string;
   action: string;
   description: string;
   impactLabel: string;
@@ -52,7 +53,7 @@ interface StepDef {
 interface Props {
   skus: EnrichedSKURef[];
   isDarkMode: boolean;
-  onNavigate: (tab: number) => void;
+  onNavigate: (tab: number, extraParams?: string) => void;
   onSkuClick?: (sku: EnrichedSKURef) => void;
 }
 
@@ -71,130 +72,6 @@ const COMPLEXITY_CFG: Record<ComplexityType, { color: string }> = {
 const TAB_ICONS: Record<number, React.ElementType> = {
   1: Activity, 3: BarChart3, 4: Scissors, 8: Award,
 };
-
-const STEPS: StepDef[] = [
-  {
-    id: 'consumer', step: 1, pillar: 'Consumer-Right', priority: 'High',
-    color: '#6366f1', icon: Users, routeTab: 4, routeLabel: 'SKU Rationalization',
-    action: 'Prioritise IPPV as primary portfolio review KPI',
-    description: 'The Bad Complexity SKUs below are dragging your Consumer-Right pillar score. Each has low IPPV — they consume resources without delivering proportionate consumer value. These should be the first candidates for consumer-needs validation before any tail-cut decision.',
-    impactLabel: 'Potential IPPV uplift if Bad Complexity SKUs exit',
-    impactFn: (skus) => {
-      const bad = skus.filter(s => s.complexityType === 'Bad Complexity');
-      const currentAvg = skus.reduce((a, s) => a + s.ippv, 0) / skus.length;
-      const remaining = skus.filter(s => s.complexityType !== 'Bad Complexity');
-      const newAvg = remaining.length ? remaining.reduce((a, s) => a + s.ippv, 0) / remaining.length : currentAvg;
-      return `+${(newAvg - currentAvg).toFixed(1)} pts avg IPPV across ${bad.length} SKUs exited`;
-    },
-    affectedFn: (skus) => [...skus].filter(s => s.complexityType === 'Bad Complexity').sort((a, b) => a.ippv - b.ippv),
-    miniChartKey: 'ippv', miniChartLabel: 'IPPV Score',
-    checks: [
-      { id: 'c1', label: 'Map all portfolio SKUs to their IPPV score' },
-      { id: 'c2', label: 'Flag SKUs with IPPV < 30 for consumer-needs review' },
-      { id: 'c3', label: 'Present IPPV ranking in next S&OP cycle' },
-      { id: 'c4', label: 'Align commercial team on IPPV as primary portfolio KPI' },
-    ],
-  },
-  {
-    id: 'retailer', step: 2, pillar: 'Retailer Win-Win', priority: 'Medium',
-    color: '#0ea5e9', icon: Link2, routeTab: 1, routeLabel: 'Portfolio Health Map',
-    action: 'Launch Joint Business Planning for low shelf-score categories',
-    description: 'Categories below 55 Shelf Productivity are under-serving retailers and losing premium shelf placement. The SKUs below are the worst performers inside those categories — they are the focus for retailer co-creation sessions and joint assortment planning.',
-    impactLabel: 'Shelf Productivity improvement opportunity',
-    impactFn: (skus) => {
-      const below = skus.filter(s => s.shelfProductivity < 55);
-      const totalGap = below.reduce((a, s) => a + (55 - s.shelfProductivity), 0);
-      return `${below.length} SKUs below threshold · avg gap ${(totalGap / (below.length || 1)).toFixed(0)} pts`;
-    },
-    affectedFn: (skus) => [...skus].sort((a, b) => a.shelfProductivity - b.shelfProductivity).slice(0, 8),
-    miniChartKey: 'shelfProductivity', miniChartLabel: 'Shelf Score',
-    checks: [
-      { id: 'r1', label: 'Identify categories with Shelf Productivity < 55' },
-      { id: 'r2', label: 'Schedule JBP sessions with top 3 retail accounts' },
-      { id: 'r3', label: 'Prepare SKU profit pool growth scenario models' },
-      { id: 'r4', label: 'Agree shared KPIs and review cadence with retailers' },
-    ],
-  },
-  {
-    id: 'valuechain', step: 3, pillar: 'Value Chain Efficient', priority: 'High',
-    color: '#f59e0b', icon: Layers, routeTab: 3, routeLabel: 'Profitability Tree',
-    action: 'Recover hidden complexity costs across value chain',
-    description: 'These SKUs carry the highest hidden cost burden — production downtime from small runs, transport overhead from route complexity, and waste from promo dependency. De-averaging shared costs reveals their true P&L and makes rationalisation decisions defensible.',
-    impactLabel: 'Total recoverable hidden cost',
-    impactFn: (skus) => {
-      const top = [...skus].sort((a, b) => b.totalHiddenCost - a.totalHiddenCost).slice(0, 10);
-      const total = top.reduce((a, s) => a + s.totalHiddenCost, 0);
-      return `₹${total.toFixed(1)}L recoverable from top 10 cost SKUs`;
-    },
-    affectedFn: (skus) => [...skus].sort((a, b) => b.totalHiddenCost - a.totalHiddenCost).slice(0, 8),
-    miniChartKey: 'totalHiddenCost', miniChartLabel: 'Hidden Cost (₹L)',
-    checks: [
-      { id: 'v1', label: 'De-average shared supply chain cost allocation per SKU' },
-      { id: 'v2', label: 'Map production downtime, transport & waste per SKU' },
-      { id: 'v3', label: 'Present true P&L to supply chain and commercial leadership' },
-      { id: 'v4', label: 'Initiate SKU-level hidden cost recovery plan' },
-    ],
-  },
-  {
-    id: 'e2e', step: 4, pillar: 'End-to-End Value', priority: 'Medium',
-    color: '#10b981', icon: Target, routeTab: 4, routeLabel: 'SKU Rationalization',
-    action: 'Involve Finance + Supply in every SKU exit decision',
-    description: 'Breaking cross-functional silos is non-negotiable for lasting simplification. The SKUs below are in negative growth territory — each needs a structured multi-team review before any exit decision. Use the Rationalization workflow to enforce the sign-off chain.',
-    impactLabel: 'Negative-growth SKUs needing cross-functional review',
-    impactFn: (skus) => {
-      const neg = skus.filter(s => s.growth < 0);
-      const revAtRisk = neg.reduce((a, s) => a + s.rev, 0);
-      return `${neg.length} SKUs · ₹${revAtRisk.toFixed(1)}Cr revenue needs managed exit`;
-    },
-    affectedFn: (skus) => [...skus].filter(s => s.growth < 0).sort((a, b) => a.growth - b.growth),
-    miniChartKey: 'growth', miniChartLabel: 'Growth Rate',
-    checks: [
-      { id: 'e1', label: 'Schedule first cross-functional SKU review in next 30 days' },
-      { id: 'e2', label: 'Map SKU exit workflow in SKU Rationalization tab' },
-      { id: 'e3', label: 'Confirm Finance + Supply sign-off process is enforced' },
-      { id: 'e4', label: 'Document first joint review outcomes and learnings' },
-    ],
-  },
-  {
-    id: 'momentum', step: 5, pillar: 'Momentum & Muscle', priority: 'Low',
-    color: '#a855f7', icon: Zap, routeTab: 8, routeLabel: 'SKU Assortment',
-    action: 'Embed IPPV into S&OP rhythm and NPD gate reviews',
-    description: 'Sustained simplification requires institutional muscle — IPPV must be an input to every new product launch gate, every S&OP review, and every assortment planning cycle. The high-complexity SKUs below are examples of what slips through without this governance.',
-    impactLabel: 'High-complexity SKUs that would be gated with IPPV governance',
-    impactFn: (skus) => {
-      const highCx = skus.filter(s => s.cx > 0.6);
-      return `${highCx.length} high-complexity SKUs (CX > 0.6) that need gate review`;
-    },
-    affectedFn: (skus) => [...skus].filter(s => s.cx > 0.5).sort((a, b) => b.cx - a.cx).slice(0, 8),
-    miniChartKey: 'cx', miniChartLabel: 'Complexity Score',
-    checks: [
-      { id: 'm1', label: 'Add IPPV to NPD gate scorecard as mandatory criterion' },
-      { id: 'm2', label: 'Set quarterly IPPV portfolio review in S&OP calendar' },
-      { id: 'm3', label: 'Integrate IPPV into annual planning and budget templates' },
-      { id: 'm4', label: 'Define Bad Complexity threshold policy and annual reset' },
-    ],
-  },
-  {
-    id: 'goodvariety', step: 6, pillar: 'Good Variety Protection', priority: 'Medium',
-    color: '#10b981', icon: CheckCircle, routeTab: 8, routeLabel: 'SKU Assortment',
-    action: 'Ring-fence Good Variety SKUs from rationalization pressure',
-    description: 'Good Variety SKUs deliver high IPPV and meet emerging consumer needs — even when they carry operational complexity. They must be explicitly protected from blanket cost-cutting. The SKUs below are your most valuable and need long-term investment commitment.',
-    impactLabel: 'Good Variety SKUs generating high consumer value',
-    impactFn: (skus) => {
-      const good = skus.filter(s => s.complexityType === 'Good Variety');
-      const totalRev = good.reduce((a, s) => a + s.rev, 0);
-      return `${good.length} SKUs · ₹${totalRev.toFixed(1)}Cr revenue to protect`;
-    },
-    affectedFn: (skus) => [...skus].filter(s => s.complexityType === 'Good Variety').sort((a, b) => b.ippv - a.ippv),
-    miniChartKey: 'ippv', miniChartLabel: 'IPPV Score',
-    checks: [
-      { id: 'g1', label: 'Extract Good Variety SKU list and share with all teams' },
-      { id: 'g2', label: 'Add protection flag to SKU Rationalization workflow' },
-      { id: 'g3', label: 'Communicate protection rationale to commercial & supply' },
-      { id: 'g4', label: 'Review Good Variety eligibility quarterly using IPPV' },
-    ],
-  },
-];
 
 // ── Status Cycle ──────────────────────────────────────────────────────────────
 const STATUS_CYCLE: StepStatus[] = ['not-started', 'in-progress', 'done'];
@@ -219,11 +96,12 @@ const StepCard: React.FC<{
   isLast: boolean;
   isDarkMode: boolean;
   onStatusChange: (id: string, s: StepStatus) => void;
-  onNavigate: (tab: number) => void;
+  onNavigate: (tab: number, extraParams?: string) => void;
   checkedItems: Set<string>;
   onCheckItem: (id: string) => void;
   onSkuClick?: (sku: EnrichedSKURef) => void;
-}> = ({ step, skus, status, isLast, isDarkMode, onStatusChange, onNavigate, checkedItems, onCheckItem, onSkuClick }) => {
+  totalSteps: number;
+}> = ({ step, skus, status, isLast, isDarkMode, onStatusChange, onNavigate, checkedItems, onCheckItem, onSkuClick, totalSteps }) => {
   const [expanded, setExpanded] = useState(false);
   const [showAll, setShowAll] = useState(false);
 
@@ -473,7 +351,7 @@ const StepCard: React.FC<{
             {/* Footer actions */}
             <div className="flex items-center justify-between pt-3 border-t" style={{ borderColor: `${step.color}15` }}>
               <div className="flex items-center gap-2">
-                <button onClick={() => onNavigate(step.routeTab)}
+                <button onClick={() => onNavigate(step.routeTab, step.extraParams)}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[8px] font-black uppercase tracking-wider text-white transition-all hover:opacity-90 shadow-sm"
                   style={{ backgroundColor: step.color }}>
                   <RouteIcon size={10} /> {step.routeLabel} <ExternalLink size={8} />
@@ -484,7 +362,7 @@ const StepCard: React.FC<{
                   {status === 'not-started' ? 'Mark In Progress' : status === 'in-progress' ? 'Mark Done ✓' : 'Reset'}
                 </button>
               </div>
-              <span className="text-[7px] text-zinc-400 font-bold">Step {step.step} of {STEPS.length}</span>
+              <span className="text-[7px] text-zinc-400 font-bold">Step {step.step} of {totalSteps}</span>
             </div>
           </div>
         )}
@@ -495,14 +373,178 @@ const StepCard: React.FC<{
 
 // ── Main Export ───────────────────────────────────────────────────────────────
 export const StrategicActionPlan: React.FC<Props> = ({ skus, isDarkMode, onNavigate, onSkuClick }) => {
-  const [statuses, setStatuses] = useState<Record<string, StepStatus>>(() =>
-    Object.fromEntries(STEPS.map(s => [s.id, 'not-started']))
-  );
+  const steps = useMemo<StepDef[]>(() => {
+    const worstIppvSku = [...skus].sort((a, b) => a.ippv - b.ippv)[0] || { name: 'Fabric Softener' };
+
+    const catNames: string[] = skus.map(s => s.cat).filter((v, i, a) => a.indexOf(v) === i);
+    const catShelves = catNames.map(cat => {
+      const items = skus.filter(s => s.cat === cat);
+      const avgShelf = items.reduce((a, s) => a + s.shelfProductivity, 0) / items.length;
+      return { cat, avgShelf };
+    });
+    const worstShelfCat = [...catShelves].sort((a, b) => a.avgShelf - b.avgShelf)[0]?.cat || 'Household';
+
+    const REG_DATA = [
+      { country: 'Italy',       skuCount: 102, netSalesM: 137.2, marginPct: 38.53 },
+      { country: 'Spain',       skuCount: 100, netSalesM: 106.7, marginPct: 38.60 },
+      { country: 'Germany',     skuCount:  98, netSalesM:  88.5, marginPct: 38.48 },
+      { country: 'France',      skuCount:  80, netSalesM:  42.6, marginPct: 38.55 },
+      { country: 'Austria',     skuCount:  80, netSalesM:  43.0, marginPct: 38.64 },
+      { country: 'Poland',      skuCount:  80, netSalesM:  42.4, marginPct: 38.36 },
+      { country: 'Netherlands', skuCount:  45, netSalesM:  12.5, marginPct: 38.20 },
+    ];
+    const sortedRegions = [...REG_DATA]
+      .filter(r => r.country !== 'Austria')
+      .map(r => ({ ...r, opp: r.netSalesM * (38.64 - r.marginPct) }))
+      .sort((a, b) => b.opp - a.opp);
+    const worstMarginRegion = sortedRegions[0] || { country: 'Germany' };
+
+    const worstDeclineSku = [...skus].filter(s => s.growth < 0).sort((a, b) => a.growth - b.growth)[0] || { name: 'Aloe Face Wash' };
+
+    return [
+      {
+        id: 'consumer', step: 1, pillar: 'Consumer-Right', priority: 'High',
+        color: '#6366f1', icon: Users, routeTab: 4, routeLabel: 'SKU Rationalization',
+        extraParams: `view=simulator&simTab=remove&sku=${encodeURIComponent(worstIppvSku.name)}`,
+        action: 'Prioritise IPPV as primary portfolio review KPI',
+        description: 'The Bad Complexity SKUs below are dragging your Consumer-Right pillar score. Each has low IPPV — they consume resources without delivering proportionate consumer value. These should be the first candidates for consumer-needs validation before any tail-cut decision.',
+        impactLabel: 'Potential IPPV uplift if Bad Complexity SKUs exit',
+        impactFn: (skus) => {
+          const bad = skus.filter(s => s.complexityType === 'Bad Complexity');
+          const currentAvg = skus.reduce((a, s) => a + s.ippv, 0) / skus.length;
+          const remaining = skus.filter(s => s.complexityType !== 'Bad Complexity');
+          const newAvg = remaining.length ? remaining.reduce((a, s) => a + s.ippv, 0) / remaining.length : currentAvg;
+          return `+${(newAvg - currentAvg).toFixed(1)} pts avg IPPV across ${bad.length} SKUs exited`;
+        },
+        affectedFn: (skus) => [...skus].filter(s => s.complexityType === 'Bad Complexity').sort((a, b) => a.ippv - b.ippv),
+        miniChartKey: 'ippv', miniChartLabel: 'IPPV Score',
+        checks: [
+          { id: 'c1', label: 'Map all portfolio SKUs to their IPPV score' },
+          { id: 'c2', label: 'Flag SKUs with IPPV < 30 for consumer-needs review' },
+          { id: 'c3', label: 'Present IPPV ranking in next S&OP cycle' },
+          { id: 'c4', label: 'Align commercial team on IPPV as primary portfolio KPI' },
+        ],
+      },
+      {
+        id: 'retailer', step: 2, pillar: 'Retailer Win-Win', priority: 'Medium',
+        color: '#0ea5e9', icon: Link2, routeTab: 1, routeLabel: 'Portfolio Health Map',
+        extraParams: `subtab=ph-kpi&metric=Shelf%20Productivity&category=${encodeURIComponent(worstShelfCat)}`,
+        action: 'Launch Joint Business Planning for low shelf-score categories',
+        description: 'Categories below 55 Shelf Productivity are under-serving retailers and losing premium shelf placement. The SKUs below are the worst performers inside those categories — they are the focus for retailer co-creation sessions and joint assortment planning.',
+        impactLabel: 'Shelf Productivity improvement opportunity',
+        impactFn: (skus) => {
+          const below = skus.filter(s => s.shelfProductivity < 55);
+          const totalGap = below.reduce((a, s) => a + (55 - s.shelfProductivity), 0);
+          return `${below.length} SKUs below threshold · avg gap ${(totalGap / (below.length || 1)).toFixed(0)} pts`;
+        },
+        affectedFn: (skus) => [...skus].sort((a, b) => a.shelfProductivity - b.shelfProductivity).slice(0, 8),
+        miniChartKey: 'shelfProductivity', miniChartLabel: 'Shelf Score',
+        checks: [
+          { id: 'r1', label: 'Identify categories with Shelf Productivity < 55' },
+          { id: 'r2', label: 'Schedule JBP sessions with top 3 retail accounts' },
+          { id: 'r3', label: 'Prepare SKU profit pool growth scenario models' },
+          { id: 'r4', label: 'Agree shared KPIs and review cadence with retailers' },
+        ],
+      },
+      {
+        id: 'valuechain', step: 3, pillar: 'Value Chain Efficient', priority: 'High',
+        color: '#f59e0b', icon: Layers, routeTab: 3, routeLabel: 'Profitability Tree',
+        extraParams: `simCountry=${encodeURIComponent(worstMarginRegion.country)}`,
+        action: 'Recover hidden complexity costs across value chain',
+        description: 'These SKUs carry the highest hidden cost burden — production downtime from small runs, transport overhead from route complexity, and waste from promo dependency. De-averaging shared costs reveals their true P&L and makes rationalisation decisions defensible.',
+        impactLabel: 'Total recoverable hidden cost',
+        impactFn: (skus) => {
+          const top = [...skus].sort((a, b) => b.totalHiddenCost - a.totalHiddenCost).slice(0, 10);
+          const total = top.reduce((a, s) => a + s.totalHiddenCost, 0);
+          return `₹${total.toFixed(1)}L recoverable from top 10 cost SKUs`;
+        },
+        affectedFn: (skus) => [...skus].sort((a, b) => b.totalHiddenCost - a.totalHiddenCost).slice(0, 8),
+        miniChartKey: 'totalHiddenCost', miniChartLabel: 'Hidden Cost (₹L)',
+        checks: [
+          { id: 'v1', label: 'De-average shared supply chain cost allocation per SKU' },
+          { id: 'v2', label: 'Map production downtime, transport & waste per SKU' },
+          { id: 'v3', label: 'Present true P&L to supply chain and commercial leadership' },
+          { id: 'v4', label: 'Initiate SKU-level hidden cost recovery plan' },
+        ],
+      },
+      {
+        id: 'e2e', step: 4, pillar: 'End-to-End Value', priority: 'Medium',
+        color: '#10b981', icon: Target, routeTab: 4, routeLabel: 'SKU Rationalization',
+        extraParams: `view=analyst&sku=${encodeURIComponent(worstDeclineSku.name)}`,
+        action: 'Involve Finance + Supply in every SKU exit decision',
+        description: 'Breaking cross-functional silos is non-negotiable for lasting simplification. The SKUs below are in negative growth territory — each needs a structured multi-team review before any exit decision. Use the Rationalization workflow to enforce the sign-off chain.',
+        impactLabel: 'Negative-growth SKUs needing cross-functional review',
+        impactFn: (skus) => {
+          const neg = skus.filter(s => s.growth < 0);
+          const revAtRisk = neg.reduce((a, s) => a + s.rev, 0);
+          return `${neg.length} SKUs · ₹${revAtRisk.toFixed(1)}Cr revenue needs managed exit`;
+        },
+        affectedFn: (skus) => [...skus].filter(s => s.growth < 0).sort((a, b) => a.growth - b.growth),
+        miniChartKey: 'growth', miniChartLabel: 'Growth Rate',
+        checks: [
+          { id: 'e1', label: 'Schedule first cross-functional SKU review in next 30 days' },
+          { id: 'e2', label: 'Map SKU exit workflow in SKU Rationalization tab' },
+          { id: 'e3', label: 'Confirm Finance + Supply sign-off process is enforced' },
+          { id: 'e4', label: 'Document first joint review outcomes and learnings' },
+        ],
+      },
+      {
+        id: 'momentum', step: 5, pillar: 'Momentum & Muscle', priority: 'Low',
+        color: '#a855f7', icon: Zap, routeTab: 8, routeLabel: 'SKU Assortment',
+        extraParams: 'subTab=guided&step=2',
+        action: 'Embed IPPV into S&OP rhythm and NPD gate reviews',
+        description: 'Sustained simplification requires institutional muscle — IPPV must be an input to every new product launch gate, every S&OP review, and every assortment planning cycle. The high-complexity SKUs below are examples of what slips through without this governance.',
+        impactLabel: 'High-complexity SKUs that would be gated with IPPV governance',
+        impactFn: (skus) => {
+          const highCx = skus.filter(s => s.cx > 0.6);
+          return `${highCx.length} high-complexity SKUs (CX > 0.6) that need gate review`;
+        },
+        affectedFn: (skus) => [...skus].filter(s => s.cx > 0.5).sort((a, b) => b.cx - a.cx).slice(0, 8),
+        miniChartKey: 'cx', miniChartLabel: 'Complexity Score',
+        checks: [
+          { id: 'm1', label: 'Add IPPV to NPD gate scorecard as mandatory criterion' },
+          { id: 'm2', label: 'Set quarterly IPPV portfolio review in S&OP calendar' },
+          { id: 'm3', label: 'Integrate IPPV into annual planning and budget templates' },
+          { id: 'm4', label: 'Define Bad Complexity threshold policy and annual reset' },
+        ],
+      },
+      {
+        id: 'goodvariety', step: 6, pillar: 'Good Variety Protection', priority: 'Medium',
+        color: '#10b981', icon: CheckCircle, routeTab: 8, routeLabel: 'SKU Assortment',
+        extraParams: 'subTab=comprehensive',
+        action: 'Ring-fence Good Variety SKUs from rationalization pressure',
+        description: 'Good Variety SKUs deliver high IPPV and meet emerging consumer needs — even when they carry operational complexity. They must be explicitly protected from blanket cost-cutting. The SKUs below are your most valuable and need long-term investment commitment.',
+        impactLabel: 'Good Variety SKUs generating high consumer value',
+        impactFn: (skus) => {
+          const good = skus.filter(s => s.complexityType === 'Good Variety');
+          const totalRev = good.reduce((a, s) => a + s.rev, 0);
+          return `${good.length} SKUs · ₹${totalRev.toFixed(1)}Cr revenue to protect`;
+        },
+        affectedFn: (skus) => [...skus].filter(s => s.complexityType === 'Good Variety').sort((a, b) => b.ippv - a.ippv),
+        miniChartKey: 'ippv', miniChartLabel: 'IPPV Score',
+        checks: [
+          { id: 'g1', label: 'Extract Good Variety SKU list and share with all teams' },
+          { id: 'g2', label: 'Add protection flag to SKU Rationalization workflow' },
+          { id: 'g3', label: 'Communicate protection rationale to commercial & supply' },
+          { id: 'g4', label: 'Review Good Variety eligibility quarterly using IPPV' },
+        ],
+      },
+    ];
+  }, [skus]);
+
+  const [statuses, setStatuses] = useState<Record<string, StepStatus>>({
+    consumer: 'not-started',
+    retailer: 'not-started',
+    valuechain: 'not-started',
+    e2e: 'not-started',
+    momentum: 'not-started',
+    goodvariety: 'not-started',
+  });
   const [checkedItems, setCheckedItems] = useState<Set<string>>(new Set());
 
   const doneCount = Object.values(statuses).filter(s => s === 'done').length;
   const inProgressCount = Object.values(statuses).filter(s => s === 'in-progress').length;
-  const overallProgress = Math.round((doneCount / STEPS.length) * 100);
+  const overallProgress = Math.round((doneCount / steps.length) * 100);
 
   const handleStatusChange = (id: string, next: StepStatus) => {
     setStatuses(prev => ({ ...prev, [id]: next }));
@@ -560,12 +602,12 @@ export const StrategicActionPlan: React.FC<Props> = ({ skus, isDarkMode, onNavig
           <div className="flex items-center gap-4 text-[7.5px] font-black uppercase tracking-wider">
             <span className="text-emerald-500 flex items-center gap-1"><CheckCircle2 size={9} /> {doneCount} Done</span>
             <span className="text-amber-500 flex items-center gap-1"><Minus size={9} /> {inProgressCount} In Progress</span>
-            <span className="text-zinc-400 flex items-center gap-1"><Circle size={9} /> {STEPS.length - doneCount - inProgressCount} Not Started</span>
+            <span className="text-zinc-400 flex items-center gap-1"><Circle size={9} /> {steps.length - doneCount - inProgressCount} Not Started</span>
           </div>
         </div>
 
         <div className="hidden sm:grid grid-cols-2 gap-x-6 gap-y-1 text-[7.5px] font-black shrink-0">
-          {STEPS.map(s => {
+          {steps.map(s => {
             const st = statuses[s.id];
             const sCfg = STATUS_CFG[st];
             return (
@@ -580,19 +622,20 @@ export const StrategicActionPlan: React.FC<Props> = ({ skus, isDarkMode, onNavig
 
       {/* ── Step cards ── */}
       <div className="pl-2">
-        {STEPS.map((step, i) => (
+        {steps.map((step, i) => (
           <StepCard
             key={step.id}
             step={step}
             skus={skus}
             status={statuses[step.id]}
-            isLast={i === STEPS.length - 1}
+            isLast={i === steps.length - 1}
             isDarkMode={isDarkMode}
             onStatusChange={handleStatusChange}
             onNavigate={onNavigate}
             checkedItems={checkedItems}
             onCheckItem={handleCheckItem}
             onSkuClick={onSkuClick}
+            totalSteps={steps.length}
           />
         ))}
       </div>

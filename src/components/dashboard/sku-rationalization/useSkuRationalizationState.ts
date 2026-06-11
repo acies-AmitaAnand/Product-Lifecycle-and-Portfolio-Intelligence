@@ -165,6 +165,53 @@ export function useSkuRationalizationState(role: Role, isDarkMode: boolean) {
   // ── Simulator states ───────────────────────────────────────────────────────
   const [simTab, setSimTab]                       = useState<'remove' | 'price' | 'launch'>('remove');
   const [selectedSkuName, setSelectedSkuName]     = useState(SKUS[0].name);
+
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash || '#';
+      const params = new URLSearchParams(hash.substring(1).replace(/\+/g, '%20'));
+      
+      const viewParam = params.get('view');
+      if (viewParam === 'simulator' || viewParam === 'analyst') {
+        setActiveView(viewParam);
+      }
+      
+      const aiClassParam = params.get('aiClass');
+      if (aiClassParam) {
+        if (aiClassParam.toLowerCase().includes('sunset')) {
+          setSelectedAiClass('sunset');
+        } else if (aiClassParam.toLowerCase().includes('reposition')) {
+          setSelectedAiClass('reposition');
+        } else if (aiClassParam.toLowerCase().includes('bundle')) {
+          setSelectedAiClass('bundle');
+        } else if (aiClassParam.toLowerCase().includes('grow')) {
+          setSelectedAiClass('grow');
+        } else if (aiClassParam.toLowerCase().includes('retain')) {
+          setSelectedAiClass('retain');
+        } else {
+          setSelectedAiClass(aiClassParam);
+        }
+      }
+      
+      const skuNameParam = params.get('sku');
+      if (skuNameParam) {
+        const foundSku = SKUS.find(s => s.name.toLowerCase() === skuNameParam.toLowerCase() || s.name.toLowerCase().includes(skuNameParam.toLowerCase()));
+        if (foundSku) {
+          setSelectedSkuName(foundSku.name);
+        }
+      }
+
+      const simTabParam = params.get('simTab');
+      if (simTabParam === 'remove' || simTabParam === 'price' || simTabParam === 'launch') {
+        setSimTab(simTabParam);
+      }
+    };
+
+    handleHashChange();
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
   const [priceChange, setPriceChange]             = useState(0);
   const [volumeElasticity, setVolumeElasticity]   = useState(-1.2);
   const [projectedRevenue, setProjectedRevenue]   = useState(40);

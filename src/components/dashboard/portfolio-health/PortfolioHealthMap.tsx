@@ -1332,6 +1332,29 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean; onAuditClick?: (metricNam
   });
   const [kpiFlash, setKpiFlash] = useState<Record<string, 'up' | 'dn' | null>>({});
 
+  // Listen to hashchange to support category deep-linking
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash || '#';
+      const params = new URLSearchParams(hash.substring(1).replace(/\+/g, '%20'));
+      
+      const catParam = params.get('category') || params.get('filterCat');
+      if (catParam) {
+        const categoriesList = ['Beverages', 'Snacks', 'Personal Care', 'Dairy', 'Household'];
+        const matched = categoriesList.find(c => c.toLowerCase() === catParam.toLowerCase());
+        if (matched) {
+          setFilterCategory(matched);
+        } else if (catParam.toLowerCase() === 'all') {
+          setFilterCategory('All');
+        }
+      }
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    handleHashChange();
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
   // Sync selectedCategory state with filterCategory selection
   useEffect(() => {
     setSelectedCategory(filterCategory === 'All' ? 'all' : filterCategory);
@@ -2356,6 +2379,49 @@ export const PortfolioHealthMap: React.FC<PortfolioHealthMapProps> = ({ role, is
   const [filteredSKUs, setFilteredSKUs] = useState(() => [...SKUS]);
 
   const [selectedSkuForModal, setSelectedSkuForModal] = useState<any>(null);
+
+  // Listen to hashchange to support subtab, category and minRev deep-linking
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash || '#';
+      const params = new URLSearchParams(hash.substring(1).replace(/\+/g, '%20'));
+      
+      const subParam = params.get('subtab');
+      const validSubTabs = ['ph-kpi', 'ph-matrix', 'ph-classification', 'ph-pareto', 'ph-channel', 'ph-sim', 'ph-growth'];
+      if (subParam && validSubTabs.includes(subParam)) {
+        setActiveSubTab(subParam);
+      }
+      
+      const minRevParam = params.get('minRev');
+      let currentMinRev = filterMinRev;
+      if (minRevParam !== null) {
+        const parsedMinRev = parseFloat(minRevParam);
+        if (!isNaN(parsedMinRev)) {
+          setFilterMinRev(parsedMinRev);
+          currentMinRev = parsedMinRev;
+        }
+      }
+      
+      const catParam = params.get('category') || params.get('filterCat');
+      if (catParam) {
+        const categoriesList = ['Beverages', 'Snacks', 'Personal Care', 'Dairy', 'Household'];
+        const matched = categoriesList.find(c => c.toLowerCase() === catParam.toLowerCase());
+        if (matched) {
+          setFilterCat(matched);
+          const res = SKUS.filter(s => s.cat === matched && s.rev >= currentMinRev);
+          setFilteredSKUs(res);
+        } else if (catParam.toLowerCase() === 'all') {
+          setFilterCat('all');
+          const res = SKUS.filter(s => s.rev >= currentMinRev);
+          setFilteredSKUs(res);
+        }
+      }
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    handleHashChange();
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, [filterMinRev]);
 
   // Standard view toasts state
   interface Toast {

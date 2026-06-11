@@ -38,6 +38,27 @@ export const AssortmentOverview: React.FC<AssortmentOverviewProps> = ({ role, is
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [isCommitted, setIsCommitted] = useState<boolean>(false);
 
+  React.useEffect(() => {
+    const handleHash = () => {
+      const hash = window.location.hash || '#';
+      const params = new URLSearchParams(hash.substring(1));
+      const subTabParam = params.get('subTab');
+      if (subTabParam === 'guided' || subTabParam === 'comprehensive') {
+        setSubTab(subTabParam);
+      }
+      const stepParam = params.get('step');
+      if (stepParam) {
+        const stepNum = parseInt(stepParam, 10);
+        if (!isNaN(stepNum) && stepNum >= 1 && stepNum <= 4) {
+          setCurrentStep(stepNum);
+        }
+      }
+    };
+    handleHash();
+    window.addEventListener('hashchange', handleHash);
+    return () => window.removeEventListener('hashchange', handleHash);
+  }, []);
+
   const handleStageAction = (action: StagedAction) => {
     setStagedActions(prev => [...prev, action]);
   };

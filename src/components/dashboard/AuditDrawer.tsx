@@ -29,6 +29,30 @@ interface AuditContent {
 }
 
 const AUDIT_DATA: Record<string, AuditContent> = {
+  'Shelf Productivity': {
+    title: 'Shelf Productivity',
+    value: '53.6',
+    soWhat: 'Average Shelf Productivity is 53.6/100, which is below the desired retailer win-win health threshold of 55. This is driven by high stockout rates on core volumetric items (e.g. BrandC Biscuits with 440 stockout events).',
+    action: 'Launch Joint Business Planning: Collaborate with retailers to establish shared stockout thresholds and optimize shelf placements for high-IPPV SKUs.',
+    columns: [
+      { name: 'val', type: 'float [DIRECT]', desc: 'Normalized commercial value score based on sales share.' },
+      { name: 'stockouts', type: 'int [DIRECT]', desc: 'Number of stockout events recorded for the SKU.' }
+    ],
+    formula: '\\text{Shelf Productivity} = \\text{Commercial Value} \\times (1 - \\text{Stockout Rate}) \\times 100',
+    formulaDescription: 'Shelf Productivity combines a SKU\'s commercial value score with its shelf availability. A high stockout frequency directly penalizes the score.',
+    assumptions: [
+      'Stockout Rate scaling: Stockout rate is modeled as Stockouts divided by 8, capped at 1.0.'
+    ],
+    trendTitle: 'Shelf Productivity by Category',
+    trendHeaders: ['Category', 'Average Shelf Score', 'Stockout Events', 'Status'],
+    trendRows: [
+      ['Beverages', '65.2', '12 events', 'Healthy'],
+      ['Snacks', '52.4', '15 events', 'Below Threshold'],
+      ['Dairy', '49.8', '19 events', 'Below Threshold'],
+      ['Personal Care', '58.0', '11 events', 'Healthy'],
+      ['Household', '43.2', '25 events', 'Critical']
+    ]
+  },
   'Net Sales (Portfolio)': {
     title: 'Net Sales (Portfolio)',
     value: '$473M',
@@ -992,6 +1016,8 @@ const getMetricTrend = (metricName: string) => {
     case 'Total Stockouts':
     case 'Peak Stockout Freq.':
       return { value: '440 events MTD', isUp: true };
+    case 'Shelf Productivity':
+      return { value: '-2.4% vs last month', isUp: false };
     default:
       return { value: '+0.5% MoM', isUp: true };
   }

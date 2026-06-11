@@ -576,7 +576,46 @@ export default function App() {
   useEffect(() => {
     safeSetItem('acies_active_tab', activeTab.toString());
     updateHash('tab', activeTab.toString());
-    setIsProfitabilitySimulatorOpen(false);
+    
+    const hash = window.location.hash || '#';
+    const params = new URLSearchParams(hash.substring(1).replace(/\+/g, '%20'));
+    const simParam = params.get('simulator');
+    if (simParam !== 'true') {
+      setIsProfitabilitySimulatorOpen(false);
+    } else {
+      setIsProfitabilitySimulatorOpen(true);
+    }
+  }, [activeTab]);
+
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash || '#';
+      const params = new URLSearchParams(hash.substring(1).replace(/\+/g, '%20'));
+      
+      const tabParam = params.get('tab');
+      if (tabParam !== null) {
+        const parsed = parseInt(tabParam, 10);
+        if (!isNaN(parsed) && parsed >= 0 && parsed < TABS.length && parsed !== activeTab) {
+          setActiveTab(parsed);
+        }
+      }
+
+      const metricParam = params.get('metric');
+      if (metricParam !== null) {
+        setActiveAuditMetric(metricParam);
+      }
+
+      const simParam = params.get('simulator');
+      if (simParam === 'true') {
+        setIsProfitabilitySimulatorOpen(true);
+      } else if (simParam === 'false') {
+        setIsProfitabilitySimulatorOpen(false);
+      }
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    handleHashChange();
+    return () => window.removeEventListener('hashchange', handleHashChange);
   }, [activeTab]);
 
   useEffect(() => {

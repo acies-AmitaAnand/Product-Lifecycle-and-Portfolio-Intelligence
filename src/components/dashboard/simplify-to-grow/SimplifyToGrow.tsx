@@ -78,12 +78,40 @@ function computePillars(skus: EnrichedSKU[]) {
   const avgHiddenCostRatio = skus.reduce((a, s) => a + (s.totalHiddenCost / (s.rev || 1)), 0) / skus.length;
   const positiveGrowth = skus.filter(s => s.growth > 0).length / skus.length;
 
+  const worstIppvSku = [...skus].sort((a, b) => a.ippv - b.ippv)[0] || { name: 'Fabric Softener' };
+
+  const catNames = Array.from(new Set(skus.map(s => s.cat)));
+  const catShelves = catNames.map(cat => {
+    const items = skus.filter(s => s.cat === cat);
+    const avgShelf = items.reduce((a, s) => a + s.shelfProductivity, 0) / items.length;
+    return { cat, avgShelf };
+  });
+  const worstShelfCat = [...catShelves].sort((a, b) => a.avgShelf - b.avgShelf)[0]?.cat || 'Household';
+
+  const REG_DATA = [
+    { country: 'Italy',       skuCount: 102, netSalesM: 137.2, marginPct: 38.53 },
+    { country: 'Spain',       skuCount: 100, netSalesM: 106.7, marginPct: 38.60 },
+    { country: 'Germany',     skuCount:  98, netSalesM:  88.5, marginPct: 38.48 },
+    { country: 'France',      skuCount:  80, netSalesM:  42.6, marginPct: 38.55 },
+    { country: 'Austria',     skuCount:  80, netSalesM:  43.0, marginPct: 38.64 },
+    { country: 'Poland',      skuCount:  80, netSalesM:  42.4, marginPct: 38.36 },
+    { country: 'Netherlands', skuCount:  45, netSalesM:  12.5, marginPct: 38.20 },
+  ];
+  const sortedRegions = [...REG_DATA]
+    .filter(r => r.country !== 'Austria')
+    .map(r => ({ ...r, opp: r.netSalesM * (38.64 - r.marginPct) }))
+    .sort((a, b) => b.opp - a.opp);
+  const worstMarginRegion = sortedRegions[0] || { country: 'Germany' };
+
+  const worstDeclineSku = [...skus].filter(s => s.growth < 0).sort((a, b) => a.growth - b.growth)[0] || { name: 'Aloe Face Wash' };
+
   return [
     {
       id: 'consumer', pillar: 'Consumer-Right', score: Math.round(avgIppv),
       description: 'Avg IPPV across portfolio. Higher = portfolio prioritises consumer-valued SKUs.',
       icon: Users, color: '#6366f1', bg: 'bg-indigo-500/10', border: 'border-indigo-500/20',
       text: 'text-indigo-600 dark:text-indigo-400', routeTab: 4, routeLabel: 'SKU Rationalization',
+      extraParams: `view=simulator&simTab=remove&sku=${encodeURIComponent(worstIppvSku.name)}`,
       kpiLabel: 'Avg IPPV', kpiValue: avgIppv.toFixed(1),
       insight: 'IPPV combines Return on Sales, Household Penetration, and Unit Profit Pool. Low-IPPV SKUs are strong rationalization candidates.',
       topSkus: (skus: EnrichedSKU[]) => [...skus].sort((a, b) => b.ippv - a.ippv).slice(0, 3),
@@ -94,6 +122,7 @@ function computePillars(skus: EnrichedSKU[]) {
       description: 'Avg Shelf Productivity Index. Combines commercial value with on-shelf availability.',
       icon: Link2, color: '#0ea5e9', bg: 'bg-sky-500/10', border: 'border-sky-500/20',
       text: 'text-sky-600 dark:text-sky-400', routeTab: 1, routeLabel: 'Portfolio Health Map',
+      extraParams: `subtab=ph-kpi&metric=Shelf%20Productivity&category=${encodeURIComponent(worstShelfCat)}`,
       kpiLabel: 'Avg Shelf Score', kpiValue: avgShelf.toFixed(1),
       insight: 'Shelf Productivity = Commercial Value × (1 − Stockout Rate). Low scores signal opportunity for joint business planning with retailers.',
       topSkus: (skus: EnrichedSKU[]) => [...skus].sort((a, b) => b.shelfProductivity - a.shelfProductivity).slice(0, 3),
@@ -104,6 +133,7 @@ function computePillars(skus: EnrichedSKU[]) {
       description: 'Complexity P&L health. Measures how well hidden costs (downtime, transport, waste) are controlled.',
       icon: Layers, color: '#f59e0b', bg: 'bg-amber-500/10', border: 'border-amber-500/20',
       text: 'text-amber-600 dark:text-amber-400', routeTab: 3, routeLabel: 'Profitability Tree',
+      extraParams: `simCountry=${encodeURIComponent(worstMarginRegion.country)}`,
       kpiLabel: 'Avg Hidden Cost Ratio', kpiValue: (avgHiddenCostRatio * 100).toFixed(1) + '%',
       insight: 'Hidden costs include production downtime for small runs, transport overhead, and promo-driven waste. De-averaging shared costs reveals the true P&L of each SKU.',
       topSkus: (skus: EnrichedSKU[]) => [...skus].sort((a, b) => a.totalHiddenCost - b.totalHiddenCost).slice(0, 3),
@@ -114,6 +144,7 @@ function computePillars(skus: EnrichedSKU[]) {
       description: 'Cross-functional value creation. % of portfolio with positive growth balanced with Good Variety classification.',
       icon: Target, color: '#10b981', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20',
       text: 'text-emerald-600 dark:text-emerald-400', routeTab: 4, routeLabel: 'SKU Rationalization',
+      extraParams: `view=analyst&sku=${encodeURIComponent(worstDeclineSku.name)}`,
       kpiLabel: 'Positive Growth SKUs', kpiValue: Math.round(positiveGrowth * 100) + '%',
       insight: 'End-to-End Value requires Finance, Marketing, Commercial, and Supply to jointly govern SKU decisions. Good Variety SKUs should be ring-fenced.',
       topSkus: (skus: EnrichedSKU[]) => [...skus].sort((a, b) => b.growth - a.growth).slice(0, 3),
@@ -124,6 +155,7 @@ function computePillars(skus: EnrichedSKU[]) {
       description: 'Portfolio simplification health. % of SKUs that are NOT Bad Complexity.',
       icon: Zap, color: '#a855f7', bg: 'bg-purple-500/10', border: 'border-purple-500/20',
       text: 'text-purple-600 dark:text-purple-400', routeTab: 8, routeLabel: 'SKU Assortment',
+      extraParams: 'subTab=guided&step=2',
       kpiLabel: 'Bad Complexity %', kpiValue: badComplexityPct.toFixed(0) + '%',
       insight: 'Sustained simplification requires embedding SKU productivity into S&OP, budgeting, and NPD gate reviews. Bad Complexity % should be tracked quarterly.',
       topSkus: (skus: EnrichedSKU[]) => skus.filter(s => s.complexityType === 'Good Variety').slice(0, 3),
@@ -321,9 +353,10 @@ const SkuFocusDrawer: React.FC<{
 const PillarDetail: React.FC<{
   pillar: ReturnType<typeof computePillars>[0];
   skus: EnrichedSKU[];
-  onNavigate: (tab: number) => void;
+  onNavigate: (tab: number, extraParams?: string) => void;
   onClose: () => void;
-}> = ({ pillar, skus, onNavigate, onClose }) => {
+  onSkuClick: (sku: EnrichedSKU) => void;
+}> = ({ pillar, skus, onNavigate, onClose, onSkuClick }) => {
   const topSkus = pillar.topSkus(skus);
   const worstSkus = pillar.worstSkus(skus);
   const RouteIcon = TAB_ROUTE_ICONS[pillar.routeTab] ?? ChevronRight;
@@ -339,13 +372,13 @@ const PillarDetail: React.FC<{
           <p className="text-[8px] text-zinc-500 dark:text-zinc-400 mt-1 max-w-lg">{pillar.insight}</p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          <button onClick={() => onNavigate(pillar.routeTab)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[8px] font-black uppercase tracking-wider text-white transition-all hover:opacity-90"
+          <button onClick={() => onNavigate(pillar.routeTab, pillar.extraParams)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[8px] font-black uppercase tracking-wider text-white transition-all hover:opacity-90 cursor-pointer"
             style={{ backgroundColor: pillar.color }}>
             <RouteIcon size={10} /> {pillar.routeLabel} <ExternalLink size={9} />
           </button>
           <button onClick={onClose}
-            className="w-7 h-7 rounded-lg flex items-center justify-center hover:bg-black/10 dark:hover:bg-white/10 text-zinc-400 transition-all">
+            className="w-7 h-7 rounded-lg flex items-center justify-center hover:bg-black/10 dark:hover:bg-white/10 text-zinc-400 transition-all cursor-pointer">
             <X size={13} />
           </button>
         </div>
@@ -357,7 +390,8 @@ const PillarDetail: React.FC<{
           </div>
           <div className="space-y-1.5">
             {topSkus.map((s, i) => (
-              <div key={s.name} className="flex items-center gap-2 p-2 rounded-lg bg-emerald-500/5 border border-emerald-500/15">
+              <button key={s.name} onClick={() => onSkuClick(s)}
+                className="w-full flex items-center gap-2 p-2 rounded-lg bg-emerald-500/5 border border-emerald-500/15 hover:bg-emerald-500/10 dark:hover:bg-emerald-500/10 transition-all cursor-pointer text-left">
                 <span className="text-[7px] font-black w-4 text-center rounded text-emerald-600 dark:text-emerald-400">#{i + 1}</span>
                 <div className="flex-1 min-w-0">
                   <div className="text-[8.5px] font-black text-acies-gray dark:text-white truncate">{s.name}</div>
@@ -370,7 +404,7 @@ const PillarDetail: React.FC<{
                    pillar.id === 'e2e' ? `+${(s.growth * 100).toFixed(1)}%` :
                    s.complexityType === 'Good Variety' ? '✓ Good' : `CX ${s.cx.toFixed(2)}`}
                 </span>
-              </div>
+              </button>
             ))}
           </div>
         </div>
@@ -380,7 +414,8 @@ const PillarDetail: React.FC<{
           </div>
           <div className="space-y-1.5">
             {worstSkus.map((s, i) => (
-              <div key={s.name} className="flex items-center gap-2 p-2 rounded-lg bg-red-500/5 border border-red-500/15">
+              <button key={s.name} onClick={() => onSkuClick(s)}
+                className="w-full flex items-center gap-2 p-2 rounded-lg bg-red-500/5 border border-red-500/15 hover:bg-red-500/10 dark:hover:bg-red-500/10 transition-all cursor-pointer text-left">
                 <span className="text-[7px] font-black w-4 text-center rounded text-red-400">!{i + 1}</span>
                 <div className="flex-1 min-w-0">
                   <div className="text-[8.5px] font-black text-acies-gray dark:text-white truncate">{s.name}</div>
@@ -393,7 +428,7 @@ const PillarDetail: React.FC<{
                    pillar.id === 'e2e' ? `${(s.growth * 100).toFixed(1)}%` :
                    `CX ${s.cx.toFixed(2)}`}
                 </span>
-              </div>
+              </button>
             ))}
           </div>
         </div>
@@ -476,7 +511,12 @@ export const SimplifyToGrow: React.FC<Props> = ({ isDarkMode, setActiveTab }) =>
     setSelectedSku(fullSku || null);
   }, [skus]);
 
-  const handleNavigate = useCallback((tab: number) => {
+  const handleNavigate = useCallback((tab: number, extraParams?: string) => {
+    if (extraParams) {
+      window.location.hash = `#tab=${tab}&${extraParams}`;
+    } else {
+      window.location.hash = `#tab=${tab}`;
+    }
     setActiveTab(tab);
   }, [setActiveTab]);
   return (
@@ -1069,7 +1109,7 @@ export const SimplifyToGrow: React.FC<Props> = ({ isDarkMode, setActiveTab }) =>
                   </div>
                   <div className="text-[7px] font-bold text-zinc-500 mt-0.5">{cat.goodCount}G · {cat.badCount}B</div>
                   {cat.avgShelf < 55 && (
-                    <button onClick={e => { e.stopPropagation(); handleNavigate(1); }}
+                    <button onClick={e => { e.stopPropagation(); handleNavigate(1, `subtab=ph-kpi&category=${encodeURIComponent(cat.cat)}`); }}
                       className="mt-1.5 flex items-center gap-0.5 text-[6.5px] font-black uppercase tracking-wider text-sky-500 mx-auto hover:text-sky-400 transition-colors">
                       View health <ArrowRight size={7} />
                     </button>
@@ -1099,7 +1139,7 @@ export const SimplifyToGrow: React.FC<Props> = ({ isDarkMode, setActiveTab }) =>
           <div className="mt-3 p-3 rounded-xl bg-sky-500/5 border border-sky-500/15 text-[8px] text-sky-700 dark:text-sky-400 font-bold leading-relaxed flex items-start gap-2">
             <Info size={11} className="shrink-0 mt-0.5" />
             <span><strong>Retailer Win-Win:</strong> Categories below 55 warrant joint business planning with key accounts. &nbsp;
-              <button onClick={() => handleNavigate(1)} className="underline hover:no-underline transition-all">
+              <button onClick={() => handleNavigate(1, 'subtab=ph-kpi')} className="underline hover:no-underline transition-all">
                 View Portfolio Health Map →
               </button>
             </span>
