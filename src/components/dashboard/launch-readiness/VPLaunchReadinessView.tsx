@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Filter, RefreshCw, Download, Zap, BarChart2, PieChart as PieIcon, Shield, ShieldAlert, DollarSign, Activity, Play, Check, AlertTriangle, Rocket, TrendingUp, Grid, Table, X
+  Filter, RefreshCw, Download, Zap, BarChart2, PieChart as PieIcon, Shield, ShieldAlert, DollarSign, Activity, Play, Check, AlertTriangle, Rocket, TrendingUp, Grid, Table, X, Layers
 } from 'lucide-react';
 import { 
   ResponsiveContainer, BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -82,7 +82,7 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
   const [filterQuarter, setFilterQuarter] = useState('All');
   const [pipelineView, setPipelineView] = useState<'bar' | 'pie'>('bar');
   const [predictionsView, setPredictionsView] = useState<'grid' | 'table'>('grid');
-  const [financialView, setFinancialView] = useState<'bar' | 'area'>('bar');
+  const [financialView, setFinancialView] = useState<'bar' | 'area' | 'radar'>('bar');
   const [localSimulateDelay, setLocalSimulateDelay] = useState(false);
   const simulateDelay = propSimulateDelay !== undefined ? propSimulateDelay : localSimulateDelay;
   const setSimulateDelay = propSetSimulateDelay !== undefined ? propSetSimulateDelay : setLocalSimulateDelay;
@@ -764,6 +764,18 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
               >
                 <Activity size={14} />
               </button>
+              <button
+                type="button"
+                onClick={() => setFinancialView('radar')}
+                className={`p-1.5 px-2.5 transition-all cursor-pointer border-none flex items-center justify-center rounded-sm shrink-0 ${
+                  financialView === 'radar'
+                    ? 'bg-blue-500 text-white shadow-sm'
+                    : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 bg-transparent'
+                }`}
+                title="Radar Chart"
+              >
+                <Layers size={14} />
+              </button>
             </div>
           </div>
 
@@ -780,7 +792,7 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
                   <Bar dataKey="Spent ($M)" fill="#10b981" />
                 </BarChart>
               </ResponsiveContainer>
-            ) : (
+            ) : financialView === 'area' ? (
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={financialData} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
                   <defs>
@@ -839,6 +851,25 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
                     activeDot={{ r: 6 }}
                   />
                 </AreaChart>
+              </ResponsiveContainer>
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <RadarChart data={financialData} cx="50%" cy="55%" radius="68%">
+                  <PolarGrid stroke={isDarkMode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)"} />
+                  <PolarAngleAxis dataKey="name" tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)', fontSize: 9 }} />
+                  <PolarRadiusAxis angle={90} domain={[0, 120]} tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} />
+                  <Radar name="Revenue at risk" dataKey="Revenue at risk" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.15} dot={{ r: 3.5, stroke: '#3b82f6', strokeWidth: 2, fill: isDarkMode ? '#1f1f1f' : '#fff' }} />
+                  <Radar name="Mitigation cost" dataKey="Mitigation cost" stroke="#8b5cf6" fill="#8b5cf6" fillOpacity={0.15} dot={{ r: 3.5, stroke: '#8b5cf6', strokeWidth: 2, fill: isDarkMode ? '#1f1f1f' : '#fff' }} />
+                  <Radar name="Projected savings" dataKey="Projected savings" stroke="#10b981" fill="#10b981" fillOpacity={0.15} dot={{ r: 3.5, stroke: '#10b981', strokeWidth: 2, fill: isDarkMode ? '#1f1f1f' : '#fff' }} />
+                  <Tooltip contentStyle={{ backgroundColor: isDarkMode ? '#1f1f1f' : '#fff', border: isDarkMode ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.1)' }} />
+                  <Legend 
+                    verticalAlign="top" 
+                    height={36} 
+                    iconType="square" 
+                    iconSize={10} 
+                    wrapperStyle={{ fontSize: 9, textTransform: 'uppercase', fontWeight: 'bold', letterSpacing: '0.05em', paddingBottom: '10px' }} 
+                  />
+                </RadarChart>
               </ResponsiveContainer>
             )}
           </div>
