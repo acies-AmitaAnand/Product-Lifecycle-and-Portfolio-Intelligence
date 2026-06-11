@@ -16,6 +16,7 @@ import { EmailComposerModal } from './EmailComposerModal';
 import { ScheduleMeetingModal } from './ScheduleMeetingModal';
 import { SuccessFeedbackModal } from './SuccessFeedbackModal';
 import { SkuDetailsModal } from '../executive/SkuDetailsModal';
+import { ParetoConcentration } from '../assortment/ParetoConcentration';
 
 
 interface PortfolioHealthMapProps {
@@ -1953,6 +1954,13 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean; onAuditClick?: (metricNam
         >
           📈 Revenue vs. Performance Matrix
         </button>
+        <span className="text-zinc-300 dark:text-zinc-700">|</span>
+        <button 
+          onClick={() => scrollToSection('vp-pareto-concentration')}
+          className="px-2.5 py-1 hover:bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-sm cursor-pointer border-none bg-transparent font-bold outline-none"
+        >
+          📊 Pareto SKU Concentration
+        </button>
       </div>
 
       {/* Portfolio Health & Lifecycle Distribution */}
@@ -2158,6 +2166,11 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean; onAuditClick?: (metricNam
           onSelectSku={setSelectedSkuForModal} 
           addToast={addToast} 
         />
+      </div>
+
+      {/* Pareto SKU Concentration */}
+      <div id="vp-pareto-concentration" className="mt-6 scroll-mt-16">
+        <ParetoConcentration />
       </div>
 
       {/* Floating Corner Toasts Container */}

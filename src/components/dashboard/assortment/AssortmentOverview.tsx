@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Role } from '../../../types/dashboard';
 import { AssortmentKPICards } from './AssortmentKPICards';
 import { RegionalAssortmentGrid } from './RegionalAssortmentGrid';
-import { ParetoConcentration } from './ParetoConcentration';
+
 import { TransferenceSimulator } from './TransferenceSimulator';
 import { CrossLocationTransfer } from './CrossLocationTransfer';
 import { LaunchEvaluator } from './LaunchEvaluator';
@@ -149,8 +149,7 @@ export const AssortmentOverview: React.FC<AssortmentOverviewProps> = ({ role, is
             onStageAction={handleStageAction} 
           />
 
-          {/* Pareto Curve & Concentration Analysis */}
-          <ParetoConcentration />
+
 
           {/* Demand Transference & Substitution Simulator */}
           <TransferenceSimulator onStageAction={handleStageAction} />
@@ -251,7 +250,7 @@ export const AssortmentOverview: React.FC<AssortmentOverviewProps> = ({ role, is
                 <p>Are these SKUs selling well, or is there an issue we are facing in their sales? Hover over bars on the Pareto Concentration curve to diagnose tail-end SKU performance, and delist underperforming items on the virtual shelf simulator to capture demand transference flows.</p>
               </div>
 
-              <ParetoConcentration />
+
               <TransferenceSimulator onStageAction={handleStageAction} />
             </div>
           )}
