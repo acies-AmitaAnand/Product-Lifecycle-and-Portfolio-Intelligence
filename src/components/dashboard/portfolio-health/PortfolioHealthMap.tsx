@@ -1558,31 +1558,31 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean; onAuditClick?: (metricNam
       color: '#ef4444',
       status: 'critical',
       location: 'Penang, Malaysia (SEA Hub)',
-      cause: 'Surfactant chemical raw material delay due to port congestion in Singapore. Current lead times have reached 35 days vs. a 14-day baseline, causing line stoppage risk.',
+      cause: 'High promotional dependency (over 45% of sales on deep discount) resulting in gross margin dilution below the 35% category hurdle.',
       suggestions: [
         {
-          action: 'Transition production to local vendor ChemCorp Malaysia on a premium contract.',
-          impact: 'Resolves 80% supply gap in 5 days; +4% unit cost.',
+          action: 'Cap promotional discount depth at 15% and redirect marketing budget to brand equity campaigns.',
+          impact: 'Reclaims 3.2% category gross margin; protects brand health.',
           contactName: 'Marcus Ng',
-          contactTitle: 'Global Procurement Director',
+          contactTitle: 'Marketing Director',
           email: 'marcus.ng@aciesglobal.com',
-          draftBody: 'Hi Marcus,\n\nRegarding the surfactant supply bottleneck for Fabric Softener at the Penang plant, please initiate the local vendor transition to ChemCorp Malaysia under the emergency premium contract to avoid factory downtime.\n\nThanks,\nVP Product Management'
+          draftBody: 'Hi Marcus,\n\nRegarding the Fabric Softener margin compression risk at the SEA Hub, please initiate a promotional discount cap at 15% and redirect the remaining spend to brand equity building.\n\nThanks,\nVP Product Management'
         },
         {
-          action: 'Utilize lower-concentration surfactant formulation (Recipe version 2.4) for standard batches.',
-          impact: 'Extends existing stock by 14 days; negligible product feel change.',
+          action: 'Introduce a premium eco-friendly line extension with 52% gross margin to shift product mix.',
+          impact: 'Raises blended category margin by 2.4pp within two quarters.',
           contactName: 'Dr. Elena Rostova',
           contactTitle: 'R&D Product Lead',
           email: 'elena.rostova@aciesglobal.com',
-          draftBody: 'Hi Elena,\n\nTo manage the current port congestion bottleneck, can we approve the temporary use of Recipe 2.4 (lower surfactant concentration) for the standard Fabric Softener runs? This will extend our raw material stock by 14 days.\n\nThanks,\nVP Product Management'
+          draftBody: 'Hi Elena,\n\nTo raise our blended Fabric Softener category margins, can we accelerate the premium eco-friendly line extension formulation with a target gross margin of 52%?\n\nThanks,\nVP Product Management'
         },
         {
-          action: 'Initiate emergency stock transfer of 15k finished units from Chennai Hub.',
-          impact: 'Fills immediate retail shelf gap for 10 days; +2.5% transit cost.',
+          action: 'Rationalize the lowest-performing pack size (250ml) to eliminate high manufacturing overhead.',
+          impact: 'Reduces SKU complexity; frees up 15% line capacity.',
           contactName: 'Vijay Kumar',
-          contactTitle: 'APAC Logistics Head',
+          contactTitle: 'APAC Portfolio Analyst',
           email: 'vijay.kumar@aciesglobal.com',
-          draftBody: 'Hi Vijay,\n\nWe have a critical stockout risk for Fabric Softener in SEA. Please coordinate an immediate transshipment of 15,000 finished units from Chennai Hub to Singapore DC. I approve the expedited air transit cost.\n\nThanks,\nVP Product Management'
+          draftBody: 'Hi Vijay,\n\nPlease conduct a rationalization audit for the Fabric Softener 250ml SKU. Eliminating this low-performing pack size will resolve complexity issues at the Penang plant.\n\nThanks,\nVP Product Management'
         }
       ]
     },
@@ -1592,31 +1592,31 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean; onAuditClick?: (metricNam
       color: '#ef4444',
       status: 'critical',
       location: 'Baddi, HP (North India Plant)',
-      cause: 'Shortage of customized 1-litre PET bottles due to a mechanical mold breakdown at primary external blowing vendor.',
+      cause: 'Severe cannibalization by adjacent private-label brands eating into Floor Cleaner market share in convenience channels.',
       suggestions: [
         {
-          action: 'Switch bottling temporarily to standard 1.2-litre generic containers with custom overlay stickers.',
-          impact: 'Bypasses custom bottle shortage; minor aesthetic package trade-off.',
+          action: 'Re-position product packaging with custom value-add bundles to capture premium household segments.',
+          impact: 'Recovers 15% volume loss; builds strong category distinction.',
           contactName: 'Rohan Sharma',
-          contactTitle: 'Plant Manager - Baddi',
+          contactTitle: 'Brand Manager',
           email: 'rohan.sharma@aciesglobal.com',
-          draftBody: 'Hi Rohan,\n\nDue to the mold breakdown, please execute the contingency plan to bottle Floor Cleaner in the generic 1.2-litre containers. We will apply custom sticker overlays to maintain branding.\n\nThanks,\nVP Product Management'
+          draftBody: 'Hi Rohan,\n\nDue to private-label cannibalization, please execute the repositioning plan for Floor Cleaner with premium value-add bundles for convenience channels.\n\nThanks,\nVP Product Management'
         },
         {
-          action: 'Deploy specialized CNC repair engineers to vendor site with expedited service bonus.',
-          impact: 'Restores custom mold within 36 hours; saves ₹18 Lakhs in retailer SLA penalties.',
+          action: 'Adjust pricing tier to create a clear separation from entry-level competitor price points.',
+          impact: 'Stops market share erosion; improves price premium index.',
           contactName: 'Amit Mehta',
-          contactTitle: 'Supplier Quality Assurance Lead',
+          contactTitle: 'Pricing Strategy Lead',
           email: 'amit.mehta@aciesglobal.com',
-          draftBody: 'Hi Amit,\n\nPlease dispatch the specialized tooling repair team to our blowing vendor site immediately. I authorize the 2x service acceleration fee to get the mold repaired within 36 hours.\n\nThanks,\nVP Product Management'
+          draftBody: 'Hi Amit,\n\nPlease run a pricing elasticity simulation for Floor Cleaner to establish a clearer separation from competitor entry-level pricing tiers.\n\nThanks,\nVP Product Management'
         },
         {
-          action: 'Prioritize citrus SKU production using remaining custom bottle inventories, pausing lower-margin floral SKU.',
-          impact: 'Protects 92% of core category gross margin during outage.',
+          action: 'Focus distribution on high-growth regional hubs to maximize sales velocity of high-margin Citrus SKU.',
+          impact: 'Increases overall category profitability by 5%.',
           contactName: 'Pooja Iyer',
           contactTitle: 'Citrus Category Manager',
           email: 'pooja.iyer@aciesglobal.com',
-          draftBody: 'Hi Pooja,\n\nDue to bottle supply constraints, we are prioritizing the high-margin Citrus SKU. Please pause packaging of the Floral SKU and divert all remaining 1L bottles to the Citrus line.\n\nThanks,\nVP Product Management'
+          draftBody: 'Hi Pooja,\n\nTo combat cannibalization in North India, please focus our distribution footprint on Citrus SKUs to maximize high-margin sales velocity.\n\nThanks,\nVP Product Management'
         }
       ]
     },
@@ -1626,31 +1626,31 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean; onAuditClick?: (metricNam
       color: '#f59e0b',
       status: 'warning',
       location: 'Pune, India (Blending & Bottling)',
-      cause: 'Temporary glass bottle manufacturing constraint due to mandatory furnace maintenance at primary glass supplier.',
+      cause: 'Volume decline in Modern Trade channels due to lack of pack size diversity, failing to capture single-serve wellness shoppers.',
       suggestions: [
         {
-          action: 'Accelerate scheduled aluminum can alternative launch from Q3 to current cycle.',
-          impact: 'Bypasses glass bottleneck; attracts eco-conscious consumers.',
+          action: 'Fast-track the alternative single-serve aluminum can format to attract convenience and eco-conscious consumers.',
+          impact: 'Opens new convenience store channels; projected +18% volume growth.',
           contactName: 'Siddharth Roy',
           contactTitle: 'NPD Project Lead',
           email: 'siddharth.roy@aciesglobal.com',
-          draftBody: 'Hi Siddharth,\n\nWith glass bottle supply constrained, we need to bring forward the aluminum can format launch for Green Tea. Can we accelerate the trial production runs to this week?\n\nThanks,\nVP Product Management'
+          draftBody: 'Hi Siddharth,\n\nTo address Green Tea RTD volume declines, please bring forward the single-serve aluminum can format launch to capture single-serve wellness shoppers.\n\nThanks,\nVP Product Management'
         },
         {
-          action: 'Transfer 8,000 cases of safety stock from Western Region to high-velocity Modern Trade accounts.',
-          impact: 'Maintains service level at major supermarket chains; slight risk in general trade.',
+          action: 'Transfer safety stock allocations towards high-velocity wellness and fitness retail accounts.',
+          impact: 'Boosts sell-through rate; reduces slow-moving regional stock.',
           contactName: 'Nisha Patel',
           contactTitle: 'Demand Planning Lead',
           email: 'nisha.patel@aciesglobal.com',
-          draftBody: 'Hi Nisha,\n\nPlease reallocate 8,000 cases of Green Tea safety stock from Western Regional depot directly to Modern Trade national accounts to avoid stockouts at major retailers.\n\nThanks,\nVP Product Management'
+          draftBody: 'Hi Nisha,\n\nPlease reallocate Green Tea safety stock buffers away from lagging depots and direct them to high-velocity wellness accounts.\n\nThanks,\nVP Product Management'
         },
         {
-          action: 'Enforce priority shipping rules based on Customer Lifetime Value (CLV) index.',
-          impact: 'Maintains 100% service level for top 5 key accounts.',
+          action: 'Implement a priority customer allocation strategy to safeguard top-performing national accounts.',
+          impact: 'Protects high-value contracts; maintains core brand revenue.',
           contactName: 'Rajesh Verma',
           contactTitle: 'VP Sales',
           email: 'rajesh.verma@aciesglobal.com',
-          draftBody: 'Hi Rajesh,\n\nWe are facing supply limitations on Green Tea RTD. Please instruct the team to apply CLV-based priority routing, ensuring our top 5 national retail accounts receive full allocations.\n\nThanks,\nVP Product Management'
+          draftBody: 'Hi Rajesh,\n\nPlease implement priority distribution routing for Green Tea to ensure our top-performing national accounts receive full allocations.\n\nThanks,\nVP Product Management'
         }
       ]
     },
@@ -1660,31 +1660,31 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean; onAuditClick?: (metricNam
       color: '#f59e0b',
       status: 'warning',
       location: 'Ghent, Belgium (EMEA Confectionery Unit)',
-      cause: 'Cocoa solids sourcing delays and cost spike due to West African harvest shortfalls.',
+      cause: 'Gross margin pressure due to ingredient price inflation, threatening brand contribution targets in Europe.',
       suggestions: [
         {
-          action: 'Secure 3-month supply contract with South American cocoa brokers.',
-          impact: 'Stabilizes raw material cost; locks in +6% price premium.',
+          action: 'Negotiate long-term contract pricing with South American supply partners to stabilize ingredient cost.',
+          impact: 'Stabilizes cost-of-goods-sold; protects margins against futures price spikes.',
           contactName: 'Jean-Pierre Dubois',
           contactTitle: 'Commodities Hedging Director',
           email: 'jp.dubois@aciesglobal.com',
-          draftBody: 'Hi Jean-Pierre,\n\nGiven the West African cocoa crisis, please execute a 3-month forward contract with our South American partners to secure wafers production volumes.\n\nThanks,\nVP Product Management'
+          draftBody: 'Hi Jean-Pierre,\n\nGiven the cocoa cost pressure on Choco Wafers, please coordinate with our South American partners to negotiate long-term hedged contracts.\n\nThanks,\nVP Product Management'
         },
         {
-          action: 'Adjust coating recipe to increase whey powder fraction, reducing pure cocoa content by 3%.',
-          impact: 'Saves 2.2% cost-to-serve; maintains consumer taste profile.',
+          action: 'Reformulate pack mix to increase share of multi-pack family boxes which command a higher margin.',
+          impact: 'Offsets raw ingredient cost pressure; raises average price per unit.',
           contactName: 'Sarah Jenkins',
           contactTitle: 'Product Scientist',
           email: 'sarah.jenkins@aciesglobal.com',
-          draftBody: 'Hi Sarah,\n\nWe need to buffer cocoa cost volatility. Please prepare the lab test and documentation to increase the whey powder ratio in the Choco Wafers coating by 3%.\n\nThanks,\nVP Product Management'
+          draftBody: 'Hi Sarah,\n\nTo safeguard Wafer gross margins, please check the feasibility of shifting our packaging mix toward high-margin family multi-packs.\n\nThanks,\nVP Product Management'
         },
         {
-          action: 'Optimize production runs to bi-weekly cycles to maximize energy and setup efficiency.',
-          impact: 'Cuts energy overheads by 8%; requires extra 400sqm temp cold storage.',
+          action: 'Optimize distribution footprint to reduce high freight costs for cold-chain chocolate logistics.',
+          impact: 'Saves 4% in distribution overhead; offsets packaging surcharges.',
           contactName: 'Dieter Maes',
-          contactTitle: 'Production Scheduler',
+          contactTitle: 'Logistics Planner',
           email: 'dieter.maes@aciesglobal.com',
-          draftBody: 'Hi Dieter,\n\nTo offset raw material cost increases, let\'s optimize wafer lines into longer, bi-weekly campaigns. Please adjust the scheduling model and secure cold storage backup.\n\nThanks,\nVP Product Management'
+          draftBody: 'Hi Dieter,\n\nPlease review our cold-chain distribution routes for Choco Wafers to identify freight efficiencies and offset recent ingredient price hikes.\n\nThanks,\nVP Product Management'
         }
       ]
     },
@@ -1694,31 +1694,31 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean; onAuditClick?: (metricNam
       color: '#f59e0b',
       status: 'warning',
       location: 'Chennai, Tamil Nadu (Cosmetics Hub)',
-      cause: 'Mechanical seal leakage failure on primary automatic foaming-pump packing line.',
+      cause: 'Customer sentiment decline and brand fatigue due to outdated foaming pump bottle design, losing share to younger competitors.',
       suggestions: [
         {
-          action: 'Air-freight replacement seal components from German OEM.',
-          impact: 'Reduces line downtime from 14 days to 4 days; ₹45k transit cost.',
+          action: 'Launch an eco-friendly pump refill pouch format to revive brand interest and lower packaging cost.',
+          impact: 'Improves sustainability rating by 30%; reduces unit cost.',
           contactName: 'K. Srinivasan',
-          contactTitle: 'Maintenance Director',
+          contactTitle: 'Packaging R&D Lead',
           email: 'k.srinivasan@aciesglobal.com',
-          draftBody: 'Hi Srinivasan,\n\nPlease expedite the order for the replacement pump seals via air freight from Germany. I approve the express delivery fee to minimize line stoppage.\n\nThanks,\nVP Product Management'
+          draftBody: 'Hi Srinivasan,\n\nTo counter brand fatigue on Foam Face Wash, let\'s speed up the eco-refill pouch packaging redesign. This will lower unit costs and capture green shoppers.\n\nThanks,\nVP Product Management'
         },
         {
-          action: 'Initialize secondary manual foaming-pump assembly line with double shifts.',
-          impact: 'Restores 60% of output capacity; increases regional labor cost by 12%.',
+          action: 'Introduce double-pack bundle promotions in cosmetics stores to drive multi-purchase trial rates.',
+          impact: 'Increases household penetration; clears slow-moving inventory.',
           contactName: 'Priyanka Rao',
-          contactTitle: 'Chennai Plant Supervisor',
+          contactTitle: 'Trade Marketing Manager',
           email: 'priyanka.rao@aciesglobal.com',
-          draftBody: 'Hi Priyanka,\n\nWhile we wait for pump parts, please stand up the manual assembly lines with double shifts starting tonight to buffer our stock levels.\n\nThanks,\nVP Product Management'
+          draftBody: 'Hi Priyanka,\n\nPlease draft a double-pack promotional bundle proposal for Foam Face Wash to drive cosmetics store trial rates and clear stock.\n\nThanks,\nVP Product Management'
         },
         {
-          action: 'Enforce 70% distributor allocation limit on secondary pharmacy chains.',
-          impact: 'Protects key retail service agreements; prevents late delivery penalties.',
+          action: 'Enforce distributor stock-replenishment limits for Tier-2 accounts to protect high-margin Tier-1 pharmacy allocations.',
+          impact: 'Prevents stockouts of high-velocity SKUs in premium channels.',
           contactName: 'Gautam Sen',
           contactTitle: 'National Distribution Manager',
           email: 'gautam.sen@aciesglobal.com',
-          draftBody: 'Hi Gautam,\n\nDue to foaming-pump assembly constraints, please cap distribution of Foam Face Wash at 70% for Tier-2 pharmacy accounts, protecting Tier-1 contracts.\n\nThanks,\nVP Product Management'
+          draftBody: 'Hi Gautam,\n\nTo manage pharmacy channel stocks of Foam Face Wash, please apply safety buffers protecting Tier-1 pharmacy store supply.\n\nThanks,\nVP Product Management'
         }
       ]
     },
@@ -1728,23 +1728,23 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean; onAuditClick?: (metricNam
       color: '#10b981',
       status: 'ok',
       location: 'Vapi, Gujarat (Western Hub)',
-      cause: 'Minor cosmetic labeling alignment defect on batch #89 - resolved and cleared.',
+      cause: 'Under-distribution in high-margin general trade outlets despite strong organic consumer search volume.',
       suggestions: [
         {
-          action: 'Install inline optical inspection sensors on primary labeling line.',
-          impact: 'Avoids manual audit delays; ₹4 Lakhs CAPEX.',
+          action: 'Onboard regional distributor networks to expand retail reach to 10k additional general trade outlets.',
+          impact: 'Captures untapped demand; projects +12% category sales growth.',
           contactName: 'Vikram Solanki',
-          contactTitle: 'QC Manager',
+          contactTitle: 'Channel Development Lead',
           email: 'vikram.solanki@aciesglobal.com',
-          draftBody: 'Hi Vikram,\n\nFollowing the batch #89 labeling issue, let\'s install the optical inspection cameras on the primary line. Please submit the CAPEX proposal for my sign-off.\n\nThanks,\nVP Product Management'
+          draftBody: 'Hi Vikram,\n\nHerbal Shampoo is under-distributed. Please draft an onboarding plan for regional general trade distributors to add 10,000 new outlets.\n\nThanks,\nVP Product Management'
         },
         {
-          action: 'Scale plant output by 20% to capitalize on current regional demand growth.',
-          impact: 'Captures ₹22 Cr in unsatisfied market orders.',
+          action: 'Partner with regional salons to drive product trials and premium brand positioning.',
+          impact: 'Builds premium brand authority; drives retail sell-out.',
           contactName: 'Rajendra Patel',
-          contactTitle: 'Vapi Hub Director',
+          contactTitle: 'Regional Sales Manager',
           email: 'rajendra.patel@aciesglobal.com',
-          draftBody: 'Hi Rajendra,\n\nHerbal Shampoo is tracking very strongly. Please prepare the Vapi plant expansion model to scale throughput by 20% starting next month.\n\nThanks,\nVP Product Management'
+          draftBody: 'Hi Rajendra,\n\nPlease set up local salon promotional partnerships for Herbal Shampoo to drive premium brand authority and trials.\n\nThanks,\nVP Product Management'
         }
       ]
     }
@@ -2086,12 +2086,12 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean; onAuditClick?: (metricNam
           </div>
         </div>
 
-        {/* CENTER COLUMN: INDUSTRY BOTTLENECKS */}
+        {/* CENTER COLUMN: PORTFOLIO HEALTH ALERTS */}
         <div className="xl:col-span-4 space-y-6">
-          {/* Industry Bottlenecks */}
+          {/* Portfolio Health Alerts */}
           <div className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm space-y-4">
             <div className="flex justify-between items-center pb-2 border-b border-black/5 dark:border-white/5">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Industry Bottlenecks</span>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Portfolio Health Alerts</span>
               <span className="text-[8px] font-bold uppercase tracking-wider text-red-500 bg-red-500/10 px-2 py-0.5 rounded-full">2 Critical</span>
             </div>
             <div className="space-y-3">
@@ -2118,7 +2118,7 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean; onAuditClick?: (metricNam
                           : 'border-blue-200 text-blue-600 bg-blue-50/50 hover:bg-blue-600 hover:text-white'
                       }`}
                     >
-                      Investigate
+                      Review
                     </button>
                   </div>
                 </div>
@@ -2257,8 +2257,8 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean; onAuditClick?: (metricNam
               channel
             });
             addToast(
-              'Mitigation Request Sent', 
-              `Request ${channel === 'email' ? 'email' : 'message'} has been sent successfully to ${name} (${email}) regarding this bottleneck.`, 
+              'Mitigation Plan Requested', 
+              `Request ${channel === 'email' ? 'email' : 'message'} has been sent successfully to ${name} (${email}) regarding this concern.`, 
               '#10b981'
             );
           }

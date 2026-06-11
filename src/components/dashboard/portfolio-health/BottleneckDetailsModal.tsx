@@ -51,7 +51,7 @@ export const BottleneckDetailsModal: React.FC<BottleneckDetailsModalProps> = ({
           <div className="flex items-center gap-1.5">
             <AlertCircle size={14} style={{ color: bottleneck.color }} />
             <span className="text-[14px] font-display font-bold text-zinc-800 dark:text-zinc-100">
-              Bottleneck Investigation: {bottleneck.label}
+              Portfolio Health Concern: {bottleneck.label}
             </span>
           </div>
           <div className="flex items-center gap-1">
@@ -59,7 +59,7 @@ export const BottleneckDetailsModal: React.FC<BottleneckDetailsModalProps> = ({
               <button 
                 onClick={onPrev}
                 className="p-1 hover:bg-black/5 dark:hover:bg-white/5 rounded text-zinc-400 hover:text-zinc-650 cursor-pointer border-none bg-transparent"
-                title="Previous Bottleneck"
+                title="Previous Health Concern"
               >
                 <ChevronLeft size={14} />
               </button>
@@ -68,7 +68,7 @@ export const BottleneckDetailsModal: React.FC<BottleneckDetailsModalProps> = ({
               <button 
                 onClick={onNext}
                 className="p-1 hover:bg-black/5 dark:hover:bg-white/5 rounded text-zinc-400 hover:text-zinc-650 cursor-pointer border-none bg-transparent"
-                title="Next Bottleneck"
+                title="Next Health Concern"
               >
                 <ChevronRight size={14} />
               </button>
@@ -98,7 +98,7 @@ export const BottleneckDetailsModal: React.FC<BottleneckDetailsModalProps> = ({
         </div>
 
         <div>
-          <p className="font-bold text-[9px] uppercase tracking-widest text-zinc-400 mb-1">Root Cause / Operational Impact</p>
+          <p className="font-bold text-[9px] uppercase tracking-widest text-zinc-400 mb-1">Root Cause / Portfolio Impact</p>
           <p className="text-zinc-655 dark:text-zinc-350 leading-relaxed font-normal">{bottleneck.cause}</p>
         </div>
 
@@ -119,7 +119,7 @@ export const BottleneckDetailsModal: React.FC<BottleneckDetailsModalProps> = ({
                   {s.impact}
                 </div>
                 <button
-                  onClick={() => onRequestAction(s.email, s.contactName, `Urgent Action Required: ${bottleneck.label} Bottleneck Mitigation`, s.draftBody)}
+                  onClick={() => onRequestAction(s.email, s.contactName, `Urgent Action Required: ${bottleneck.label} Health Mitigation`, s.draftBody)}
                   className="flex items-center gap-1 px-2.5 py-1 text-[8.5px] font-bold uppercase tracking-wider text-white bg-[#6d28d9] dark:bg-[#a78bfa] hover:opacity-95 rounded-sm transition-all cursor-pointer border-none"
                 >
                   <Mail size={9} />
@@ -138,7 +138,7 @@ export const BottleneckDetailsModal: React.FC<BottleneckDetailsModalProps> = ({
             onClick={onClose}
             className="px-4 py-2 border border-black/10 dark:border-white/10 rounded-sm font-bold uppercase tracking-wider text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer bg-transparent"
           >
-            Close Investigation
+            Close Review
           </button>
         </div>
       </div>
