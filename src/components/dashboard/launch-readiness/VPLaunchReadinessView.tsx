@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Filter, RefreshCw, Download, Zap, BarChart2, PieChart as PieIcon, Shield, ShieldAlert, DollarSign, Activity, Play, Check, AlertTriangle, Rocket, TrendingUp, Grid, Table
+  Filter, RefreshCw, Download, Zap, BarChart2, PieChart as PieIcon, Shield, ShieldAlert, DollarSign, Activity, Play, Check, AlertTriangle, Rocket, TrendingUp, Grid, Table, X
 } from 'lucide-react';
 import { 
   ResponsiveContainer, BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -89,6 +89,7 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
   const [toasts, setToasts] = useState<{ id: string; title: string; body: string; color: string }[]>([]);
   const [isPredictionModalOpen, setIsPredictionModalOpen] = useState(false);
   const [predictionModalType, setPredictionModalType] = useState<'stockout' | 'elasticity' | 'margin' | 'demand' | 'delay' | null>(null);
+  const [selectedStageSKUs, setSelectedStageSKUs] = useState<{ title: string; skus: VPLaunchProduct[] } | null>(null);
 
   useEffect(() => {
     const updateTime = () => {
@@ -545,22 +546,46 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
 
           {/* 4 KPI Cards */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5">
-            <div className="bg-zinc-100/80 dark:bg-zinc-900/60 border border-black/5 dark:border-white/5 p-4 rounded-xl hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition-all">
+            <div 
+              onClick={() => setSelectedStageSKUs({
+                title: 'Active pipeline SKUs',
+                skus: filteredProducts
+              })}
+              className="bg-zinc-100/80 dark:bg-zinc-900/60 border border-black/5 dark:border-white/5 p-4 rounded-xl hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98]"
+            >
               <p className="text-[10px] font-bold text-zinc-400">Active pipeline SKUs</p>
               <h4 className="text-2xl font-display font-extrabold text-zinc-850 dark:text-white mt-1.5 leading-none">{activePipelineSKUs}</h4>
             </div>
 
-            <div className="bg-zinc-100/80 dark:bg-zinc-900/60 border border-black/5 dark:border-white/5 p-4 rounded-xl hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition-all">
+            <div 
+              onClick={() => setSelectedStageSKUs({
+                title: 'In development+ SKUs',
+                skus: filteredProducts.filter(p => p.stage === 'Ideation' || p.stage === 'Development' || p.stage === 'Testing')
+              })}
+              className="bg-zinc-100/80 dark:bg-zinc-900/60 border border-black/5 dark:border-white/5 p-4 rounded-xl hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98]"
+            >
               <p className="text-[10px] font-bold text-zinc-400">In development+</p>
               <h4 className="text-2xl font-display font-extrabold text-zinc-850 dark:text-white mt-1.5 leading-none">{inDevelopmentPlus}</h4>
             </div>
 
-            <div className="bg-zinc-100/80 dark:bg-zinc-900/60 border border-black/5 dark:border-white/5 p-4 rounded-xl hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition-all">
+            <div 
+              onClick={() => setSelectedStageSKUs({
+                title: 'Near launch SKUs',
+                skus: filteredProducts.filter(p => p.stage === 'Pre-market' || p.stage === 'Launch')
+              })}
+              className="bg-zinc-100/80 dark:bg-zinc-900/60 border border-black/5 dark:border-white/5 p-4 rounded-xl hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98]"
+            >
               <p className="text-[10px] font-bold text-zinc-400">Near launch</p>
               <h4 className="text-2xl font-display font-extrabold text-zinc-850 dark:text-white mt-1.5 leading-none">{nearLaunchCount}</h4>
             </div>
 
-            <div className="bg-zinc-100/80 dark:bg-zinc-900/60 border border-black/5 dark:border-white/5 p-4 rounded-xl hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition-all">
+            <div 
+              onClick={() => setSelectedStageSKUs({
+                title: 'Launched SKUs',
+                skus: filteredProducts.filter(p => p.stage === 'Launch')
+              })}
+              className="bg-zinc-100/80 dark:bg-zinc-900/60 border border-black/5 dark:border-white/5 p-4 rounded-xl hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98]"
+            >
               <p className="text-[10px] font-bold text-zinc-400">Launched</p>
               <h4 className="text-2xl font-display font-extrabold text-zinc-850 dark:text-white mt-1.5 leading-none">{launchedCount}</h4>
             </div>
@@ -1154,6 +1179,119 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
         onClose={() => setIsPredictionModalOpen(false)}
         predictionType={predictionModalType}
       />
+
+      {/* Stage SKUs List Modal */}
+      {selectedStageSKUs && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-zinc-950 border border-black/10 dark:border-white/10 rounded-xl shadow-2xl w-full max-w-3xl max-h-[85vh] overflow-hidden flex flex-col animate-scaleIn">
+            {/* Header */}
+            <div className="p-4 border-b border-black/5 dark:border-white/5 flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-display font-extrabold text-zinc-850 dark:text-zinc-100">
+                  {selectedStageSKUs.title} ({selectedStageSKUs.skus.length})
+                </h3>
+                <p className="text-[9px] text-zinc-400 uppercase tracking-wider mt-0.5 font-bold">
+                  Launch readiness and status breakdown
+                </p>
+              </div>
+              <button 
+                onClick={() => setSelectedStageSKUs(null)}
+                className="p-1 hover:bg-black/5 dark:hover:bg-white/5 rounded-full text-zinc-400 hover:text-zinc-650 dark:hover:text-zinc-200 cursor-pointer transition-colors"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            {/* Content List */}
+            <div className="p-4 overflow-y-auto flex-1 space-y-3 max-h-[60vh] no-scrollbar">
+              {selectedStageSKUs.skus.length > 0 ? (
+                <div className="border border-black/5 dark:border-white/10 rounded-sm overflow-hidden bg-zinc-50/30 dark:bg-white/5">
+                  <table className="w-full text-left border-collapse text-[10px]">
+                    <thead>
+                      <tr className="border-b border-black/5 dark:border-white/10 bg-black/[0.02] dark:bg-white/5 text-[9px] uppercase tracking-wider text-zinc-450 dark:text-zinc-350 font-extrabold">
+                        <th className="p-3">SKU Name</th>
+                        <th className="p-3">Category</th>
+                        <th className="p-3">Region</th>
+                        <th className="p-3">Stage</th>
+                        <th className="p-3">Readiness</th>
+                        <th className="p-3">Risk</th>
+                        <th className="p-3">Rev Exposure</th>
+                        <th className="p-3">Owner</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-black/5 dark:divide-white/5">
+                      {selectedStageSKUs.skus.map(sku => (
+                        <tr 
+                          key={sku.id}
+                          className="hover:bg-black/[0.01] dark:hover:bg-white/[0.01] transition-colors"
+                        >
+                          <td className="p-3 font-extrabold text-zinc-850 dark:text-zinc-200">
+                            {sku.name}
+                            <span className="block text-[8px] text-zinc-400 font-bold uppercase mt-0.5">{sku.brand}</span>
+                          </td>
+                          <td className="p-3 text-zinc-600 dark:text-zinc-400 font-bold">{sku.category}</td>
+                          <td className="p-3 font-semibold text-zinc-600 dark:text-zinc-400">{sku.region}</td>
+                          <td className="p-3">
+                            <span className={`px-2 py-0.5 rounded-full text-[8px] font-extrabold uppercase tracking-wide ${
+                              sku.stage === 'Launch' ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' :
+                              sku.stage === 'Pre-market' ? 'bg-blue-500/10 text-blue-500 border border-blue-500/20' :
+                              sku.stage === 'Testing' ? 'bg-indigo-500/10 text-indigo-500 border border-indigo-500/20' :
+                              'bg-purple-500/10 text-purple-500 border border-purple-500/20'
+                            }`}>
+                              {sku.stage}
+                            </span>
+                          </td>
+                          <td className="p-3 font-bold">
+                            <div className="flex items-center gap-1.5">
+                              <span className={`w-1.5 h-1.5 rounded-full ${
+                                sku.readiness >= 75 ? 'bg-emerald-500' :
+                                sku.readiness >= 50 ? 'bg-amber-500' :
+                                'bg-red-500'
+                              }`} />
+                              <span className={
+                                sku.readiness >= 75 ? 'text-emerald-500' :
+                                sku.readiness >= 50 ? 'text-amber-500' :
+                                'text-red-500'
+                              }>{sku.readiness}%</span>
+                            </div>
+                          </td>
+                          <td className="p-3">
+                            <span className={`font-extrabold ${
+                              sku.risk === 'High' ? 'text-red-500' :
+                              sku.risk === 'Medium' ? 'text-amber-500' :
+                              'text-emerald-500'
+                            }`}>
+                              {sku.risk}
+                            </span>
+                          </td>
+                          <td className="p-3 font-mono font-bold text-zinc-750 dark:text-zinc-350">
+                            ${sku.revExposure.toFixed(1)}M
+                          </td>
+                          <td className="p-3 text-zinc-550 dark:text-zinc-450 font-bold">{sku.owner}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div className="text-center py-10">
+                  <p className="text-xs text-zinc-450">No SKUs in this status currently</p>
+                </div>
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="p-4 border-t border-black/5 dark:border-white/5 flex justify-end">
+              <button 
+                onClick={() => setSelectedStageSKUs(null)}
+                className="px-4 py-2 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 hover:bg-black/10 dark:hover:bg-white/10 rounded-md text-[10px] font-extrabold uppercase tracking-wider text-zinc-700 dark:text-zinc-300 transition-all cursor-pointer outline-none"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
