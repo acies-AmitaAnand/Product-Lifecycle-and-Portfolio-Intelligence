@@ -618,18 +618,7 @@ const InvestmentMarginMap: React.FC<InvestmentMarginMapProps> = ({ skusList, isD
             <option value="Dairy">Dairy</option>
             <option value="Household">Household</option>
           </select>
-          <div className="flex items-center bg-black/5 dark:bg-white/5 p-0.5 rounded-sm border border-black/10 dark:border-white/10">
-            <button
-              onClick={() => setViewMode('quadrant')}
-              className={`px-3 py-1 text-[8.5px] font-extrabold uppercase tracking-widest rounded-sm border-none cursor-pointer transition-colors ${
-                viewMode === 'quadrant'
-                  ? 'bg-white dark:bg-zinc-800 shadow-sm text-acies-gray dark:text-white'
-                  : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 bg-transparent'
-              }`}
-            >
-              Quadrant
-            </button>
-          </div>
+
           <span className="text-[8px] font-bold uppercase tracking-wider text-[#10b981] bg-[#10b981]/10 px-2 py-0.5 rounded-full animate-pulse">
             Capital Allocation Active
           </span>
@@ -1046,18 +1035,7 @@ const RevenuePerformanceMatrix: React.FC<RevenuePerformanceMatrixProps> = ({ sku
             <option value="Dairy">Dairy</option>
             <option value="Household">Household</option>
           </select>
-          <div className="flex items-center bg-black/5 dark:bg-white/5 p-0.5 rounded-sm border border-black/10 dark:border-white/10">
-            <button
-              onClick={() => setViewMode('quadrant')}
-              className={`px-3 py-1 text-[8.5px] font-extrabold uppercase tracking-widest rounded-sm border-none cursor-pointer transition-colors ${
-                viewMode === 'quadrant'
-                  ? 'bg-white dark:bg-zinc-800 shadow-sm text-acies-gray dark:text-white'
-                  : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 bg-transparent'
-              }`}
-            >
-              Quadrant
-            </button>
-          </div>
+
           <span className="text-[8px] font-bold uppercase tracking-wider text-[#8b5cf6] bg-[#8b5cf6]/10 px-2 py-0.5 rounded-full animate-pulse">
             Portfolio Segmentation Active
           </span>
