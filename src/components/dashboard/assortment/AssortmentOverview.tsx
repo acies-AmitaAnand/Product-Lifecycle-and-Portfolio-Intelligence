@@ -10,6 +10,8 @@ import { ExecutiveCart } from './ExecutiveCart';
 import { SKUHoldingsMatrix } from './SKUHoldingsMatrix';
 import { StagedAction } from './types';
 import { Globe, Layers, Truck, Briefcase, ChevronRight, ChevronLeft, Trash2, CheckCircle } from 'lucide-react';
+import { RegionalChannelPerformance } from './RegionalChannelPerformance';
+import { ProductMixClustering } from './ProductMixClustering';
 
 interface AssortmentOverviewProps {
   role: Role;
@@ -32,7 +34,7 @@ export const AssortmentOverview: React.FC<AssortmentOverviewProps> = ({ role, is
   });
 
   const [stagedActions, setStagedActions] = useState<StagedAction[]>([]);
-  const [subTab, setSubTab] = useState<'comprehensive' | 'guided'>('comprehensive');
+  const [subTab, setSubTab] = useState<'comprehensive' | 'performance' | 'mix_clustering' | 'guided'>('comprehensive');
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [isCommitted, setIsCommitted] = useState<boolean>(false);
 
@@ -95,10 +97,10 @@ export const AssortmentOverview: React.FC<AssortmentOverviewProps> = ({ role, is
           <p className="text-[9px] text-zinc-500 font-medium mt-0.5">Model catalog alterations, evaluate launch expansion variants, and commit local reallocations.</p>
         </div>
         
-        <div className="flex bg-black/5 dark:bg-white/5 p-1 rounded border border-black/5 dark:border-white/5 self-start font-bold">
+        <div className="flex bg-black/5 dark:bg-white/5 p-1 rounded border border-black/10 dark:border-white/10 self-start font-bold gap-1 flex-wrap">
           <button
             onClick={() => setSubTab('comprehensive')}
-            className={`px-4 py-1.5 text-[8.5px] font-extrabold uppercase tracking-wider rounded transition-all cursor-pointer border-none outline-none ${
+            className={`px-3 py-1.5 text-[8.5px] font-extrabold uppercase tracking-wider rounded transition-all cursor-pointer border-none outline-none ${
               subTab === 'comprehensive'
                 ? 'bg-white dark:bg-zinc-800 text-acies-yellow shadow-sm shadow-black/5'
                 : 'text-zinc-400 hover:text-zinc-650 dark:hover:text-zinc-200 bg-transparent'
@@ -107,20 +109,39 @@ export const AssortmentOverview: React.FC<AssortmentOverviewProps> = ({ role, is
             Comprehensive View
           </button>
           <button
+            onClick={() => setSubTab('performance')}
+            className={`px-3 py-1.5 text-[8.5px] font-extrabold uppercase tracking-wider rounded transition-all cursor-pointer border-none outline-none ${
+              subTab === 'performance'
+                ? 'bg-white dark:bg-zinc-800 text-acies-yellow shadow-sm shadow-black/5'
+                : 'text-zinc-400 hover:text-zinc-650 dark:hover:text-zinc-200 bg-transparent'
+            }`}
+          >
+            Regional & Channel Performance
+          </button>
+          <button
+            onClick={() => setSubTab('mix_clustering')}
+            className={`px-3 py-1.5 text-[8.5px] font-extrabold uppercase tracking-wider rounded transition-all cursor-pointer border-none outline-none ${
+              subTab === 'mix_clustering'
+                ? 'bg-white dark:bg-zinc-800 text-acies-yellow shadow-sm shadow-black/5'
+                : 'text-zinc-400 hover:text-zinc-650 dark:hover:text-zinc-200 bg-transparent'
+            }`}
+          >
+            Product Mix & Clustering
+          </button>
+          <button
             onClick={() => setSubTab('guided')}
-            className={`px-4 py-1.5 text-[8.5px] font-extrabold uppercase tracking-wider rounded transition-all cursor-pointer border-none outline-none ${
+            className={`px-3 py-1.5 text-[8.5px] font-extrabold uppercase tracking-wider rounded transition-all cursor-pointer border-none outline-none ${
               subTab === 'guided'
                 ? 'bg-white dark:bg-zinc-800 text-acies-yellow shadow-sm shadow-black/5'
                 : 'text-zinc-400 hover:text-zinc-650 dark:hover:text-zinc-200 bg-transparent'
             }`}
           >
-            Executive Decision Flow
+            Decision Flow (Wizard)
           </button>
         </div>
       </div>
 
-      {subTab === 'comprehensive' ? (
-        /* Comprehensive Tab (Current Layout list) */
+      {subTab === 'comprehensive' && (
         <div className="space-y-6">
           {/* Regional Footprints & Optimizer Grid */}
           <RegionalAssortmentGrid 
@@ -147,8 +168,24 @@ export const AssortmentOverview: React.FC<AssortmentOverviewProps> = ({ role, is
             onClearCart={() => setStagedActions([])} 
           />
         </div>
-      ) : (
-        /* Guided Step-by-Step Tab */
+      )}
+
+      {subTab === 'performance' && (
+        <RegionalChannelPerformance isDarkMode={isDarkMode} />
+      )}
+
+      {subTab === 'mix_clustering' && (
+        <div className="space-y-6">
+          <ProductMixClustering isDarkMode={isDarkMode} onStageAction={handleStageAction} />
+          <ExecutiveCart 
+            stagedActions={stagedActions} 
+            onRemoveAction={handleRemoveAction} 
+            onClearCart={() => setStagedActions([])} 
+          />
+        </div>
+      )}
+
+      {subTab === 'guided' && (
         <div className="space-y-6">
           
           {/* Step Navigator Bar */}
@@ -319,7 +356,7 @@ export const AssortmentOverview: React.FC<AssortmentOverviewProps> = ({ role, is
                       </div>
                       
                       <div className="p-3 border border-black/5 dark:border-white/5 rounded bg-white dark:bg-zinc-850 flex flex-col justify-between">
-                        <span className="text-zinc-550 text-[8px] uppercase tracking-wider block mb-1">Net Profit Lift</span>
+                        <span className="text-zinc-555 text-[8px] uppercase tracking-wider block mb-1">Net Profit Lift</span>
                         <span className={totalMargin >= 0 ? 'text-emerald-500 text-xs font-extrabold' : 'text-rose-500 text-xs'}>
                           {totalMargin >= 0 ? '+' : ''}₹{totalMargin.toFixed(2)} Cr
                         </span>
