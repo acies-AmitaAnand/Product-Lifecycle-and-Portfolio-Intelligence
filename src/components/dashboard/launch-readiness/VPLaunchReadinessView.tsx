@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Filter, RefreshCw, Download, Zap, BarChart2, PieChart as PieIcon
+  Filter, RefreshCw, Download, Zap, BarChart2, PieChart as PieIcon, Rocket, TrendingUp
 } from 'lucide-react';
 import { 
   ResponsiveContainer, BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -10,6 +10,7 @@ import {
 import { ResolveEscalationModal, VPEscalation } from './ResolveEscalationModal';
 import { EmailComposerModal } from '../portfolio-health/EmailComposerModal';
 import { SuccessFeedbackModal } from '../portfolio-health/SuccessFeedbackModal';
+import { AIPredictionModal } from '../signals-board/AIPredictionModal';
 
 const RECIPIENT_TITLES: Record<string, string> = {
   'ananya.sen@aciesglobal.com': 'VP Finance',
@@ -85,6 +86,8 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
   const setSimulateDelay = propSetSimulateDelay !== undefined ? propSetSimulateDelay : setLocalSimulateDelay;
   const [lastRefreshed, setLastRefreshed] = useState('');
   const [toasts, setToasts] = useState<{ id: string; title: string; body: string; color: string }[]>([]);
+  const [isPredictionModalOpen, setIsPredictionModalOpen] = useState(false);
+  const [predictionModalType, setPredictionModalType] = useState<'stockout' | 'elasticity' | 'margin' | 'demand' | 'delay' | null>(null);
 
   useEffect(() => {
     const updateTime = () => {
@@ -335,8 +338,106 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
         </div>
       </div>
 
+      {/* Row 1: Executive Readiness Score (Top Section) */}
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
+        
+        {/* Left Circular Gauge Banner */}
+        <div className="xl:col-span-4 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm flex items-center justify-between relative overflow-hidden group">
+          <div className="absolute top-0 right-0 p-3 opacity-5 rotate-12 pointer-events-none text-[#6d28d9] dark:text-[#a78bfa]">
+            <Rocket size={100} />
+          </div>
+          
+          <div className="space-y-2">
+            <span className="text-[9px] font-bold uppercase tracking-widest text-[#6d28d9] dark:text-[#a78bfa]">Hero Metric</span>
+            <h3 className="text-sm font-display font-extrabold text-zinc-800 dark:text-zinc-200">Overall Launch Readiness</h3>
+            <p className="text-[10px] text-zinc-500 dark:text-zinc-400 leading-snug max-w-[200px]">
+              Average score across {totalLaunches} active pipeline SKUs.
+            </p>
+            <div className="flex items-center gap-1 text-[9px] font-bold text-emerald-500 mt-1">
+              <TrendingUp size={11} />
+              <span>+2.4% vs last week</span>
+            </div>
+          </div>
 
+          <div className="relative flex items-center justify-center shrink-0 w-28 h-28">
+            <svg className="w-28 h-28 transform -rotate-90">
+              <circle 
+                cx="56" 
+                cy="56" 
+                r={radius} 
+                className="text-black/5 dark:text-white/5" 
+                strokeWidth={strokeWidth} 
+                stroke="currentColor" 
+                fill="transparent" 
+              />
+              <circle 
+                cx="56" 
+                cy="56" 
+                r={radius} 
+                className="text-[#6d28d9] dark:text-[#a78bfa]" 
+                strokeWidth={strokeWidth} 
+                strokeDasharray={circumference} 
+                strokeDashoffset={strokeDashoffset} 
+                strokeLinecap="round" 
+                stroke="currentColor" 
+                fill="transparent" 
+              />
+            </svg>
+            <div className="absolute text-center">
+              <span className="text-xl font-display font-black text-zinc-850 dark:text-zinc-150">{overallReadiness}%</span>
+              <p className="text-[8px] uppercase tracking-widest text-zinc-400 font-bold leading-none mt-0.5">Ready</p>
+            </div>
+          </div>
+        </div>
 
+        {/* Right KPI Cards Grid */}
+        <div className="xl:col-span-8 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
+          
+          <div className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm flex flex-col justify-between h-28 hover:bg-black/[0.01] dark:hover:bg-white/[0.01] transition-all">
+            <p className="text-[8px] font-bold uppercase tracking-widest text-zinc-400">On Track</p>
+            <h4 className="text-2xl font-display font-extrabold text-emerald-500 leading-none">{onTrackCount}</h4>
+            <p className="text-[9px] text-zinc-400 font-semibold uppercase">Status: Optimal</p>
+          </div>
+
+          <div className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm flex flex-col justify-between h-28 hover:bg-black/[0.01] dark:hover:bg-white/[0.01] transition-all">
+            <p className="text-[8px] font-bold uppercase tracking-widest text-zinc-400">Delayed</p>
+            <h4 className="text-2xl font-display font-extrabold text-red-500 leading-none">{delayedCount}</h4>
+            <p className="text-[9px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">Needs Focus</p>
+          </div>
+
+          <div className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm flex flex-col justify-between h-28 hover:bg-black/[0.01] dark:hover:bg-white/[0.01] transition-all">
+            <p className="text-[8px] font-bold uppercase tracking-widest text-zinc-400">At Risk</p>
+            <h4 className="text-2xl font-display font-extrabold text-amber-500 leading-none">{atRiskCount}</h4>
+            <p className="text-[9px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">Watching</p>
+          </div>
+
+          <div className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm flex flex-col justify-between h-28 hover:bg-black/[0.01] dark:hover:bg-white/[0.01] transition-all">
+            <p className="text-[8px] font-bold uppercase tracking-widest text-zinc-400">Next 60 Days</p>
+            <h4 className="text-2xl font-display font-extrabold text-blue-500 leading-none">
+              {filteredProducts.filter(p => p.stage !== 'Launch Completed' && p.stage !== 'Ideation').length}
+            </h4>
+            <p className="text-[9px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">Readying</p>
+          </div>
+
+          <div className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm flex flex-col justify-between h-28 hover:bg-black/[0.01] dark:hover:bg-white/[0.01] transition-all">
+            <p className="text-[8px] font-bold uppercase tracking-widest text-zinc-400">Rev Exposure</p>
+            <h4 className="text-2xl font-display font-extrabold text-orange-500 leading-none">
+              ${revenueExposure.toFixed(1)}M
+            </h4>
+            <p className="text-[9px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">At-Risk/Delayed</p>
+          </div>
+
+          <div className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm flex flex-col justify-between h-28 hover:bg-black/[0.01] dark:hover:bg-white/[0.01] transition-all">
+            <p className="text-[8px] font-bold uppercase tracking-widest text-zinc-400">Market Coverage</p>
+            <h4 className="text-2xl font-display font-extrabold text-[#6d28d9] dark:text-[#a78bfa] leading-none">
+              {marketCoverage}%
+            </h4>
+            <p className="text-[9px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">Geo Readiness</p>
+          </div>
+
+        </div>
+
+      </div>
 
       {/* Row 2: Launch Pipeline Overview | Risk & Escalation Center */}
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
@@ -545,35 +646,20 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
             <span className="text-[10px] font-bold uppercase tracking-widest text-[#6d28d9] dark:text-[#a78bfa]">AI Predictions</span>
           </div>
           <div className="space-y-2 text-[9px]">
-            <div className="p-2 bg-purple-500/5 border border-purple-500/15 rounded-sm">
+            <div 
+              onClick={() => { setPredictionModalType('delay'); setIsPredictionModalOpen(true); }}
+              className="p-2 bg-purple-500/5 hover:bg-purple-500/10 border border-purple-500/15 rounded-sm cursor-pointer hover:scale-[1.01] transition-all"
+            >
               <p className="font-semibold mb-0.5">⚠️ BrandC Products: 78% delay probability</p>
               <p className="text-zinc-500">Packaging sourcing constraint in EMEA</p>
             </div>
-            <div className="p-2 bg-emerald-500/5 border border-emerald-500/15 rounded-sm">
+            <div 
+              onClick={() => { setPredictionModalType('delay'); setIsPredictionModalOpen(true); }}
+              className="p-2 bg-emerald-500/5 hover:bg-emerald-500/10 border border-emerald-500/15 rounded-sm cursor-pointer hover:scale-[1.01] transition-all"
+            >
               <p className="font-semibold mb-0.5">💡 Recommendation: Domestic sourcing</p>
               <p className="text-zinc-500">Recovers 12 days, saves $2.1M revenue risk</p>
             </div>
-          </div>
-
-          <div className="pt-3 border-t border-black/5 dark:border-white/5">
-            <button 
-              onClick={() => {
-                const state = !simulateDelay;
-                setSimulateDelay(state);
-                if (state) {
-                  addToast('Simulation Activated', 'APAC shipping delay applied.', '#ef4444');
-                } else {
-                  addToast('Simulation Deactivated', 'Standard metrics restored.', '#3b82f6');
-                }
-              }}
-              className={`w-full px-3 py-1.5 rounded-sm text-[9px] font-bold uppercase tracking-wider transition-all cursor-pointer ${
-                simulateDelay 
-                  ? 'bg-red-500 text-white hover:bg-red-600' 
-                  : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-300 dark:hover:bg-zinc-700'
-              }`}
-            >
-              {simulateDelay ? 'Stop Cargo Delay Sim' : 'Run Cargo Delay Simulation'}
-            </button>
           </div>
         </div>
       </div>
@@ -677,6 +763,13 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
           channel={successFeedback.channel}
         />
       )}
+
+      {/* AI Prediction Explainer Modal */}
+      <AIPredictionModal
+        isOpen={isPredictionModalOpen}
+        onClose={() => setIsPredictionModalOpen(false)}
+        predictionType={predictionModalType}
+      />
     </div>
   );
 };
