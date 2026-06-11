@@ -18,15 +18,12 @@ import {
   AlertTriangle, Package, Minus,
 } from 'lucide-react';
 
+import { ComplexityType, EnrichedSKU } from './types';
+
 // ── Types ─────────────────────────────────────────────────────────────────────
-type ComplexityType = 'Bad Complexity' | 'Good Variety' | 'Neutral';
 type StepStatus = 'not-started' | 'in-progress' | 'done';
 
-export interface EnrichedSKURef {
-  name: string; cat: string; rev: number; margin: number; growth: number;
-  ippv: number; cx: number; totalHiddenCost: number; shelfProductivity: number;
-  householdPenetration: number; complexityType: ComplexityType;
-}
+export type EnrichedSKURef = EnrichedSKU;
 
 interface CheckItem { id: string; label: string; }
 
