@@ -410,6 +410,7 @@ export const SimplifyToGrow: React.FC<Props> = ({ isDarkMode, setActiveTab }) =>
   const [selectedSku, setSelectedSku] = useState<EnrichedSKU | null>(null);
   const [expandedPillar, setExpandedPillar] = useState<string | null>(null);
   const [hoveredCat, setHoveredCat] = useState<string | null>(null);
+  const [costDriverFilter, setCostDriverFilter] = useState<'All' | 'downtime' | 'transport' | 'waste'>('All');
   const focusRef = useRef<HTMLDivElement>(null);
 
   const skus = useMemo(() => computeEnrichedSKUs(), []);
@@ -454,6 +455,9 @@ export const SimplifyToGrow: React.FC<Props> = ({ isDarkMode, setActiveTab }) =>
         totalCount: items.length,
         topSku: [...items].sort((a, b) => b.ippv - a.ippv)[0],
         worstSku: [...items].sort((a, b) => a.ippv - b.ippv)[0],
+        worstDowntimeSku: [...items].sort((a, b) => b.productionDowntimeCost - a.productionDowntimeCost)[0],
+        worstTransportSku: [...items].sort((a, b) => b.transportOverheadCost - a.transportOverheadCost)[0],
+        worstWasteSku: [...items].sort((a, b) => b.wasteWriteOffCost - a.wasteWriteOffCost)[0],
       };
     });
   }, [skus]);
@@ -749,7 +753,32 @@ export const SimplifyToGrow: React.FC<Props> = ({ isDarkMode, setActiveTab }) =>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <div className="lg:col-span-2 glass-card bg-white dark:bg-[#1a1a24] border border-black/10 dark:border-white/10 p-5 rounded-xl shadow-sm">
             <h4 className="text-[10px] font-bold uppercase tracking-widest text-acies-gray dark:text-white mb-1">Hidden Costs by Category</h4>
-            <p className="text-[8px] text-zinc-450 font-bold uppercase tracking-wider mb-3">Hover bars for detail · Click category cards (right) to filter IPPV table</p>
+            <p className="text-[8px] text-zinc-450 font-bold uppercase tracking-wider mb-3">Isolate specific cost drivers using the pills below · Click category bars/cards to filter IPPV table</p>
+            
+            {/* Cost Driver Selector Pills */}
+            <div className="flex flex-wrap items-center gap-2 mb-4 bg-black/5 dark:bg-white/5 p-2 rounded-xl border border-black/5 dark:border-white/5">
+              <span className="text-[7.5px] font-black uppercase tracking-widest text-zinc-450 dark:text-zinc-500 mr-2">Focus Cost Driver:</span>
+              {[
+                { id: 'All', label: 'All Drivers (Stacked)', color: '#6b7280', border: 'border-zinc-500/20' },
+                { id: 'downtime', label: 'Production Downtime', color: '#ef4444', border: 'border-red-500/20' },
+                { id: 'transport', label: 'Transport Overhead', color: '#f59e0b', border: 'border-amber-500/20' },
+                { id: 'waste', label: 'Waste & Write-off', color: '#8b5cf6', border: 'border-purple-500/20' },
+              ].map(driver => (
+                <button
+                  key={driver.id}
+                  onClick={() => setCostDriverFilter(driver.id as any)}
+                  className={`px-2.5 py-1 rounded-full text-[7.5px] font-black uppercase tracking-wider transition-all border ${
+                    costDriverFilter === driver.id 
+                      ? 'text-white shadow-sm' 
+                      : 'border-black/5 dark:border-white/5 text-zinc-500 hover:bg-black/5 dark:hover:bg-white/5'
+                  }`}
+                  style={costDriverFilter === driver.id ? { backgroundColor: driver.color, borderColor: 'transparent' } : {}}
+                >
+                  {driver.label}
+                </button>
+              ))}
+            </div>
+
             <div className="h-52">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={categories} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
@@ -761,32 +790,103 @@ export const SimplifyToGrow: React.FC<Props> = ({ isDarkMode, setActiveTab }) =>
                     content={({ active, payload, label }) => {
                       if (!active || !payload?.length) return null;
                       const cat = categories.find(c => c.cat === label);
+                      
+                      let worstSkuName = cat?.worstSku?.name;
+                      let worstSkuCost = cat?.worstSku?.totalHiddenCost;
+                      let culpritLabel = "Top Cost Culprit";
+                      
+                      if (costDriverFilter === 'downtime') {
+                        worstSkuName = cat?.worstDowntimeSku?.name;
+                        worstSkuCost = cat?.worstDowntimeSku?.productionDowntimeCost;
+                        culpritLabel = "Downtime Culprit";
+                      } else if (costDriverFilter === 'transport') {
+                        worstSkuName = cat?.worstTransportSku?.name;
+                        worstSkuCost = cat?.worstTransportSku?.transportOverheadCost;
+                        culpritLabel = "Transport Culprit";
+                      } else if (costDriverFilter === 'waste') {
+                        worstSkuName = cat?.worstWasteSku?.name;
+                        worstSkuCost = cat?.worstWasteSku?.wasteWriteOffCost;
+                        culpritLabel = "Waste Culprit";
+                      }
+                      
                       return (
-                        <div className="rounded-xl border p-3 text-[8px] shadow-xl" style={{ backgroundColor: ttBg, borderColor: ttBorder }}>
+                        <div className="rounded-xl border p-3 text-[8.5px] shadow-xl" style={{ backgroundColor: ttBg, borderColor: ttBorder }}>
                           <div className="font-black mb-2" style={{ color: CAT_COLORS[label] }}>{label}</div>
                           {payload.map((p: any) => (
-                            <div key={p.name} className="flex justify-between gap-4">
-                              <span className="text-zinc-400">{p.name}</span>
+                            <div key={p.name} className="flex justify-between gap-4 py-0.5">
+                              <span className="text-zinc-400 font-bold">{p.name}</span>
                               <span className="font-black" style={{ color: p.fill }}>₹{p.value}L</span>
                             </div>
                           ))}
-                          {cat && <div className="mt-2 pt-2 border-t border-black/5 dark:border-white/5 text-zinc-400">
-                            Top drain: {cat.worstSku?.name} (₹{cat.worstSku?.totalHiddenCost}L)
-                          </div>}
+                          {cat && worstSkuName && (
+                            <div className="mt-2 pt-2 border-t border-black/5 dark:border-white/5 text-zinc-400 flex flex-col gap-0.5">
+                              <span className="font-black text-zinc-500 dark:text-zinc-400">{culpritLabel}:</span>
+                              <span className="font-bold text-amber-500">{worstSkuName} (₹{worstSkuCost}L)</span>
+                            </div>
+                          )}
                         </div>
                       );
                     }}
                   />
-                  <Bar dataKey="productionDowntime" name="Production Downtime" stackId="a" fill="#ef4444" radius={[0,0,0,0]} barSize={28} />
-                  <Bar dataKey="transportOverhead" name="Transport Overhead" stackId="a" fill="#f59e0b" barSize={28} />
-                  <Bar dataKey="wasteWriteOff" name="Waste & Write-off" stackId="a" fill="#8b5cf6" radius={[4,4,0,0]} barSize={28} />
+                  {costDriverFilter === 'All' && (
+                    <>
+                      <Bar dataKey="productionDowntime" name="Production Downtime" stackId="a" fill="#ef4444" radius={[0,0,0,0]} barSize={28}
+                        onClick={(data) => setSelectedCategory(prev => prev === data.cat ? null : data.cat)}>
+                        {categories.map(c => (
+                          <Cell key={c.cat} fill="#ef4444" opacity={selectedCategory && selectedCategory !== c.cat ? 0.35 : 1} className="cursor-pointer" />
+                        ))}
+                      </Bar>
+                      <Bar dataKey="transportOverhead" name="Transport Overhead" stackId="a" fill="#f59e0b" barSize={28}
+                        onClick={(data) => setSelectedCategory(prev => prev === data.cat ? null : data.cat)}>
+                        {categories.map(c => (
+                          <Cell key={c.cat} fill="#f59e0b" opacity={selectedCategory && selectedCategory !== c.cat ? 0.35 : 1} className="cursor-pointer" />
+                        ))}
+                      </Bar>
+                      <Bar dataKey="wasteWriteOff" name="Waste & Write-off" stackId="a" fill="#8b5cf6" radius={[4,4,0,0]} barSize={28}
+                        onClick={(data) => setSelectedCategory(prev => prev === data.cat ? null : data.cat)}>
+                        {categories.map(c => (
+                          <Cell key={c.cat} fill="#8b5cf6" opacity={selectedCategory && selectedCategory !== c.cat ? 0.35 : 1} className="cursor-pointer" />
+                        ))}
+                      </Bar>
+                    </>
+                  )}
+                  {costDriverFilter === 'downtime' && (
+                    <Bar dataKey="productionDowntime" name="Production Downtime" fill="#ef4444" radius={[4,4,0,0]} barSize={28}
+                      onClick={(data) => setSelectedCategory(prev => prev === data.cat ? null : data.cat)}>
+                      {categories.map(c => (
+                        <Cell key={c.cat} fill="#ef4444" opacity={selectedCategory && selectedCategory !== c.cat ? 0.35 : 1} className="cursor-pointer" />
+                      ))}
+                    </Bar>
+                  )}
+                  {costDriverFilter === 'transport' && (
+                    <Bar dataKey="transportOverhead" name="Transport Overhead" fill="#f59e0b" radius={[4,4,0,0]} barSize={28}
+                      onClick={(data) => setSelectedCategory(prev => prev === data.cat ? null : data.cat)}>
+                      {categories.map(c => (
+                        <Cell key={c.cat} fill="#f59e0b" opacity={selectedCategory && selectedCategory !== c.cat ? 0.35 : 1} className="cursor-pointer" />
+                      ))}
+                    </Bar>
+                  )}
+                  {costDriverFilter === 'waste' && (
+                    <Bar dataKey="wasteWriteOff" name="Waste & Write-off" fill="#8b5cf6" radius={[4,4,0,0]} barSize={28}
+                      onClick={(data) => setSelectedCategory(prev => prev === data.cat ? null : data.cat)}>
+                      {categories.map(c => (
+                        <Cell key={c.cat} fill="#8b5cf6" opacity={selectedCategory && selectedCategory !== c.cat ? 0.35 : 1} className="cursor-pointer" />
+                      ))}
+                    </Bar>
+                  )}
                 </BarChart>
               </ResponsiveContainer>
             </div>
             <div className="flex items-center gap-4 mt-2 text-[7.5px] font-black uppercase tracking-wider">
-              <span className="flex items-center gap-1"><span className="w-2 h-1.5 rounded-sm bg-red-500" /> Production Downtime</span>
-              <span className="flex items-center gap-1"><span className="w-2 h-1.5 rounded-sm bg-amber-500" /> Transport Overhead</span>
-              <span className="flex items-center gap-1"><span className="w-2 h-1.5 rounded-sm bg-purple-500" /> Waste &amp; Write-off</span>
+              <button onClick={() => setCostDriverFilter(prev => prev === 'downtime' ? 'All' : 'downtime')} className={`flex items-center gap-1 hover:opacity-80 transition-opacity ${costDriverFilter === 'downtime' ? 'underline text-red-500' : 'text-zinc-500'}`}>
+                <span className="w-2 h-1.5 rounded-sm bg-red-500" /> Production Downtime
+              </button>
+              <button onClick={() => setCostDriverFilter(prev => prev === 'transport' ? 'All' : 'transport')} className={`flex items-center gap-1 hover:opacity-80 transition-opacity ${costDriverFilter === 'transport' ? 'underline text-amber-500' : 'text-zinc-500'}`}>
+                <span className="w-2 h-1.5 rounded-sm bg-amber-500" /> Transport Overhead
+              </button>
+              <button onClick={() => setCostDriverFilter(prev => prev === 'waste' ? 'All' : 'waste')} className={`flex items-center gap-1 hover:opacity-80 transition-opacity ${costDriverFilter === 'waste' ? 'underline text-purple-500' : 'text-zinc-500'}`}>
+                <span className="w-2 h-1.5 rounded-sm bg-purple-500" /> Waste &amp; Write-off
+              </button>
             </div>
           </div>
 
@@ -808,18 +908,38 @@ export const SimplifyToGrow: React.FC<Props> = ({ isDarkMode, setActiveTab }) =>
                     </div>
                   </div>
                   <div className="grid grid-cols-3 gap-1 text-center mb-2">
-                    <div className="rounded-md p-1" style={{ backgroundColor: 'rgba(239,68,68,0.08)' }}>
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); setCostDriverFilter(prev => prev === 'downtime' ? 'All' : 'downtime'); }}
+                      className={`rounded-md p-1 transition-all border ${
+                        costDriverFilter === 'downtime' ? 'border-red-500/50 bg-red-500/15' : 'border-transparent bg-red-500/5 hover:bg-red-500/10'
+                      }`}
+                      style={{ opacity: costDriverFilter === 'All' || costDriverFilter === 'downtime' ? 1 : 0.4 }}
+                    >
                       <div className="text-[8px] font-black text-red-500">₹{cat.productionDowntime}L</div>
                       <div className="text-[6px] text-zinc-400 font-bold uppercase tracking-wider leading-tight">Downtime</div>
-                    </div>
-                    <div className="rounded-md p-1" style={{ backgroundColor: 'rgba(245,158,11,0.08)' }}>
+                    </button>
+                    
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); setCostDriverFilter(prev => prev === 'transport' ? 'All' : 'transport'); }}
+                      className={`rounded-md p-1 transition-all border ${
+                        costDriverFilter === 'transport' ? 'border-amber-500/50 bg-amber-500/15' : 'border-transparent bg-amber-500/5 hover:bg-amber-500/10'
+                      }`}
+                      style={{ opacity: costDriverFilter === 'All' || costDriverFilter === 'transport' ? 1 : 0.4 }}
+                    >
                       <div className="text-[8px] font-black text-amber-500">₹{cat.transportOverhead}L</div>
                       <div className="text-[6px] text-zinc-400 font-bold uppercase tracking-wider leading-tight">Transport</div>
-                    </div>
-                    <div className="rounded-md p-1" style={{ backgroundColor: 'rgba(139,92,246,0.08)' }}>
+                    </button>
+                    
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); setCostDriverFilter(prev => prev === 'waste' ? 'All' : 'waste'); }}
+                      className={`rounded-md p-1 transition-all border ${
+                        costDriverFilter === 'waste' ? 'border-purple-500/50 bg-purple-500/15' : 'border-transparent bg-purple-500/5 hover:bg-purple-500/10'
+                      }`}
+                      style={{ opacity: costDriverFilter === 'All' || costDriverFilter === 'waste' ? 1 : 0.4 }}
+                    >
                       <div className="text-[8px] font-black text-purple-500">₹{cat.wasteWriteOff}L</div>
                       <div className="text-[6px] text-zinc-400 font-bold uppercase tracking-wider leading-tight">Waste</div>
-                    </div>
+                    </button>
                   </div>
                   {/* Bad/Good breakdown */}
                   <div className="flex items-center gap-1.5 text-[7px] font-black">
