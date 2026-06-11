@@ -645,20 +645,65 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
             <Zap size={12} className="text-[#6d28d9] dark:text-[#a78bfa]" />
             <span className="text-[10px] font-bold uppercase tracking-widest text-[#6d28d9] dark:text-[#a78bfa]">AI Predictions</span>
           </div>
-          <div className="space-y-2 text-[9px]">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-[9px]">
+            {/* Card 1: Sourcing Delay */}
             <div 
               onClick={() => { setPredictionModalType('delay'); setIsPredictionModalOpen(true); }}
-              className="p-2 bg-purple-500/5 hover:bg-purple-500/10 border border-purple-500/15 rounded-sm cursor-pointer hover:scale-[1.01] transition-all"
+              className="p-3 bg-purple-500/5 hover:bg-purple-500/10 border border-purple-500/15 dark:border-purple-500/20 rounded-sm cursor-pointer hover:scale-[1.02] transition-all flex flex-col justify-between h-24"
             >
-              <p className="font-semibold mb-0.5">⚠️ BrandC Products: 78% delay probability</p>
-              <p className="text-zinc-500">Packaging sourcing constraint in EMEA</p>
+              <div>
+                <p className="font-bold text-zinc-800 dark:text-zinc-200 text-[10px] leading-tight">⚠️ Sourcing Delay (EMEA)</p>
+                <p className="text-[9px] text-zinc-550 dark:text-zinc-400 mt-1 line-clamp-2">BrandC Snacks packaging shortage at EMEA hub.</p>
+              </div>
+              <div className="flex items-center justify-between mt-2 pt-1 border-t border-black/5 dark:border-white/5">
+                <span className="text-[8px] font-semibold text-purple-600 dark:text-purple-400 bg-purple-500/10 px-1.5 py-0.5 rounded-sm">78% Risk</span>
+                <span className="text-[8px] font-bold text-zinc-700 dark:text-zinc-300">$2.1M Impact</span>
+              </div>
             </div>
+
+            {/* Card 2: Stockout Risk */}
             <div 
-              onClick={() => { setPredictionModalType('delay'); setIsPredictionModalOpen(true); }}
-              className="p-2 bg-emerald-500/5 hover:bg-emerald-500/10 border border-emerald-500/15 rounded-sm cursor-pointer hover:scale-[1.01] transition-all"
+              onClick={() => { setPredictionModalType('stockout'); setIsPredictionModalOpen(true); }}
+              className="p-3 bg-red-500/5 hover:bg-red-500/10 border border-red-500/15 dark:border-red-500/20 rounded-sm cursor-pointer hover:scale-[1.02] transition-all flex flex-col justify-between h-24"
             >
-              <p className="font-semibold mb-0.5">💡 Recommendation: Domestic sourcing</p>
-              <p className="text-zinc-500">Recovers 12 days, saves $2.1M revenue risk</p>
+              <div>
+                <p className="font-bold text-zinc-800 dark:text-zinc-200 text-[10px] leading-tight">🚨 Stockout Risk (APAC)</p>
+                <p className="text-[9px] text-zinc-550 dark:text-zinc-400 mt-1 line-clamp-2">BrandA Energy buffer below safety limit at Vapi Hub.</p>
+              </div>
+              <div className="flex items-center justify-between mt-2 pt-1 border-t border-black/5 dark:border-white/5">
+                <span className="text-[8px] font-semibold text-red-600 dark:text-red-400 bg-red-500/10 px-1.5 py-0.5 rounded-sm">92% Risk</span>
+                <span className="text-[8px] font-bold text-zinc-700 dark:text-zinc-300">$1.5M Impact</span>
+              </div>
+            </div>
+
+            {/* Card 3: Margin Compression */}
+            <div 
+              onClick={() => { setPredictionModalType('margin'); setIsPredictionModalOpen(true); }}
+              className="p-3 bg-amber-500/5 hover:bg-amber-500/10 border border-amber-500/15 dark:border-amber-500/20 rounded-sm cursor-pointer hover:scale-[1.02] transition-all flex flex-col justify-between h-24"
+            >
+              <div>
+                <p className="font-bold text-zinc-800 dark:text-zinc-200 text-[10px] leading-tight">📉 Margin Compression</p>
+                <p className="text-[9px] text-zinc-550 dark:text-zinc-400 mt-1 line-clamp-2">BrandC Biscuits gross margin breach from discount dependence.</p>
+              </div>
+              <div className="flex items-center justify-between mt-2 pt-1 border-t border-black/5 dark:border-white/5">
+                <span className="text-[8px] font-semibold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded-sm">81% Risk</span>
+                <span className="text-[8px] font-bold text-zinc-700 dark:text-zinc-300">$0.9M Impact</span>
+              </div>
+            </div>
+
+            {/* Card 4: Demand Surge */}
+            <div 
+              onClick={() => { setPredictionModalType('demand'); setIsPredictionModalOpen(true); }}
+              className="p-3 bg-indigo-500/5 hover:bg-indigo-500/10 border border-indigo-500/15 dark:border-indigo-500/20 rounded-sm cursor-pointer hover:scale-[1.02] transition-all flex flex-col justify-between h-24"
+            >
+              <div>
+                <p className="font-bold text-zinc-800 dark:text-zinc-200 text-[10px] leading-tight">⚡ Capacity Bottleneck (APAC)</p>
+                <p className="text-[9px] text-zinc-550 dark:text-zinc-400 mt-1 line-clamp-2">BrandF Eco Water demand spike exceeding plant throughput.</p>
+              </div>
+              <div className="flex items-center justify-between mt-2 pt-1 border-t border-black/5 dark:border-white/5">
+                <span className="text-[8px] font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 px-1.5 py-0.5 rounded-sm">88% Risk</span>
+                <span className="text-[8px] font-bold text-zinc-700 dark:text-zinc-300">$1.2M Impact</span>
+              </div>
             </div>
           </div>
         </div>
