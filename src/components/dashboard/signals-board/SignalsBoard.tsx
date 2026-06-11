@@ -2116,7 +2116,7 @@ const VPSignalsBoardView: React.FC<{
 
         {/* KPI 4: AI Risk Predictions */}
         <div className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm flex flex-col justify-between h-28 hover:bg-black/[0.01] dark:hover:bg-white/[0.01] transition-all">
-          <p className="text-[8px] font-bold uppercase tracking-widest text-zinc-400">AI Predictions</p>
+          <p className="text-[8px] font-bold uppercase tracking-widest text-zinc-400">AI Risk Predictions</p>
           <h4 className="text-2xl font-display font-extrabold text-[#6d28d9] dark:text-[#a78bfa] leading-none">12</h4>
           <p className="text-[9px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">Emergent concerns</p>
         </div>

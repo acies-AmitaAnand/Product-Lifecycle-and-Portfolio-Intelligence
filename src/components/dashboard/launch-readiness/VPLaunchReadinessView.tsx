@@ -645,7 +645,7 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
           <div className="flex justify-between items-center pb-2 border-b border-black/5 dark:border-white/5">
             <div className="flex items-center gap-2">
               <Zap size={12} className="text-[#6d28d9] dark:text-[#a78bfa]" />
-              <span className="text-[10px] font-bold uppercase tracking-widest text-[#6d28d9] dark:text-[#a78bfa]">AI Predictions</span>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-[#6d28d9] dark:text-[#a78bfa]">AI Risk Predictions</span>
             </div>
             <div className="flex items-center border border-black/10 dark:border-white/10 rounded-md overflow-hidden bg-black/5 dark:bg-white/5 p-0.5 shrink-0">
               <button
