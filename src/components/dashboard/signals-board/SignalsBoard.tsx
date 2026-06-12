@@ -2404,219 +2404,9 @@ const VPSignalsBoardView: React.FC<{
 
       </div>
 
-      {/* Row 4: Portfolio Health Signals | Competitive Intelligence */}
+      {/* Row 4: Market Signals | Competitive Intelligence */}
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
         
-        {/* Portfolio Health & Saturation Dials */}
-        <div className="xl:col-span-7 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm space-y-4">
-          <div className="flex justify-between items-center pb-2 border-b border-black/5 dark:border-white/5">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Portfolio Saturation & Cannibalization</span>
-            <span className="text-[8px] font-bold uppercase tracking-wider text-zinc-400">System metrics</span>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1">
-            {/* Card 1: Beverages Overlap Ratio */}
-            <div 
-              onClick={() => setSelectedPortfolioBlock('overlap')}
-              className="bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 p-4 rounded-sm flex flex-col items-center text-center space-y-2 cursor-pointer hover:scale-[1.02] hover:shadow-md hover:border-purple-500/35 transition-all select-none"
-            >
-              <div className="relative">
-                <svg viewBox="0 0 120 70" className="w-28 h-16">
-                  {/* Background track */}
-                  <path
-                    d="M 15 60 A 45 45 0 0 1 105 60"
-                    fill="none"
-                    stroke={isDarkMode ? "rgba(239, 68, 68, 0.15)" : "rgba(239, 68, 68, 0.1)"}
-                    strokeWidth="8"
-                    strokeLinecap="round"
-                  />
-                  {/* Filled track for 0.68 */}
-                  <path
-                    d="M 15 60 A 45 45 0 0 1 105 60"
-                    fill="none"
-                    stroke="#ef4444"
-                    strokeWidth="8"
-                    strokeLinecap="round"
-                    strokeDasharray={141.37}
-                    strokeDashoffset={141.37 * (1 - 0.68)}
-                  />
-                </svg>
-              </div>
-              <div className="space-y-0.5">
-                <span className="text-xl font-display font-extrabold text-red-500 block leading-none">0.68</span>
-                <span className="text-[10px] font-bold text-zinc-550 dark:text-zinc-400 block">Beverages overlap ratio</span>
-              </div>
-              <span className="px-2.5 py-0.5 rounded-full text-[8.5px] font-bold uppercase tracking-wider bg-red-500/10 text-red-650 dark:text-red-400 border border-red-500/20">
-                High cannibalization
-              </span>
-            </div>
-
-            {/* Card 2: Innovation Volume Share */}
-            <div 
-              onClick={() => setSelectedPortfolioBlock('innovation')}
-              className="bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 p-4 rounded-sm flex flex-col items-center text-center space-y-2 cursor-pointer hover:scale-[1.02] hover:shadow-md hover:border-purple-500/35 transition-all select-none"
-            >
-              <div className="relative">
-                <svg viewBox="0 0 120 70" className="w-28 h-16">
-                  {/* Background track */}
-                  <path
-                    d="M 15 60 A 45 45 0 0 1 105 60"
-                    fill="none"
-                    stroke={isDarkMode ? "rgba(16, 185, 129, 0.15)" : "rgba(16, 185, 129, 0.1)"}
-                    strokeWidth="8"
-                    strokeLinecap="round"
-                  />
-                  {/* Filled track for 34% (0.34) */}
-                  <path
-                    d="M 15 60 A 45 45 0 0 1 105 60"
-                    fill="none"
-                    stroke="#10b981"
-                    strokeWidth="8"
-                    strokeLinecap="round"
-                    strokeDasharray={141.37}
-                    strokeDashoffset={141.37 * (1 - 0.34)}
-                  />
-                </svg>
-              </div>
-              <div className="space-y-0.5">
-                <span className="text-xl font-display font-extrabold text-emerald-555 dark:text-emerald-500 block leading-none">34%</span>
-                <span className="text-[10px] font-bold text-zinc-555 dark:text-zinc-400 block">Innovation volume share</span>
-              </div>
-              <span className="px-2.5 py-0.5 rounded-full text-[8.5px] font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-650 dark:text-emerald-400 border border-emerald-500/20">
-                Target &gt; 30%
-              </span>
-            </div>
-
-            {/* Card 3: Portfolio Health Risk Index */}
-            <div 
-              onClick={() => setSelectedPortfolioBlock('risk')}
-              className="bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 p-4 rounded-sm flex flex-col items-center text-center space-y-2 cursor-pointer hover:scale-[1.02] hover:shadow-md hover:border-purple-500/35 transition-all select-none"
-            >
-              <div className="relative">
-                <svg viewBox="0 0 120 70" className="w-28 h-16">
-                  {/* Background track */}
-                  <path
-                    d="M 15 60 A 45 45 0 0 1 105 60"
-                    fill="none"
-                    stroke={isDarkMode ? "rgba(245, 158, 11, 0.15)" : "rgba(245, 158, 11, 0.1)"}
-                    strokeWidth="8"
-                    strokeLinecap="round"
-                  />
-                  {/* Filled track for 0.44 */}
-                  <path
-                    d="M 15 60 A 45 45 0 0 1 105 60"
-                    fill="none"
-                    stroke="#f59e0b"
-                    strokeWidth="8"
-                    strokeLinecap="round"
-                    strokeDasharray={141.37}
-                    strokeDashoffset={141.37 * (1 - 0.44)}
-                  />
-                </svg>
-              </div>
-              <div className="space-y-0.5">
-                <span className="text-xl font-display font-extrabold text-amber-500 block leading-none">0.44</span>
-                <span className="text-[10px] font-bold text-zinc-555 dark:text-zinc-400 block">Portfolio health risk index</span>
-              </div>
-              <span className="px-2.5 py-0.5 rounded-full text-[8.5px] font-bold uppercase tracking-wider bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
-                Moderate risk
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Competitive Intelligence Signals */}
-        <div className="xl:col-span-5 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm space-y-4">
-          <div className="flex justify-between items-center pb-2 border-b border-black/5 dark:border-white/5">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Competitive Intelligence</span>
-            <span className="text-[8px] font-bold uppercase tracking-wider text-zinc-400">Market activity ticker</span>
-          </div>
-
-          <div className="space-y-3.5 pt-1">
-            {[
-              { label: 'Rival Pricing Cut', body: 'Competitor wafers priced drop -10% in EU supermarts.', time: '1h ago', cat: 'Snacks' },
-              { label: 'Competitor Launch', body: 'Alternative premium soy drink introduced in APAC region.', time: '3h ago', cat: 'Beverages' },
-              { label: 'Distribution Surge', body: 'Rival personal care brand secured 80% shelf targets in West India.', time: '5h ago', cat: 'Personal Care' }
-            ].map((c, i) => (
-              <div 
-                key={i} 
-                onClick={() => setSelectedCompIntelIdx(i)}
-                className="flex justify-between items-start gap-4 p-3 bg-black/[0.01] dark:bg-white/5 rounded border border-black/5 dark:border-white/5 text-[11px] cursor-pointer hover:border-purple-500/35 hover:bg-black/[0.02] dark:hover:bg-white/5 hover:scale-[1.01] transition-all"
-              >
-                <div className="min-w-0 space-y-1">
-                  <p className="font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-1.5 flex-wrap">
-                    {c.label} · <span className="text-[8px] font-bold uppercase px-1 bg-black/10 dark:bg-white/10 rounded">{c.cat}</span>
-                  </p>
-                  <p className="text-[10px] text-zinc-500 mt-0.5 leading-snug">{c.body}</p>
-                  <span className="text-[8.5px] text-[#6d28d9] dark:text-[#a78bfa] font-bold uppercase mt-1 flex items-center gap-1">
-                    <Sparkles size={10} className="animate-pulse" /> AI Comparison Available
-                  </span>
-                </div>
-                <span className="text-[8.5px] font-mono text-zinc-400 whitespace-nowrap shrink-0">{c.time}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-      </div>
-
-      {/* Row 5: Customer Sentiment NPS | Supply Chain Signals */}
-      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
-        
-        {/* Customer Sentiment NPS Meter */}
-        <div className="xl:col-span-5 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm space-y-4">
-          <div className="flex justify-between items-center pb-2 border-b border-black/5 dark:border-white/5">
-            <div>
-              <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Customer NPS Sentiment</span>
-              <p className="text-[8px] font-bold uppercase tracking-wider text-zinc-400 mt-0.5">Target Score: &gt; 70</p>
-            </div>
-            
-            <div className="flex bg-black/5 dark:bg-white/5 p-0.5 rounded border border-black/5 dark:border-white/10 shrink-0">
-              <button
-                type="button"
-                onClick={() => setNpsTimeframe('weekly')}
-                className={`px-2 py-0.5 text-[8.5px] font-bold uppercase tracking-wider rounded-sm transition-all border-none cursor-pointer outline-none ${
-                  npsTimeframe === 'weekly'
-                    ? 'bg-[#5850ec] text-white shadow-sm'
-                    : `bg-transparent text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white`
-                }`}
-              >
-                Weekly
-              </button>
-              <button
-                type="button"
-                onClick={() => setNpsTimeframe('monthly')}
-                className={`px-2 py-0.5 text-[8.5px] font-bold uppercase tracking-wider rounded-sm transition-all border-none cursor-pointer outline-none ${
-                  npsTimeframe === 'monthly'
-                    ? 'bg-[#5850ec] text-white shadow-sm'
-                    : `bg-transparent text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white`
-                }`}
-              >
-                Monthly
-              </button>
-            </div>
-          </div>
-
-          <div className="h-56">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={activeNpsData} margin={{ left: -25, right: 5, top: 10, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke={isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'} vertical={false} />
-                <XAxis dataKey="name" tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 9 }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 9 }} axisLine={false} tickLine={false} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: isDarkMode ? '#1f1f1f' : '#fff', border: isDarkMode ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.1)', color: isDarkMode ? '#fff' : '#000' }}
-                  itemStyle={{ fontSize: 9 }}
-                />
-                <Legend wrapperStyle={{ fontSize: 9 }} />
-                <Line type="monotone" dataKey="Beverages" stroke="#6d28d9" strokeWidth={1.5} dot={false} />
-                <Line type="monotone" dataKey="Snacks" stroke="#10b981" strokeWidth={1.5} dot={false} />
-                <Line type="monotone" dataKey="PersonalCare" stroke="#3b82f6" strokeWidth={1.5} dot={false} />
-                <Line type="monotone" dataKey="Household" stroke="#f59e0b" strokeWidth={1.5} dot={false} />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
         {/* Market Signals Card */}
         <div className="xl:col-span-7 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm flex flex-col justify-between min-h-[350px]">
           <div className="space-y-3.5">
@@ -2800,6 +2590,216 @@ const VPSignalsBoardView: React.FC<{
           </button>
 
       </div>
+
+        {/* Competitive Intelligence Signals */}
+        <div className="xl:col-span-5 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm space-y-4">
+          <div className="flex justify-between items-center pb-2 border-b border-black/5 dark:border-white/5">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Competitive Intelligence</span>
+            <span className="text-[8px] font-bold uppercase tracking-wider text-zinc-400">Market activity ticker</span>
+          </div>
+
+          <div className="space-y-3.5 pt-1">
+            {[
+              { label: 'Rival Pricing Cut', body: 'Competitor wafers priced drop -10% in EU supermarts.', time: '1h ago', cat: 'Snacks' },
+              { label: 'Competitor Launch', body: 'Alternative premium soy drink introduced in APAC region.', time: '3h ago', cat: 'Beverages' },
+              { label: 'Distribution Surge', body: 'Rival personal care brand secured 80% shelf targets in West India.', time: '5h ago', cat: 'Personal Care' }
+            ].map((c, i) => (
+              <div 
+                key={i} 
+                onClick={() => setSelectedCompIntelIdx(i)}
+                className="flex justify-between items-start gap-4 p-3 bg-black/[0.01] dark:bg-white/5 rounded border border-black/5 dark:border-white/5 text-[11px] cursor-pointer hover:border-purple-500/35 hover:bg-black/[0.02] dark:hover:bg-white/5 hover:scale-[1.01] transition-all"
+              >
+                <div className="min-w-0 space-y-1">
+                  <p className="font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-1.5 flex-wrap">
+                    {c.label} · <span className="text-[8px] font-bold uppercase px-1 bg-black/10 dark:bg-white/10 rounded">{c.cat}</span>
+                  </p>
+                  <p className="text-[10px] text-zinc-500 mt-0.5 leading-snug">{c.body}</p>
+                  <span className="text-[8.5px] text-[#6d28d9] dark:text-[#a78bfa] font-bold uppercase mt-1 flex items-center gap-1">
+                    <Sparkles size={10} className="animate-pulse" /> AI Comparison Available
+                  </span>
+                </div>
+                <span className="text-[8.5px] font-mono text-zinc-400 whitespace-nowrap shrink-0">{c.time}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+      </div>
+
+      {/* Row 5: Customer Sentiment NPS | Portfolio Saturation & Cannibalization */}
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
+        
+        {/* Customer Sentiment NPS Meter */}
+        <div className="xl:col-span-5 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm space-y-4">
+          <div className="flex justify-between items-center pb-2 border-b border-black/5 dark:border-white/5">
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Customer NPS Sentiment</span>
+              <p className="text-[8px] font-bold uppercase tracking-wider text-zinc-400 mt-0.5">Target Score: &gt; 70</p>
+            </div>
+            
+            <div className="flex bg-black/5 dark:bg-white/5 p-0.5 rounded border border-black/5 dark:border-white/10 shrink-0">
+              <button
+                type="button"
+                onClick={() => setNpsTimeframe('weekly')}
+                className={`px-2 py-0.5 text-[8.5px] font-bold uppercase tracking-wider rounded-sm transition-all border-none cursor-pointer outline-none ${
+                  npsTimeframe === 'weekly'
+                    ? 'bg-[#5850ec] text-white shadow-sm'
+                    : `bg-transparent text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white`
+                }`}
+              >
+                Weekly
+              </button>
+              <button
+                type="button"
+                onClick={() => setNpsTimeframe('monthly')}
+                className={`px-2 py-0.5 text-[8.5px] font-bold uppercase tracking-wider rounded-sm transition-all border-none cursor-pointer outline-none ${
+                  npsTimeframe === 'monthly'
+                    ? 'bg-[#5850ec] text-white shadow-sm'
+                    : `bg-transparent text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white`
+                }`}
+              >
+                Monthly
+              </button>
+            </div>
+          </div>
+
+          <div className="h-56">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={activeNpsData} margin={{ left: -25, right: 5, top: 10, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke={isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'} vertical={false} />
+                <XAxis dataKey="name" tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 9 }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 9 }} axisLine={false} tickLine={false} />
+                <Tooltip 
+                  contentStyle={{ backgroundColor: isDarkMode ? '#1f1f1f' : '#fff', border: isDarkMode ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.1)', color: isDarkMode ? '#fff' : '#000' }}
+                  itemStyle={{ fontSize: 9 }}
+                />
+                <Legend wrapperStyle={{ fontSize: 9 }} />
+                <Line type="monotone" dataKey="Beverages" stroke="#6d28d9" strokeWidth={1.5} dot={false} />
+                <Line type="monotone" dataKey="Snacks" stroke="#10b981" strokeWidth={1.5} dot={false} />
+                <Line type="monotone" dataKey="PersonalCare" stroke="#3b82f6" strokeWidth={1.5} dot={false} />
+                <Line type="monotone" dataKey="Household" stroke="#f59e0b" strokeWidth={1.5} dot={false} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Portfolio Health & Saturation Dials */}
+        <div className="xl:col-span-7 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm space-y-4">
+          <div className="flex justify-between items-center pb-2 border-b border-black/5 dark:border-white/5">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Portfolio Saturation & Cannibalization</span>
+            <span className="text-[8px] font-bold uppercase tracking-wider text-zinc-400">System metrics</span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1">
+            {/* Card 1: Beverages Overlap Ratio */}
+            <div 
+              onClick={() => setSelectedPortfolioBlock('overlap')}
+              className="bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 p-4 rounded-sm flex flex-col items-center text-center space-y-2 cursor-pointer hover:scale-[1.02] hover:shadow-md hover:border-purple-500/35 transition-all select-none"
+            >
+              <div className="relative">
+                <svg viewBox="0 0 120 70" className="w-28 h-16">
+                  {/* Background track */}
+                  <path
+                    d="M 15 60 A 45 45 0 0 1 105 60"
+                    fill="none"
+                    stroke={isDarkMode ? "rgba(239, 68, 68, 0.15)" : "rgba(239, 68, 68, 0.1)"}
+                    strokeWidth="8"
+                    strokeLinecap="round"
+                  />
+                  {/* Filled track for 0.68 */}
+                  <path
+                    d="M 15 60 A 45 45 0 0 1 105 60"
+                    fill="none"
+                    stroke="#ef4444"
+                    strokeWidth="8"
+                    strokeLinecap="round"
+                    strokeDasharray={141.37}
+                    strokeDashoffset={141.37 * (1 - 0.68)}
+                  />
+                </svg>
+              </div>
+              <div className="space-y-0.5">
+                <span className="text-xl font-display font-extrabold text-red-500 block leading-none">0.68</span>
+                <span className="text-[10px] font-bold text-zinc-550 dark:text-zinc-400 block">Beverages overlap ratio</span>
+              </div>
+              <span className="px-2.5 py-0.5 rounded-full text-[8.5px] font-bold uppercase tracking-wider bg-red-500/10 text-red-650 dark:text-red-400 border border-red-500/20">
+                High cannibalization
+              </span>
+            </div>
+
+            {/* Card 2: Innovation Volume Share */}
+            <div 
+              onClick={() => setSelectedPortfolioBlock('innovation')}
+              className="bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 p-4 rounded-sm flex flex-col items-center text-center space-y-2 cursor-pointer hover:scale-[1.02] hover:shadow-md hover:border-purple-500/35 transition-all select-none"
+            >
+              <div className="relative">
+                <svg viewBox="0 0 120 70" className="w-28 h-16">
+                  {/* Background track */}
+                  <path
+                    d="M 15 60 A 45 45 0 0 1 105 60"
+                    fill="none"
+                    stroke={isDarkMode ? "rgba(16, 185, 129, 0.15)" : "rgba(16, 185, 129, 0.1)"}
+                    strokeWidth="8"
+                    strokeLinecap="round"
+                  />
+                  {/* Filled track for 34% (0.34) */}
+                  <path
+                    d="M 15 60 A 45 45 0 0 1 105 60"
+                    fill="none"
+                    stroke="#10b981"
+                    strokeWidth="8"
+                    strokeLinecap="round"
+                    strokeDasharray={141.37}
+                    strokeDashoffset={141.37 * (1 - 0.34)}
+                  />
+                </svg>
+              </div>
+              <div className="space-y-0.5">
+                <span className="text-xl font-display font-extrabold text-emerald-555 dark:text-emerald-500 block leading-none">34%</span>
+                <span className="text-[10px] font-bold text-zinc-555 dark:text-zinc-400 block">Innovation volume share</span>
+              </div>
+              <span className="px-2.5 py-0.5 rounded-full text-[8.5px] font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-650 dark:text-emerald-400 border border-emerald-500/20">
+                Target &gt; 30%
+              </span>
+            </div>
+
+            {/* Card 3: Portfolio Health Risk Index */}
+            <div 
+              onClick={() => setSelectedPortfolioBlock('risk')}
+              className="bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 p-4 rounded-sm flex flex-col items-center text-center space-y-2 cursor-pointer hover:scale-[1.02] hover:shadow-md hover:border-purple-500/35 transition-all select-none"
+            >
+              <div className="relative">
+                <svg viewBox="0 0 120 70" className="w-28 h-16">
+                  {/* Background track */}
+                  <path
+                    d="M 15 60 A 45 45 0 0 1 105 60"
+                    fill="none"
+                    stroke={isDarkMode ? "rgba(245, 158, 11, 0.15)" : "rgba(245, 158, 11, 0.1)"}
+                    strokeWidth="8"
+                    strokeLinecap="round"
+                  />
+                  {/* Filled track for 0.44 */}
+                  <path
+                    d="M 15 60 A 45 45 0 0 1 105 60"
+                    fill="none"
+                    stroke="#f59e0b"
+                    strokeWidth="8"
+                    strokeLinecap="round"
+                    strokeDasharray={141.37}
+                    strokeDashoffset={141.37 * (1 - 0.44)}
+                  />
+                </svg>
+              </div>
+              <div className="space-y-0.5">
+                <span className="text-xl font-display font-extrabold text-amber-500 block leading-none">0.44</span>
+                <span className="text-[10px] font-bold text-zinc-555 dark:text-zinc-400 block">Portfolio health risk index</span>
+              </div>
+              <span className="px-2.5 py-0.5 rounded-full text-[8.5px] font-bold uppercase tracking-wider bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                Moderate risk
+              </span>
+            </div>
+          </div>
+        </div>
     </div>
         </>
       )}
