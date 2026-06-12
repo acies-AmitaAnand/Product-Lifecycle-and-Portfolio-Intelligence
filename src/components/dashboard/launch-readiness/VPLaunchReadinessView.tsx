@@ -944,7 +944,7 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
               </ResponsiveContainer>
             ) : (
               <ResponsiveContainer width="100%" height="100%">
-                <RadarChart data={financialData} cx="50%" cy="55%" radius="68%">
+                <RadarChart data={financialData} cx="50%" cy="55%" outerRadius="68%">
                   <PolarGrid stroke={isDarkMode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)"} />
                   <PolarAngleAxis dataKey="name" tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)', fontSize: 9 }} />
                   <PolarRadiusAxis angle={90} domain={[0, 120]} tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} />
