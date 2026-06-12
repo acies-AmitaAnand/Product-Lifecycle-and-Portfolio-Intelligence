@@ -63,6 +63,12 @@ export const DrilldownRegionGrid: React.FC<DrilldownRegionGridProps> = ({
         EMEA:     { margin: { actual: 37.0, target: 36.5 }, otif: { actual: 93.8, target: 93.5 } },
         LATAM:    { margin: { actual: 33.6, target: 34.2 }, otif: { actual: 90.5, target: 91.0 } },
       },
+      '2Y': {
+        APAC:     { margin: { actual: 38.2, target: 37.8 }, otif: { actual: 95.5, target: 95.0 } },
+        Americas: { margin: { actual: 32.0, target: 34.2 }, otif: { actual: 87.2, target: 91.0 } },
+        EMEA:     { margin: { actual: 36.2, target: 35.8 }, otif: { actual: 92.6, target: 92.8 } },
+        LATAM:    { margin: { actual: 32.8, target: 33.6 }, otif: { actual: 89.2, target: 90.0 } },
+      },
       '3Y': {
         APAC:     { margin: { actual: 37.5, target: 37.0 }, otif: { actual: 94.8, target: 94.5 } },
         Americas: { margin: { actual: 31.0, target: 33.5 }, otif: { actual: 85.5, target: 90.0 } },
@@ -94,6 +100,7 @@ export const DrilldownRegionGrid: React.FC<DrilldownRegionGridProps> = ({
       '6M':  { APAC: { revTrend: 5.1,  marginTrend: 1.2,  otifTrend: 0.6  }, Americas: { revTrend: 0.5,  marginTrend: -0.5, otifTrend: 1.5  }, EMEA: { revTrend: 3.2,  marginTrend: 0.7, otifTrend: 0.9  }, LATAM: { revTrend: 2.0,  marginTrend: 0.2,  otifTrend: 0.8  } },
       'YTD': { APAC: { revTrend: 4.8,  marginTrend: 0.9,  otifTrend: 0.4  }, Americas: { revTrend: -0.2, marginTrend: -0.8, otifTrend: 1.2  }, EMEA: { revTrend: 2.8,  marginTrend: 0.5, otifTrend: 0.7  }, LATAM: { revTrend: 1.5,  marginTrend: 0.0,  otifTrend: 0.3  } },
       '12M': { APAC: { revTrend: 6.2,  marginTrend: 1.5,  otifTrend: 0.8  }, Americas: { revTrend: 1.2,  marginTrend: 0.2,  otifTrend: 2.1  }, EMEA: { revTrend: 4.5,  marginTrend: 1.1, otifTrend: 1.2  }, LATAM: { revTrend: 3.1,  marginTrend: 0.5,  otifTrend: 1.0  } },
+      '2Y':  { APAC: { revTrend: 10.4, marginTrend: 1.8,  otifTrend: 1.1  }, Americas: { revTrend: 2.8,  marginTrend: 0.5,  otifTrend: 2.8  }, EMEA: { revTrend: 7.8,  marginTrend: 1.4, otifTrend: 1.7  }, LATAM: { revTrend: 5.8,  marginTrend: 0.8,  otifTrend: 1.4  } },
       '3Y':  { APAC: { revTrend: 14.5, marginTrend: 2.1,  otifTrend: 1.5  }, Americas: { revTrend: 4.2,  marginTrend: 0.8,  otifTrend: 3.5  }, EMEA: { revTrend: 11.2, marginTrend: 1.8, otifTrend: 2.2  }, LATAM: { revTrend: 8.4,  marginTrend: 1.1,  otifTrend: 1.8  } },
     };
     const horizonTrends = trends[timeHorizon] || trends['3M'];

@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { REGIONAL_DATA } from '../../../constants/data';
+import React, { useState, useEffect, useMemo } from 'react';
+import { REGIONAL_DATA as GLOBAL_REGIONAL_DATA } from '../../../constants/data';
 import { Percent, Landmark, ShieldAlert, Check, Globe } from 'lucide-react';
 import { StagedAction } from './types';
+import { TimelineRange, getFilteredRegionalData } from '../../../utils/timeframe';
 
 interface RegionalAssortmentGridProps {
   onStageAction?: (action: StagedAction) => void;
@@ -15,9 +16,11 @@ interface RegionalAssortmentGridProps {
     capitalFreed: number;
     revenueAtRisk: number;
   }) => void;
+  timelineRange: TimelineRange;
 }
 
-export const RegionalAssortmentGrid: React.FC<RegionalAssortmentGridProps> = ({ onStageAction, onSliderChange }) => {
+export const RegionalAssortmentGrid: React.FC<RegionalAssortmentGridProps> = ({ onStageAction, onSliderChange, timelineRange }) => {
+  const REGIONAL_DATA = useMemo(() => getFilteredRegionalData(GLOBAL_REGIONAL_DATA, timelineRange), [timelineRange]);
   const [selectedCountry, setSelectedCountry] = useState<string>('Netherlands');
   const [skusDelisted, setSkusDelisted] = useState<number>(0);
   const [flippedCountries, setFlippedCountries] = useState<Record<string, boolean>>({});

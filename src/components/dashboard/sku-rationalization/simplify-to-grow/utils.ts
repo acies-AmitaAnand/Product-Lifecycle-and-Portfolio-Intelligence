@@ -4,8 +4,9 @@
 
 import React from 'react';
 import { Users, Link2, Layers, Target, Zap, Activity, BarChart3, Scissors, Award } from 'lucide-react';
-import { SKUS } from '../../../constants/data';
+import { SKUS } from '../../../../constants/data';
 import { EnrichedSKU, PillarDef, ComplexityType } from './types';
+import { TimelineRange, getFilteredSKUS } from '../../../../utils/timeframe';
 
 export const COMPLEXITY_CONFIG: Record<ComplexityType, { color: string; bg: string; label: string; desc: string }> = {
   'Good Variety':   { color: '#10b981', bg: 'rgba(16,185,129,0.12)',  label: 'Good Variety',  desc: 'High IPPV with positive growth. Meets emerging consumer needs — retain & invest.' },
@@ -28,8 +29,9 @@ export const TAB_ROUTE_ICONS: Record<number, React.ComponentType<any>> = {
   8: Award,
 };
 
-export function computeEnrichedSKUs(): EnrichedSKU[] {
-  const enriched = SKUS.map(s => {
+export function computeEnrichedSKUs(timelineRange: TimelineRange = '12m'): EnrichedSKU[] {
+  const timeframeSkus = getFilteredSKUS(SKUS, timelineRange);
+  const enriched = timeframeSkus.map(s => {
     const ros = s.margin / 100;
     const unitProfitPool = s.rev * ros;
     const penetration = (s as any).householdPenetration ?? 0.4;

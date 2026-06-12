@@ -1,18 +1,16 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
 import React, { useState } from 'react';
 import { DrilldownFilters }      from './DrilldownFilters';
 import { DrilldownNetworkGraph } from './DrilldownNetworkGraph';
 import { DrilldownRegionGrid }   from './DrilldownRegionGrid';
 import { DrilldownSkuGrid }      from './DrilldownSkuGrid';
 import { DrilldownSkuModal }     from './DrilldownSkuModal';
+import { TimelineRange }         from '../../../utils/timeframe';
 
 interface TopDownDrilldownProps {
   isDarkMode: boolean;
   role: string;
+  timelineRange: TimelineRange;
+  setTimelineRange: (range: TimelineRange) => void;
 }
 
 const REGIONS_CONFIG: Record<string, { name: string; manager: string; email: string; role: string; plant: string }> = {
@@ -29,8 +27,31 @@ const REGION_SKUS: Record<string, string[]> = {
   LATAM:    ['Mango Fizz 500ml', 'Oat Cookies',      'Fabric Softener', 'Floor Cleaner'],
 };
 
-export const TopDownDrilldown: React.FC<TopDownDrilldownProps> = ({ isDarkMode }) => {
-  const [timeHorizon,    setTimeHorizon]    = useState<'1M' | '3M' | '6M' | 'YTD' | '12M' | '3Y'>('3M');
+export const TopDownDrilldown: React.FC<TopDownDrilldownProps> = ({ isDarkMode, timelineRange, setTimelineRange }) => {
+  const timeHorizon = (() => {
+    switch (timelineRange) {
+      case '1m': return '1M';
+      case '3m': return '3M';
+      case '6m': return '6M';
+      case '12m': return '12M';
+      case '24m': return '2Y';
+      case '36m': return '3Y';
+      default: return '3M';
+    }
+  })() as '1M' | '3M' | '6M' | 'YTD' | '12M' | '2Y' | '3Y';
+
+  const setTimeHorizon = (h: '1M' | '3M' | '6M' | 'YTD' | '12M' | '2Y' | '3Y') => {
+    switch (h) {
+      case '1M': setTimelineRange('1m'); break;
+      case '3M': setTimelineRange('3m'); break;
+      case '6M': setTimelineRange('6m'); break;
+      case 'YTD': setTimelineRange('6m'); break;
+      case '12M': setTimelineRange('12m'); break;
+      case '2Y': setTimelineRange('24m'); break;
+      case '3Y': setTimelineRange('36m'); break;
+    }
+  };
+
   const [selectedMetric, setSelectedMetric] = useState<'rev' | 'margin' | 'otif'>('rev');
   const [selectedRegion, setSelectedRegion] = useState<string | null>(null);
   const [selectedSkuName, setSelectedSkuName]   = useState<string>('');
@@ -49,13 +70,13 @@ export const TopDownDrilldown: React.FC<TopDownDrilldownProps> = ({ isDarkMode }
   };
 
   const getHorizonMultiplier = () => {
-    switch (timeHorizon) {
-      case '1M':  return 0.33;
-      case '6M':  return 2.0;
-      case 'YTD': return 1.67;
-      case '12M': return 4.0;
-      case '3Y':  return 12.0;
-      case '3M':
+    switch (timelineRange) {
+      case '1m':  return 0.33;
+      case '3m':  return 1.0;
+      case '6m':  return 2.0;
+      case '12m': return 4.0;
+      case '24m': return 8.0;
+      case '36m': return 12.0;
       default:    return 1.0;
     }
   };
@@ -124,6 +145,7 @@ export const TopDownDrilldown: React.FC<TopDownDrilldownProps> = ({ isDarkMode }
               selectedSkuName={selectedSkuName}
               onSkuSelect={handleSkuSelect}
               selectedRegionName={regionalConfig.name}
+              timelineRange={timelineRange}
             />
           )}
         </div>
@@ -139,6 +161,7 @@ export const TopDownDrilldown: React.FC<TopDownDrilldownProps> = ({ isDarkMode }
         timeHorizon={timeHorizon}
         multiplier={multiplier}
         isDarkMode={isDarkMode}
+        timelineRange={timelineRange}
       />
 
     </div>

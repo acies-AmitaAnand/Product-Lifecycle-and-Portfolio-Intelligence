@@ -138,12 +138,12 @@ const StepCard: React.FC<{
           onClick={() => onStatusChange(step.id, nextStatus)}
           title={`Status: ${sCfg.label} — click to advance`}
           className={`w-9 h-9 rounded-full border-2 flex items-center justify-center font-black text-[11px] transition-all hover:scale-110 shadow-sm z-10 ${
-            status === 'done' ? 'text-white' : 'text-white'
+            status === 'not-started' ? 'text-zinc-600 dark:text-zinc-450' : 'text-white'
           }`}
           style={{
             backgroundColor: status === 'done' ? '#10b981' : status === 'in-progress' ? '#f59e0b' : isDarkMode ? '#27272a' : '#f4f4f5',
             borderColor: status === 'done' ? '#10b981' : status === 'in-progress' ? '#f59e0b' : isDarkMode ? '#3f3f46' : '#d4d4d8',
-            color: status === 'not-started' ? (isDarkMode ? '#71717a' : '#a1a1aa') : 'white',
+            color: status === 'not-started' ? (isDarkMode ? '#a1a1aa' : '#52525b') : 'white',
           }}>
           {status === 'done' ? <CheckCircle2 size={16} /> : step.step}
         </button>
@@ -189,7 +189,7 @@ const StepCard: React.FC<{
               <span className={`text-[6.5px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-full border ${sCfg.bg} ${sCfg.border}`}
                 style={{ color: sCfg.color }}>{sCfg.label}</span>
               {affected.length > 0 && (
-                <span className="text-[6.5px] font-bold text-zinc-400 px-1.5 py-0.5 rounded-full bg-black/5 dark:bg-white/5">
+                <span className="text-[6.5px] font-bold text-zinc-500 dark:text-zinc-400 px-1.5 py-0.5 rounded-full bg-black/5 dark:bg-white/5">
                   {affected.length} SKUs affected
                 </span>
               )}
@@ -209,7 +209,7 @@ const StepCard: React.FC<{
           <div className={`shrink-0 w-6 h-6 rounded-lg flex items-center justify-center transition-colors ${
             expanded ? 'bg-black/10 dark:bg-white/10' : 'group-hover:bg-black/5 dark:group-hover:bg-white/5'
           }`}>
-            {expanded ? <ChevronUp size={13} className="text-zinc-400" /> : <ChevronDown size={13} className="text-zinc-400" />}
+            {expanded ? <ChevronUp size={13} className="text-zinc-500 dark:text-zinc-400" /> : <ChevronDown size={13} className="text-zinc-500 dark:text-zinc-400" />}
           </div>
         </button>
 
@@ -220,13 +220,13 @@ const StepCard: React.FC<{
             {/* Description + Impact */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="sm:col-span-2">
-                <div className="text-[8px] font-black uppercase tracking-widest text-zinc-400 mb-1.5">Context & Rationale</div>
-                <p className="text-[8.5px] text-zinc-600 dark:text-zinc-300 leading-relaxed">{step.description}</p>
+                <div className="text-[8px] font-black uppercase tracking-widest text-zinc-500 dark:text-zinc-400 mb-1.5">Context & Rationale</div>
+                <p className="text-[8.5px] text-zinc-650 dark:text-zinc-300 leading-relaxed">{step.description}</p>
               </div>
               <div className="rounded-xl p-3 border" style={{ backgroundColor: `${step.color}08`, borderColor: `${step.color}20` }}>
                 <div className="text-[7px] font-black uppercase tracking-widest mb-1" style={{ color: step.color }}>Estimated Impact</div>
                 <div className="text-[9px] font-black text-acies-gray dark:text-white leading-snug">{impact}</div>
-                <div className="mt-2 text-[7px] text-zinc-400 font-bold">{step.impactLabel}</div>
+                <div className="mt-2 text-[7px] text-zinc-500 dark:text-zinc-400 font-bold">{step.impactLabel}</div>
               </div>
             </div>
 
@@ -235,7 +235,7 @@ const StepCard: React.FC<{
 
               {/* Affected SKU table */}
               <div>
-                <div className="text-[8px] font-black uppercase tracking-widest text-zinc-400 mb-2 flex items-center justify-between">
+                <div className="text-[8px] font-black uppercase tracking-widest text-zinc-500 dark:text-zinc-400 mb-2 flex items-center justify-between">
                   <span>Affected SKUs — {affected.length} total</span>
                   {affected.length > 5 && (
                     <button onClick={() => setShowAll(s => !s)}
@@ -264,7 +264,7 @@ const StepCard: React.FC<{
                         onClick={() => onSkuClick && onSkuClick(s)}
                         className={`flex items-center gap-2 px-2 py-1.5 rounded-lg transition-all hover:bg-black/[0.05] dark:hover:bg-white/[0.05] group/sku ${onSkuClick ? 'cursor-pointer' : 'cursor-default'}`}
                         style={{ backgroundColor: i % 2 === 0 ? (isDarkMode ? 'rgba(255,255,255,0.015)' : 'rgba(0,0,0,0.015)') : 'transparent' }}>
-                        <span className="text-[7px] w-4 font-mono font-black text-zinc-400">{i + 1}</span>
+                        <span className="text-[7px] w-4 font-mono font-black text-zinc-500 dark:text-zinc-400">{i + 1}</span>
                         <div className="flex-1 min-w-0">
                           <div className="text-[8.5px] font-black text-acies-gray dark:text-zinc-100 truncate">{s.name}</div>
                           <div className="flex items-center gap-1.5 mt-0.5">
@@ -288,7 +288,7 @@ const StepCard: React.FC<{
                     );
                   })}
                   {affected.length === 0 && (
-                    <div className="text-center py-4 text-[8px] text-zinc-400 font-bold">No SKUs in this category</div>
+                    <div className="text-center py-4 text-[8px] text-zinc-500 dark:text-zinc-400 font-bold">No SKUs in this category</div>
                   )}
                 </div>
               </div>
@@ -298,7 +298,7 @@ const StepCard: React.FC<{
                 {/* Micro bar chart */}
                 {chartData.length > 0 && (
                   <div>
-                    <div className="text-[8px] font-black uppercase tracking-widest text-zinc-400 mb-2">{step.miniChartLabel} — Top SKUs</div>
+                    <div className="text-[8px] font-black uppercase tracking-widest text-zinc-500 dark:text-zinc-400 mb-2">{step.miniChartLabel} — Top SKUs</div>
                     <div className="h-28">
                       <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={chartData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
@@ -316,7 +316,7 @@ const StepCard: React.FC<{
 
                 {/* Action checklist */}
                 <div>
-                  <div className="text-[8px] font-black uppercase tracking-widest text-zinc-400 mb-2 flex items-center justify-between">
+                  <div className="text-[8px] font-black uppercase tracking-widest text-zinc-500 dark:text-zinc-400 mb-2 flex items-center justify-between">
                     <span>Action Checklist</span>
                     <span className="text-[7px] font-bold" style={{ color: step.color }}>{checked}/{step.checks.length} complete</span>
                   </div>
@@ -359,7 +359,7 @@ const StepCard: React.FC<{
                   {status === 'not-started' ? 'Mark In Progress' : status === 'in-progress' ? 'Mark Done ✓' : 'Reset'}
                 </button>
               </div>
-              <span className="text-[7px] text-zinc-400 font-bold">Step {step.step} of {totalSteps}</span>
+              <span className="text-[7px] text-zinc-500 dark:text-zinc-400 font-bold">Step {step.step} of {totalSteps}</span>
             </div>
           </div>
         )}
@@ -563,7 +563,7 @@ export const StrategicActionPlan: React.FC<Props> = ({ skus, isDarkMode, onNavig
         <h3 className="text-xs font-bold uppercase tracking-widest text-emerald-600 dark:text-emerald-400">
           ⑤ Momentum &amp; Muscle — Strategic Action Plan
         </h3>
-        <span className="ml-auto text-[7.5px] text-zinc-400 font-bold uppercase tracking-wider">
+        <span className="ml-auto text-[7.5px] text-zinc-500 dark:text-zinc-400 font-bold uppercase tracking-wider">
           Click a step to expand · Check off tasks · Click status to advance
         </span>
       </div>
@@ -599,7 +599,7 @@ export const StrategicActionPlan: React.FC<Props> = ({ skus, isDarkMode, onNavig
           <div className="flex items-center gap-4 text-[7.5px] font-black uppercase tracking-wider">
             <span className="text-emerald-500 flex items-center gap-1"><CheckCircle2 size={9} /> {doneCount} Done</span>
             <span className="text-amber-500 flex items-center gap-1"><Minus size={9} /> {inProgressCount} In Progress</span>
-            <span className="text-zinc-400 flex items-center gap-1"><Circle size={9} /> {steps.length - doneCount - inProgressCount} Not Started</span>
+            <span className="text-zinc-500 dark:text-zinc-400 flex items-center gap-1"><Circle size={9} /> {steps.length - doneCount - inProgressCount} Not Started</span>
           </div>
         </div>
 

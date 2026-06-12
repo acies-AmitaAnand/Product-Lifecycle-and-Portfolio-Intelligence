@@ -7,7 +7,7 @@ import React, { useState, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { Role } from '../../../types/dashboard';
 import { Download, Search, CheckCircle2, Activity, X, Eye, Printer, FileText, RefreshCw } from 'lucide-react';
-import { SKUS } from '../../../constants/data';
+import { SKUS as GLOBAL_SKUS } from '../../../constants/data';
 import { SkuIntelligenceModal } from './SkuIntelligenceModal';
 import { ProductDirectory } from './ProductDirectory';
 import { KPICard } from '../KPICard';
@@ -20,7 +20,8 @@ import { CannibalizationAnalystView } from './CannibalizationAnalystView';
 import { useSkuRationalizationState } from './useSkuRationalizationState';
 import { ActionRoutingPanel } from './ActionRoutingPanel';
 import { getDocumentTemplates } from './documentTemplates';
-import { SimplifyToGrow } from '../simplify-to-grow/SimplifyToGrow';
+import { SimplifyToGrow } from './simplify-to-grow/SimplifyToGrow';
+import { TimelineRange, getFilteredSKUS } from '../../../utils/timeframe';
 
 // Re-export constants and pure functions to prevent breaking sibling imports
 export { srClassify, SR_CLASSES, getSkuLocation } from './skuConstants';
@@ -29,10 +30,12 @@ interface SKURationalizationProps {
   role: Role;
   isDarkMode: boolean;
   setActiveTab?: (tabId: number) => void;
+  timelineRange: TimelineRange;
 }
 
-export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, isDarkMode, setActiveTab }) => {
-  const state = useSkuRationalizationState(role, isDarkMode);
+export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, isDarkMode, setActiveTab, timelineRange }) => {
+  const SKUS = useMemo(() => getFilteredSKUS(GLOBAL_SKUS, timelineRange), [timelineRange]);
+  const state = useSkuRationalizationState(role, isDarkMode, timelineRange);
 
   // Audit Ledger filtering states
   const [ledgerSearch, setLedgerSearch] = useState('');
@@ -136,35 +139,6 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
   return (
     <div className="space-y-6 pb-12 animate-fadeIn text-zinc-800 dark:text-white">
       
-      {/* Role Access Indicator Banner */}
-      <div className={`p-3 rounded-xl border flex items-center justify-between text-[11px] font-semibold transition-all ${
-        role === 'VP Product Management'
-          ? 'bg-purple-500/10 border-purple-500/20 text-purple-700 dark:text-purple-400'
-          : role === 'Product Manager'
-            ? 'bg-amber-500/10 border-amber-500/20 text-amber-700 dark:text-amber-400'
-            : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-700 dark:text-emerald-400'
-      }`}>
-        <div className="flex items-center gap-2">
-          <span className="relative flex h-2 w-2">
-            <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
-              role === 'VP Product Management' ? 'bg-purple-450' : role === 'Product Manager' ? 'bg-amber-450' : 'bg-emerald-450'
-            }`}></span>
-            <span className={`relative inline-flex rounded-full h-2 w-2 ${
-              role === 'VP Product Management' ? 'bg-purple-500' : role === 'Product Manager' ? 'bg-amber-500' : 'bg-emerald-500'
-            }`}></span>
-          </span>
-          <span>
-            Current View Profile: <span className="font-black uppercase tracking-wider">{role}</span>
-          </span>
-        </div>
-        <div className="text-[10px] font-bold uppercase tracking-wider opacity-90">
-          {role === 'VP Product Management'
-            ? '👑 Read-Only Workflow Checklists & Executive Authorization Sign-Off'
-            : role === 'Product Manager'
-              ? '⚙️ Authorized: Product Management & Supply Chain Operational Steps'
-              : '📊 Authorized: Pricing & Commercial Margin Customization Steps'}
-        </div>
-      </div>
 
       {/* Consolidated Toolbar Header */}
       <SkuToolbar
@@ -179,16 +153,18 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
       />
 
       {/* KPI Cards Strip */}
-      <div className={`grid grid-cols-1 sm:grid-cols-2 ${role === 'VP Product Management' ? 'lg:grid-cols-3' : 'lg:grid-cols-4'} gap-3`}>
-        {state.kpis.map((kpi) => (
-          <KPICard 
-            key={kpi.label}
-            kpi={kpi} 
-            role={role} 
-            onAuditClick={() => state.setActiveKpiAction(kpi.label)}
-          />
-        ))}
-      </div>
+      {state.activeView !== 'simplify' && (
+        <div className={`grid grid-cols-1 sm:grid-cols-2 ${role === 'VP Product Management' ? 'lg:grid-cols-3' : 'lg:grid-cols-4'} gap-3`}>
+          {state.kpis.map((kpi) => (
+            <KPICard 
+              key={kpi.label}
+              kpi={kpi} 
+              role={role} 
+              onAuditClick={() => state.setActiveKpiAction(kpi.label)}
+            />
+          ))}
+        </div>
+      )}
 
       {/* WORKSPACE VIEW 1: STRATEGIC SIMULATOR VIEW */}
       {state.activeView === 'simulator' && (
@@ -335,9 +311,11 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
 
       {/* WORKSPACE VIEW 3: SIMPLIFY TO GROW */}
       {state.activeView === 'simplify' && (
-        <SimplifyToGrow
-          role={role}
-          isDarkMode={isDarkMode}
+        <SimplifyToGrow 
+          role={role} 
+          isDarkMode={isDarkMode} 
+          selectedLocation={state.selectedLocation}
+          timelineRange={timelineRange}
           setActiveTab={(tabId) => {
             if (tabId === 4) {
               state.setActiveView('simulator');
@@ -349,136 +327,138 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
       )}
 
       {/* ⑥ CROSS-FUNCTIONAL ACTIONS & AUDIT LOG LEDGER */}
-      <div className="space-y-3 pt-6 border-t border-black/5 dark:border-white/5">
-        <div className="flex items-center justify-between gap-4 py-0.5 w-full">
-          <div className="flex items-center gap-2 border-l-4 border-emerald-600 pl-3">
-            <h3 className="text-xs font-bold uppercase tracking-widest text-emerald-600 dark:text-emerald-400">
-              ⑥ Cross-Functional Actions & Audit Log Ledger
-            </h3>
-          </div>
-          {state.auditLog && state.auditLog.length > 0 && (
-            <button
-              onClick={exportLogsCSV}
-              className="flex items-center gap-1.5 px-3 py-1 text-[9px] font-black text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg cursor-pointer transition shadow-sm border-none"
-            >
-              <Download size={10} />
-              <span>Export CSV</span>
-            </button>
-          )}
-        </div>
-
-        <div className="glass-card bg-white dark:bg-[#1a1a24] border border-black/10 dark:border-white/10 p-5 shadow-sm rounded-xl space-y-4">
-          {/* Filters */}
-          <div className="flex flex-col sm:flex-row gap-3">
-            <div className="flex-1 relative">
-              <input 
-                type="text" 
-                placeholder="Search audit trail by variant name, action or rationale..." 
-                value={ledgerSearch}
-                onChange={(e) => setLedgerSearch(e.target.value)}
-                className="w-full bg-black/5 dark:bg-[#121214] border border-black/10 dark:border-white/10 rounded-lg py-2 px-3 pl-8 text-xs font-semibold text-acies-gray dark:text-white outline-none focus:border-emerald-600"
-              />
-              <span className="absolute left-2.5 top-2.5 text-zinc-450 dark:text-zinc-500 text-xs">
-                <Search size={12} />
-              </span>
+      {state.activeView !== 'simplify' && (
+        <div className="space-y-3 pt-6 border-t border-black/5 dark:border-white/5">
+          <div className="flex items-center justify-between gap-4 py-0.5 w-full">
+            <div className="flex items-center gap-2 border-l-4 border-emerald-600 pl-3">
+              <h3 className="text-xs font-bold uppercase tracking-widest text-emerald-600 dark:text-emerald-400">
+                ⑥ Cross-Functional Actions & Audit Log Ledger
+              </h3>
             </div>
-            <select 
-              value={ledgerTeamFilter}
-              onChange={(e) => setLedgerTeamFilter(e.target.value)}
-              className="bg-black/5 dark:bg-[#121214] border border-black/10 dark:border-white/10 rounded-lg py-2 px-3 text-xs font-bold text-acies-gray dark:text-white outline-none focus:border-emerald-600"
-            >
-              <option value="ALL">All Teams</option>
-              <option value="pricing">Pricing & Finance</option>
-              <option value="product">Product Management</option>
-              <option value="supplychain">Supply Chain Ops</option>
-            </select>
+            {state.auditLog && state.auditLog.length > 0 && (
+              <button
+                onClick={exportLogsCSV}
+                className="flex items-center gap-1.5 px-3 py-1 text-[9px] font-black text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg cursor-pointer transition shadow-sm border-none"
+              >
+                <Download size={10} />
+                <span>Export CSV</span>
+              </button>
+            )}
           </div>
 
-          {/* Audit Logs Table */}
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse text-[10px]">
-              <thead>
-                <tr className="border-b border-black/10 dark:border-white/10 text-zinc-400 font-bold uppercase tracking-wider text-[8px]">
-                  <th className="py-2.5 px-3">Audit ID</th>
-                  <th className="py-2.5 px-3">Timestamp</th>
-                  <th className="py-2.5 px-3">Variant Pair</th>
-                  <th className="py-2.5 px-3">Team</th>
-                  <th className="py-2.5 px-3">Action Executed</th>
-                  <th className="py-2.5 px-3">Parameters & Audit Rationale</th>
-                  <th className="py-2.5 px-3 text-right">Sign-Off</th>
-                  <th className="py-2.5 px-3 text-right">Document Vault</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-black/5 dark:divide-white/5 font-medium">
-                {filteredLogs.map((log) => (
-                  <tr key={log.id} className="hover:bg-black/[0.01] dark:hover:bg-white/[0.01]">
-                    <td className="py-3 px-3 font-mono font-bold text-zinc-450">{log.id}</td>
-                    <td className="py-3 px-3 text-zinc-400 font-bold whitespace-nowrap">{log.timestamp}</td>
-                    <td className="py-3 px-3">
-                      <div className="font-black text-acies-gray dark:text-zinc-200">
-                        {log.skuA} <span className="text-zinc-400 font-normal">↔</span> {log.skuB}
-                      </div>
-                      <div className="text-[8px] text-zinc-400 font-bold uppercase">Risk: {(log.riskScore * 100).toFixed(0)}%</div>
-                    </td>
-                    <td className="py-3 px-3 uppercase tracking-wider text-[8px] font-black">
-                      <span className={`px-2 py-0.5 rounded ${
-                        log.team === 'pricing' ? 'bg-red-500/10 text-red-500' :
-                        log.team === 'product' ? 'bg-amber-500/10 text-amber-500' :
-                        'bg-blue-500/10 text-blue-400'
-                      }`}>
-                        {log.team === 'pricing' ? 'Pricing' : log.team === 'product' ? 'Product' : 'Supply'}
-                      </span>
-                    </td>
-                    <td className="py-3 px-3 font-extrabold uppercase text-acies-gray dark:text-zinc-200">{log.actionLabel}</td>
-                    <td className="py-3 px-3 text-zinc-500 dark:text-zinc-450 leading-relaxed max-w-sm">
-                      <div className="font-black text-[9px] text-zinc-400 uppercase">Params: {log.details}</div>
-                      <div className="mt-0.5">{log.rationale}</div>
-                    </td>
-                    <td className="py-3 px-3 text-right font-black uppercase">
-                      {log.actionLabel.startsWith('REVERSAL:') ? (
-                        <span className="inline-flex items-center gap-1 text-amber-500 text-[8px]">
-                          <X size={10} />
-                          <span>Reversed</span>
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1 text-emerald-500 text-[8px]">
-                          <CheckCircle2 size={10} />
-                          <span>Success</span>
-                        </span>
-                      )}
-                    </td>
-                    <td className="py-3 px-3 text-right">
-                      {(() => {
-                        const docType = getDocTypeForStep(log.team, log.actionLabel);
-                        if (docType) {
-                          return (
-                            <button
-                              type="button"
-                              onClick={() => state.setSelectedDoc(docType)}
-                              className="inline-flex items-center gap-1 px-2.5 py-1 text-[9px] font-black border border-purple-500/20 text-purple-600 dark:text-purple-400 bg-purple-500/5 hover:bg-purple-500/10 rounded-lg cursor-pointer transition border-none"
-                            >
-                              <FileText size={10} />
-                              <span>View Doc</span>
-                            </button>
-                          );
-                        }
-                        return <span className="text-zinc-400 dark:text-zinc-650">—</span>;
-                      })()}
-                    </td>
+          <div className="glass-card bg-white dark:bg-[#1a1a24] border border-black/10 dark:border-white/10 p-5 shadow-sm rounded-xl space-y-4">
+            {/* Filters */}
+            <div className="flex flex-col sm:flex-row gap-3">
+              <div className="flex-1 relative">
+                <input 
+                  type="text" 
+                  placeholder="Search audit trail by variant name, action or rationale..." 
+                  value={ledgerSearch}
+                  onChange={(e) => setLedgerSearch(e.target.value)}
+                  className="w-full bg-black/5 dark:bg-[#121214] border border-black/10 dark:border-white/10 rounded-lg py-2 px-3 pl-8 text-xs font-semibold text-acies-gray dark:text-white outline-none focus:border-emerald-600"
+                />
+                <span className="absolute left-2.5 top-2.5 text-zinc-450 dark:text-zinc-500 text-xs">
+                  <Search size={12} />
+                </span>
+              </div>
+              <select 
+                value={ledgerTeamFilter}
+                onChange={(e) => setLedgerTeamFilter(e.target.value)}
+                className="bg-black/5 dark:bg-[#121214] border border-black/10 dark:border-white/10 rounded-lg py-2 px-3 text-xs font-bold text-acies-gray dark:text-white outline-none focus:border-emerald-600"
+              >
+                <option value="ALL">All Teams</option>
+                <option value="pricing">Pricing & Finance</option>
+                <option value="product">Product Management</option>
+                <option value="supplychain">Supply Chain Ops</option>
+              </select>
+            </div>
+
+            {/* Audit Logs Table */}
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse text-[10px]">
+                <thead>
+                  <tr className="border-b border-black/10 dark:border-white/10 text-zinc-400 font-bold uppercase tracking-wider text-[8px]">
+                    <th className="py-2.5 px-3">Audit ID</th>
+                    <th className="py-2.5 px-3">Timestamp</th>
+                    <th className="py-2.5 px-3">Variant Pair</th>
+                    <th className="py-2.5 px-3">Team</th>
+                    <th className="py-2.5 px-3">Action Executed</th>
+                    <th className="py-2.5 px-3">Parameters & Audit Rationale</th>
+                    <th className="py-2.5 px-3 text-right">Sign-Off</th>
+                    <th className="py-2.5 px-3 text-right">Document Vault</th>
                   </tr>
-                ))}
-                {filteredLogs.length === 0 && (
-                  <tr>
-                    <td colSpan={8} className="py-8 text-center text-zinc-400 dark:text-zinc-500 font-bold uppercase tracking-widest">
-                      No actions executed on the ledger yet. Open the Control Room to execute steps.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-black/5 dark:divide-white/5 font-medium">
+                  {filteredLogs.map((log) => (
+                    <tr key={log.id} className="hover:bg-black/[0.01] dark:hover:bg-white/[0.01]">
+                      <td className="py-3 px-3 font-mono font-bold text-zinc-450">{log.id}</td>
+                      <td className="py-3 px-3 text-zinc-400 font-bold whitespace-nowrap">{log.timestamp}</td>
+                      <td className="py-3 px-3">
+                        <div className="font-black text-acies-gray dark:text-zinc-200">
+                          {log.skuA} <span className="text-zinc-400 font-normal">↔</span> {log.skuB}
+                        </div>
+                        <div className="text-[8px] text-zinc-400 font-bold uppercase">Risk: {(log.riskScore * 100).toFixed(0)}%</div>
+                      </td>
+                      <td className="py-3 px-3 uppercase tracking-wider text-[8px] font-black">
+                        <span className={`px-2 py-0.5 rounded ${
+                          log.team === 'pricing' ? 'bg-red-500/10 text-red-500' :
+                          log.team === 'product' ? 'bg-amber-500/10 text-amber-500' :
+                          'bg-blue-500/10 text-blue-400'
+                        }`}>
+                          {log.team === 'pricing' ? 'Pricing' : log.team === 'product' ? 'Product' : 'Supply'}
+                        </span>
+                      </td>
+                      <td className="py-3 px-3 font-extrabold uppercase text-acies-gray dark:text-zinc-200">{log.actionLabel}</td>
+                      <td className="py-3 px-3 text-zinc-500 dark:text-zinc-450 leading-relaxed max-w-sm">
+                        <div className="font-black text-[9px] text-zinc-400 uppercase">Params: {log.details}</div>
+                        <div className="mt-0.5">{log.rationale}</div>
+                      </td>
+                      <td className="py-3 px-3 text-right font-black uppercase">
+                        {log.actionLabel.startsWith('REVERSAL:') ? (
+                          <span className="inline-flex items-center gap-1 text-amber-500 text-[8px]">
+                            <X size={10} />
+                            <span>Reversed</span>
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 text-emerald-500 text-[8px]">
+                            <CheckCircle2 size={10} />
+                            <span>Success</span>
+                          </span>
+                        )}
+                      </td>
+                      <td className="py-3 px-3 text-right">
+                        {(() => {
+                          const docType = getDocTypeForStep(log.team, log.actionLabel);
+                          if (docType) {
+                            return (
+                              <button
+                                type="button"
+                                onClick={() => state.setSelectedDoc(docType)}
+                                className="inline-flex items-center gap-1 px-2.5 py-1 text-[9px] font-black border border-purple-500/20 text-purple-600 dark:text-purple-400 bg-purple-500/5 hover:bg-purple-500/10 rounded-lg cursor-pointer transition border-none"
+                              >
+                                <FileText size={10} />
+                                <span>View Doc</span>
+                              </button>
+                            );
+                          }
+                          return <span className="text-zinc-400 dark:text-zinc-650">—</span>;
+                        })()}
+                      </td>
+                    </tr>
+                  ))}
+                  {filteredLogs.length === 0 && (
+                    <tr>
+                      <td colSpan={8} className="py-8 text-center text-zinc-400 dark:text-zinc-500 font-bold uppercase tracking-widest">
+                        No actions executed on the ledger yet. Open the Control Room to execute steps.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* SKU DETAIL MODAL WINDOW */}
       <SkuIntelligenceModal

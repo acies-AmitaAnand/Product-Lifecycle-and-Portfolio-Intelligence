@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Layers, Calculator, Save, CheckCircle2, Info, TrendingUp, HelpCircle, ArrowRight, Award, AlertTriangle, Sparkles, RefreshCw, Package, FileText, ArrowUpRight, ArrowLeft
 } from 'lucide-react';
@@ -7,9 +7,10 @@ import {
   LineChart, Line, PieChart, Pie, Legend, ComposedChart
 } from 'recharts';
 import { Role } from '../../../types/dashboard';
-import { SKUS } from '../../../constants/data';
+import { SKUS as GLOBAL_SKUS } from '../../../constants/data';
 import { ForecastAccuracySimulator } from './ForecastAccuracySimulator';
 import { MarginSimulator } from './MarginSimulator';
+import { TimelineRange, getTimeframeScale, getDeterministicNoise, getFilteredSKUS, getAdjustedMargin, getAdjustedPci } from '../../../utils/timeframe';
 
 interface ProfitabilityTreeProps {
   role: Role;
@@ -17,6 +18,7 @@ interface ProfitabilityTreeProps {
   isDarkMode: boolean;
   isSimulatorOpen?: boolean;
   setIsSimulatorOpen?: (open: boolean) => void;
+  timelineRange: TimelineRange;
 }
 
 interface Scenario {
@@ -51,7 +53,8 @@ const VPProfitabilityTreeView: React.FC<{
   isSimulatorOpen?: boolean;
   setIsSimulatorOpen?: (open: boolean) => void;
   onAuditClick?: (metric: string | null) => void;
-}> = ({ isDarkMode, isSimulatorOpen, setIsSimulatorOpen, onAuditClick }) => {
+  timelineRange: TimelineRange;
+}> = ({ isDarkMode, isSimulatorOpen, setIsSimulatorOpen, onAuditClick, timelineRange }) => {
   const accentColor = isDarkMode ? '#a78bfa' : '#6d28d9';
   const gridStroke = isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
   const tickColor = isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)';
@@ -159,6 +162,10 @@ const VPProfitabilityTreeView: React.FC<{
     { name: 'Warehouse', value: 38, color: '#10b981' },
   ];
 
+  const scale = getTimeframeScale(timelineRange);
+  const noise = (key: string) => 1 + getDeterministicNoise(key, timelineRange) * 0.03;
+  const pci = getAdjustedPci(0.5509, timelineRange);
+
   const PT_NODES = [
     {
       id: 'pt-revenue',
@@ -168,9 +175,9 @@ const VPProfitabilityTreeView: React.FC<{
       bg: 'rgba(16,185,129,0.06)',
       dotColor: '#10b981',
       items: [
-        { label: 'Product-wise revenue', val: '₹851 Cr', badge: '▲ 8.4%', bc: 'rgba(16,185,129,0.15)', bcolor: '#10b981' },
-        { label: 'SKU-wise revenue', val: '127 SKUs', badge: '', bc: '', bcolor: '' },
-        { label: 'Category contribution', val: '4 categories', badge: '', bc: '', bcolor: '' },
+        { label: 'Product-wise revenue', val: `₹${Math.round(851 * scale * noise('pt-rev-product'))} Cr`, badge: '▲ 8.4%', bc: 'rgba(16,185,129,0.15)', bcolor: '#10b981' },
+        { label: 'SKU-wise revenue', val: `${Math.round(127 + getDeterministicNoise('active_skus_pt', timelineRange)*3)} SKUs`, badge: '', bc: '', bcolor: '' },
+        { label: 'Category contribution', val: '5 categories', badge: '', bc: '', bcolor: '' },
       ]
     },
     {
@@ -181,10 +188,10 @@ const VPProfitabilityTreeView: React.FC<{
       bg: 'rgba(239,68,68,0.06)',
       dotColor: '#ef4444',
       items: [
-        { label: 'Manufacturing costs', val: '₹312 Cr', badge: '', bc: '', bcolor: '' },
-        { label: 'Transportation costs', val: '₹68 Cr', badge: '▲ 4%', bc: 'rgba(239,68,68,0.12)', bcolor: '#ef4444' },
-        { label: 'Packaging costs', val: '₹44 Cr', badge: '', bc: '', bcolor: '' },
-        { label: 'Marketing expenses', val: '₹91 Cr', badge: '', bc: '', bcolor: '' },
+        { label: 'Manufacturing costs', val: `₹${Math.round(312 * scale * noise('pt-mfg-cost'))} Cr`, badge: '', bc: '', bcolor: '' },
+        { label: 'Transportation costs', val: `₹${Math.round(68 * scale * noise('pt-trans-cost'))} Cr`, badge: '▲ 4%', bc: 'rgba(239,68,68,0.12)', bcolor: '#ef4444' },
+        { label: 'Packaging costs', val: `₹${Math.round(44 * scale * noise('pt-pack-cost'))} Cr`, badge: '', bc: '', bcolor: '' },
+        { label: 'Marketing expenses', val: `₹${Math.round(91 * scale * noise('pt-mkt-cost'))} Cr`, badge: '', bc: '', bcolor: '' },
       ]
     },
     {
@@ -195,9 +202,9 @@ const VPProfitabilityTreeView: React.FC<{
       bg: 'rgba(139,92,246,0.06)',
       dotColor: '#8b5cf6',
       items: [
-        { label: 'Gross Margin (GM)', val: '36.2%', badge: '▲ 1.1pp', bc: 'rgba(139,92,246,0.12)', bcolor: '#8b5cf6' },
-        { label: 'Operating Margin (OM)', val: '18.4%', badge: '', bc: '', bcolor: '' },
-        { label: 'Net Margin (NM)', val: '11.1%', badge: '', bc: '', bcolor: '' },
+        { label: 'Gross Margin (GM)', val: `${getAdjustedMargin(36.2, 'GM_PT', timelineRange)}%`, badge: '▲ 1.1pp', bc: 'rgba(139,92,246,0.12)', bcolor: '#8b5cf6' },
+        { label: 'Operating Margin (OM)', val: `${getAdjustedMargin(18.4, 'OM_PT', timelineRange)}%`, badge: '', bc: '', bcolor: '' },
+        { label: 'Net Margin (NM)', val: `${getAdjustedMargin(11.1, 'NM_PT', timelineRange)}%`, badge: '', bc: '', bcolor: '' },
       ]
     },
     {
@@ -208,8 +215,8 @@ const VPProfitabilityTreeView: React.FC<{
       bg: 'rgba(245,158,11,0.06)',
       dotColor: '#f59e0b',
       items: [
-        { label: 'Cost to maintain each SKU', val: '₹4.2 Cr avg', badge: '', bc: '', bcolor: '' },
-        { label: 'Active complex designs', val: '14 items', badge: '', bc: '', bcolor: '' },
+        { label: 'Cost to maintain each SKU', val: `₹${(4.2 * (1 + getDeterministicNoise('pt-c2s-cost', timelineRange)*0.05)).toFixed(1)} Cr avg`, badge: '', bc: '', bcolor: '' },
+        { label: 'Active complex designs', val: `${Math.round(14 + getDeterministicNoise('active_designs_pt', timelineRange)*2)} items`, badge: '', bc: '', bcolor: '' },
       ]
     },
     {
@@ -220,8 +227,8 @@ const VPProfitabilityTreeView: React.FC<{
       bg: 'rgba(239,68,68,0.06)',
       dotColor: '#ef4444',
       items: [
-        { label: 'Excess inventory', val: '₹28 Cr', badge: 'Critical', bc: 'rgba(239,68,68,0.15)', bcolor: '#ef4444' },
-        { label: 'Packaging complexity', val: '₹14 Cr', badge: 'High', bc: 'rgba(245,158,11,0.12)', bcolor: '#f59e0b' },
+        { label: 'Excess inventory', val: `₹${Math.round(28 * scale * noise('pt-leak-inv'))} Cr`, badge: 'Critical', bc: 'rgba(239,68,68,0.15)', bcolor: '#ef4444' },
+        { label: 'Packaging complexity', val: `₹${Math.round(14 * scale * noise('pt-leak-pack'))} Cr`, badge: 'High', bc: 'rgba(245,158,11,0.12)', bcolor: '#f59e0b' },
       ]
     },
     {
@@ -1324,7 +1331,8 @@ export const ProfitabilityTree: React.FC<ProfitabilityTreeProps> = ({
   isDarkMode,
   isSimulatorOpen,
   setIsSimulatorOpen,
-  onAuditClick
+  onAuditClick,
+  timelineRange
 }) => {
   if (role === 'VP Product Management') {
     return (
@@ -1333,6 +1341,7 @@ export const ProfitabilityTree: React.FC<ProfitabilityTreeProps> = ({
         isSimulatorOpen={isSimulatorOpen}
         setIsSimulatorOpen={setIsSimulatorOpen}
         onAuditClick={onAuditClick}
+        timelineRange={timelineRange}
       />
     );
   }
@@ -1355,6 +1364,16 @@ export const ProfitabilityTree: React.FC<ProfitabilityTreeProps> = ({
 
   // Accordion guide
   const [guideOpen, setGuideOpen] = useState(false);
+
+  useEffect(() => {
+    const scale = getTimeframeScale(timelineRange);
+    const noise = 1 + getDeterministicNoise('ProfitTree_Units', timelineRange) * 0.03;
+    setUnits(Math.round(850 * scale * noise));
+    setCost(Math.round(95 * (1 + getDeterministicNoise('ProfitTree_Cost', timelineRange) * 0.02)));
+    setLogistics(Math.round(18 * scale * (1 + getDeterministicNoise('ProfitTree_Log', timelineRange) * 0.04)));
+    setPrice(Math.round(180 + getDeterministicNoise('ProfitTree_Price', timelineRange) * 5));
+    setOverhead(Math.round(8 * scale * (1 + getDeterministicNoise('ProfitTree_OH', timelineRange) * 0.03)));
+  }, [timelineRange]);
 
   // Financial calculations
   const rev = units * price / 100;

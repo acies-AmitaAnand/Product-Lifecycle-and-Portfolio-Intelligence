@@ -138,7 +138,7 @@ export const SkuToolbar: React.FC<SkuToolbarProps> = ({
       </div>
 
       {/* Center: View switcher tabs */}
-      <div className="flex bg-black/5 dark:bg-white/5 p-0.5 rounded border border-black/5 dark:border-white/10 min-w-[450px]">
+      <div className="flex bg-black/5 dark:bg-white/5 p-0.5 rounded border border-black/5 dark:border-white/10 min-w-[480px]">
         {[
           { id: 'simulator', label: 'Portfolio Simulator Command' },
           { id: 'analyst',   label: 'Cannibalisation Simulator' },

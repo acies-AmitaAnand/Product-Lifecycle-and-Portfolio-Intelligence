@@ -26,7 +26,7 @@ export const PillarsGrid: React.FC<PillarsGridProps> = ({
         <h3 className="text-xs font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-400">
           ① Simplify to Grow Flywheel — 5 Pillar Health
         </h3>
-        <span className="ml-auto text-[7.5px] text-zinc-400 font-bold uppercase tracking-wider">
+        <span className="ml-auto text-[7.5px] text-zinc-500 dark:text-zinc-400 font-bold uppercase tracking-wider">
           Click any pillar to drill down
         </span>
       </div>
@@ -62,10 +62,10 @@ export const PillarsGrid: React.FC<PillarsGridProps> = ({
                   )}
                 </div>
               </div>
-              <div className={`text-2xl font-black mb-0.5 ${p.text}`}>{p.score}</div>
-              <div className="text-[8px] font-black uppercase tracking-widest text-zinc-450 dark:text-zinc-500 mb-1">{p.pillar}</div>
-              <p className="text-[7.5px] text-zinc-450 dark:text-zinc-500 leading-relaxed font-medium">{p.description}</p>
-              <div className="mt-2 text-[7px] font-black text-zinc-350 dark:text-zinc-600 uppercase tracking-widest flex items-center gap-1">
+              <div className="text-2xl font-black mb-0.5 ${p.text}">{p.score}</div>
+              <div className="text-[8px] font-black uppercase tracking-widest text-zinc-500 dark:text-zinc-400 mb-1">{p.pillar}</div>
+              <p className="text-[7.5px] text-zinc-600 dark:text-zinc-400 leading-relaxed font-medium">{p.description}</p>
+              <div className="mt-2 text-[7px] font-black text-zinc-500 dark:text-zinc-500 uppercase tracking-widest flex items-center gap-1">
                 Pillar {i + 1} of 5 · {isExpanded ? 'collapse' : 'click to expand'}
               </div>
             </button>

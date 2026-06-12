@@ -7,19 +7,20 @@ import React, { useRef } from 'react';
 import { Calendar } from 'lucide-react';
 
 interface DrilldownFiltersProps {
-  timeHorizon: '1M' | '3M' | '6M' | 'YTD' | '12M' | '3Y';
-  setTimeHorizon: (q: '1M' | '3M' | '6M' | 'YTD' | '12M' | '3Y') => void;
+  timeHorizon: '1M' | '3M' | '6M' | 'YTD' | '12M' | '2Y' | '3Y';
+  setTimeHorizon: (q: '1M' | '3M' | '6M' | 'YTD' | '12M' | '2Y' | '3Y') => void;
   selectedMetric: 'rev' | 'margin' | 'otif';
   setSelectedMetric: (m: 'rev' | 'margin' | 'otif') => void;
 }
 
-const getDateRangeLabel = (horizon: '1M' | '3M' | '6M' | 'YTD' | '12M' | '3Y') => {
+const getDateRangeLabel = (horizon: '1M' | '3M' | '6M' | 'YTD' | '12M' | '2Y' | '3Y') => {
   switch (horizon) {
     case '1M':  return 'May 09, 2026 – Jun 08, 2026 (30 Days)';
     case '3M':  return 'Mar 09, 2026 – Jun 08, 2026 (91 Days)';
     case '6M':  return 'Dec 09, 2025 – Jun 08, 2026 (182 Days)';
     case 'YTD': return 'Jan 01, 2026 – Jun 08, 2026 (159 Days)';
     case '12M': return 'Jun 09, 2025 – Jun 08, 2026 (365 Days)';
+    case '2Y':  return 'Jun 09, 2024 – Jun 08, 2026 (730 Days)';
     case '3Y':  return 'Jun 09, 2023 – Jun 08, 2026 (1096 Days)';
     default:    return '';
   }
@@ -31,7 +32,7 @@ export const DrilldownFilters: React.FC<DrilldownFiltersProps> = ({
   selectedMetric,
   setSelectedMetric,
 }) => {
-  const horizons = ['1M', '3M', '6M', 'YTD', '12M', '3Y'] as const;
+  const horizons = ['1M', '3M', '6M', 'YTD', '12M', '2Y', '3Y'] as const;
   const activeIndex = horizons.indexOf(timeHorizon);
   const trackPct = (activeIndex / (horizons.length - 1)) * 100;
 

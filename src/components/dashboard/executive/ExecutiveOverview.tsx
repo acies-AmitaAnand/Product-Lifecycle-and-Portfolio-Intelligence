@@ -11,6 +11,7 @@ import { Role } from '../../../types/dashboard';
 import { 
   VP_ALERTS, VP_APPROVALS, VP_FORECAST, VP_KPI_BASE, SKUS 
 } from '../../../constants/data';
+import { TimelineRange, getTimeframeScale, getDeterministicNoise, getFilteredSKUS } from '../../../utils/timeframe';
 import { SkuDetailsModal } from './SkuDetailsModal';
 import { RegionalForecastModal } from './RegionalForecastModal';
 import { EmailComposerModal } from '../portfolio-health/EmailComposerModal';
@@ -173,6 +174,7 @@ interface ExecutiveOverviewProps {
   setActiveTab: (tab: number) => void;
   isDarkMode: boolean;
   onAuditClick: (metric: string) => void;
+  timelineRange: TimelineRange;
 }
 
 // Top Customer Insights Dataset
@@ -665,7 +667,7 @@ const generateInitialEvents = () => {
   return list;
 };
 
-export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setActiveTab, isDarkMode, onAuditClick }) => {
+export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setActiveTab, isDarkMode, onAuditClick, timelineRange }) => {
   const [alerts, setAlerts] = useState(() => VP_ALERTS.map(a => ({ ...a })));
   const [approvals, setApprovals] = useState(() => VP_APPROVALS.map(a => ({ ...a })));
   const [kpis, setKpis] = useState(() => {
@@ -676,6 +678,55 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
     return baseKpis.map(k => ({ ...k, sparkPoints: k.spark.map((v, i) => ({ index: i, value: v })) }));
   });
   const [lastRefreshed, setLastRefreshed] = useState<string>('Refreshed just now');
+
+  useEffect(() => {
+    let baseKpis = VP_KPI_BASE;
+    if (role === 'VP Product Management') {
+      baseKpis = baseKpis.filter(k => k.label !== 'Gross Margin');
+    }
+    
+    const scale = getTimeframeScale(timelineRange);
+    const updated = baseKpis.map(k => {
+      let scaledValue = k.value;
+      let scaledSpark = [...k.spark];
+      const noiseFactor = 1 + getDeterministicNoise(k.label, timelineRange) * 0.03;
+      
+      if (k.label === 'Total Revenue') {
+        scaledValue = Math.round(k.value * scale * noiseFactor);
+        scaledSpark = k.spark.map(v => Math.round(v * scale * noiseFactor));
+      } else if (k.label === 'Gross Margin') {
+        let drift = 0;
+        if (timelineRange === '1m') drift = -1.5;
+        else if (timelineRange === '3m') drift = -0.8;
+        else if (timelineRange === '6m') drift = -0.3;
+        else if (timelineRange === '24m') drift = 0.5;
+        else if (timelineRange === '36m') drift = 1.1;
+        scaledValue = parseFloat((k.value + drift + getDeterministicNoise('GM_Overview', timelineRange) * 0.5).toFixed(1));
+        scaledSpark = k.spark.map(v => parseFloat((v + drift + getDeterministicNoise('GM_Overview', timelineRange) * 0.5).toFixed(1)));
+      } else if (k.label === 'Active SKUs') {
+        let drift = 0;
+        if (timelineRange === '1m') drift = 5;
+        else if (timelineRange === '3m') drift = 3;
+        else if (timelineRange === '6m') drift = 2;
+        else if (timelineRange === '24m') drift = -4;
+        else if (timelineRange === '36m') drift = -8;
+        scaledValue = Math.round(k.value + drift + getDeterministicNoise('SKUs_Overview', timelineRange) * 2);
+        scaledSpark = k.spark.map(v => Math.round(v + drift + getDeterministicNoise('SKUs_Overview', timelineRange) * 2));
+      } else if (k.label === 'Critical Alerts') {
+        scaledValue = Math.max(0, Math.round(k.value * scale * noiseFactor));
+        scaledSpark = k.spark.map(v => Math.max(0, Math.round(v * scale * noiseFactor)));
+      }
+      
+      return {
+        ...k,
+        value: scaledValue,
+        spark: scaledSpark,
+        sparkPoints: scaledSpark.map((v, i) => ({ index: i, value: v }))
+      };
+    });
+    
+    setKpis(updated);
+  }, [timelineRange, role]);
 
   // Live Industry Updates states
   const [viewFormat, setViewFormat] = useState<'grid' | 'table'>('grid');
@@ -814,30 +865,39 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
     setApprovals(prev => prev.filter(a => a.id !== id));
   };
 
-  // Recharts actual vs target data
+    // Recharts actual vs target data
   const revMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   const revActual = [58, 61, 65, 70, 74, 77, 80, 84, 88, 91, 92.4, 95.1];
   const revTarget = [60, 63, 66, 70, 74, 76, 80, 83, 86, 90, 93, 96];
 
-  const revenueTrendData = revMonths.map((m, idx) => ({
+  const numMonthsToShow = timelineRange === '1m' ? 1 :
+                          timelineRange === '3m' ? 3 :
+                          timelineRange === '6m' ? 6 : 12;
+  const slicedActual = revActual.slice(-numMonthsToShow);
+  const slicedTarget = revTarget.slice(-numMonthsToShow);
+  const slicedMonths = revMonths.slice(-numMonthsToShow);
+
+  const revenueTrendData = slicedMonths.map((m, idx) => ({
     month: m,
-    Actual: idx < revActual.length ? revActual[idx] : null,
-    Target: revTarget[idx]
+    Actual: idx < slicedActual.length ? slicedActual[idx] : null,
+    Target: slicedTarget[idx]
   }));
 
   // Category performance
+  const scale = getTimeframeScale(timelineRange);
   const categoryPerfData = [
-    { name: 'Beverages', value: 316, color: '#7C3AED' },
-    { name: 'Snacks', value: 253, color: '#0F6E56' },
-    { name: 'Dairy', value: 180, color: '#F59E0B' },
-    { name: 'Personal Care', value: 225, color: '#185FA5' },
-    { name: 'Household', value: 145, color: '#854F0B' }
+    { name: 'Beverages', value: Math.round(316 * scale * (1 + getDeterministicNoise('Beverages_perf', timelineRange) * 0.03)), color: '#7C3AED' },
+    { name: 'Snacks', value: Math.round(253 * scale * (1 + getDeterministicNoise('Snacks_perf', timelineRange) * 0.03)), color: '#0F6E56' },
+    { name: 'Dairy', value: Math.round(180 * scale * (1 + getDeterministicNoise('Dairy_perf', timelineRange) * 0.03)), color: '#F59E0B' },
+    { name: 'Personal Care', value: Math.round(225 * scale * (1 + getDeterministicNoise('PersonalCare_perf', timelineRange) * 0.03)), color: '#185FA5' },
+    { name: 'Household', value: Math.round(145 * scale * (1 + getDeterministicNoise('Household_perf', timelineRange) * 0.03)), color: '#854F0B' }
   ];
 
   // Top SKUs by revenue filtered by category
+  const timeframeSkus = getFilteredSKUS(SKUS, timelineRange);
   const filteredSkus = activeCategory === 'All'
-    ? SKUS
-    : SKUS.filter(s => s.cat === activeCategory);
+    ? timeframeSkus
+    : timeframeSkus.filter(s => s.cat === activeCategory);
   const topSkus = [...filteredSkus].sort((a, b) => b.rev - a.rev).slice(0, 5);
   const maxSkuRev = topSkus[0]?.rev || 1;
   

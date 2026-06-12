@@ -10,17 +10,20 @@ import {
 import { 
   ResponsiveContainer, BarChart, Bar, CartesianGrid, XAxis, YAxis, Tooltip, Cell
 } from 'recharts';
-import { SKUS } from '../../../constants/data';
+import { SKUS as GLOBAL_SKUS } from '../../../constants/data';
 import { EmailComposerModal } from '../portfolio-health/EmailComposerModal';
+import { TimelineRange, getFilteredSKUS } from '../../../utils/timeframe';
+import { useMemo } from 'react';
 
 interface DrilldownSkuModalProps {
   isOpen: boolean;
   onClose: () => void;
   skuName: string;
   selectedRegion: string;
-  timeHorizon: '1M' | '3M' | '6M' | 'YTD' | '12M' | '3Y';
+  timeHorizon: '1M' | '3M' | '6M' | 'YTD' | '12M' | '2Y' | '3Y';
   multiplier: number;
   isDarkMode: boolean;
+  timelineRange: TimelineRange;
 }
 
 const REGIONS_CONFIG: Record<string, { name: string; manager: string; email: string; role: string; plant: string }> = {
@@ -38,7 +41,9 @@ export const DrilldownSkuModal: React.FC<DrilldownSkuModalProps> = ({
   timeHorizon,
   multiplier,
   isDarkMode,
+  timelineRange,
 }) => {
+  const SKUS = useMemo(() => getFilteredSKUS(GLOBAL_SKUS, timelineRange), [timelineRange]);
   const [detailTab, setDetailTab] = useState<'profit' | 'supply' | 'ai'>('profit');
   const [isEmailOpen, setIsEmailOpen] = useState(false);
   const [emailData, setEmailData] = useState({ to: '', name: '', subject: '', body: '' });
@@ -70,6 +75,7 @@ export const DrilldownSkuModal: React.FC<DrilldownSkuModalProps> = ({
   const getStockoutsMultiplier = () => {
     switch (timeHorizon) {
       case '3Y': return 12;
+      case '2Y': return 8;
       case '12M': return 4;
       case '6M': return 2;
       case 'YTD': return 1.67;

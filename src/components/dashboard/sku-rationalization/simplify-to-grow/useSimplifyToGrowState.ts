@@ -5,8 +5,11 @@
 import { useState, useMemo, useCallback } from 'react';
 import { EnrichedSKU, ClassFilter } from './types';
 import { computeEnrichedSKUs, computePillars } from './utils';
+import { getSkuLocation } from '../skuConstants';
 
-export function useSimplifyToGrowState(setActiveTab: (tab: number) => void) {
+import { TimelineRange } from '../../../../utils/timeframe';
+
+export function useSimplifyToGrowState(setActiveTab: (tab: number) => void, selectedLocation?: string, timelineRange: TimelineRange = '12m') {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [classFilter, setClassFilter] = useState<ClassFilter>('All');
   const [ippvSort, setIppvSort] = useState<'ippv' | 'cx' | 'complexity' | 'cost'>('ippv');
@@ -15,7 +18,12 @@ export function useSimplifyToGrowState(setActiveTab: (tab: number) => void) {
   const [hoveredCat, setHoveredCat] = useState<string | null>(null);
   const [costDriverFilter, setCostDriverFilter] = useState<'All' | 'downtime' | 'transport' | 'waste'>('All');
 
-  const skus = useMemo(() => computeEnrichedSKUs(), []);
+  const allEnrichedSkus = useMemo(() => computeEnrichedSKUs(timelineRange), [timelineRange]);
+  const skus = useMemo(() => {
+    if (!selectedLocation || selectedLocation === 'ALL') return allEnrichedSkus;
+    return allEnrichedSkus.filter(s => getSkuLocation(s.name) === selectedLocation);
+  }, [allEnrichedSkus, selectedLocation]);
+
   const pillars = useMemo(() => computePillars(skus), [skus]);
   const overallScore = Math.round(pillars.reduce((a, p) => a + p.score, 0) / pillars.length);
 

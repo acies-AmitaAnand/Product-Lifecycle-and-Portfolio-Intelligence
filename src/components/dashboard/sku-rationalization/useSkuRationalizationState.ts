@@ -8,18 +8,21 @@
  */
 
 import { useState, useEffect, useMemo } from 'react';
-import { SKUS } from '../../../constants/data';
+import { SKUS as GLOBAL_SKUS } from '../../../constants/data';
 import { Role } from '../../../types/dashboard';
 import { srClassify, getSkuLocation, PAIRS_DATA, SR_CLASSES } from './skuConstants';
+import { TimelineRange, getFilteredSKUS } from '../../../utils/timeframe';
 
-export function useSkuRationalizationState(role: Role, isDarkMode: boolean) {
+export function useSkuRationalizationState(role: Role, isDarkMode: boolean, timelineRange: TimelineRange) {
+  const SKUS = useMemo(() => getFilteredSKUS(GLOBAL_SKUS, timelineRange), [timelineRange]);
+
   // ── Region ─────────────────────────────────────────────────────────────────
   const [selectedLocation, setSelectedLocation] = useState<string>('ALL');
 
   const locationFilteredSkus = useMemo(() => {
     if (selectedLocation === 'ALL') return SKUS;
     return SKUS.filter(s => getSkuLocation(s.name) === selectedLocation);
-  }, [selectedLocation]);
+  }, [selectedLocation, SKUS]);
 
   // ── Chart visual constants ─────────────────────────────────────────────────
   const gridStroke    = isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
@@ -28,6 +31,7 @@ export function useSkuRationalizationState(role: Role, isDarkMode: boolean) {
   const tooltipBorder = isDarkMode ? 'rgba(255,255,255,0.1)'  : 'rgba(0,0,0,0.1)';
   const tooltipText   = isDarkMode ? '#fff' : '#000';
 
+  // ── View & toolbar ─────────────────────────────────────────────────────────
   const [activeView, setActiveView] = useState<'simulator' | 'analyst' | 'simplify'>(() => {
     try {
       const saved = localStorage.getItem('sku_rationalization_active_view');
@@ -172,7 +176,7 @@ export function useSkuRationalizationState(role: Role, isDarkMode: boolean) {
       const params = new URLSearchParams(hash.substring(1).replace(/\+/g, '%20'));
       
       const viewParam = params.get('view');
-      if (viewParam === 'simulator' || viewParam === 'analyst') {
+      if (viewParam === 'simulator' || viewParam === 'analyst' || viewParam === 'simplify') {
         setActiveView(viewParam);
       }
       

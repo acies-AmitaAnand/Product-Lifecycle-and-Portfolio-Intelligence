@@ -52,7 +52,7 @@ export const IppvLeagueTable: React.FC<IppvLeagueTableProps> = ({
         <h3 className="text-xs font-bold uppercase tracking-widest text-sky-600 dark:text-sky-400">
           ② IPPV Portfolio Ranking
         </h3>
-        <div className="ml-auto flex items-center gap-1 text-[7px] text-zinc-400">
+        <div className="ml-auto flex items-center gap-1 text-[7px] text-zinc-500 dark:text-zinc-400">
           <Info size={9} />
           <span className="font-bold uppercase tracking-wider">IPPV = ROS × Household Penetration × Unit Profit Pool</span>
         </div>
@@ -63,7 +63,7 @@ export const IppvLeagueTable: React.FC<IppvLeagueTableProps> = ({
         <div className="glass-card bg-white dark:bg-[#1a1a24] border border-black/10 dark:border-white/10 p-5 rounded-xl shadow-sm flex flex-col">
           <div className="mb-3">
             <h4 className="text-[10px] font-bold uppercase tracking-widest text-acies-gray dark:text-white">Flywheel Radar</h4>
-            <p className="text-[8px] text-zinc-450 font-bold uppercase tracking-wider mt-0.5">5-Pillar Balance · Click a pillar above to drill in</p>
+            <p className="text-[8px] text-zinc-500 dark:text-zinc-400 font-bold uppercase tracking-wider mt-0.5">5-Pillar Balance · Click a pillar above to drill in</p>
           </div>
           <div className="flex-1 min-h-[200px]">
             <ResponsiveContainer width="100%" height="100%">
@@ -101,7 +101,7 @@ export const IppvLeagueTable: React.FC<IppvLeagueTableProps> = ({
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
             <div>
               <h4 className="text-[10px] font-bold uppercase tracking-widest text-acies-gray dark:text-white">SKU IPPV League Table</h4>
-              <p className="text-[8px] text-zinc-450 font-bold uppercase tracking-wider mt-0.5">
+              <p className="text-[8px] text-zinc-500 dark:text-zinc-400 font-bold uppercase tracking-wider mt-0.5">
                 {filteredSkus.length} of {skus.length} SKUs · Click any row to open drill-down
               </p>
             </div>
@@ -125,7 +125,7 @@ export const IppvLeagueTable: React.FC<IppvLeagueTableProps> = ({
 
               {/* Sort Selector */}
               <div className="flex items-center gap-1.5">
-                <span className="text-[7px] font-bold text-zinc-400 uppercase tracking-widest">Sort:</span>
+                <span className="text-[7px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest">Sort:</span>
                 <select value={ippvSort} onChange={e => setIppvSort(e.target.value as any)}
                   className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-[7.5px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-md focus:outline-none cursor-pointer">
                   <option value="ippv">↓ IPPV Score</option>
@@ -140,7 +140,7 @@ export const IppvLeagueTable: React.FC<IppvLeagueTableProps> = ({
           <div className="overflow-auto max-h-80" ref={focusRef}>
             <table className="w-full text-left border-collapse text-[9px]">
               <thead>
-                <tr className="border-b border-black/10 dark:border-white/10 text-zinc-400 font-black uppercase tracking-wider text-[7px] sticky top-0 bg-white dark:bg-[#1a1a24] z-10">
+                <tr className="border-b border-black/10 dark:border-white/10 text-zinc-500 dark:text-zinc-400 font-black uppercase tracking-wider text-[7px] sticky top-0 bg-white dark:bg-[#1a1a24] z-10">
                   <th className="py-2 px-2">#</th>
                   <th className="py-2 px-2">SKU</th>
                   <th className="py-2 px-2">Category</th>
@@ -161,7 +161,7 @@ export const IppvLeagueTable: React.FC<IppvLeagueTableProps> = ({
                         onClick={() => handleSkuClick(sku)}
                         className={`cursor-pointer transition-all border-b border-black/[0.04] dark:border-white/[0.04] ${isSelected ? 'bg-black/[0.03] dark:bg-white/[0.03]' : 'hover:bg-black/[0.015] dark:hover:bg-white/[0.015]'}`}
                         style={isSelected ? { boxShadow: `inset 2px 0 0 ${cfg.color}` } : {}}>
-                        <td className="py-2 px-2 font-mono text-zinc-400 font-bold text-[8px]">{i + 1}</td>
+                        <td className="py-2 px-2 font-mono text-zinc-500 dark:text-zinc-400 font-bold text-[8px]">{i + 1}</td>
                         <td className="py-2 px-2">
                           <div className="font-black text-[9px] text-acies-gray dark:text-zinc-100 flex items-center gap-1.5">
                             {sku.name}
@@ -198,7 +198,7 @@ export const IppvLeagueTable: React.FC<IppvLeagueTableProps> = ({
                 })}
                 {filteredSkus.length === 0 && (
                   <tr>
-                    <td colSpan={8} className="py-6 text-center text-zinc-450 font-bold uppercase tracking-wider text-[9px]">
+                    <td colSpan={8} className="py-6 text-center text-zinc-500 dark:text-zinc-400 font-bold uppercase tracking-wider text-[9px]">
                       No SKUs match the current classification filter.
                     </td>
                   </tr>

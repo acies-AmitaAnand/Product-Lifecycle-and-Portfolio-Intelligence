@@ -13,13 +13,16 @@ import { Globe, Layers, Truck, Briefcase, ChevronRight, ChevronLeft, Trash2, Che
 import { RegionalChannelPerformance } from './RegionalChannelPerformance';
 import { ProductMixClustering } from './ProductMixClustering';
 
+import { TimelineRange } from '../../../utils/timeframe';
+
 interface AssortmentOverviewProps {
   role: Role;
   isDarkMode: boolean;
   onAuditClick: (metricName: string) => void;
+  timelineRange: TimelineRange;
 }
 
-export const AssortmentOverview: React.FC<AssortmentOverviewProps> = ({ role, isDarkMode, onAuditClick }) => {
+export const AssortmentOverview: React.FC<AssortmentOverviewProps> = ({ role, isDarkMode, onAuditClick, timelineRange }) => {
   // Local state to manage overrides passed from slider in RegionalAssortmentGrid to AssortmentKPICards
   const [kpiOverrides, setKpiOverrides] = useState<{
     density: string;
@@ -32,6 +35,54 @@ export const AssortmentOverview: React.FC<AssortmentOverviewProps> = ({ role, is
     yieldVal: '₹3.02 Cr',
     cannibalization: '0.62'
   });
+
+  // Keep defaults in sync with global timeline picker changes
+  React.useEffect(() => {
+    let densityVal = '102 SKUs';
+    let burdenVal = '66.7%';
+    let yieldValueStr = '₹3.02 Cr';
+    let cannibalizationVal = '0.62';
+
+    switch (timelineRange) {
+      case '1m':
+        burdenVal = '68.2%';
+        yieldValueStr = '₹0.25 Cr';
+        cannibalizationVal = '0.64';
+        break;
+      case '3m':
+        burdenVal = '67.5%';
+        yieldValueStr = '₹0.76 Cr';
+        cannibalizationVal = '0.63';
+        break;
+      case '6m':
+        burdenVal = '67.0%';
+        yieldValueStr = '₹1.51 Cr';
+        cannibalizationVal = '0.62';
+        break;
+      case '12m':
+        burdenVal = '66.7%';
+        yieldValueStr = '₹3.02 Cr';
+        cannibalizationVal = '0.62';
+        break;
+      case '24m':
+        burdenVal = '65.5%';
+        yieldValueStr = '₹6.04 Cr';
+        cannibalizationVal = '0.61';
+        break;
+      case '36m':
+        burdenVal = '64.2%';
+        yieldValueStr = '₹9.06 Cr';
+        cannibalizationVal = '0.60';
+        break;
+    }
+
+    setKpiOverrides({
+      density: densityVal,
+      burden: burdenVal,
+      yieldVal: yieldValueStr,
+      cannibalization: cannibalizationVal
+    });
+  }, [timelineRange]);
 
   const [stagedActions, setStagedActions] = useState<StagedAction[]>([]);
   const [subTab, setSubTab] = useState<'comprehensive' | 'performance' | 'mix_clustering' | 'guided'>('comprehensive');
@@ -168,6 +219,7 @@ export const AssortmentOverview: React.FC<AssortmentOverviewProps> = ({ role, is
           <RegionalAssortmentGrid 
             onSliderChange={handleSliderChange} 
             onStageAction={handleStageAction} 
+            timelineRange={timelineRange}
           />
 
 
@@ -259,6 +311,7 @@ export const AssortmentOverview: React.FC<AssortmentOverviewProps> = ({ role, is
               <RegionalAssortmentGrid 
                 onSliderChange={handleSliderChange} 
                 onStageAction={handleStageAction} 
+                timelineRange={timelineRange}
               />
             </div>
           )}

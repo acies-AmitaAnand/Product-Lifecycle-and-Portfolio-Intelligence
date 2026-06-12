@@ -43,11 +43,11 @@ export const ComplexityPl: React.FC<ComplexityPlProps> = ({
         {/* Cost Stacked Bar Chart Card */}
         <div className="lg:col-span-2 glass-card bg-white dark:bg-[#1a1a24] border border-black/10 dark:border-white/10 p-5 rounded-xl shadow-sm">
           <h4 className="text-[10px] font-bold uppercase tracking-widest text-acies-gray dark:text-white mb-1">Hidden Costs by Category</h4>
-          <p className="text-[8px] text-zinc-450 font-bold uppercase tracking-wider mb-3">Isolate specific cost drivers using the pills below · Click category bars/cards to filter IPPV table</p>
+          <p className="text-[8px] text-zinc-500 dark:text-zinc-400 font-bold uppercase tracking-wider mb-3">Isolate specific cost drivers using the pills below · Click category bars/cards to filter IPPV table</p>
           
           {/* Cost Driver Selector Pills */}
           <div className="flex flex-wrap items-center gap-2 mb-4 bg-black/5 dark:bg-white/5 p-2 rounded-xl border border-black/5 dark:border-white/5">
-            <span className="text-[7.5px] font-black uppercase tracking-widest text-zinc-450 dark:text-zinc-500 mr-2">Focus Cost Driver:</span>
+            <span className="text-[7.5px] font-black uppercase tracking-widest text-zinc-500 dark:text-zinc-400 mr-2">Focus Cost Driver:</span>
             {[
               { id: 'All', label: 'All Drivers (Stacked)', color: '#6b7280' },
               { id: 'downtime', label: 'Production Downtime', color: '#ef4444' },
@@ -104,12 +104,12 @@ export const ComplexityPl: React.FC<ComplexityPlProps> = ({
                         <div className="font-black mb-2" style={{ color: CAT_COLORS[label] }}>{label}</div>
                         {payload.map((p: any) => (
                           <div key={p.name} className="flex justify-between gap-4 py-0.5">
-                            <span className="text-zinc-400 font-bold">{p.name}</span>
+                            <span className="text-zinc-500 dark:text-zinc-400 font-bold">{p.name}</span>
                             <span className="font-black" style={{ color: p.fill }}>₹{p.value}L</span>
                           </div>
                         ))}
                         {cat && worstSkuName && (
-                          <div className="mt-2 pt-2 border-t border-black/5 dark:border-white/5 text-zinc-400 flex flex-col gap-0.5">
+                          <div className="mt-2 pt-2 border-t border-black/5 dark:border-white/5 text-zinc-500 dark:text-zinc-400 flex flex-col gap-0.5">
                             <span className="font-black text-zinc-500 dark:text-zinc-400">{culpritLabel}:</span>
                             <span className="font-bold text-amber-500">{worstSkuName} (₹{worstSkuCost}L)</span>
                           </div>
@@ -206,7 +206,7 @@ export const ComplexityPl: React.FC<ComplexityPlProps> = ({
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-[9px] font-black uppercase tracking-widest" style={{ color: CAT_COLORS[cat.cat] }}>{cat.cat}</span>
                   <div className="flex items-center gap-1.5">
-                    <span className="text-[7px] text-zinc-400 font-bold">{cat.totalCount} SKUs</span>
+                    <span className="text-[7px] text-zinc-500 dark:text-zinc-400 font-bold">{cat.totalCount} SKUs</span>
                     <span className="text-[8px] font-black text-amber-500">₹{cat.totalHiddenCost}L</span>
                   </div>
                 </div>
@@ -220,7 +220,7 @@ export const ComplexityPl: React.FC<ComplexityPlProps> = ({
                     style={{ opacity: costDriverFilter === 'All' || costDriverFilter === 'downtime' ? 1 : 0.4 }}
                   >
                     <div className="text-[8px] font-black text-red-500">₹{cat.productionDowntime}L</div>
-                    <div className="text-[6px] text-zinc-400 font-bold uppercase tracking-wider leading-tight">Downtime</div>
+                    <div className="text-[6px] text-zinc-500 dark:text-zinc-400 font-bold uppercase tracking-wider leading-tight">Downtime</div>
                   </button>
                   
                   <button 
@@ -231,7 +231,7 @@ export const ComplexityPl: React.FC<ComplexityPlProps> = ({
                     style={{ opacity: costDriverFilter === 'All' || costDriverFilter === 'transport' ? 1 : 0.4 }}
                   >
                     <div className="text-[8px] font-black text-amber-500">₹{cat.transportOverhead}L</div>
-                    <div className="text-[6px] text-zinc-400 font-bold uppercase tracking-wider leading-tight">Transport</div>
+                    <div className="text-[6px] text-zinc-500 dark:text-zinc-400 font-bold uppercase tracking-wider leading-tight">Transport</div>
                   </button>
                   
                   <button 
@@ -242,7 +242,7 @@ export const ComplexityPl: React.FC<ComplexityPlProps> = ({
                     style={{ opacity: costDriverFilter === 'All' || costDriverFilter === 'waste' ? 1 : 0.4 }}
                   >
                     <div className="text-[8px] font-black text-purple-500">₹{cat.wasteWriteOff}L</div>
-                    <div className="text-[6px] text-zinc-400 font-bold uppercase tracking-wider leading-tight">Waste</div>
+                    <div className="text-[6px] text-zinc-500 dark:text-zinc-400 font-bold uppercase tracking-wider leading-tight">Waste</div>
                   </button>
                 </div>
 
@@ -251,8 +251,8 @@ export const ComplexityPl: React.FC<ComplexityPlProps> = ({
                   <span className="text-zinc-300">·</span>
                   <span className="text-emerald-500">{cat.goodCount} Good</span>
                   <span className="text-zinc-300">·</span>
-                  <span className="text-zinc-400">{cat.totalCount - cat.badCount - cat.goodCount} Neutral</span>
-                  {isActive && <span className="ml-auto text-[6.5px] uppercase tracking-widest font-black text-zinc-400">Expanded view</span>}
+                  <span className="text-zinc-500 dark:text-zinc-400">{cat.totalCount - cat.badCount - cat.goodCount} Neutral</span>
+                  {isActive && <span className="ml-auto text-[6.5px] uppercase tracking-widest font-black text-zinc-500 dark:text-zinc-400">Expanded view</span>}
                 </div>
                 <div className="mt-2 h-1 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
                    <div className="h-full rounded-full" style={{ width: `${Math.min((cat.totalHiddenCost / 25) * 100, 100)}%`, backgroundColor: CAT_COLORS[cat.cat] }} />
@@ -261,7 +261,7 @@ export const ComplexityPl: React.FC<ComplexityPlProps> = ({
                 {/* Expanded SKU List Drill-down */}
                 {isActive && (
                   <div className="mt-3 pt-3 border-t border-black/5 dark:border-white/5 space-y-2 animate-fadeIn">
-                    <div className="text-[7.5px] font-black uppercase tracking-widest text-zinc-450 dark:text-zinc-500 mb-1">
+                    <div className="text-[7.5px] font-black uppercase tracking-widest text-zinc-500 dark:text-zinc-400 mb-1">
                       {costDriverFilter === 'downtime' ? 'Top 5 Downtime Culprits' :
                        costDriverFilter === 'transport' ? 'Top 5 Transport Culprits' :
                        costDriverFilter === 'waste' ? 'Top 5 Waste Culprits' :
@@ -279,7 +279,7 @@ export const ComplexityPl: React.FC<ComplexityPlProps> = ({
                             onClick={(e) => { e.stopPropagation(); handleSkuClick(s); }}
                             className="flex items-center gap-2 p-1.5 rounded-lg bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border border-black/5 dark:border-white/5 transition-all text-left group/sku-row cursor-pointer"
                           >
-                            <span className="text-[7.5px] font-black w-3 text-zinc-400 font-mono">#{idx + 1}</span>
+                            <span className="text-[7.5px] font-black w-3 text-zinc-500 dark:text-zinc-400 font-mono">#{idx + 1}</span>
                             <div className="flex-1 min-w-0">
                               <div className="text-[8px] font-black text-acies-gray dark:text-zinc-200 truncate group-hover/sku-row:text-amber-500 transition-colors">
                                 {s.name.replace('Brand ', '').replace('Category ', '')}
@@ -299,7 +299,7 @@ export const ComplexityPl: React.FC<ComplexityPlProps> = ({
                 )}
 
                 {!isActive && (
-                  <div className="mt-2.5 pt-2 border-t border-black/5 dark:border-white/5 flex items-center justify-between text-[7px] font-bold text-zinc-450 dark:text-zinc-500">
+                  <div className="mt-2.5 pt-2 border-t border-black/5 dark:border-white/5 flex items-center justify-between text-[7px] font-bold text-zinc-500 dark:text-zinc-400">
                     <span className="flex items-center gap-0.5">
                       Top SKU: 
                       <button 

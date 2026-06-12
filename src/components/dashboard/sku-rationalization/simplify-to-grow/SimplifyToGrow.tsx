@@ -7,7 +7,7 @@
  */
 
 import React from 'react';
-import { Role } from '../../../types/dashboard';
+import { Role } from '../../../../types/dashboard';
 import { useSimplifyToGrowState } from './useSimplifyToGrowState';
 import { FlywheelHero } from './components/FlywheelHero';
 import { PillarsGrid } from './components/PillarsGrid';
@@ -17,21 +17,25 @@ import { ShelfProductivity } from './components/ShelfProductivity';
 import { SkuFocusDrawer } from './components/SkuFocusDrawer';
 import { StrategicActionPlan } from './StrategicActionPlan';
 
+import { TimelineRange } from '../../../../utils/timeframe';
+
 interface Props {
   role: Role;
   isDarkMode: boolean;
   setActiveTab: (tab: number) => void;
+  selectedLocation?: string;
+  timelineRange: TimelineRange;
 }
 
-export const SimplifyToGrow: React.FC<Props> = ({ isDarkMode, setActiveTab }) => {
-  const state = useSimplifyToGrowState(setActiveTab);
+export const SimplifyToGrow: React.FC<Props> = ({ isDarkMode, setActiveTab, selectedLocation, timelineRange }) => {
+  const state = useSimplifyToGrowState(setActiveTab, selectedLocation, timelineRange);
 
   const scoreColor = state.overallScore >= 70 ? 'text-emerald-500' : state.overallScore >= 50 ? 'text-amber-500' : 'text-red-500';
   const scoreRingColor = state.overallScore >= 70 ? '#10b981' : state.overallScore >= 50 ? '#f59e0b' : '#ef4444';
   const maxIppv = 100;
 
   return (
-    <div className="space-y-6 pb-12 text-zinc-800 dark:text-white">
+    <div className="space-y-4 pb-8 text-zinc-800 dark:text-white">
       {/* ── Hero Banner ── */}
       <FlywheelHero
         pillars={state.pillars}

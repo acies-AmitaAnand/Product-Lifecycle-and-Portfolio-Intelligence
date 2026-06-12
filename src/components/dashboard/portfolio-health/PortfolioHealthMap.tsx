@@ -10,7 +10,8 @@ import {
   LineChart, ReferenceLine
 } from 'recharts';
 import { Role } from '../../../types/dashboard';
-import { SKUS } from '../../../constants/data';
+import { SKUS as GLOBAL_SKUS } from '../../../constants/data';
+import { TimelineRange, getFilteredSKUS, getFilteredPortfolioData } from '../../../utils/timeframe';
 import { BottleneckDetailsModal } from './BottleneckDetailsModal';
 import { EmailComposerModal } from './EmailComposerModal';
 import { ScheduleMeetingModal } from './ScheduleMeetingModal';
@@ -23,6 +24,7 @@ interface PortfolioHealthMapProps {
   role: Role;
   isDarkMode: boolean;
   onAuditClick?: (metricName: string) => void;
+  timelineRange: TimelineRange;
 }
 
 interface CustomSKUType {
@@ -359,7 +361,7 @@ const LifecycleHealthPanel: React.FC<LifecycleHealthPanelProps> = ({ skusList, i
                           key={name}
                           onClick={(e) => {
                             e.stopPropagation();
-                            const skuObject = SKUS.find(s => s.name === name);
+                            const skuObject = skusList.find(s => s.name === name);
                             if (skuObject && onSelectSku) {
                               onSelectSku(skuObject);
                             }
@@ -691,7 +693,7 @@ const InvestmentMarginMap: React.FC<InvestmentMarginMapProps> = ({ skusList, isD
                       fill={viewMode === 'category' ? (categoryColors[entry.cat] || '#6b7280') : getBubbleColor(entry.quadrant)} 
                       className="cursor-pointer hover:opacity-85 transition-opacity"
                       onClick={() => {
-                        const originalSku = SKUS.find(s => s.name === entry.name);
+                        const originalSku = skusList.find(s => s.name === entry.name);
                         if (originalSku && onSelectSku) {
                           onSelectSku(originalSku);
                         }
@@ -780,7 +782,7 @@ const InvestmentMarginMap: React.FC<InvestmentMarginMapProps> = ({ skusList, isD
                 <div className="flex justify-between items-start gap-2">
                   <div 
                     onClick={() => {
-                      const originalSku = SKUS.find(s => s.name === item.name);
+                      const originalSku = skusList.find(s => s.name === item.name);
                       if (originalSku && onSelectSku) {
                         onSelectSku(originalSku);
                       }
@@ -812,7 +814,7 @@ const InvestmentMarginMap: React.FC<InvestmentMarginMapProps> = ({ skusList, isD
                   <button
                     type="button"
                     onClick={() => {
-                      const originalSku = SKUS.find(s => s.name === item.name);
+                      const originalSku = skusList.find(s => s.name === item.name);
                       if (originalSku && onSelectSku) {
                         onSelectSku(originalSku);
                       }
@@ -1108,7 +1110,7 @@ const RevenuePerformanceMatrix: React.FC<RevenuePerformanceMatrixProps> = ({ sku
                       fill={viewMode === 'category' ? (categoryColors[entry.cat] || '#6b7280') : getBubbleColor(entry.quadrant)} 
                       className="cursor-pointer hover:opacity-85 transition-opacity"
                       onClick={() => {
-                        const originalSku = SKUS.find(s => s.name === entry.name);
+                        const originalSku = skusList.find(s => s.name === entry.name);
                         if (originalSku && onSelectSku) {
                           onSelectSku(originalSku);
                         }
@@ -1197,7 +1199,7 @@ const RevenuePerformanceMatrix: React.FC<RevenuePerformanceMatrixProps> = ({ sku
                 <div className="flex justify-between items-start gap-2">
                   <div 
                     onClick={() => {
-                      const originalSku = SKUS.find(s => s.name === item.name);
+                      const originalSku = skusList.find(s => s.name === item.name);
                       if (originalSku && onSelectSku) {
                         onSelectSku(originalSku);
                       }
@@ -1229,7 +1231,7 @@ const RevenuePerformanceMatrix: React.FC<RevenuePerformanceMatrixProps> = ({ sku
                   <button
                     type="button"
                     onClick={() => {
-                      const originalSku = SKUS.find(s => s.name === item.name);
+                      const originalSku = skusList.find(s => s.name === item.name);
                       if (originalSku && onSelectSku) {
                         onSelectSku(originalSku);
                       }
@@ -1263,7 +1265,8 @@ const RevenuePerformanceMatrix: React.FC<RevenuePerformanceMatrixProps> = ({ sku
 // ══════════════════════════════════════════════════════════════════════════════
 // VP COMMAND CENTER SUB-COMPONENT
 // ══════════════════════════════════════════════════════════════════════════════
-const VPCommandCenter: React.FC<{ isDarkMode: boolean; onAuditClick?: (metricName: string) => void }> = ({ isDarkMode, onAuditClick }) => {
+const VPCommandCenter: React.FC<{ isDarkMode: boolean; onAuditClick?: (metricName: string) => void; timelineRange: TimelineRange }> = ({ isDarkMode, onAuditClick, timelineRange }) => {
+  const SKUS = getFilteredSKUS(GLOBAL_SKUS, timelineRange);
   const accentColor = isDarkMode ? '#a78bfa' : '#6d28d9';
   const gridStroke = isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
   const tickColor = isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)';
@@ -1427,7 +1430,7 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean; onAuditClick?: (metricNam
 
       return { ...s, region, quarter, risk };
     });
-  }, []);
+  }, [SKUS]);
 
   // Filter SKUs
   const filteredSKUs = React.useMemo(() => {
@@ -2357,9 +2360,10 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean; onAuditClick?: (metricNam
   );
 };
 
-export const PortfolioHealthMap: React.FC<PortfolioHealthMapProps> = ({ role, isDarkMode, onAuditClick }) => {
+export const PortfolioHealthMap: React.FC<PortfolioHealthMapProps> = ({ role, isDarkMode, onAuditClick, timelineRange }) => {
+  const SKUS = getFilteredSKUS(GLOBAL_SKUS, timelineRange);
   if (role === 'VP Product Management') {
-    return <VPCommandCenter isDarkMode={isDarkMode} onAuditClick={onAuditClick} />;
+    return <VPCommandCenter isDarkMode={isDarkMode} onAuditClick={onAuditClick} timelineRange={timelineRange} />;
   }
 
   // Hash helpers for sub-tab routing
@@ -2409,6 +2413,15 @@ export const PortfolioHealthMap: React.FC<PortfolioHealthMapProps> = ({ role, is
   const [filterCat, setFilterCat] = useState<string>('all');
   const [filterMinRev, setFilterMinRev] = useState<number>(0);
   const [filteredSKUs, setFilteredSKUs] = useState(() => [...SKUS]);
+
+  useEffect(() => {
+    const res = SKUS.filter(s => {
+      const matchCat = filterCat === 'all' || s.cat === filterCat;
+      const matchRev = s.rev >= filterMinRev;
+      return matchCat && matchRev;
+    });
+    setFilteredSKUs(res);
+  }, [timelineRange]);
 
   const [selectedSkuForModal, setSelectedSkuForModal] = useState<any>(null);
 

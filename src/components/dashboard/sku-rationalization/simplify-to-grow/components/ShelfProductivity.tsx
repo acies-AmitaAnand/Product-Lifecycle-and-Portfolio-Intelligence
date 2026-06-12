@@ -32,7 +32,7 @@ export const ShelfProductivity: React.FC<ShelfProductivityProps> = ({
         <span className="ml-auto text-[7px] font-bold uppercase tracking-wider text-zinc-400">Click a category ring to filter</span>
       </div>
 
-      <div className="glass-card bg-white dark:bg-[#1a1a24] border border-black/10 dark:border-white/10 p-5 rounded-xl shadow-sm text-zinc-850 dark:text-white">
+      <div className="glass-card bg-white dark:bg-[#1a1a24] border border-black/10 dark:border-white/10 p-5 rounded-xl shadow-sm text-zinc-800 dark:text-white">
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-5">
           {categories.map(cat => {
             const isActive = selectedCategory === cat.cat;
@@ -93,7 +93,7 @@ export const ShelfProductivity: React.FC<ShelfProductivityProps> = ({
         <div className="mt-3 p-3 rounded-xl bg-sky-500/5 border border-sky-500/15 text-[8px] text-sky-700 dark:text-sky-400 font-bold leading-relaxed flex items-start gap-2">
           <Info size={11} className="shrink-0 mt-0.5" />
           <span><strong>Retailer Win-Win:</strong> Categories below 55 warrant joint business planning with key accounts. &nbsp;
-            <button onClick={() => handleNavigate(1, 'subtab=ph-kpi')} className="underline hover:no-underline transition-all cursor-pointer border-none bg-transparent text-sky-650 dark:text-sky-400 font-bold">
+            <button onClick={() => handleNavigate(1, 'subtab=ph-kpi')} className="underline hover:no-underline transition-all cursor-pointer border-none bg-transparent text-sky-600 dark:text-sky-400 font-bold">
               View Portfolio Health Map →
             </button>
           </span>

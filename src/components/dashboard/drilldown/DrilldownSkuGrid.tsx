@@ -3,15 +3,17 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Layers, TrendingUp, TrendingDown, Clock, ShieldAlert, ChevronRight } from 'lucide-react';
-import { SKUS } from '../../../constants/data';
+import { SKUS as GLOBAL_SKUS } from '../../../constants/data';
+import { TimelineRange, getFilteredSKUS } from '../../../utils/timeframe';
 
 interface DrilldownSkuGridProps {
   activeRegionSkus: string[];
   selectedSkuName: string;
   onSkuSelect: (name: string) => void;
   selectedRegionName: string;
+  timelineRange: TimelineRange;
 }
 
 export const DrilldownSkuGrid: React.FC<DrilldownSkuGridProps> = ({
@@ -19,7 +21,9 @@ export const DrilldownSkuGrid: React.FC<DrilldownSkuGridProps> = ({
   selectedSkuName,
   onSkuSelect,
   selectedRegionName,
+  timelineRange,
 }) => {
+  const SKUS = useMemo(() => getFilteredSKUS(GLOBAL_SKUS, timelineRange), [timelineRange]);
   return (
     <div className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded shadow-sm space-y-4 w-full">
       {/* Header */}
