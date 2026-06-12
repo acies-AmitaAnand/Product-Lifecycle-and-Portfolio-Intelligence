@@ -47,7 +47,7 @@ export const AUDIT_DATA: Record<string, AuditContent> = {
       { name: 'date / year', type: 'date/int [DIRECT/DERIVED]', desc: 'Transaction timestamp. Year is derived using date.dt.year to calculate YoY comparison.' }
     ],
     formula: 'S_{total} = \\sum_{i=1}^{N} \\text{net\\_sales}_i',
-    formulaDescription: 'Total portfolio net sales is the arithmetic sum of the net sales column across all transaction records in the dataset.',
+    formulaDescription: 'Total Net Sales is the total revenue generated from all product sales across our entire portfolio.',
     assumptions: [
       'Pre-aggregated transactions: The dataset represents already calculated net sales per line item.',
       'YoY alignment: New SKUs introduced in 2023 with no 2022 records are treated as having 0% growth, not flat.'
@@ -97,7 +97,7 @@ export const AUDIT_DATA: Record<string, AuditContent> = {
       { name: 'sku_id / sku_name', type: 'int/string [DIRECT]', desc: 'Join key used to group and rank portfolio items.' }
     ],
     formula: '\\text{Cumulative Share} = \\frac{\\sum_{i=1}^{k} S_i}{S_{\\text{total}}} \\quad \\text{where } S_1 \\ge S_2 \\ge \\dots \\ge S_N',
-    formulaDescription: 'SKUs are sorted in descending order of net sales. The running cumulative sales of the top k SKUs is divided by total portfolio sales.',
+    formulaDescription: 'Revenue Concentration measures what percentage of our total sales comes from our top-selling products.',
     assumptions: [
       'Pareto benchmark: Focuses entirely on revenue concentration, not margin contribution. Some top revenue SKUs are margin-dilutive.'
     ],
@@ -172,7 +172,7 @@ export const AUDIT_DATA: Record<string, AuditContent> = {
       { name: 'operational_complexity_score', type: 'float [DERIVED]', desc: 'Equal-weighted sum of lead time, suppliers, promo, stockouts, and volatility.' }
     ],
     formula: '\\text{Segment} = \\text{Rationalize if Value} < \\text{Median} \\text{ and Complexity} > \\text{Median}',
-    formulaDescription: 'SKUs are segmented based on median splits of the normalized Commercial Value Score (X-axis) and Operational Complexity Score (Y-axis).',
+    formulaDescription: 'Rationalize Candidates are products that generate low sales and margin, but cause high complexity and stockouts, making them ideal to remove or replace.',
     assumptions: [
       'Relative splits: Thresholds are set at the medians of the current portfolio. Thus, 35 SKUs will always appear in the "Rationalize" quadrant unless thresholds are set as absolute values.'
     ],
@@ -642,7 +642,7 @@ export const AUDIT_DATA: Record<string, AuditContent> = {
       { name: 'promo_discounts', type: 'float [DIRECT]', desc: 'Promotional markdown deductions per product line.' }
     ],
     formula: 'R_{portfolio} = \\sum_{i=1}^{M} S_i',
-    formulaDescription: 'Portfolio revenue is the arithmetic sum of the net sales column across all transaction records matching the active month-to-date filter.',
+    formulaDescription: 'Portfolio Revenue is the total sales revenue generated across all products in our catalog during the current month.',
     assumptions: [
       'Target baseline: The target of ₹900 Cr is set based on historical seasonal runs and Q2 category forecasts.',
       'Active items: Includes all revenue-generating SKUs across all regions (APAC, EMEA, Americas).'
@@ -669,7 +669,7 @@ export const AUDIT_DATA: Record<string, AuditContent> = {
       { name: 'is_active', type: 'boolean [DIRECT]', desc: 'State flag indicating if the product is actively listed for trade.' }
     ],
     formula: 'N_{SKU} = \\sum_{j=1}^{K} [SKU_j \\text{ is Active}]',
-    formulaDescription: 'Calculated as the total number of unique product listing records where the is_active status is true.',
+    formulaDescription: 'Total SKU Count is the count of all active unique products in our catalog.',
     assumptions: [
       'Active status: Assumes SKUs with zero sales MTD but marked active in ERP are counted.',
       'Excludes sunsetted listings: SKUs flagged as rationalized and officially phased out are excluded.'
