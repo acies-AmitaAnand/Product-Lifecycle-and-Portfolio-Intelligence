@@ -86,12 +86,12 @@ async function run() {
     console.log("- Has Last Year Actual Sales? ", hasLastYearActual);
     console.log("- Has Next Year Forecast? ", hasNextYearForecast);
     console.log("- Has Last Year Price? ", hasLastYearPrice);
-    console.log("- Has AI Recommendations? ", hasAIRecommendations);
+    console.log("- Has AI Recommendations (Should be false)? ", hasAIRecommendations);
 
-    if (hasTitle && hasLastYearActual && hasNextYearForecast && hasLastYearPrice && hasAIRecommendations) {
-      console.log("SUCCESS: All VP-level month forecast details are rendering perfectly!");
+    if (hasTitle && hasLastYearActual && hasNextYearForecast && hasLastYearPrice && !hasAIRecommendations) {
+      console.log("SUCCESS: All VP-level month forecast details are rendering perfectly without AI recommendations!");
     } else {
-      console.error("FAIL: Some key details are missing from the forecast modal.");
+      console.error("FAIL: Some key details are incorrect in the forecast modal.");
     }
   } else {
     console.error("FAIL: Trend month forecast modal did not open or is not visible.");

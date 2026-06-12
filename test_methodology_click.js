@@ -50,10 +50,10 @@ async function run() {
 
   await new Promise(r => setTimeout(r, 1500));
 
-  console.log("Locating and clicking 'View AI Methodology & Priority Matrix →' link...");
+  console.log("Locating and clicking 'View Forecast Methodology & Key Drivers →' link...");
   const toggleLink = await page.evaluateHandle(() => {
     const buttons = Array.from(document.querySelectorAll('button'));
-    return buttons.find(b => b.textContent.includes('View AI Methodology'));
+    return buttons.find(b => b.textContent.includes('View Forecast Methodology'));
   });
 
   if (toggleLink) {
@@ -88,13 +88,13 @@ async function run() {
     console.log("Validation checklist:");
     console.log("- Has Holt-Winters Projections? ", hasHoltWinters);
     console.log("- Has Prediction Drivers? ", hasDrivers);
-    console.log("- Has AI Recommendation Priority Matrix? ", hasPriorityMatrix);
-    console.log("- Has Top Priority Block? ", hasTopPriority);
+    console.log("- Has AI Recommendation Priority Matrix (Should be false)? ", hasPriorityMatrix);
+    console.log("- Has Top Priority Block (Should be false)? ", hasTopPriority);
 
-    if (hasHoltWinters && hasDrivers && hasPriorityMatrix && hasTopPriority) {
-      console.log("SUCCESS: Expandable AI Methodology & Priority Matrix is rendering perfectly!");
+    if (hasHoltWinters && hasDrivers && !hasPriorityMatrix && !hasTopPriority) {
+      console.log("SUCCESS: Expandable Forecast Methodology is rendering perfectly without AI Priority Matrix!");
     } else {
-      console.error("FAIL: Expandable methodology details are missing.");
+      console.error("FAIL: Expandable methodology details are incorrect or missing.");
     }
   } else {
     console.error("FAIL: Modal not open or visible.");

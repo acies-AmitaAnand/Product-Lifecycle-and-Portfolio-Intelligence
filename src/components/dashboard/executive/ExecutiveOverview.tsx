@@ -606,24 +606,7 @@ const MonthForecastModal: React.FC<{ isOpen: boolean; month: string | null; onCl
           </div>
         </div>
 
-        <div className="space-y-1.5">
-          <div className="flex items-center gap-1.5">
-            <Zap size={13} className="text-purple-500 dark:text-purple-400 animate-pulse" />
-            <p className="font-bold text-[9.5px] uppercase tracking-widest text-purple-600 dark:text-purple-400">
-              AI Strategic Recommendations (VP Brief)
-            </p>
-          </div>
-          <div className="bg-gradient-to-r from-purple-50/50 to-indigo-50/50 dark:from-purple-950/10 dark:to-indigo-950/10 border border-purple-500/15 rounded p-4 space-y-3 shadow-inner">
-            {data.aiRecommendations.map((recommendation, idx) => (
-              <div key={idx} className="flex gap-2.5 text-zinc-650 dark:text-zinc-300 leading-relaxed font-medium">
-                <div className="w-5 h-5 rounded-full bg-purple-500/10 dark:bg-purple-400/10 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0 font-extrabold text-[9px] mt-0.5 border border-purple-500/20">
-                  {idx + 1}
-                </div>
-                <p className="text-zinc-700 dark:text-zinc-200">{recommendation}</p>
-              </div>
-            ))}
-          </div>
-        </div>
+
 
         <div className="flex justify-end border-t border-black/10 dark:border-white/10 pt-3 mt-1">
           <button

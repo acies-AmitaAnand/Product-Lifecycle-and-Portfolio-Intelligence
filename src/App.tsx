@@ -264,6 +264,21 @@ export default function App() {
      return { ...tab, icon };
   });
 
+  const handleSwitchPersona = () => {
+    try {
+      sessionStorage.removeItem('acies_session_active');
+    } catch (e) {}
+    try {
+      const hash = window.location.hash || '#';
+      const params = new URLSearchParams(hash.substring(1).replace(/\+/g, '%20'));
+      params.delete('role');
+      window.history.replaceState(null, '', '#' + params.toString());
+    } catch (e) {
+      console.warn("Could not remove role parameter from URL hash:", e);
+    }
+    setShowWelcomeGate(true);
+  };
+
   if (showWelcomeGate) {
     return (
       <WelcomeGate 
@@ -296,6 +311,7 @@ export default function App() {
           }
         }}
         onClickHome={() => setActiveTab(0)}
+        onSwitchPersona={handleSwitchPersona}
         searchBar={
           <GlobalSearchBar
             searchQuery={searchQuery}

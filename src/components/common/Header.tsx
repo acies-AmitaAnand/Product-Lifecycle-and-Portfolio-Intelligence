@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { Activity, User, Sun, Moon, ChevronRight, Home } from 'lucide-react';
+import { Activity, User, Sun, Moon, ChevronRight, Home, LogOut } from 'lucide-react';
 import { Role } from '../../types/dashboard';
 import { TimelineRange } from '../../utils/timeframe';
 
@@ -19,6 +19,7 @@ interface HeaderProps {
   onClickHome?: () => void;
   searchBar?: React.ReactNode;
   activeTab?: number;
+  onSwitchPersona?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({ 
@@ -31,7 +32,8 @@ export const Header: React.FC<HeaderProps> = ({
   onStartTour, 
   onClickHome, 
   searchBar,
-  activeTab
+  activeTab,
+  onSwitchPersona
 }) => {
   const isTimelineIgnored = activeTab !== undefined && [2, 5, 7].includes(activeTab);
 
@@ -73,15 +75,16 @@ export const Header: React.FC<HeaderProps> = ({
 
         <div className="flex items-center gap-2 text-acies-gray dark:text-white border-l border-black/10 dark:border-white/10 pl-3">
           <User size={12} className="opacity-40" />
-          <select 
-            value={currentRole}
-            onChange={(e) => setRole(e.target.value as Role)}
-            className="bg-transparent border-none text-[10px] font-medium focus:ring-0 cursor-pointer outline-none text-acies-gray dark:text-white"
+          <span className="text-[10px] font-bold uppercase tracking-wider select-none">{currentRole}</span>
+          <button
+            type="button"
+            onClick={onSwitchPersona}
+            className="flex items-center gap-1.5 px-2 py-1 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border border-black/10 dark:border-white/10 rounded text-[9px] font-bold uppercase tracking-widest text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200 transition-colors cursor-pointer ml-1.5"
+            title="Switch to another persona"
           >
-            <option className="bg-white text-acies-gray dark:bg-acies-gray dark:text-white">VP Product Management</option>
-            <option className="bg-white text-acies-gray dark:bg-acies-gray dark:text-white">Product Manager</option>
-            <option className="bg-white text-acies-gray dark:bg-acies-gray dark:text-white">Pricing and Margin Partner</option>
-          </select>
+            <LogOut size={10} className="rotate-180" />
+            <span>Switch</span>
+          </button>
         </div>
         
         <button 

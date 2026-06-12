@@ -313,23 +313,6 @@ export const TrendMonthForecastModal: React.FC<TrendMonthForecastModalProps> = (
 
         </div>
 
-        {/* AI Recommendations */}
-        <div className="space-y-1.5">
-          <div className="flex items-center gap-1.5">
-            <Sparkles size={13} className="text-purple-500 dark:text-purple-400 animate-pulse" />
-            <p className="font-bold text-[9.5px] uppercase tracking-widest text-purple-600 dark:text-purple-400">AI Strategic Recommendations (VP Brief)</p>
-          </div>
-          <div className="bg-gradient-to-r from-purple-50/50 to-indigo-50/50 dark:from-purple-950/10 dark:to-indigo-950/10 border border-purple-500/15 rounded p-4 space-y-3 shadow-inner">
-            {data.aiRecommendations.map((rec, idx) => (
-              <div key={idx} className="flex gap-2.5 text-zinc-650 dark:text-zinc-300 leading-relaxed font-medium">
-                <div className="w-5 h-5 rounded-full bg-purple-500/10 dark:bg-purple-400/10 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0 font-extrabold text-[9px] mt-0.5 border border-purple-500/20">
-                  {idx + 1}
-                </div>
-                <p className="text-zinc-700 dark:text-zinc-200">{rec}</p>
-              </div>
-            ))}
-          </div>
-        </div>
         {showMethodology && (
           <div className="bg-zinc-50 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded p-4 space-y-4 text-zinc-700 dark:text-zinc-200">
             
@@ -351,32 +334,6 @@ export const TrendMonthForecastModal: React.FC<TrendMonthForecastModalProps> = (
               </div>
             </div>
 
-            {/* Recommendation Priority Matrix */}
-            <div className="space-y-1.5 pt-2.5 border-t border-black/5 dark:border-white/5">
-              <p className="font-bold text-[9.5px] uppercase tracking-widest text-zinc-500 dark:text-zinc-400">AI Recommendation Priority Matrix</p>
-              <div className="space-y-2">
-                <div className="p-2.5 bg-purple-500/10 dark:bg-purple-400/10 border border-purple-500/20 rounded flex justify-between items-start gap-4">
-                  <div className="space-y-0.5">
-                    <span className="font-extrabold text-[8px] bg-purple-500 text-white dark:bg-purple-400 dark:text-black uppercase px-1 rounded-sm">Top Priority</span>
-                    <p className="font-bold mt-1">Recommendation #1: {data.aiRecommendations[0]}</p>
-                    <p className="text-[10px] text-zinc-500 dark:text-zinc-450 mt-0.5"><strong>Rationale:</strong> Directly addresses raw material sourcing or primary logistics buffers, leading to immediate gross margin stabilization.</p>
-                  </div>
-                  <span className="font-extrabold text-purple-600 dark:text-purple-400 shrink-0 text-[10px] uppercase tracking-wider">CRITICAL IMPACT</span>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                  <div className="p-2.5 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 rounded space-y-0.5">
-                    <span className="font-extrabold text-[8px] bg-zinc-500 text-white uppercase px-1 rounded-sm">Priority 2 (High)</span>
-                    <p className="font-semibold mt-1">Recommendation #2: {data.aiRecommendations[1]}</p>
-                    <p className="text-[10px] text-zinc-550 dark:text-zinc-400"><strong>Rationale:</strong> Standardizes supply chain distribution or regional marketing spend prior to seasonal fluctuations.</p>
-                  </div>
-                  <div className="p-2.5 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 rounded space-y-0.5">
-                    <span className="font-extrabold text-[8px] bg-zinc-400 text-white uppercase px-1 rounded-sm">Priority 3 (Medium)</span>
-                    <p className="font-semibold mt-1">Recommendation #3: {data.aiRecommendations[2]}</p>
-                    <p className="text-[10px] text-zinc-550 dark:text-zinc-400"><strong>Rationale:</strong> Long-term cost optimization or portfolio simplification option; execution timelines bound by distributor contract cycles.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
 
           </div>
         )}
@@ -389,7 +346,7 @@ export const TrendMonthForecastModal: React.FC<TrendMonthForecastModalProps> = (
             className="text-[9.5px] font-bold text-purple-600 dark:text-purple-400 hover:underline cursor-pointer border-none bg-transparent flex items-center gap-1.5 outline-none"
           >
             <Activity size={12} />
-            {showMethodology ? 'Hide Methodology & Priority Matrix' : 'View AI Methodology & Priority Matrix →'}
+            {showMethodology ? 'Hide Forecast Methodology & Key Drivers' : 'View Forecast Methodology & Key Drivers →'}
           </button>
           <button 
             type="button"
