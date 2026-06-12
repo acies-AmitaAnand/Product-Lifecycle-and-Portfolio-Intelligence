@@ -264,6 +264,8 @@ export default function App() {
      return { ...tab, icon };
   });
 
+  const [isExploreOpen, setIsExploreOpen] = useState<boolean>(false);
+
   const handleSwitchPersona = () => {
     try {
       sessionStorage.removeItem('acies_session_active');
@@ -292,8 +294,6 @@ export default function App() {
       />
     );
   }
-
-  const [isExploreOpen, setIsExploreOpen] = useState<boolean>(false);
 
   return (
     <div className="min-h-screen font-body bg-acies-offwhite dark:bg-acies-gray transition-colors pb-20">

@@ -14,7 +14,7 @@ async function run() {
   page.on('pageerror', err => console.error('[BROWSER ERROR]', err));
 
   console.log("Navigating to dashboard...");
-  await page.goto('https://product-lifecycle-and-portfolio-int-orpin.vercel.app/', { waitUntil: 'networkidle2' });
+  await page.goto('http://localhost:3000/', { waitUntil: 'networkidle2' });
 
   // Onboarding Screen
   const roleSelector = 'div.group';

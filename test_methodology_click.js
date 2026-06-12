@@ -11,7 +11,7 @@ async function run() {
   await page.setViewport({ width: 1280, height: 1024 });
 
   console.log("Navigating to staging dashboard...");
-  await page.goto('https://product-lifecycle-and-portfolio-int-orpin.vercel.app/', {
+  await page.goto('http://localhost:3000/', {
     waitUntil: 'networkidle2'
   });
 
