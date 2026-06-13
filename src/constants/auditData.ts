@@ -451,8 +451,8 @@ export const AUDIT_DATA: Record<string, AuditContent> = {
   },
   'Portfolio SKUs': {
     title: 'Active SKUs',
-    value: '127',
-    soWhat: 'Portfolio contains 127 total active SKUs, recently optimized by sun-setting 3 low-value tail products.',
+    value: '100',
+    soWhat: 'Portfolio contains 100 total active SKUs, recently optimized by sun-setting 3 low-value tail products.',
     action: 'Maintain category assortments and monitor baseline volume transfer to core hero SKUs.',
     columns: [
       { name: 'sku_id', type: 'string [DIRECT]', desc: 'Unique database identifier for each active stock-keeping unit.' },

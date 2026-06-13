@@ -39,7 +39,7 @@ export const KpiActionModal: React.FC<KpiActionModalProps> = ({
       case 'Portfolio SKUs':
         return {
           title: 'Portfolio SKUs Assortment Command',
-          value: '127 Active SKUs',
+          value: '100 Active SKUs',
           trendText: '−3 rationalized this Q',
           trendType: 'up',
           desc: 'Total active SKUs across the global portfolio. Monitoring category velocity splits is critical to prevent stockouts and carrier fragmentation.',

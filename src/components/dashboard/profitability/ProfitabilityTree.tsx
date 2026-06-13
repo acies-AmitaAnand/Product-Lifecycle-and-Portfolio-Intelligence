@@ -176,7 +176,7 @@ const VPProfitabilityTreeView: React.FC<{
       dotColor: '#10b981',
       items: [
         { label: 'Product-wise revenue', val: `₹${Math.round(851 * scale * noise('pt-rev-product'))} Cr`, badge: '▲ 8.4%', bc: 'rgba(16,185,129,0.15)', bcolor: '#10b981' },
-        { label: 'SKU-wise revenue', val: `${Math.round(127 + getDeterministicNoise('active_skus_pt', timelineRange)*3)} SKUs`, badge: '', bc: '', bcolor: '' },
+        { label: 'SKU-wise revenue', val: `${Math.round(100 + getDeterministicNoise('active_skus_pt', timelineRange)*3)} SKUs`, badge: '', bc: '', bcolor: '' },
         { label: 'Category contribution', val: '5 categories', badge: '', bc: '', bcolor: '' },
       ]
     },

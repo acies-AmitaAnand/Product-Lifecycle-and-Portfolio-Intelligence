@@ -70,7 +70,7 @@ const KPI_TOOLTIPS: Record<string, { soWhat: string; action: string }> = {
   },
   // Tab 4 (SKU Rationalization) KPIs
   'Portfolio SKUs': {
-    soWhat: 'Portfolio contains 127 total active SKUs, recently optimized by sun-setting 3 low-value tail products.',
+    soWhat: 'Portfolio contains 100 total active SKUs, recently optimized by sun-setting 3 low-value tail products.',
     action: 'Maintain category assortments and monitor baseline volume transfer to core hero SKUs.'
   },
   'Sunset Candidates': {

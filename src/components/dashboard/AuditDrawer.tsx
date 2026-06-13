@@ -294,7 +294,7 @@ export const AuditDrawer: React.FC<AuditDrawerProps> = ({ activeMetric, close, i
               </div>
 
               {/* Category-based SKU Browser (for Active SKUs only) */}
-              {activeMetric === 'Active SKUs' && (
+              {(mappedMetric === 'Portfolio SKUs' || mappedMetric === 'Portfolio SKU Count') && (
                 <div className="border border-purple-500/20 bg-purple-500/5 dark:bg-purple-950/10 rounded-xl p-4.5 space-y-3">
                   <button
                     onClick={() => setShowSkusByCategory(!showSkusByCategory)}

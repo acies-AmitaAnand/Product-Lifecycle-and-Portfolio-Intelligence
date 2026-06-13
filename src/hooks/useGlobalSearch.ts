@@ -101,7 +101,7 @@ export const useGlobalSearch = (
     const uniqueMetrics = [
       { label: 'Total Revenue', value: '₹851.2 Cr' },
       { label: 'Gross Margin', value: '36.2%' },
-      { label: 'Active SKUs', value: '127' },
+      { label: 'Active SKUs', value: '100' },
       { label: 'Critical Alerts', value: '2' },
       { label: 'Net Sales (Portfolio)', value: '$473M' },
       { label: 'Avg Gross Margin', value: '38.53%' },
