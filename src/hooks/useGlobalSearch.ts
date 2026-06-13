@@ -107,7 +107,7 @@ export const useGlobalSearch = (
       { label: 'Avg Gross Margin', value: '38.53%' },
       { label: 'Revenue Concentration', value: '27.81%' },
       { label: 'Portfolio PCI', value: '0.5509' },
-      { label: 'Long-Tail SKU Burden', value: '66.7%' },
+      { label: 'Long-Tail SKU Burden', value: '68.0%' },
       { label: 'Rationalize Candidates', value: '35 SKUs' },
       { label: 'Peak Stockout Freq.', value: '440 events' },
       { label: 'Revenue Tail Risk', value: '27.08%' },
@@ -122,7 +122,7 @@ export const useGlobalSearch = (
       { label: 'Market Demand Change', value: '+18.4%' },
       { label: 'Customer Sentiment Score', value: '72' },
       { label: 'Portfolio Revenue', value: '₹851.4 Cr' },
-      { label: 'Portfolio SKU Count', value: '102' },
+      { label: 'Portfolio SKU Count', value: '100' },
       { label: 'Growth Rate', value: '8.4%' },
       { label: 'Orders — Today', value: '4232' },
       { label: 'Forecast Attainment', value: '94.6%' }

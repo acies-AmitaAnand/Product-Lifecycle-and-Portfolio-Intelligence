@@ -20,8 +20,8 @@ const REGIONAL_STRATEGIES: Record<string, CountryStrategy> = {
   Italy: {
     originalMargin: 38.53,
     netSalesM: 137.2,
-    skuCount: 102,
-    finding: "Italy drives our highest sales volume ($137.2M) but faces complexity drag from 102 SKUs.",
+    skuCount: 100,
+    finding: "Italy drives our highest sales volume ($137.2M) but faces complexity drag from 100 SKUs.",
     recommendation: "Product line pruning of low-velocity tail.",
     soWhat: "Reduces inventory carrying overhead while preserving high-revenue SKU margins.",
     actionPlan: "Phase out the lowest-performing 15 SKUs in Italian supermarket segments."

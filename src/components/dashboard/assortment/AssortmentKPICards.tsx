@@ -35,26 +35,26 @@ export const AssortmentKPICards: React.FC<AssortmentKPICardsProps> = ({ role, on
   const kpis: AssortmentKPI[] = [
     {
       label: 'Assortment Density',
-      value: customValues?.density || '102 SKUs',
+      value: customValues?.density || '100 SKUs',
       trend: 'up',
-      trendValue: 'Max in Italy (102)',
+      trendValue: 'Max in Italy (100)',
       info: 'Count of active items listed in country-channel catalogs.',
       target: '80 SKUs',
       color: '#8b5cf6', // purple
-      hist: [105, 104, 103, 102, 102, 102, 102, 102],
-      soWhat: 'Catalog breadth is at 102 active items, causing operational friction in warehouse layouts.',
+      hist: [105, 104, 103, 100, 100, 100, 100, 100],
+      soWhat: 'Catalog breadth is at 100 active items, causing operational friction in warehouse layouts.',
       action: 'Prune the bottom 20% to free up logistics capacity and focus on hero lines.'
     },
     {
       label: 'Long-Tail Burden Ratio',
-      value: customValues?.burden || '66.7%',
+      value: customValues?.burden || '68.0%',
       trend: 'up',
       isRisk: true,
       trendValue: '68 SKUs <1% rev',
       info: 'Percentage of SKUs contributing less than 1% of revenue but occupying shelf space.',
       target: '< 40.0%',
       color: '#ef4444', // red
-      hist: [62, 63, 64, 65, 65, 66, 66.7, 66.7],
+      hist: [62, 63, 64, 65, 65, 66, 68.0, 68.0],
       soWhat: '68 items contribute negligible revenue but eat up 100% of vendor management cycles.',
       action: 'Transition low-value suppliers to category clusters or consolidate variants.'
     },

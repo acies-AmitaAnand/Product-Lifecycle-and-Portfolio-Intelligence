@@ -131,8 +131,8 @@ export const AUDIT_DATA: Record<string, AuditContent> = {
     trendHeaders: ['Complexity Driver', 'Actual Index Value', 'Benchmark Target', 'Status'],
     trendRows: [
       ['Supplier Fragmentation Index', '1.2000', '1.0000', 'Critical (Over-dispersed)'],
-      ['SKU Proliferation Index', '1.0200', '0.8500', 'High (102 SKUs active)'],
-      ['Low Velocity SKU Concentration', '0.6667', '0.4000', 'High (66.7% of catalog)'],
+      ['SKU Proliferation Index', '1.0000', '0.8500', 'High (100 SKUs active)'],
+      ['Low Velocity SKU Concentration', '0.6800', '0.4000', 'High (68% of catalog)'],
       ['Lead Time Instability (CV)', '0.2014', '0.1500', 'Elevated (Volatility in delivery)'],
       ['Promo Dependency Score', '0.1100', '0.0800', 'Elevated (Promo-driven sales)'],
       ['Avg Portfolio Volatility (CV)', '0.1071', '0.0800', 'Stable (Low organic variance)']
@@ -140,8 +140,8 @@ export const AUDIT_DATA: Record<string, AuditContent> = {
   },
   'Long-Tail SKU Burden': {
     title: 'Long-Tail SKU Burden',
-    value: '66.7%',
-    soWhat: '68 items (66.7% of catalog) generate <1% of revenue each, yet they interact with all 60 suppliers, creating massive administrative overhead without business value.',
+    value: '68%',
+    soWhat: '68 items (68% of catalog) generate <1% of revenue each, yet they interact with all 60 suppliers, creating massive administrative overhead without business value.',
     action: 'Consolidate Vendor Networks: Prune overlapping supplier relationships for low-velocity SKUs and transition to specialized distributors.',
     columns: [
       { name: 'net_sales', type: 'float [DIRECT]', desc: 'Determines SKU revenue velocity.' },
@@ -661,8 +661,8 @@ export const AUDIT_DATA: Record<string, AuditContent> = {
   },
   'Portfolio SKU Count': {
     title: 'Portfolio SKU Count',
-    value: '102',
-    soWhat: 'The active SKU count stands at 102 items, which is slightly above the target catalog size of 100. Over-proliferation of low-volume variants drives up supply chain friction, raising average inventory carrying costs and straining manufacturing shift schedules.',
+    value: '100',
+    soWhat: 'The active SKU count stands at 100 items, which matches the target catalog size of 100. Over-proliferation of low-volume variants drives up supply chain friction, raising average inventory carrying costs and straining manufacturing shift schedules.',
     action: 'Phase out the 35 identified "Rationalize" candidates in low-margin, high-complexity segments (such as Floor Cleaner) to optimize catalog efficiency.',
     columns: [
       { name: 'sku_id', type: 'string [DIRECT]', desc: 'Unique SKU identifier in the product master database.' },
@@ -780,8 +780,8 @@ export const AUDIT_DATA: Record<string, AuditContent> = {
   },
   'High-Value SKUs': {
     title: 'High-Value SKUs',
-    value: '42/102',
-    soWhat: 'High-value SKUs (items with Value Score >= 0.6) make up 41.2% of the active catalog (42 of 102 items). These items generate over 75% of net profit, meaning service levels for these SKUs must be heavily protected.',
+    value: '42/100',
+    soWhat: 'High-value SKUs (items with Value Score >= 0.6) make up 42.0% of the active catalog (42 of 100 items). These items generate over 75% of net profit, meaning service levels for these SKUs must be heavily protected.',
     action: 'Establish priority warehouse picking lanes and logistics lanes to protect core high-value SKU service levels.',
     columns: [
       { name: 'value_score', type: 'float [DERIVED]', desc: 'Composite SKU value rating based on margin and revenue contribution.' }
@@ -803,8 +803,8 @@ export const AUDIT_DATA: Record<string, AuditContent> = {
   },
   'Assortment Density': {
     title: 'Assortment Density',
-    value: '102 SKUs',
-    soWhat: 'Catalog breadth is at 102 active items (target: 80 SKUs), causing elevated storage density pressure and long picking times in regional depots.',
+    value: '100 SKUs',
+    soWhat: 'Catalog breadth is at 100 active items (target: 80 SKUs), causing elevated storage density pressure and long picking times in regional depots.',
     action: 'Execute SKU rationalization plan, deleting the bottom 20% low-velocity items to streamline logistics capacity.',
     columns: [
       { name: 'sku_id', type: 'string [DIRECT]', desc: 'Unique identifier for each SKU listed in regional catalogs.' },
@@ -827,8 +827,8 @@ export const AUDIT_DATA: Record<string, AuditContent> = {
   },
   'Long-Tail Burden Ratio': {
     title: 'Long-Tail Burden Ratio',
-    value: '66.7%',
-    soWhat: '68 SKUs (66.7% of the catalog) generate less than 1% of revenue each, yet occupy 100% of vendor management overhead and shelf-space cycles.',
+    value: '68.0%',
+    soWhat: '68 SKUs (68% of the catalog) generate less than 1% of revenue each, yet occupy 100% of vendor management overhead and shelf-space cycles.',
     action: 'Consolidate low-value vendor networks and transition tail variants to category distributor models.',
     columns: [
       { name: 'net_sales', type: 'float [DIRECT]', desc: 'Determines SKU revenue velocity.' },
@@ -842,11 +842,11 @@ export const AUDIT_DATA: Record<string, AuditContent> = {
     trendTitle: 'Long-Tail Density by Region',
     trendHeaders: ['Region', 'Total SKUs', 'Long-Tail SKUs', 'Burden %'],
     trendRows: [
-      ['Netherlands', '102', '68', '66.7%'],
+      ['Netherlands', '100', '68', '68%'],
       ['Germany', '98', '62', '63.3%'],
       ['Poland', '95', '60', '63.2%'],
       ['Austria', '85', '42', '49.4%'],
-      ['Italy', '102', '68', '66.7%']
+      ['Italy', '100', '68', '68%']
     ]
   },
   'Assortment Gross Yield': {

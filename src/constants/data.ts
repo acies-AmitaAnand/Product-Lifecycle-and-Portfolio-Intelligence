@@ -27,7 +27,7 @@ import {
 // ─── Company Context ──────────────────────────────────────────────────────────
 export const COMPANY_CONTEXT = {
   entity: 'FMCG Multi-Country Enterprise',
-  brands: '102 SKUs across 6 Brands',
+  brands: '100 SKUs across 6 Brands',
   revenue: '$473M Annual',
   categories: 5,
 };
@@ -163,7 +163,7 @@ export const CHANNEL_DATA: ChannelData[] = [
 
 // ─── Regional Data (Q16) ─────────────────────────────────────────────────────
 export const REGIONAL_DATA: RegionalData[] = [
-  { country: 'Italy',       skuCount: 102, netSalesM: 137.2, marginPct: 38.53, complexityLabel: 'High' },
+  { country: 'Italy',       skuCount: 100, netSalesM: 137.2, marginPct: 38.53, complexityLabel: 'High' },
   { country: 'Spain',       skuCount: 100, netSalesM: 106.7, marginPct: 38.60, complexityLabel: 'High' },
   { country: 'Germany',     skuCount:  98, netSalesM:  88.5, marginPct: 38.48, complexityLabel: 'High' },
   { country: 'France',      skuCount:  80, netSalesM:  42.6, marginPct: 38.55, complexityLabel: 'Medium' },
@@ -215,7 +215,7 @@ export const TOP_SKUS_REVENUE: TopSKU[] = [
 
 // ─── Agent Roster ─────────────────────────────────────────────────────────────
 export const AGENT_ROSTER: Agent[] = [
-  { name: 'Portfolio Agent',     role: 'Monitors 102 SKUs; flagged Dairy as highest drag (27.78%).' },
+  { name: 'Portfolio Agent',     role: 'Monitors 100 SKUs; flagged Dairy as highest drag (27.78%).' },
   { name: 'Market Signal Agent', role: 'Tracks promo dependency; BrandD Water at 27.97% — highest in portfolio.' },
   { name: 'Supplier Agent',      role: 'Identified 60 universal suppliers creating interconnectivity risk (0% reducible).' },
   { name: 'Profitability Agent', role: '12 high-volume SKUs diluting portfolio margin to 38.53% vs 40% target.' },
@@ -252,6 +252,21 @@ export const SKUS = [
   {name:'Coconut Water 330ml',    cat:'Beverages',    rev:110, val:0.75, cx:0.25, stockouts:1, promo:0.18, margin:45, growth:0.22,  lead:10, householdPenetration:0.72},
   {name:'Coconut Water 1L',       cat:'Beverages',    rev:68,  val:0.65, cx:0.42, stockouts:2, promo:0.35, margin:42, growth:0.14,  lead:11, householdPenetration:0.58},
   {name:'BrandC Energy Drink',    cat:'Beverages',    rev:92,  val:0.71, cx:0.38, stockouts:1, promo:0.25, margin:44, growth:0.26,  lead:12, householdPenetration:0.65},
+  {name:'BrandC Diet Cola 500ml', cat:'Beverages',    rev:112, val:0.74, cx:0.28, stockouts:1, promo:0.24, margin:43, growth:0.14,  lead:12, householdPenetration:0.64},
+  {name:'BrandC Orange Soda 500ml',cat:'Beverages',   rev:95,  val:0.68, cx:0.32, stockouts:2, promo:0.31, margin:40, growth:0.08,  lead:12, householdPenetration:0.55},
+  {name:'Premium Cold Brew 250ml',cat:'Beverages',    rev:130, val:0.81, cx:0.45, stockouts:1, promo:0.15, margin:48, growth:0.25,  lead:16, householdPenetration:0.48},
+  {name:'Organic Lemonade 1L',    cat:'Beverages',    rev:85,  val:0.63, cx:0.38, stockouts:3, promo:0.35, margin:37, growth:0.06,  lead:14, householdPenetration:0.42},
+  {name:'Pomegranate Juice 1L',   cat:'Beverages',    rev:72,  val:0.54, cx:0.52, stockouts:4, promo:0.48, margin:33, growth:-0.02, lead:18, householdPenetration:0.32},
+  {name:'Apple Juice Box 6-Pack', cat:'Beverages',    rev:105, val:0.72, cx:0.26, stockouts:1, promo:0.20, margin:39, growth:0.10,  lead:10, householdPenetration:0.67},
+  {name:'BrandC Sugar Free Energy',cat:'Beverages',   rev:88,  val:0.69, cx:0.40, stockouts:2, promo:0.28, margin:42, growth:0.18,  lead:12, householdPenetration:0.49},
+  {name:'Ginger Beer 4-Pack',     cat:'Beverages',    rev:64,  val:0.50, cx:0.48, stockouts:3, promo:0.38, margin:35, growth:0.04,  lead:15, householdPenetration:0.38},
+  {name:'Tonic Water 1L',         cat:'Beverages',    rev:55,  val:0.45, cx:0.30, stockouts:2, promo:0.25, margin:38, growth:0.02,  lead:10, householdPenetration:0.44},
+  {name:'Sparkling Water Lime 500ml',cat:'Beverages', rev:118, val:0.76, cx:0.22, stockouts:1, promo:0.12, margin:44, growth:0.21,  lead:8,  householdPenetration:0.70},
+  {name:'Sparkling Water Berry 500ml',cat:'Beverages',rev:110, val:0.73, cx:0.24, stockouts:2, promo:0.14, margin:43, growth:0.19,  lead:8,  householdPenetration:0.68},
+  {name:'Peach Iced Tea 500ml',   cat:'Beverages',    rev:82,  val:0.60, cx:0.36, stockouts:2, promo:0.34, margin:36, growth:0.07,  lead:12, householdPenetration:0.51},
+  {name:'Matcha Latte RTD',       cat:'Beverages',    rev:50,  val:0.38, cx:0.65, stockouts:4, promo:0.55, margin:30, growth:-0.05, lead:20, householdPenetration:0.20},
+  {name:'Almond Milk Latte RTD',  cat:'Beverages',    rev:78,  val:0.58, cx:0.48, stockouts:3, promo:0.42, margin:35, growth:0.12,  lead:15, householdPenetration:0.35},
+  {name:'Root Beer 500ml',        cat:'Beverages',    rev:45,  val:0.32, cx:0.55, stockouts:5, promo:0.50, margin:28, growth:-0.08, lead:16, householdPenetration:0.25},
 
   // Snacks
   {name:'Oat Cookies',            cat:'Snacks',       rev:121, val:0.77, cx:0.29, stockouts:1, promo:0.22, margin:44, growth:0.22,  lead:12, householdPenetration:0.71},
@@ -261,6 +276,21 @@ export const SKUS = [
   {name:'BrandC Chips (Spicy)',   cat:'Snacks',       rev:94,  val:0.78, cx:0.55, stockouts:3, promo:0.48, margin:36, growth:0.19,  lead:15, householdPenetration:0.62},
   {name:'BrandD Chocolate 100g',  cat:'Snacks',       rev:85,  val:0.66, cx:0.32, stockouts:2, promo:0.29, margin:39, growth:0.16,  lead:13, householdPenetration:0.55},
   {name:'BrandD Chocolate 250g',  cat:'Snacks',       rev:52,  val:0.48, cx:0.64, stockouts:4, promo:0.58, margin:31, growth:-0.02, lead:19, householdPenetration:0.22},
+  {name:'Salted Peanuts 200g',    cat:'Snacks',       rev:90,  val:0.67, cx:0.25, stockouts:1, promo:0.18, margin:42, growth:0.09,  lead:9,  householdPenetration:0.62},
+  {name:'Spicy Cashews 150g',     cat:'Snacks',       rev:108, val:0.75, cx:0.38, stockouts:2, promo:0.24, margin:45, growth:0.15,  lead:14, householdPenetration:0.52},
+  {name:'BrandB Tortilla Chips',  cat:'Snacks',       rev:125, val:0.82, cx:0.24, stockouts:1, promo:0.16, margin:44, growth:0.11,  lead:8,  householdPenetration:0.75},
+  {name:'Cheese Crackers 150g',   cat:'Snacks',       rev:98,  val:0.70, cx:0.28, stockouts:2, promo:0.22, margin:40, growth:0.07,  lead:10, householdPenetration:0.65},
+  {name:'Pretzels Sea Salt',      cat:'Snacks',       rev:76,  val:0.56, cx:0.30, stockouts:2, promo:0.28, margin:38, growth:0.03,  lead:11, householdPenetration:0.53},
+  {name:'BrandD Milk Chocolate Bar',cat:'Snacks',     rev:115, val:0.78, cx:0.26, stockouts:1, promo:0.19, margin:42, growth:0.13,  lead:10, householdPenetration:0.70},
+  {name:'BrandD Dark Chocolate Bar',cat:'Snacks',     rev:92,  val:0.69, cx:0.34, stockouts:2, promo:0.22, margin:45, growth:0.16,  lead:12, householdPenetration:0.50},
+  {name:'Gummy Bears 150g',       cat:'Snacks',       rev:84,  val:0.62, cx:0.32, stockouts:2, promo:0.35, margin:36, growth:0.05,  lead:11, householdPenetration:0.58},
+  {name:'Sour Worms 150g',        cat:'Snacks',       rev:70,  val:0.52, cx:0.35, stockouts:3, promo:0.40, margin:34, growth:0.02,  lead:11, householdPenetration:0.48},
+  {name:'Caramel Popcorn Bag',    cat:'Snacks',       rev:62,  val:0.46, cx:0.42, stockouts:3, promo:0.45, margin:31, growth:-0.01, lead:13, householdPenetration:0.38},
+  {name:'Butter Popcorn Bag',     cat:'Snacks',       rev:80,  val:0.59, cx:0.30, stockouts:2, promo:0.32, margin:35, growth:0.04,  lead:10, householdPenetration:0.52},
+  {name:'Rice Cakes Sea Salt',    cat:'Snacks',       rev:58,  val:0.43, cx:0.45, stockouts:4, promo:0.50, margin:28, growth:-0.04, lead:16, householdPenetration:0.29},
+  {name:'Granola Bars Honey 6P',  cat:'Snacks',       rev:102, val:0.72, cx:0.32, stockouts:2, promo:0.25, margin:39, growth:0.08,  lead:12, householdPenetration:0.60},
+  {name:'Granola Bars Choco 6P',  cat:'Snacks',       rev:105, val:0.74, cx:0.30, stockouts:1, promo:0.23, margin:40, growth:0.10,  lead:12, householdPenetration:0.62},
+  {name:'Fruit & Nut Mix 250g',   cat:'Snacks',       rev:86,  val:0.64, cx:0.48, stockouts:3, promo:0.30, margin:43, growth:0.06,  lead:15, householdPenetration:0.45},
 
   // Personal Care
   {name:'Hand Cream SPF',         cat:'Personal Care',rev:62,  val:0.48, cx:0.52, stockouts:3, promo:0.44, margin:31, growth:0.06,  lead:20, householdPenetration:0.28},
@@ -269,12 +299,40 @@ export const SKUS = [
   {name:'Aloe Face Wash',         cat:'Personal Care',rev:32,  val:0.28, cx:0.78, stockouts:6, promo:0.65, margin:18, growth:-0.15, lead:26, householdPenetration:0.12},
   {name:'BrandD Toothpaste',      cat:'Personal Care',rev:81,  val:0.72, cx:0.28, stockouts:1, promo:0.21, margin:40, growth:0.05,  lead:10, householdPenetration:0.64},
   {name:'BrandB Soap',            cat:'Personal Care',rev:74,  val:0.67, cx:0.36, stockouts:2, promo:0.26, margin:38, growth:0.04,  lead:9,  householdPenetration:0.59},
+  {name:'Anti-Dandruff Shampoo',  cat:'Personal Care',rev:95,  val:0.70, cx:0.38, stockouts:2, promo:0.25, margin:44, growth:0.08,  lead:12, householdPenetration:0.58},
+  {name:'Tea Tree Conditioner',   cat:'Personal Care',rev:82,  val:0.61, cx:0.42, stockouts:2, promo:0.28, margin:46, growth:0.11,  lead:12, householdPenetration:0.48},
+  {name:'Moisturizing Body Wash', cat:'Personal Care',rev:110, val:0.76, cx:0.30, stockouts:1, promo:0.20, margin:42, growth:0.12,  lead:10, householdPenetration:0.65},
+  {name:'Exfoliating Scrub 150ml',cat:'Personal Care',rev:48,  val:0.34, cx:0.68, stockouts:5, promo:0.58, margin:28, growth:-0.07, lead:22, householdPenetration:0.18},
+  {name:'Sensitive Skin Lotion',  cat:'Personal Care',rev:76,  val:0.55, cx:0.46, stockouts:3, promo:0.38, margin:37, growth:0.04,  lead:16, householdPenetration:0.38},
+  {name:'BrandD Charcoal Toothpaste',cat:'Personal Care',rev:68,val:0.50,cx:0.44, stockouts:3, promo:0.35, margin:39, growth:0.08,  lead:11, householdPenetration:0.35},
+  {name:'Whitening Mouthwash 500ml',cat:'Personal Care',rev:85,val:0.63, cx:0.35, stockouts:2, promo:0.26, margin:41, growth:0.06,  lead:12, householdPenetration:0.52},
+  {name:'BrandB Shea Soap 3-Pack',cat:'Personal Care',rev:90,  val:0.68, cx:0.28, stockouts:1, promo:0.18, margin:38, growth:0.05,  lead:9,  householdPenetration:0.61},
+  {name:'Deodorant Roll-On Active',cat:'Personal Care',rev:104,val:0.74, cx:0.26, stockouts:1, promo:0.15, margin:45, growth:0.14,  lead:10, householdPenetration:0.68},
+  {name:'Deodorant Roll-On Fresh',cat:'Personal Care',rev:98,  val:0.71, cx:0.26, stockouts:2, promo:0.18, margin:44, growth:0.10,  lead:10, householdPenetration:0.64},
+  {name:'Aloe Hand Sanitizer 100ml',cat:'Personal Care',rev:40,val:0.28, cx:0.50, stockouts:4, promo:0.45, margin:25, growth:-0.10, lead:14, householdPenetration:0.26},
+  {name:'Hydrating Sheet Mask',   cat:'Personal Care',rev:35,  val:0.24, cx:0.70, stockouts:5, promo:0.62, margin:22, growth:-0.12, lead:24, householdPenetration:0.15},
+  {name:'Foaming Shaving Gel',    cat:'Personal Care',rev:70,  val:0.52, cx:0.38, stockouts:2, promo:0.30, margin:38, growth:0.03,  lead:12, householdPenetration:0.44},
+  {name:'Soothing Aftershave Balm',cat:'Personal Care',rev:52, val:0.38, cx:0.58, stockouts:4, promo:0.48, margin:32, growth:-0.04, lead:18, householdPenetration:0.25},
 
   // Dairy
   {name:'BrandD Cheese Blocks',   cat:'Dairy',        rev:95,  val:0.76, cx:0.38, stockouts:2, promo:0.22, margin:39, growth:0.06,  lead:12, householdPenetration:0.61},
   {name:'BrandB Yogurt 500g',     cat:'Dairy',        rev:72,  val:0.60, cx:0.45, stockouts:3, promo:0.38, margin:35, growth:0.02,  lead:14, householdPenetration:0.48},
   {name:'BrandB Yogurt 1kg',      cat:'Dairy',        rev:42,  val:0.35, cx:0.68, stockouts:5, promo:0.61, margin:24, growth:-0.08, lead:18, householdPenetration:0.24},
   {name:'BrandE Yogurt (Straw)',  cat:'Dairy',        rev:35,  val:0.29, cx:0.72, stockouts:6, promo:0.68, margin:21, growth:-0.14, lead:19, householdPenetration:0.16},
+  {name:'BrandD Cheddar Slices',  cat:'Dairy',        rev:105, val:0.78, cx:0.34, stockouts:1, promo:0.20, margin:41, growth:0.08,  lead:11, householdPenetration:0.68},
+  {name:'BrandD Shredded Mozzarella',cat:'Dairy',     rev:112, val:0.82, cx:0.36, stockouts:2, promo:0.24, margin:40, growth:0.12,  lead:11, householdPenetration:0.70},
+  {name:'BrandB Greek Yogurt Plain',cat:'Dairy',      rev:120, val:0.85, cx:0.28, stockouts:1, promo:0.18, margin:43, growth:0.15,  lead:8,  householdPenetration:0.74},
+  {name:'BrandB Greek Yogurt Blueberry',cat:'Dairy',  rev:95,  val:0.70, cx:0.35, stockouts:2, promo:0.28, margin:39, growth:0.09,  lead:10, householdPenetration:0.58},
+  {name:'BrandB Greek Yogurt Honey',cat:'Dairy',      rev:88,  val:0.65, cx:0.38, stockouts:3, promo:0.32, margin:38, growth:0.07,  lead:10, householdPenetration:0.52},
+  {name:'Organic Whole Milk 1L',  cat:'Dairy',        rev:130, val:0.88, cx:0.22, stockouts:1, promo:0.12, margin:35, growth:0.05,  lead:6,  householdPenetration:0.82},
+  {name:'Organic Low Fat Milk 1L',cat:'Dairy',        rev:118, val:0.80, cx:0.22, stockouts:2, promo:0.15, margin:34, growth:0.03,  lead:6,  householdPenetration:0.76},
+  {name:'Salted Butter 250g',     cat:'Dairy',        rev:115, val:0.81, cx:0.25, stockouts:1, promo:0.16, margin:38, growth:0.06,  lead:9,  householdPenetration:0.78},
+  {name:'Unsalted Butter 250g',   cat:'Dairy',        rev:92,  val:0.68, cx:0.28, stockouts:2, promo:0.22, margin:38, growth:0.04,  lead:9,  householdPenetration:0.62},
+  {name:'Whipped Cream Can',      cat:'Dairy',        rev:60,  val:0.44, cx:0.48, stockouts:4, promo:0.45, margin:30, growth:-0.02, lead:14, householdPenetration:0.38},
+  {name:'BrandE Yogurt Drink Strawberry',cat:'Dairy', rev:64,  val:0.46, cx:0.45, stockouts:3, promo:0.38, margin:32, growth:0.02,  lead:12, householdPenetration:0.41},
+  {name:'BrandE Yogurt Drink Mango',cat:'Dairy',      rev:58,  val:0.42, cx:0.48, stockouts:4, promo:0.42, margin:31, growth:-0.01, lead:12, householdPenetration:0.36},
+  {name:'Sour Cream 250g',        cat:'Dairy',        rev:70,  val:0.52, cx:0.36, stockouts:2, promo:0.28, margin:36, growth:0.03,  lead:11, householdPenetration:0.49},
+  {name:'Cottage Cheese 400g',    cat:'Dairy',        rev:80,  val:0.58, cx:0.40, stockouts:3, promo:0.30, margin:35, growth:0.05,  lead:12, householdPenetration:0.54},
 
   // Household
   {name:'Floor Cleaner',          cat:'Household',    rev:38,  val:0.29, cx:0.74, stockouts:6, promo:0.68, margin:19, growth:-0.16, lead:31, householdPenetration:0.14},
@@ -282,6 +340,19 @@ export const SKUS = [
   {name:'Fabric Softener',        cat:'Household',    rev:28,  val:0.22, cx:0.81, stockouts:7, promo:0.76, margin:15, growth:-0.22, lead:35, householdPenetration:0.10},
   {name:'Laundry Pods Premium',   cat:'Household',    rev:115, val:0.81, cx:0.33, stockouts:1, promo:0.24, margin:46, growth:0.24,  lead:12, householdPenetration:0.74},
   {name:'BrandF Detergent',       cat:'Household',    rev:66,  val:0.58, cx:0.48, stockouts:3, promo:0.36, margin:33, growth:0.05,  lead:15, householdPenetration:0.44},
+  {name:'Multi-Surface Cleaner 1L',cat:'Household',   rev:100, val:0.72, cx:0.32, stockouts:2, promo:0.24, margin:38, growth:0.11,  lead:12, householdPenetration:0.60},
+  {name:'Glass Cleaner Spray 500ml',cat:'Household',  rev:78,  val:0.56, cx:0.38, stockouts:3, promo:0.32, margin:35, growth:0.04,  lead:14, householdPenetration:0.48},
+  {name:'Dish Soap Lemon 500ml',  cat:'Household',    rev:85,  val:0.62, cx:0.28, stockouts:1, promo:0.20, margin:37, growth:0.08,  lead:10, householdPenetration:0.59},
+  {name:'Dishwasher Pods 30ct',   cat:'Household',    rev:120, val:0.84, cx:0.35, stockouts:1, promo:0.18, margin:48, growth:0.20,  lead:14, householdPenetration:0.70},
+  {name:'Trash Bags 30 Gallon',   cat:'Household',    rev:94,  val:0.68, cx:0.26, stockouts:2, promo:0.22, margin:34, growth:0.05,  lead:10, householdPenetration:0.66},
+  {name:'Kitchen Paper Towels 4-Pack',cat:'Household',rev:110, val:0.78, cx:0.24, stockouts:2, promo:0.19, margin:32, growth:0.08,  lead:8,  householdPenetration:0.78},
+  {name:'Toilet Paper 12-Pack',   cat:'Household',    rev:140, val:0.90, cx:0.20, stockouts:1, promo:0.12, margin:30, growth:0.04,  lead:6,  householdPenetration:0.85},
+  {name:'BrandF Detergent Powder 2kg',cat:'Household',rev:88,  val:0.64, cx:0.42, stockouts:3, promo:0.29, margin:35, growth:0.06,  lead:13, householdPenetration:0.52},
+  {name:'Fabric Softener Lavender 1L',cat:'Household',rev:42,  val:0.30, cx:0.72, stockouts:5, promo:0.65, margin:20, growth:-0.12, lead:28, householdPenetration:0.22},
+  {name:'Disinfecting Wipes 80ct',cat:'Household',    rev:105, val:0.75, cx:0.30, stockouts:2, promo:0.20, margin:42, growth:0.14,  lead:12, householdPenetration:0.64},
+  {name:'Air Freshener Spray 300ml',cat:'Household',  rev:50,  val:0.35, cx:0.55, stockouts:4, promo:0.48, margin:28, growth:-0.06, lead:18, householdPenetration:0.30},
+  {name:'Drain Clog Remover 1L',  cat:'Household',    rev:55,  val:0.39, cx:0.62, stockouts:4, promo:0.42, margin:31, growth:-0.04, lead:20, householdPenetration:0.25},
+  {name:'Bathroom Cleaner Gel 750ml',cat:'Household', rev:72,  val:0.52, cx:0.45, stockouts:3, promo:0.35, margin:33, growth:0.02,  lead:15, householdPenetration:0.40},
 ];
 
 export const VP_ALERTS = [

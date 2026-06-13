@@ -30,16 +30,16 @@ export const AssortmentOverview: React.FC<AssortmentOverviewProps> = ({ role, is
     yieldVal: string;
     cannibalization: string;
   }>({
-    density: '102 SKUs',
-    burden: '66.7%',
+    density: '100 SKUs',
+    burden: '68.0%',
     yieldVal: '₹3.02 Cr',
     cannibalization: '0.62'
   });
 
   // Keep defaults in sync with global timeline picker changes
   React.useEffect(() => {
-    let densityVal = '102 SKUs';
-    let burdenVal = '66.7%';
+    let densityVal = '100 SKUs';
+    let burdenVal = '68.0%';
     let yieldValueStr = '₹3.02 Cr';
     let cannibalizationVal = '0.62';
 

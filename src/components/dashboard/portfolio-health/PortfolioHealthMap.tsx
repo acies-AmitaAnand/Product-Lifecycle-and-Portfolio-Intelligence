@@ -1446,7 +1446,7 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean; onAuditClick?: (metricNam
   // Dynamically calculate KPIs based on filtered SKUs and jittering offset
   const filteredCount = filteredSKUs.length || 1;
   const dynamicTotalRev = filteredSKUs.reduce((sum, s) => sum + s.rev, 0) * 0.3915;
-  const dynamicSkuCount = Math.round(filteredSKUs.length * (102 / 29));
+  const dynamicSkuCount = filteredSKUs.length;
   const dynamicGrowth = (filteredSKUs.reduce((sum, s) => sum + s.growth, 0) / filteredCount) * 100;
   const dynamicOrders = filteredSKUs.reduce((sum, s) => sum + s.rev, 0) * (4218 / 2174);
   const dynamicFcast = 94.6 + (filteredSKUs.reduce((sum, s) => sum + s.margin, 0) / filteredCount - 35.1) * 0.1;
@@ -1457,8 +1457,8 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean; onAuditClick?: (metricNam
   const revHist = [790, 800, 811, 820, 829, 838, 845, 851.2].map(v => v * revScale);
 
   const skuCountVal = Math.round(dynamicSkuCount + jitterOffset.skuCount);
-  const skuCountScale = Math.max(0.1, skuCountVal / 102);
-  const skuCountHist = [105, 104, 104, 103, 103, 102, 102, 102].map(v => v * skuCountScale);
+  const skuCountScale = Math.max(0.1, skuCountVal / 100);
+  const skuCountHist = [105, 104, 104, 103, 103, 100, 100, 100].map(v => v * skuCountScale);
 
   const growthVal = parseFloat((dynamicGrowth + jitterOffset.growth).toFixed(1));
   const growthScale = Math.max(0.1, growthVal / 8.4);

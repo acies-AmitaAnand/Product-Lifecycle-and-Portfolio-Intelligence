@@ -17,7 +17,7 @@ export const AGENT_THOUGHTS_DATA: Record<string, AgentThoughts> = {
     borderColor: 'border-purple-500/25',
     bgColor: 'bg-purple-500/5',
     thoughts: [
-      'Scanning portfolio: 102 SKUs loaded.',
+      'Scanning portfolio: 100 SKUs loaded.',
       'Identified Dairy category as the highest friction point (27.78% margin dilution).',
       'Supplier fragmentation index at 1.20 (above 1.0 benchmark). Recommended SKU consolidation.'
     ]
@@ -69,7 +69,7 @@ export const AGENT_THOUGHTS_DATA: Record<string, AgentThoughts> = {
     borderColor: 'border-indigo-500/25',
     bgColor: 'bg-indigo-500/5',
     thoughts: [
-      'IPPV model loaded for 29 SKUs. Top performer: BrandB Chips (78% household penetration, IPPV 100).',
+      'IPPV model loaded for 100 SKUs. Top performer: BrandB Chips (78% household penetration, IPPV 100).',
       'Detected 8 Bad Complexity SKUs dragging portfolio flywheel score below 65.',
       'Complexity P&L analysis complete: Household category carries highest hidden cost burden. Recommend value chain review.'
     ]
@@ -108,7 +108,7 @@ export const AGENT_THOUGHTS_DATA: Record<string, AgentThoughts> = {
     borderColor: 'border-rose-500/25',
     bgColor: 'bg-rose-500/5',
     thoughts: [
-      'Assortment Optimization Model loaded: 102 SKUs registered.',
+      'Assortment Optimization Model loaded: 100 SKUs registered.',
       'Netherlands identified as immediate opportunity: lowest gross margin at 38.20% with smallest footprint (45 SKUs).',
       'Beverages category flagged for high cannibalization risk (internal promo correlation index at -0.62).'
     ]

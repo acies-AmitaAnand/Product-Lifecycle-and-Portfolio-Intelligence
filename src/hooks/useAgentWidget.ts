@@ -13,7 +13,7 @@ export const useAgentWidget = (
   const [isAgentTyping, setIsAgentTyping] = useState<boolean>(false);
 
   const [agentChatHistory, setAgentChatHistory] = useState<Record<string, Array<{ sender: 'user' | 'agent', text: string }>>>({
-    '1': [{ sender: 'agent', text: 'Hello! I am the Portfolio Agent. I am monitoring the health of all 102 SKUs on this tab. Let me know if you would like me to compile complexity metrics or highlight low-performing segments!' }],
+    '1': [{ sender: 'agent', text: 'Hello! I am the Portfolio Agent. I am monitoring the health of all 100 SKUs on this tab. Let me know if you would like me to compile complexity metrics or highlight low-performing segments!' }],
     '2': [{ sender: 'agent', text: 'Hi, I am the Supply Chain Agent. Sourcing and lead time modeling is active. Sourcing delay on BrandD Yogurt detected. How can I assist you with launch timelines?' }],
     '3': [{ sender: 'agent', text: 'Greetings, I am the FP&A Agent. Margin and cash flows are synced. I am monitoring structural profitability drivers. Let me know if you would like to run statement simulations!' }],
     '4': [{ sender: 'agent', text: 'Hello, I am the Merchandiser Agent. Assortment planning and category sync is online. 35 "Rationalize" segment SKUs identified. How can I help optimize catalog complexity?' }],
@@ -63,7 +63,7 @@ Geographically, Italy's top seller is BrandF Water, while Spain is led by BrandC
         } else if (lowerMsg.includes('best') || lowerMsg.includes('top') || lowerMsg.includes('highest')) {
           replyText = `Based on our multi-country sales data, our best performing SKU by Net Sales is BrandF Water (₹17.03 Cr) and by Gross Margin is also BrandF Water (₹6.83 Cr), followed closely by BrandC Chips (₹16.00 Cr).`;
         } else if (lowerMsg.includes('worst') || lowerMsg.includes('lowest') || lowerMsg.includes('leakage') || lowerMsg.includes('drag') || lowerMsg.includes('burden')) {
-          replyText = `The worst performing SKU in terms of growth is Fabric Softener (-22.2% growth, 15% margin). Also, Dairy has the highest concentration of low-performing items at 27.78%, and 66.7% of our catalog (68 SKUs) represents a long-tail burden contributing <1% revenue.`;
+          replyText = `The worst performing SKU in terms of growth is Fabric Softener (-22.2% growth, 15% margin). Also, Dairy has the highest concentration of low-performing items at 27.78%, and 68% of our catalog (68 SKUs) represents a long-tail burden contributing <1% revenue.`;
         } else if (lowerMsg.includes('netherlands') || lowerMsg.includes('gap') || lowerMsg.includes('realignment') || lowerMsg.includes('austria')) {
           replyText = `The Netherlands holds our smallest footprint (45 SKUs) but yields the lowest gross margin (38.20%). Realigning its mix to match the Austria benchmark of 38.64% is our top assortment opportunity.`;
         } else if (lowerMsg.includes('cannibalization') || lowerMsg.includes('overlap') || lowerMsg.includes('correlation')) {
@@ -75,7 +75,7 @@ Geographically, Italy's top seller is BrandF Water, while Spain is led by BrandC
         if (lowerMsg.includes('worst') || lowerMsg.includes('dairy') || lowerMsg.includes('drag')) {
           replyText = `Dairy is currently our biggest drag with 27.78% margin dilution. The supplier fragmentation index stands at 1.20, which is well above our 1.0 benchmark.`;
         } else if (lowerMsg.includes('count') || lowerMsg.includes('skus') || lowerMsg.includes('size')) {
-          replyText = `The portfolio currently tracks 102 active SKUs across 6 major brands, generating $473M annual net sales.`;
+          replyText = `The portfolio currently tracks 100 active SKUs across 6 major brands, generating $473M annual net sales.`;
         } else {
           replyText = `I am tracking portfolio complexity and mix. Ask me about 'Dairy margin dilution', 'supplier fragmentation index', or 'active SKU counts'.`;
         }

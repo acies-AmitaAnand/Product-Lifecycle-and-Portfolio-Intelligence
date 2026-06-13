@@ -34,7 +34,7 @@ export const SKUHoldingsMatrix: React.FC<SKUHoldingsMatrixProps> = () => {
     // France, Austria, Poland: medium catalog (80 SKUs) - omit highly complex low-velocity items
     if ((country === 'France' || country === 'Austria' || country === 'Poland') && sku.rev < 48) return 'not-listed';
 
-    // Germany (98), Spain (100), Italy (102): largest catalogs - list almost everything
+    // Germany (98), Spain (100), Italy (100): largest catalogs - list almost everything
     if (sku.stockouts >= 6) return 'critical'; // Extreme stockouts
     if (sku.stockouts >= 3 || sku.growth < 0) return 'warning'; // Stockout risk or negative growth
     return 'active'; // Healthy stock level

@@ -382,7 +382,7 @@ export const StrategicActionPlan: React.FC<Props> = ({ skus, isDarkMode, onNavig
     const worstShelfCat = [...catShelves].sort((a, b) => a.avgShelf - b.avgShelf)[0]?.cat || 'Household';
 
     const REG_DATA = [
-      { country: 'Italy',       skuCount: 102, netSalesM: 137.2, marginPct: 38.53 },
+      { country: 'Italy',       skuCount: 100, netSalesM: 137.2, marginPct: 38.53 },
       { country: 'Spain',       skuCount: 100, netSalesM: 106.7, marginPct: 38.60 },
       { country: 'Germany',     skuCount:  98, netSalesM:  88.5, marginPct: 38.48 },
       { country: 'France',      skuCount:  80, netSalesM:  42.6, marginPct: 38.55 },
