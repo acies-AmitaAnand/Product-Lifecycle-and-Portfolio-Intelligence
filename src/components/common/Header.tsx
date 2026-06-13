@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { Activity, User, Sun, Moon, ChevronRight, Home, LogOut } from 'lucide-react';
+import { Activity, User, Sun, Moon, ChevronRight, Home } from 'lucide-react';
 import { Role } from '../../types/dashboard';
 import { TimelineRange } from '../../utils/timeframe';
 
@@ -47,42 +47,50 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       </div>
 
-      <div className="flex items-center gap-4">
-        {searchBar}
-        
-        <div className="flex items-center gap-2 text-acies-gray dark:text-white border-l border-black/10 dark:border-white/10 pl-3">
-          <User size={12} className="opacity-40" />
-          <span className="text-[10px] font-bold uppercase tracking-wider select-none">{currentRole}</span>
-          <button
-            type="button"
-            onClick={onSwitchPersona}
-            className="flex items-center gap-1.5 px-2 py-1 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border border-black/10 dark:border-white/10 rounded text-[9px] font-bold uppercase tracking-widest text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200 transition-colors cursor-pointer ml-1.5"
-            title="Switch to another persona"
+      <div className="flex items-center gap-3">
+        {/* Unified premium toolbar widget matching template */}
+        <div className="flex items-center gap-3 bg-zinc-50 dark:bg-zinc-900/40 border border-black/10 dark:border-white/10 rounded-xl p-1.5 shadow-sm">
+          {searchBar}
+          
+          <button 
+            onClick={onClickHome} 
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-transparent border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg text-acies-gray dark:text-white font-extrabold text-[10px] uppercase tracking-wider transition-colors cursor-pointer outline-none"
+            title="Go to HOME"
           >
-            <LogOut size={10} className="rotate-180" />
-            <span>Switch</span>
+            <Home size={13} className="shrink-0" />
+            <span>HOME</span>
+          </button>
+
+          <div className="h-6 w-[1px] bg-black/10 dark:bg-white/10 shrink-0" />
+
+          <button 
+            onClick={onSwitchPersona} 
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-transparent border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg text-acies-gray dark:text-white font-extrabold text-[10px] transition-colors cursor-pointer outline-none"
+            title="Switch Profile"
+          >
+            <User size={13} className="shrink-0 opacity-70" />
+            <span>Switch profile ↗</span>
+          </button>
+
+          <button 
+            onClick={toggleDarkMode} 
+            className="p-2 bg-white dark:bg-transparent border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg text-acies-gray dark:text-white/85 transition-colors cursor-pointer outline-none flex items-center justify-center"
+            title="Toggle Theme"
+          >
+            {isDarkMode ? <Sun size={13} /> : <Moon size={13} />}
           </button>
         </div>
-        <button 
-          onClick={onClickHome} 
-          className="flex items-center gap-1.5 px-2 py-1.5 hover:bg-black/5 dark:hover:bg-white/5 rounded-sm transition-colors text-acies-gray dark:text-white/80 cursor-pointer"
-          title="Go to HOME"
-        >
-          <Home size={15} />
-          <span className="text-[10px] font-bold uppercase tracking-widest">HOME</span>
-        </button>
 
-        <button onClick={toggleDarkMode} className="p-1.5 hover:bg-black/5 dark:hover:bg-white/5 rounded-full transition-colors text-acies-gray dark:text-white/80 cursor-pointer">
-          {isDarkMode ? <Sun size={16} /> : <Moon size={16} />}
-        </button>
-
-        <button 
-          onClick={onStartTour}
-          className="acies-button px-4 py-1.5 text-[10px] flex items-center gap-2 group cursor-pointer"
-        >
-          Guided Tour
-          <ChevronRight size={12} className="group-hover:translate-x-0.5 transition-transform" />
-        </button>
+        {/* Guided Tour button */}
+        {onStartTour && (
+          <button 
+            onClick={onStartTour}
+            className="acies-button px-4 py-2 text-[10px] flex items-center gap-2 group cursor-pointer"
+          >
+            Guided Tour
+            <ChevronRight size={12} className="group-hover:translate-x-0.5 transition-transform" />
+          </button>
+        )}
       </div>
     </header>
   );

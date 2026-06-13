@@ -48,12 +48,16 @@ export const GlobalSearchBar: React.FC<GlobalSearchBarProps> = ({
           }}
           onFocus={() => setIsSearchFocused(true)}
           onKeyDown={handleKeyDownInput}
-          placeholder="Search metrics or SKUs... (Ctrl+K or /)"
-          className="w-full bg-black/5 dark:bg-white/5 border border-purple-500/60 dark:border-purple-400/50 rounded-full px-3 py-1 pl-8.5 pr-12 text-[10px] font-semibold text-zinc-800 dark:text-zinc-150 placeholder-zinc-400 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20 transition-all animate-fadeIn"
+          placeholder="Search metrics or SKUs..."
+          className="w-full bg-black/5 dark:bg-white/5 border border-black/15 dark:border-zinc-700/80 rounded-full px-3 py-1 pl-8.5 pr-24 text-[10px] font-semibold text-zinc-800 dark:text-zinc-150 placeholder-zinc-400 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20 transition-all animate-fadeIn"
         />
-        <div className="absolute inset-y-0 right-0 pr-2.5 flex items-center pointer-events-none">
-          <kbd className="text-[8px] font-bold bg-black/5 dark:bg-white/10 border border-black/10 dark:border-white/10 px-1 py-0.5 rounded-full text-zinc-400 dark:text-zinc-500 font-mono select-none">
+        <div className="absolute inset-y-0 right-0 pr-2.5 flex items-center gap-1 pointer-events-none select-none">
+          <kbd className="text-[7.5px] font-extrabold bg-black/10 dark:bg-white/10 border border-black/10 dark:border-white/15 px-1.5 py-0.5 rounded text-zinc-500 dark:text-zinc-400 font-mono">
             Ctrl K
+          </kbd>
+          <span className="text-[7.5px] font-extrabold text-zinc-400 dark:text-zinc-500 lowercase font-sans">or</span>
+          <kbd className="text-[7.5px] font-extrabold bg-black/10 dark:bg-white/10 border border-black/10 dark:border-white/15 px-2 py-0.5 rounded text-zinc-500 dark:text-zinc-400 font-mono">
+            /
           </kbd>
         </div>
       </div>
