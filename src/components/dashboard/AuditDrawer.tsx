@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { X, Database, BookOpen, HelpCircle, Activity, CheckCircle, TrendingUp, AlertTriangle, Zap, ChevronDown, Sparkles } from 'lucide-react';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Cell, CartesianGrid } from 'recharts';
 import { AUDIT_DATA } from '../../constants/auditData';
+import { SKUS } from '../../constants/data';
 import { parseTrendData, getConfidenceScore, getMetricStatus, getMetricTrend } from '../../utils/auditHelpers';
 
 interface AuditDrawerProps {
@@ -160,6 +161,10 @@ export const AuditDrawer: React.FC<AuditDrawerProps> = ({ activeMetric, close, i
     decisions: false
   });
 
+  // Active SKUs by Category state
+  const [showSkusByCategory, setShowSkusByCategory] = useState<boolean>(false);
+  const [selectedCategory, setSelectedCategory] = useState<string>('All');
+
   const toggleSection = (section: string) => {
     setExpanded(prev => ({ ...prev, [section]: !prev[section] }));
   };
@@ -184,6 +189,8 @@ export const AuditDrawer: React.FC<AuditDrawerProps> = ({ activeMetric, close, i
         recommendations: true,
         decisions: false
       });
+      setShowSkusByCategory(false);
+      setSelectedCategory('All');
     }
   }, [activeMetric]);
 
@@ -285,6 +292,80 @@ export const AuditDrawer: React.FC<AuditDrawerProps> = ({ activeMetric, close, i
                   {content.formulaDescription}
                 </p>
               </div>
+
+              {/* Category-based SKU Browser (for Active SKUs only) */}
+              {activeMetric === 'Active SKUs' && (
+                <div className="border border-purple-500/20 bg-purple-500/5 dark:bg-purple-950/10 rounded-xl p-4.5 space-y-3">
+                  <button
+                    onClick={() => setShowSkusByCategory(!showSkusByCategory)}
+                    className="w-full flex items-center justify-between py-1.5 px-3 text-xs font-bold text-purple-700 hover:text-purple-900 dark:text-purple-300 dark:hover:text-purple-100 transition-all border border-purple-500/30 rounded-lg bg-purple-500/10 hover:bg-purple-500/20 cursor-pointer outline-none active:scale-98"
+                  >
+                    <span>{showSkusByCategory ? 'Hide Active SKUs by Category' : 'Browse Active SKUs by Category →'}</span>
+                    <ChevronDown size={14} className={`transform transition-transform duration-200 ${showSkusByCategory ? 'rotate-180' : ''}`} />
+                  </button>
+                  
+                  <AnimatePresence>
+                    {showSkusByCategory && (
+                      <motion.div 
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="space-y-4 overflow-hidden"
+                      >
+                        {/* Tabs for Categories */}
+                        <div className="flex flex-wrap gap-1.5 border-b border-purple-500/10 pb-2">
+                          {['All', 'Beverages', 'Snacks', 'Personal Care', 'Dairy', 'Household'].map(cat => (
+                            <button
+                              key={cat}
+                              onClick={() => setSelectedCategory(cat)}
+                              className={`px-2 py-0.5 rounded text-[9px] font-bold transition-all border cursor-pointer ${
+                                selectedCategory === cat
+                                  ? 'bg-purple-600 text-white border-purple-600'
+                                  : 'bg-transparent text-zinc-650 hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-zinc-200 border-zinc-200 dark:border-zinc-800'
+                              }`}
+                            >
+                              {cat} ({cat === 'All' ? SKUS.length : SKUS.filter(s => s.cat === cat).length})
+                            </button>
+                          ))}
+                        </div>
+                        
+                        {/* SKU Lists */}
+                        <div className="max-h-[260px] overflow-y-auto pr-1 space-y-4 scrollbar-thin scrollbar-thumb-purple-500">
+                          {['Beverages', 'Snacks', 'Personal Care', 'Dairy', 'Household']
+                            .filter(cat => selectedCategory === 'All' || selectedCategory === cat)
+                            .map(cat => {
+                              const catSkus = SKUS.filter(s => s.cat === cat);
+                              if (catSkus.length === 0) return null;
+                              return (
+                                <div key={cat} className="space-y-2">
+                                  <h4 className="text-[9.5px] font-extrabold uppercase tracking-wider text-purple-600 dark:text-purple-400 flex items-center gap-1.5 border-b border-purple-500/5 pb-1">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-purple-500" />
+                                    {cat} ({catSkus.length})
+                                  </h4>
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                    {catSkus.map(sku => (
+                                      <div 
+                                        key={sku.name} 
+                                        className="p-2.5 border border-zinc-150 dark:border-zinc-900 bg-white/50 dark:bg-zinc-900/50 rounded-lg flex flex-col gap-1 hover:border-purple-500/40 transition-colors shadow-sm"
+                                      >
+                                        <span className="font-bold text-[10px] text-zinc-800 dark:text-zinc-200 leading-tight">{sku.name}</span>
+                                        <div className="flex items-center gap-2 text-[8.5px] text-zinc-500 dark:text-zinc-400 font-mono">
+                                          <span>Margin: <span className="font-bold text-zinc-700 dark:text-zinc-300">{sku.margin}%</span></span>
+                                          <span>·</span>
+                                          <span>Sales: <span className="font-bold text-zinc-700 dark:text-zinc-300">₹{sku.rev} Cr</span></span>
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              );
+                            })}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              )}
 
               {/* Accordions Group */}
               <div className="space-y-1">
