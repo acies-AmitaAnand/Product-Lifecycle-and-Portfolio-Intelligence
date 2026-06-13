@@ -227,7 +227,6 @@ export const TrendMonthForecastModal: React.FC<TrendMonthForecastModalProps> = (
   month,
   onClose
 }) => {
-  const [showMethodology, setShowMethodology] = React.useState(false);
 
   if (!isOpen || !month) return null;
 
@@ -313,41 +312,8 @@ export const TrendMonthForecastModal: React.FC<TrendMonthForecastModalProps> = (
 
         </div>
 
-        {showMethodology && (
-          <div className="bg-zinc-50 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded p-4 space-y-4 text-zinc-700 dark:text-zinc-200">
-            
-            {/* Prediction Logic */}
-            <div className="space-y-1.5">
-              <p className="font-bold text-[9.5px] uppercase tracking-widest text-zinc-500 dark:text-zinc-400">Prediction Methodology & Key Drivers</p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 leading-relaxed">
-                <div className="space-y-1">
-                  <span className="font-extrabold text-[9px] text-[#6d28d9] dark:text-[#a78bfa] uppercase block">Holt-Winters Projections</span>
-                  <p>Calculated using triple exponential smoothing models tracking seasonal index vectors, base trend adjustments, and pricing velocity indicators to project next year's rate (+12% target rate).</p>
-                </div>
-                <div className="space-y-1">
-                  <span className="font-extrabold text-[9px] text-[#6d28d9] dark:text-[#a78bfa] uppercase block">Key Drivers Behind {data.fullName}</span>
-                  <ul className="list-disc pl-3.5 space-y-0.5">
-                    <li><strong>YoY Price Lift (+4.2%):</strong> Positive elasticity support on core SKUs.</li>
-                    <li><strong>Product mix index:</strong> Shifting volume weight toward higher-margin premium variants.</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-
-          </div>
-        )}
-
         {/* Footer */}
-        <div className="flex justify-between items-center border-t border-black/10 dark:border-white/10 pt-3 mt-1">
-          <button 
-            type="button"
-            onClick={() => setShowMethodology(!showMethodology)}
-            className="text-[9.5px] font-bold text-purple-600 dark:text-purple-400 hover:underline cursor-pointer border-none bg-transparent flex items-center gap-1.5 outline-none"
-          >
-            <Activity size={12} />
-            {showMethodology ? 'Hide Forecast Methodology & Key Drivers' : 'View Forecast Methodology & Key Drivers →'}
-          </button>
+        <div className="flex justify-end items-center border-t border-black/10 dark:border-white/10 pt-3 mt-1">
           <button 
             type="button"
             onClick={onClose}
