@@ -37,21 +37,21 @@ async function run() {
     console.log(`Saved initial screenshot to: ${initialPath}`);
   }
 
-  // Find the simulator range slider (min=20, max=40)
+  // Find the simulator range slider (min=20, max=60)
   console.log("Locating the Hero Cutoff range slider...");
   const sliderHandle = await page.evaluateHandle(() => {
     const inputs = Array.from(document.querySelectorAll('input[type="range"]'));
-    return inputs.find(i => i.min === '20' && i.max === '40');
+    return inputs.find(i => i.min === '20' && i.max === '60');
   });
 
   const slider = sliderHandle.asElement();
   if (slider) {
-    console.log("Found slider. Simulating slide to 35%...");
+    console.log("Found slider. Simulating slide to 45%...");
     
     // Evaluate in browser to set value and dispatch input/change events using React-friendly setter
     await page.evaluate((el) => {
       const nativeValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value").set;
-      nativeValueSetter.call(el, '35');
+      nativeValueSetter.call(el, '45');
       el.dispatchEvent(new Event('input', { bubbles: true }));
       el.dispatchEvent(new Event('change', { bubbles: true }));
     }, slider);
@@ -65,11 +65,11 @@ async function run() {
     });
 
     console.log("--- Updated Pareto Component Text ---");
-    console.log(textInfo.split('\n').filter(l => l.includes('HERO') || l.includes('TAIL') || l.includes('Top 35%') || l.includes('Bottom 65%')));
+    console.log(textInfo.split('\n').filter(l => l.includes('HERO') || l.includes('TAIL') || l.includes('Top 45%') || l.includes('Bottom 55%')));
     console.log("-------------------------------------");
 
-    // Take screenshot of simulated state (35% cutoff)
-    const simulatedPath = 'C:\\Users\\Sree Vyshnavi\\.gemini\\antigravity\\brain\\6470fd70-a4a4-4b87-a99d-d8ddeb36d56a\\scratch\\pareto_simulated_35.png';
+    // Take screenshot of simulated state (45% cutoff)
+    const simulatedPath = 'C:\\Users\\Sree Vyshnavi\\.gemini\\antigravity\\brain\\6470fd70-a4a4-4b87-a99d-d8ddeb36d56a\\scratch\\pareto_simulated_45.png';
     if (paretoEl) {
       await paretoEl.screenshot({ path: simulatedPath });
       console.log(`Saved simulated screenshot to: ${simulatedPath}`);

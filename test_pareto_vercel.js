@@ -26,15 +26,15 @@ async function run() {
   console.log("Locating the Hero Cutoff range slider on Vercel...");
   const sliderHandle = await page.evaluateHandle(() => {
     const inputs = Array.from(document.querySelectorAll('input[type="range"]'));
-    return inputs.find(i => i.min === '20' && i.max === '40');
+    return inputs.find(i => i.min === '20' && i.max === '60');
   });
 
   const slider = sliderHandle.asElement();
   if (slider) {
-    console.log("Found slider on Vercel. Simulating slide to 35%...");
+    console.log("Found slider on Vercel. Simulating slide to 45%...");
     await page.evaluate((el) => {
       const nativeValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value").set;
-      nativeValueSetter.call(el, '35');
+      nativeValueSetter.call(el, '45');
       el.dispatchEvent(new Event('input', { bubbles: true }));
       el.dispatchEvent(new Event('change', { bubbles: true }));
     }, slider);
@@ -42,7 +42,7 @@ async function run() {
     await new Promise(r => setTimeout(r, 2000));
 
     // Capture the screenshot of the simulated Pareto card on the Vercel production deployment
-    const simulatedPath = 'C:\\Users\\Sree Vyshnavi\\.gemini\\antigravity\\brain\\6470fd70-a4a4-4b87-a99d-d8ddeb36d56a\\scratch\\vercel_pareto_simulated_35.png';
+    const simulatedPath = 'C:\\Users\\Sree Vyshnavi\\.gemini\\antigravity\\brain\\6470fd70-a4a4-4b87-a99d-d8ddeb36d56a\\scratch\\vercel_pareto_simulated_45.png';
     const paretoEl = await page.$('#vp-pareto-concentration');
     if (paretoEl) {
       await paretoEl.screenshot({ path: simulatedPath });
