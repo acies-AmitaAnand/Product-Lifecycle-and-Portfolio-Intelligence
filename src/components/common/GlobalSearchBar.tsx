@@ -78,8 +78,14 @@ export const GlobalSearchBar: React.FC<GlobalSearchBarProps> = ({
               </div>
             ) : (
               <div className="max-h-[260px] overflow-y-auto no-scrollbar py-2">
-                {Object.entries(groupedSearchResults).map(([category, items]) => (
-                  <div key={category} className="space-y-0.5">
+                {Object.entries(groupedSearchResults)
+                  .sort((a, b) => {
+                    const aMinPriority = Math.min(...a[1].map(item => item.priority ?? 2));
+                    const bMinPriority = Math.min(...b[1].map(item => item.priority ?? 2));
+                    return aMinPriority - bMinPriority;
+                  })
+                  .map(([category, items]) => (
+                    <div key={category} className="space-y-0.5">
                     <div className="px-3.5 py-1 text-[7.5px] font-extrabold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 bg-black/[0.02] dark:bg-white/[0.01] border-b border-black/5 dark:border-white/5">
                       {category}
                     </div>

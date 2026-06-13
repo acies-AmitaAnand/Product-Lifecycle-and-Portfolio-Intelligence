@@ -11,6 +11,7 @@ export interface SearchItem {
   rawKpiLabel?: string;
   skuData?: SKU;
   tabId?: number;
+  priority?: number;
 }
 
 export const useGlobalSearch = (
@@ -158,13 +159,36 @@ export const useGlobalSearch = (
     return items;
   }, [filteredSKUS, filteredPortfolioData]);
 
-  // Filter items based on user search query using keyword matching
+  // Filter and prioritize/sort items based on user search query
   const filteredSearchItems = useMemo(() => {
-    if (searchQuery.trim() === '') return [];
-    const keywords = searchQuery.toLowerCase().split(/\s+/).filter(Boolean);
-    return searchItems.filter(item => {
-      const searchText = `${item.name} ${item.categoryName} ${item.subtitle || ''}`.toLowerCase();
+    const cleanQuery = searchQuery.trim().toLowerCase();
+    if (cleanQuery === '') return [];
+    
+    const keywords = cleanQuery.split(/\s+/).filter(Boolean);
+    
+    // Filter items first (excluding categoryName from matching text to prevent matching pollution)
+    const matched = searchItems.filter(item => {
+      const searchText = `${item.name} ${item.subtitle || ''}`.toLowerCase();
       return keywords.every(kw => searchText.includes(kw));
+    });
+
+    // Assign priority scores and sort
+    return matched.map(item => {
+      const nameLower = item.name.toLowerCase();
+      let priority = 2; // Default: contains query
+
+      if (nameLower.startsWith(cleanQuery)) {
+        priority = 0; // Starts with query
+      } else if (nameLower.split(/\s+/).some(w => w.startsWith(cleanQuery))) {
+        priority = 1; // Word starts with query
+      }
+
+      return { ...item, priority };
+    }).sort((a, b) => {
+      if (a.priority !== b.priority) {
+        return a.priority - b.priority;
+      }
+      return 0; // Maintain original relative order
     });
   }, [searchQuery, searchItems]);
 
