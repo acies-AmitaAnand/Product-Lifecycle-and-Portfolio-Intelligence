@@ -8,7 +8,7 @@ export const ParetoConcentration: React.FC = () => {
   const [filterType, setFilterType] = useState<'all' | 'heroes' | 'tail'>('all');
   const [selectedSkuName, setSelectedSkuName] = useState<string | null>(null);
   const [discountDepth, setDiscountDepth] = useState<number>(10);
-  const [heroThreshold, setHeroThreshold] = useState<number>(30); // dynamic simulator from 20 to 50
+  const [heroThreshold, setHeroThreshold] = useState<number>(30); // dynamic simulator from 20 to 40
 
   const skuItem = selectedSkuName ? PORTFOLIO_DATA.find(item => item.name === selectedSkuName) : null;
 
@@ -66,7 +66,7 @@ export const ParetoConcentration: React.FC = () => {
             <input 
               type="range" 
               min="20" 
-              max="50" 
+              max="40" 
               value={heroThreshold}
               onChange={(e) => setHeroThreshold(parseInt(e.target.value, 10))}
               className="accent-acies-yellow cursor-pointer h-1 w-24 bg-zinc-200 dark:bg-zinc-700 rounded-lg appearance-none"
