@@ -50,6 +50,18 @@ export const Header: React.FC<HeaderProps> = ({
       <div className="flex items-center gap-3">
         {/* Unified premium toolbar widget matching template */}
         <div className="flex items-center gap-3 bg-zinc-50 dark:bg-zinc-900/40 border border-black/10 dark:border-white/10 rounded-xl p-1.5 shadow-sm">
+          {/* Active Persona indicator */}
+          <div className="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-zinc-800/80 border border-black/10 dark:border-white/10 rounded-lg text-zinc-700 dark:text-zinc-200 font-extrabold text-[9.5px] uppercase tracking-wider shadow-sm shrink-0">
+            <span className={`h-1.5 w-1.5 rounded-full animate-pulse shrink-0 ${
+              currentRole === 'VP Product Management' ? 'bg-amber-500' :
+              currentRole === 'Product Manager' ? 'bg-green-500' : 'bg-blue-500'
+            }`} />
+            <span className="text-zinc-400 dark:text-zinc-500 font-medium normal-case mr-0.5">Profile:</span>
+            <span>{currentRole}</span>
+          </div>
+
+          <div className="h-6 w-[1px] bg-black/10 dark:bg-white/10 shrink-0" />
+
           {searchBar}
           
           <button 
