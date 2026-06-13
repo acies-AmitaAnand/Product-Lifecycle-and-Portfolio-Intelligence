@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { PORTFOLIO_DATA } from '../../../constants/data';
-import { ResponsiveContainer, ComposedChart, Bar, Line, XAxis, YAxis, Tooltip, CartesianGrid, ReferenceLine } from 'recharts';
+import { ResponsiveContainer, ComposedChart, Bar, Line, XAxis, YAxis, Tooltip, CartesianGrid, ReferenceLine, Cell } from 'recharts';
 import { BarChart2, Star, Award, Layers, X, Sparkles, TrendingUp, AlertTriangle, Percent, Clock, ShieldCheck, Box, ChevronRight, HelpCircle, Coins, BarChart3 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -8,6 +8,7 @@ export const ParetoConcentration: React.FC = () => {
   const [filterType, setFilterType] = useState<'all' | 'heroes' | 'tail'>('all');
   const [selectedSkuName, setSelectedSkuName] = useState<string | null>(null);
   const [discountDepth, setDiscountDepth] = useState<number>(10);
+  const [heroThreshold, setHeroThreshold] = useState<number>(30); // dynamic simulator from 20 to 50
 
   const skuItem = selectedSkuName ? PORTFOLIO_DATA.find(item => item.name === selectedSkuName) : null;
 
@@ -34,7 +35,7 @@ export const ParetoConcentration: React.FC = () => {
   });
 
   // Filter items for display
-  const heroCutoffIdx = Math.floor(chartData.length * 0.3); // Top 30% are hero/grow lines
+  const heroCutoffIdx = Math.floor(chartData.length * (heroThreshold / 100)); // Dynamic Hero cutoff index
   
   const filteredData = chartData.filter(item => {
     if (filterType === 'heroes') return item.rank <= heroCutoffIdx;
@@ -44,50 +45,68 @@ export const ParetoConcentration: React.FC = () => {
 
   // Hero highlights details
   const top10pctSales = chartData.filter(item => item.rank <= Math.ceil(chartData.length * 0.1)).reduce((sum, i) => sum + i.sales, 0);
-  const top30pctSales = chartData.filter(item => item.rank <= Math.ceil(chartData.length * 0.3)).reduce((sum, i) => sum + i.sales, 0);
+  const topHeroPctSales = chartData.filter(item => item.rank <= Math.ceil(chartData.length * (heroThreshold / 100))).reduce((sum, i) => sum + i.sales, 0);
+  const tailPct = 100 - heroThreshold;
+  const tailSales = totalSales - topHeroPctSales;
 
   return (
     <div className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-sm p-5 flex flex-col mb-6">
       
       {/* Header Controls */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-5">
         <div>
           <h4 className="text-xs uppercase font-bold tracking-widest text-zinc-400">Pareto SKU Concentration</h4>
           <p className="text-[10px] text-zinc-500 mt-0.5">Analysing SKU catalog revenue density and identification of the long-tail.</p>
         </div>
 
-        {/* Tab-like Filters */}
-        <div className="flex bg-black/5 dark:bg-white/5 p-0.5 rounded border border-black/5 dark:border-white/5 self-start">
-          <button 
-            onClick={() => setFilterType('all')}
-            className={`px-3 py-1 text-[8.5px] font-bold uppercase tracking-wider rounded transition-all cursor-pointer ${
-              filterType === 'all' 
-                ? 'bg-white dark:bg-zinc-800 text-acies-yellow shadow-sm' 
-                : 'text-zinc-400 hover:text-zinc-650 dark:hover:text-zinc-200'
-            }`}
-          >
-            All SKUs
-          </button>
-          <button 
-            onClick={() => setFilterType('heroes')}
-            className={`px-3 py-1 text-[8.5px] font-bold uppercase tracking-wider rounded transition-all cursor-pointer ${
-              filterType === 'heroes' 
-                ? 'bg-white dark:bg-zinc-800 text-acies-yellow shadow-sm' 
-                : 'text-zinc-400 hover:text-zinc-650 dark:hover:text-zinc-200'
-            }`}
-          >
-            Hero Tier (Top 30%)
-          </button>
-          <button 
-            onClick={() => setFilterType('tail')}
-            className={`px-3 py-1 text-[8.5px] font-bold uppercase tracking-wider rounded transition-all cursor-pointer ${
-              filterType === 'tail' 
-                ? 'bg-white dark:bg-zinc-800 text-acies-yellow shadow-sm' 
-                : 'text-zinc-400 hover:text-zinc-650 dark:hover:text-zinc-200'
-            }`}
-          >
-            Long Tail (Bottom 70%)
-          </button>
+        <div className="flex flex-wrap items-center gap-4">
+          {/* Simulator Slider */}
+          <div className="flex items-center gap-3 bg-black/5 dark:bg-white/5 px-3 py-1.5 rounded border border-black/10 dark:border-white/10 text-[9px] font-bold text-zinc-500 dark:text-zinc-400">
+            <span className="shrink-0 uppercase tracking-wider">Hero Cutoff:</span>
+            <input 
+              type="range" 
+              min="20" 
+              max="50" 
+              value={heroThreshold}
+              onChange={(e) => setHeroThreshold(parseInt(e.target.value, 10))}
+              className="accent-acies-yellow cursor-pointer h-1 w-24 bg-zinc-200 dark:bg-zinc-700 rounded-lg appearance-none"
+            />
+            <span className="text-acies-yellow font-extrabold w-6 text-right">{heroThreshold}%</span>
+          </div>
+
+          {/* Tab-like Filters */}
+          <div className="flex bg-black/5 dark:bg-white/5 p-0.5 rounded border border-black/5 dark:border-white/5 self-start">
+            <button 
+              onClick={() => setFilterType('all')}
+              className={`px-3 py-1 text-[8.5px] font-bold uppercase tracking-wider rounded transition-all cursor-pointer ${
+                filterType === 'all' 
+                  ? 'bg-white dark:bg-zinc-800 text-acies-yellow shadow-sm' 
+                  : 'text-zinc-400 hover:text-zinc-655 dark:hover:text-zinc-200'
+              }`}
+            >
+              All SKUs
+            </button>
+            <button 
+              onClick={() => setFilterType('heroes')}
+              className={`px-3 py-1 text-[8.5px] font-bold uppercase tracking-wider rounded transition-all cursor-pointer ${
+                filterType === 'heroes' 
+                  ? 'bg-white dark:bg-zinc-800 text-acies-yellow shadow-sm' 
+                  : 'text-zinc-400 hover:text-zinc-655 dark:hover:text-zinc-200'
+              }`}
+            >
+              Hero Tier (Top {heroThreshold}%)
+            </button>
+            <button 
+              onClick={() => setFilterType('tail')}
+              className={`px-3 py-1 text-[8.5px] font-bold uppercase tracking-wider rounded transition-all cursor-pointer ${
+                filterType === 'tail' 
+                  ? 'bg-white dark:bg-zinc-800 text-acies-yellow shadow-sm' 
+                  : 'text-zinc-400 hover:text-zinc-655 dark:hover:text-zinc-200'
+              }`}
+            >
+              Long Tail (Bottom {100 - heroThreshold}%)
+            </button>
+          </div>
         </div>
       </div>
 
@@ -141,7 +160,6 @@ export const ParetoConcentration: React.FC = () => {
               <Bar 
                 yAxisId="left" 
                 dataKey="sales" 
-                fill="#3b82f6" 
                 radius={[2, 2, 0, 0]} 
                 maxBarSize={30}
                 style={{ cursor: 'pointer' }}
@@ -151,7 +169,17 @@ export const ParetoConcentration: React.FC = () => {
                     setDiscountDepth(15);
                   }
                 }}
-              />
+              >
+                {filteredData.map((entry, index) => {
+                  const isHero = entry.rank <= heroCutoffIdx;
+                  return (
+                    <Cell 
+                      key={`cell-${index}`} 
+                      fill={isHero ? '#3b82f6' : '#94a3b8'} 
+                    />
+                  );
+                })}
+              </Bar>
               <Line 
                 yAxisId="right" 
                 type="monotone" 
@@ -162,6 +190,17 @@ export const ParetoConcentration: React.FC = () => {
               />
               {/* Strategic 80% Line */}
               <ReferenceLine yAxisId="right" y={80} stroke="#ef4444" strokeDasharray="3 3" label={{ value: '80% Revenue Cutoff', fill: '#ef4444', fontSize: 7, fontWeight: 'bold', position: 'top' }} />
+              
+              {/* Simulated Cutoff Vertical Line */}
+              {filterType === 'all' && chartData[heroCutoffIdx - 1] && (
+                <ReferenceLine 
+                  yAxisId="left"
+                  x={chartData[heroCutoffIdx - 1].name} 
+                  stroke="#3b82f6" 
+                  strokeDasharray="3 3" 
+                  label={{ value: `Top ${heroThreshold}% Cutoff`, fill: '#3b82f6', fontSize: 6.5, fontWeight: 'bold', position: 'insideTopRight' }} 
+                />
+              )}
             </ComposedChart>
           </ResponsiveContainer>
         </div>
@@ -190,19 +229,19 @@ export const ParetoConcentration: React.FC = () => {
               </p>
             </div>
 
-            {/* KPI Item 2: Top 30% */}
+            {/* KPI Item 2: Top X% */}
             <div className="bg-black/[0.02] dark:bg-white/[0.02] border border-black/5 dark:border-white/5 p-2 rounded-sm">
               <div className="flex justify-between items-center text-[9px] font-bold text-zinc-400">
                 <span className="flex items-center gap-1">
                   <Award size={9} className="text-blue-500" />
-                  Top 30% SKUs
+                  Top {heroThreshold}% SKUs
                 </span>
                 <span className="font-mono text-emerald-500">
-                  {((top30pctSales / totalSales) * 100).toFixed(1)}% Sales
+                  {((topHeroPctSales / totalSales) * 100).toFixed(1)}% Sales
                 </span>
               </div>
               <p className="text-[8px] text-zinc-500 mt-1 leading-normal">
-                30 high-performing items drive 62.9% of portfolio revenue.
+                {heroCutoffIdx} high-performing items drive {((topHeroPctSales / totalSales) * 100).toFixed(1)}% of portfolio revenue.
               </p>
             </div>
 
@@ -211,14 +250,14 @@ export const ParetoConcentration: React.FC = () => {
               <div className="flex justify-between items-center text-[9px] font-bold text-zinc-400">
                 <span className="flex items-center gap-1">
                   <Layers size={9} className="text-rose-500" />
-                  Bottom 66.7% SKUs
+                  Bottom {tailPct.toFixed(0)}% SKUs
                 </span>
                 <span className="font-mono text-rose-500">
-                  &lt; 5.0% Sales
+                  {((tailSales / totalSales) * 100).toFixed(1)}% Sales
                 </span>
               </div>
               <p className="text-[8px] text-zinc-500 mt-1 leading-normal">
-                68 long-tail items consume massive supplier overhead with negligible return.
+                {chartData.length - heroCutoffIdx} long-tail items consume massive supplier overhead with negligible return.
               </p>
             </div>
           </div>
