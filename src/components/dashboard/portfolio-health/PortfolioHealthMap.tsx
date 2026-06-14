@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { 
   Layers, Filter, RefreshCw, BarChart2, PieChart, Info, HelpCircle, Save, Plus, Trash2, ArrowRight, Zap,
   Shield, Bell, Check, X, AlertTriangle, AlertCircle, TrendingUp, TrendingDown, Globe, Activity as ActivityIcon,
-  Mail, MapPin, Calendar, Download, BookOpen
+  Mail, MapPin, Calendar, Download
 } from 'lucide-react';
 import { 
   ResponsiveContainer, ScatterChart, Scatter, XAxis, YAxis, ZAxis, Tooltip, CartesianGrid, LabelList,
@@ -25,8 +25,6 @@ interface PortfolioHealthMapProps {
   isDarkMode: boolean;
   onAuditClick?: (metricName: string) => void;
   timelineRange: TimelineRange;
-  showExecutiveGuide?: boolean;
-  setShowExecutiveGuide?: (show: boolean) => void;
 }
 
 interface CustomSKUType {
@@ -1361,9 +1359,7 @@ const VPCommandCenter: React.FC<{
   isDarkMode: boolean; 
   onAuditClick?: (metricName: string) => void; 
   timelineRange: TimelineRange;
-  showExecutiveGuide?: boolean;
-  setShowExecutiveGuide?: (show: boolean) => void;
-}> = ({ isDarkMode, onAuditClick, timelineRange, showExecutiveGuide = false, setShowExecutiveGuide = () => {} }) => {
+}> = ({ isDarkMode, onAuditClick, timelineRange }) => {
   const SKUS = getFilteredSKUS(GLOBAL_SKUS, timelineRange);
   const accentColor = isDarkMode ? '#a78bfa' : '#6d28d9';
   const gridStroke = isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
@@ -2095,45 +2091,7 @@ const VPCommandCenter: React.FC<{
         </button>
       </div>
 
-      {showExecutiveGuide && (
-        <div className="glass-card p-5 flex flex-col gap-5 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-sm shadow-sm animate-fadeIn">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-black/5 dark:border-white/5 pb-3">
-            <div className="flex items-center gap-2">
-              <BookOpen size={16} style={{ color: accentColor }} />
-              <div>
-                <h3 className="font-display text-sm font-bold text-acies-gray dark:text-white">Portfolio Health Map: Executive Guide</h3>
-                <p className="text-[9px] text-zinc-400 dark:text-zinc-500 mt-0.5">
-                  Strategic rationale and business logic of the active portfolio monitoring modules
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <a 
-                href="/portfolio_health_guide.pdf" 
-                download="portfolio_health_guide.pdf"
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 hover:bg-black/10 dark:hover:bg-white/10 text-[8.5px] font-bold uppercase tracking-widest transition-all rounded-sm cursor-pointer text-zinc-750 dark:text-zinc-300"
-              >
-                <Download size={11} />
-                Download PDF
-              </a>
-              <button 
-                onClick={() => setShowExecutiveGuide(false)}
-                className="p-1 hover:bg-black/5 dark:hover:bg-white/10 text-zinc-450 dark:text-zinc-500 rounded-sm cursor-pointer border-none bg-transparent"
-              >
-                <X size={13} />
-              </button>
-            </div>
-          </div>
-          
-          <div className="relative w-full rounded-sm overflow-hidden border border-black/10 dark:border-white/10 bg-white">
-            <iframe 
-              src="/portfolio_health_guide.html" 
-              className="w-full h-[600px] border-none block"
-              title="Executive Portfolio Health Guide"
-            />
-          </div>
-        </div>
-      )}
+
 
       {/* Portfolio Health & Lifecycle Distribution */}
       <div id="vp-lifecycle-health" className="scroll-mt-16">
@@ -2502,9 +2460,7 @@ export const PortfolioHealthMap: React.FC<PortfolioHealthMapProps> = ({
   role, 
   isDarkMode, 
   onAuditClick, 
-  timelineRange, 
-  showExecutiveGuide, 
-  setShowExecutiveGuide 
+  timelineRange 
 }) => {
   const SKUS = getFilteredSKUS(GLOBAL_SKUS, timelineRange);
   if (role === 'VP Product Management') {
@@ -2513,8 +2469,6 @@ export const PortfolioHealthMap: React.FC<PortfolioHealthMapProps> = ({
         isDarkMode={isDarkMode} 
         onAuditClick={onAuditClick} 
         timelineRange={timelineRange} 
-        showExecutiveGuide={showExecutiveGuide}
-        setShowExecutiveGuide={setShowExecutiveGuide}
       />
     );
   }

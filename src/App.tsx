@@ -90,7 +90,6 @@ export default function App() {
   });
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [showExecutiveGuide, setShowExecutiveGuide] = useState(false);
 
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
     const themeParam = getHashParam('theme');
@@ -381,20 +380,7 @@ export default function App() {
                 <div>
                   <h2 className="text-xl font-display leading-tight text-acies-gray dark:text-white">{tabs[activeTab]?.name || 'Unknown Module'}</h2>
                 </div>
-                <div className="flex items-center gap-3 self-end sm:self-auto">
-                   {activeTab === 1 && role === 'VP Product Management' && (
-                     <button 
-                      onClick={() => setShowExecutiveGuide(!showExecutiveGuide)}
-                      className={`flex items-center gap-2 px-4 py-2 text-[9px] font-bold uppercase tracking-widest transition-all cursor-pointer rounded-sm ${
-                        showExecutiveGuide 
-                          ? 'bg-acies-yellow text-acies-gray' 
-                          : 'bg-acies-gray text-white hover:bg-acies-yellow hover:text-acies-gray'
-                      }`}
-                     >
-                       <BookOpen size={12} className={showExecutiveGuide ? 'text-acies-gray' : 'text-acies-yellow'} />
-                       Executive Guide
-                     </button>
-                   )}
+                <div className="flex items-center gap-4 self-end sm:self-auto">
                    <button 
                     onClick={() => setIsSidebarOpen(true)}
                     className="flex items-center gap-2 px-4 py-2 bg-acies-gray text-white text-[9px] font-bold uppercase tracking-widest hover:bg-acies-yellow hover:text-acies-gray transition-all cursor-pointer"
@@ -605,16 +591,7 @@ export default function App() {
                     timelineRange={timelineRange}
                   />
                 )}
-                {activeTab === 1 && (
-                  <PortfolioHealthMap 
-                    role={role} 
-                    isDarkMode={isDarkMode} 
-                    onAuditClick={setActiveAuditMetric} 
-                    timelineRange={timelineRange} 
-                    showExecutiveGuide={showExecutiveGuide}
-                    setShowExecutiveGuide={setShowExecutiveGuide}
-                  />
-                )}
+                {activeTab === 1 && <PortfolioHealthMap role={role} isDarkMode={isDarkMode} onAuditClick={setActiveAuditMetric} timelineRange={timelineRange} />}
                 {activeTab === 2 && (
                   <LaunchReadinessDashboard 
                     role={role} 
