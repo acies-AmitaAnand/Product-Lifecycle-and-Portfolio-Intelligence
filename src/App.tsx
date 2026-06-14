@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { 
-  Activity, Rocket, Layers, Scissors, AlertOctagon, Home, Cpu, Award, BarChart3, LayoutDashboard, Zap
+  Activity, Rocket, Layers, Scissors, AlertOctagon, Home, Cpu, Award, BarChart3, LayoutDashboard, Zap, BookOpen, Download
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -52,6 +52,7 @@ const getTabDisplayName = (id: number, name: string): string => {
     case 6: return 'Top-Down Drill';
     case 7: return 'Agent Orchestrator';
     case 8: return 'SKU Assortment';
+    case 9: return 'Executive Guide';
     default: return name;
   }
 };
@@ -261,6 +262,7 @@ export default function App() {
      if (tab.id === 6) icon = LayoutDashboard;
      if (tab.id === 7) icon = Cpu;
      if (tab.id === 8) icon = Award;
+     if (tab.id === 9) icon = BookOpen;
      return { ...tab, icon };
   });
 
@@ -618,7 +620,35 @@ export default function App() {
                 {activeTab === 6 && <TopDownDrilldown isDarkMode={isDarkMode} role={role} timelineRange={timelineRange} setTimelineRange={setTimelineRange} />}
                 {activeTab === 7 && <AgentOrchestrator isDarkMode={isDarkMode} role={role} />}
                 {activeTab === 8 && <AssortmentOverview role={role} isDarkMode={isDarkMode} onAuditClick={setActiveAuditMetric} timelineRange={timelineRange} />}
-                {activeTab < 0 || activeTab > 8 ? (
+                {activeTab === 9 && (
+                  <div className="glass-card p-6 flex flex-col gap-6">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-black/5 dark:border-white/5 pb-4">
+                      <div>
+                        <h3 className="font-display text-2xl text-acies-gray dark:text-white">Executive Tab Guide</h3>
+                        <p className="text-xs text-acies-gray/50 dark:text-white/40 mt-1">
+                          Interactive walkthrough and business logic for the Portfolio Health Map
+                        </p>
+                      </div>
+                      <a 
+                        href="/portfolio_health_guide.pdf" 
+                        download="portfolio_health_guide.pdf"
+                        className="flex items-center gap-2 px-4 py-2.5 bg-acies-yellow text-white dark:text-acies-gray text-[10px] font-bold uppercase tracking-widest hover:bg-acies-yellow/90 hover:shadow-lg transition-all rounded-xl cursor-pointer"
+                      >
+                        <Download size={14} />
+                        Download PDF Guide
+                      </a>
+                    </div>
+                    
+                    <div className="relative w-full rounded-2xl overflow-hidden border border-black/10 dark:border-white/10 bg-white">
+                      <iframe 
+                        src="/portfolio_health_guide.html" 
+                        className="w-full h-[750px] border-none block"
+                        title="Executive Portfolio Health Guide"
+                      />
+                    </div>
+                  </div>
+                )}
+                {activeTab < 0 || activeTab > 9 ? (
                   <div className="flex flex-col items-center justify-center min-h-[550px] glass-card">
                     <div className="w-16 h-16 rounded-full bg-acies-yellow/10 flex items-center justify-center mb-6">
                       <Zap size={32} className="text-acies-yellow" />
