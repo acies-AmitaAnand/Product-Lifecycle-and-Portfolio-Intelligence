@@ -53,7 +53,7 @@ async function run() {
     console.log("Stage Details:", tab1Data.stageDetails);
     
     // Verify expected dynamic stage values:
-    const expectedStages = ['Introduction', 'Growth', 'Maturity', 'Decline'];
+    const expectedStages = ['Introduction', 'Growth', 'Margin', 'Decline'];
     const expectedCounts = ['5 SKUs', '23 SKUs', '49 SKUs', '23 SKUs'];
     
     tab1Data.stageDetails.forEach((stage, idx) => {
