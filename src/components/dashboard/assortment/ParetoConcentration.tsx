@@ -62,11 +62,11 @@ export const ParetoConcentration: React.FC = () => {
         <div className="flex flex-wrap items-center gap-4">
           {/* Simulator Slider */}
           <div className="flex items-center gap-3 bg-black/5 dark:bg-white/5 px-3 py-1.5 rounded border border-black/10 dark:border-white/10 text-[9px] font-bold text-zinc-500 dark:text-zinc-400">
-            <span className="shrink-0 uppercase tracking-wider">Hero Cutoff:</span>
+            <span className="shrink-0 uppercase tracking-wider">Cutoff:</span>
             <input 
               type="range" 
               min="20" 
-              max="60" 
+              max="100" 
               value={heroThreshold}
               onChange={(e) => setHeroThreshold(parseInt(e.target.value, 10))}
               className="accent-acies-yellow cursor-pointer h-1 w-24 bg-zinc-200 dark:bg-zinc-700 rounded-lg appearance-none"
