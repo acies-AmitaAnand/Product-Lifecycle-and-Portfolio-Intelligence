@@ -13,7 +13,6 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Cell
 } from 'recharts';
 import { VPLaunchReadinessView } from './VPLaunchReadinessView';
-import { LifecycleTimeline } from './LifecycleTimeline';
 
 interface LaunchReadinessDashboardProps {
   role: Role;
@@ -150,8 +149,7 @@ export const LaunchReadinessDashboard: React.FC<LaunchReadinessDashboardProps> =
         </div>
       </div>
 
-      {/* Lifecycle Timeline */}
-      <LifecycleTimeline isDarkMode={isDarkMode} />
+
 
       {/* Guide Panel Accordion */}
       <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-4">

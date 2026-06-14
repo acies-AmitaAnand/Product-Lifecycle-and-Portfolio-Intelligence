@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
   Layers, Filter, RefreshCw, BarChart2, PieChart, Info, HelpCircle, Save, Plus, Trash2, ArrowRight, Zap,
-  Shield, Bell, Check, X, AlertTriangle, AlertCircle, TrendingUp, Globe, Activity as ActivityIcon,
+  Shield, Bell, Check, X, AlertTriangle, AlertCircle, TrendingUp, TrendingDown, Globe, Activity as ActivityIcon,
   Mail, MapPin, Calendar, Download
 } from 'lucide-react';
 import { 
@@ -264,119 +264,209 @@ const LifecycleHealthPanel: React.FC<LifecycleHealthPanelProps> = ({ skusList, i
         </div>
       </div>
 
-      {/* RIGHT COLUMN: DISTRIBUTION BAR AND STAGE DETAILS */}
+      {/* RIGHT COLUMN: TIMELINE JOURNEY AND SUMMARY CARDS */}
       <div className="lg:col-span-8 space-y-4">
-        <div className="space-y-3">
-          <span className="text-[9px] font-bold uppercase tracking-widest text-zinc-400 block mb-1">Product Lifecycle Distribution</span>
-          
-          {/* SKU Count Proportions Bar */}
-          <div className="space-y-1">
-            <div className="flex justify-between items-center text-[7.5px] uppercase tracking-wider text-zinc-400 font-bold">
-              <span>SKU Count Share</span>
-              <span>Total: {skusList.length} SKUs</span>
-            </div>
-            <div className="w-full h-4 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-sm overflow-hidden flex gap-0.5">
-              {stages.map(st => {
-                if (st.count === 0) return null;
-                return (
-                  <div 
-                    key={st.key}
-                    style={{ width: `${st.pct}%`, backgroundColor: st.color }}
-                    onMouseEnter={() => setHoveredStage(st.key)}
-                    onMouseLeave={() => setHoveredStage(null)}
-                    className="h-full relative cursor-pointer opacity-90 hover:opacity-100 transition-opacity flex items-center justify-center"
-                    title={`${st.label}: ${st.count} SKUs (${st.pct}%)`}
-                  >
-                    {st.pct >= 8 && (
-                      <span className="text-[8px] font-bold text-white leading-none select-none">{st.pct}%</span>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+        <div className="flex justify-between items-center pb-1 border-b border-black/5 dark:border-white/5">
+          <span className="text-[9px] font-bold uppercase tracking-widest text-zinc-400 block">Product Lifecycle Journey Timeline</span>
+          <span className="text-[8px] font-bold px-1.5 py-0.5 rounded-sm bg-black/5 dark:bg-white/5 text-zinc-500 dark:text-zinc-400 uppercase">
+            Active Portfolio View
+          </span>
+        </div>
 
-          {/* Revenue Contribution Proportions Bar */}
-          <div className="space-y-1">
-            <div className="flex justify-between items-center text-[7.5px] uppercase tracking-wider text-zinc-400 font-bold">
-              <span>Revenue Contribution Share</span>
-              <span>Total: ₹{data.totalRev.toFixed(1)} Cr</span>
-            </div>
-            <div className="w-full h-4 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-sm overflow-hidden flex gap-0.5">
-              {stages.map(st => {
-                if (st.revAmount === 0) return null;
-                return (
+        {/* Horizontal Journey Timeline */}
+        <div className="relative w-full py-4 mb-4 select-none">
+          {/* Thin connector line behind nodes */}
+          <div className="absolute top-[38px] left-[12.5%] right-[12.5%] h-[2px] bg-zinc-200 dark:bg-zinc-800 z-0"></div>
+
+          {/* Timeline nodes */}
+          <div className="relative z-10 flex justify-between items-start w-full">
+            {stages.map((stage) => {
+              const borderCol = 
+                stage.key === 'intro' ? 'border-purple-500' :
+                stage.key === 'growth' ? 'border-teal-500' :
+                stage.key === 'margin' ? 'border-amber-500' : 'border-red-500';
+
+              const textCol = 
+                stage.key === 'intro' ? 'text-purple-600 dark:text-purple-400' :
+                stage.key === 'growth' ? 'text-teal-600 dark:text-teal-400' :
+                stage.key === 'margin' ? 'text-amber-600 dark:text-amber-400' : 'text-red-600 dark:text-red-400';
+              
+              const isEfficient = stage.revPct >= stage.pct;
+              const isHoveredOrActive = hoveredStage === stage.key;
+
+              return (
+                <div 
+                  key={stage.key} 
+                  className="flex flex-col items-center text-center w-1/4 group select-none relative"
+                  onMouseEnter={() => setHoveredStage(stage.key)}
+                  onMouseLeave={() => setHoveredStage(null)}
+                >
+                  {/* Circular Badge showing SKU Share % */}
                   <div 
-                    key={st.key}
-                    style={{ width: `${st.revPct}%`, backgroundColor: st.color }}
-                    onMouseEnter={() => setHoveredStage(st.key)}
-                    onMouseLeave={() => setHoveredStage(null)}
-                    className="h-full relative cursor-pointer opacity-90 hover:opacity-100 transition-opacity flex items-center justify-center"
-                    title={`${st.label} Revenue: ₹${st.revAmount.toFixed(1)} Cr (${st.revPct}%)`}
+                    className={`w-11 h-11 rounded-full flex items-center justify-center font-display font-extrabold text-[10px] border-4 bg-white dark:bg-zinc-900 shadow-md transition-all duration-300 group-hover:scale-110 cursor-pointer ${borderCol} ${textCol}`}
+                    title={`${stage.label} stage SKU share: ${stage.pct}%`}
                   >
-                    {st.revPct >= 8 && (
-                      <span className="text-[8px] font-bold text-white leading-none select-none">{st.revPct}%</span>
+                    <span className="text-zinc-800 dark:text-white font-mono">{stage.pct}%</span>
+                  </div>
+
+                  {/* Stage Name */}
+                  <span className={`text-[10px] font-extrabold tracking-wide mt-2 text-zinc-800 dark:text-zinc-200 group-hover:${textCol} transition-colors`}>
+                    {stage.label}
+                  </span>
+
+                  {/* Absolute SKU Count */}
+                  <span className="text-[9px] font-bold text-zinc-400 dark:text-zinc-500 mt-0.5">
+                    {stage.count} SKUs
+                  </span>
+
+                  {/* Absolute Revenue Value */}
+                  <span className="text-[9px] font-extrabold text-zinc-700 dark:text-zinc-300 font-mono mt-0.5">
+                    ₹{Math.round(stage.revAmount).toLocaleString('en-IN')} Cr
+                  </span>
+
+                  {/* Efficiency arrow */}
+                  <div className="flex items-center gap-0.5 mt-0.5 text-[8px] font-bold">
+                    {isEfficient ? (
+                      <span className="text-emerald-500 flex items-center gap-0.5" title="Revenue share is higher than SKU share (Efficient)">
+                        <TrendingUp size={9} />
+                        <span>▲ Efficient</span>
+                      </span>
+                    ) : (
+                      <span className="text-red-500 flex items-center gap-0.5" title="SKU share is higher than revenue share (Underperforming)">
+                        <TrendingDown size={9} />
+                        <span>▼ Underperforming</span>
+                      </span>
                     )}
                   </div>
-                );
-              })}
-            </div>
+                  
+                  {/* Share comparison */}
+                  <span className="text-[7px] text-zinc-400 dark:text-zinc-650 font-mono mt-0.5">
+                    ({stage.revPct}% Rev vs {stage.pct}% SKU)
+                  </span>
+
+                  {/* Micro SKU list popover on hover */}
+                  {isHoveredOrActive && stage.list.length > 0 && (
+                    <div 
+                      className="absolute left-1/2 -translate-x-1/2 top-full mt-2 bg-white dark:bg-zinc-900 border border-black/10 dark:border-white/15 p-2 rounded-sm shadow-xl z-30 space-y-1.5 max-h-48 w-44 overflow-y-auto no-scrollbar"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <p className="text-[7.5px] font-bold uppercase tracking-widest text-zinc-400 mb-1 leading-none">{stage.label} SKUs ({stage.count})</p>
+                      <div className="flex flex-wrap gap-1">
+                        {stage.list.map(name => (
+                          <button 
+                            key={name}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              const skuObject = skusList.find(s => s.name === name);
+                              if (skuObject && onSelectSku) {
+                                onSelectSku(skuObject);
+                              }
+                            }}
+                            className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 px-1 py-0.5 rounded-sm text-[7.5px] font-medium text-acies-gray dark:text-zinc-200 hover:bg-[#8b5cf6]/10 hover:border-[#8b5cf6]/30 cursor-pointer transition-all outline-none"
+                          >
+                            {name}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
 
-        {/* Stages list */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          {stages.map(st => {
-            const isHoveredOrActive = hoveredStage === st.key;
+        {/* Summary Metric Cards */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-3 border-t border-black/5 dark:border-white/5">
+          {/* Total SKUs */}
+          <div className="bg-black/5 dark:bg-white/5 rounded-sm p-2.5 border border-black/5 dark:border-white/5 flex flex-col justify-between">
+            <span className="text-[7.5px] text-zinc-400 dark:text-zinc-500 font-bold uppercase tracking-wider block">
+              Total SKUs
+            </span>
+            <div className="flex items-baseline gap-1 mt-0.5">
+              <span className="text-sm font-display font-extrabold text-zinc-800 dark:text-white">
+                {totalCount}
+              </span>
+              <span className="text-[8px] text-zinc-500 uppercase font-bold">Items</span>
+            </div>
+          </div>
+
+          {/* Total Revenue */}
+          <div className="bg-black/5 dark:bg-white/5 rounded-sm p-2.5 border border-black/5 dark:border-white/5 flex flex-col justify-between">
+            <span className="text-[7.5px] text-zinc-400 dark:text-zinc-500 font-bold uppercase tracking-wider block">
+              Total Revenue
+            </span>
+            <div className="flex items-baseline gap-1 mt-0.5">
+              <span className="text-sm font-display font-extrabold text-zinc-800 dark:text-white font-mono">
+                ₹{Math.round(totalRevVal).toLocaleString('en-IN')}
+              </span>
+              <span className="text-[8px] text-zinc-500 uppercase font-bold">Cr</span>
+            </div>
+          </div>
+
+          {/* Most Efficient Stage */}
+          {(() => {
+            let mostEfficient = stages[0];
+            let maxRatio = 0;
+            stages.forEach(st => {
+              const ratio = st.count > 0 ? st.revAmount / st.count : 0;
+              if (ratio > maxRatio) {
+                maxRatio = ratio;
+                mostEfficient = st;
+              }
+            });
+            const textCol = 
+              mostEfficient.key === 'intro' ? 'text-purple-650 dark:text-purple-400' :
+              mostEfficient.key === 'growth' ? 'text-teal-650 dark:text-teal-400' :
+              mostEfficient.key === 'margin' ? 'text-amber-650 dark:text-amber-400' : 'text-red-650 dark:text-red-400';
             return (
-              <div 
-                key={st.key}
-                onMouseEnter={() => setHoveredStage(st.key)}
-                onMouseLeave={() => setHoveredStage(null)}
-                className={`p-2.5 border rounded-sm transition-all duration-200 cursor-pointer relative select-none ${
-                  isHoveredOrActive 
-                    ? 'border-black/20 dark:border-white/25 bg-black/[0.02] dark:bg-white/5 shadow-sm' 
-                    : 'border-black/5 dark:border-white/10 bg-transparent'
-                }`}
-              >
-                <div className="flex items-center gap-1.5 mb-1">
-                  <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: st.color }} />
-                  <span className="text-[9px] font-extrabold uppercase tracking-wider text-zinc-400 truncate">{st.label}</span>
+              <div className="bg-black/5 dark:bg-white/5 rounded-sm p-2.5 border border-black/5 dark:border-white/5 flex flex-col justify-between">
+                <span className="text-[7.5px] text-zinc-400 dark:text-zinc-500 font-bold uppercase tracking-wider block">
+                  Most Efficient Stage
+                </span>
+                <div className="flex items-baseline justify-between mt-0.5">
+                  <span className={`text-[11px] font-display font-extrabold ${textCol} truncate max-w-[55px]`}>
+                    {mostEfficient.label}
+                  </span>
+                  <span className="text-[8px] font-mono text-emerald-500 font-bold">
+                    Ratio: {maxRatio.toFixed(1)}
+                  </span>
                 </div>
-                <div className="flex items-baseline gap-1.5">
-                  <span className="text-base font-display font-extrabold text-acies-gray dark:text-white leading-none">{st.count}</span>
-                  <span className="text-[9px] text-zinc-400 leading-none">SKUs</span>
-                </div>
-                <div className="text-[8px] text-zinc-500 font-semibold mt-1.5 truncate">
-                  Rev: <span className="text-acies-gray dark:text-zinc-350 font-extrabold">₹{st.revAmount.toFixed(0)} Cr</span> ({st.revPct}%)
-                </div>
-                
-                {/* Micro SKU list popover on hover */}
-                {isHoveredOrActive && st.list.length > 0 && (
-                  <div className="absolute left-0 right-0 top-full mt-1.5 bg-white dark:bg-zinc-900 border border-black/10 dark:border-white/15 p-2 rounded-sm shadow-xl z-30 space-y-1.5 max-h-48 overflow-y-auto no-scrollbar">
-                    <p className="text-[7.5px] font-bold uppercase tracking-widest text-zinc-400 mb-1 leading-none">{st.label} SKUs ({st.count})</p>
-                    <div className="flex flex-wrap gap-1">
-                      {st.list.map(name => (
-                        <button 
-                          key={name}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            const skuObject = skusList.find(s => s.name === name);
-                            if (skuObject && onSelectSku) {
-                              onSelectSku(skuObject);
-                            }
-                          }}
-                          className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 px-1 py-0.5 rounded-sm text-[8px] font-medium text-acies-gray dark:text-zinc-200 hover:bg-[#8b5cf6]/10 hover:border-[#8b5cf6]/30 cursor-pointer transition-all outline-none"
-                        >
-                          {name}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
               </div>
             );
-          })}
+          })()}
+
+          {/* Least Efficient Stage */}
+          {(() => {
+            let leastEfficient = stages[0];
+            let minRatio = Infinity;
+            stages.forEach(st => {
+              const ratio = st.count > 0 ? st.revAmount / st.count : 0;
+              if (ratio < minRatio) {
+                minRatio = ratio;
+                leastEfficient = st;
+              }
+            });
+            const textCol = 
+              leastEfficient.key === 'intro' ? 'text-purple-650 dark:text-purple-400' :
+              leastEfficient.key === 'growth' ? 'text-teal-650 dark:text-teal-400' :
+              leastEfficient.key === 'margin' ? 'text-amber-650 dark:text-amber-400' : 'text-red-650 dark:text-red-400';
+            return (
+              <div className="bg-black/5 dark:bg-white/5 rounded-sm p-2.5 border border-black/5 dark:border-white/5 flex flex-col justify-between">
+                <span className="text-[7.5px] text-zinc-400 dark:text-zinc-500 font-bold uppercase tracking-wider block">
+                  Least Efficient Stage
+                </span>
+                <div className="flex items-baseline justify-between mt-0.5">
+                  <span className={`text-[11px] font-display font-extrabold ${textCol} truncate max-w-[55px]`}>
+                    {leastEfficient.label}
+                  </span>
+                  <span className="text-[8px] font-mono text-red-500 font-bold">
+                    Ratio: {minRatio.toFixed(1)}
+                  </span>
+                </div>
+              </div>
+            );
+          })()}
         </div>
       </div>
     </div>

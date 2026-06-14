@@ -11,7 +11,6 @@ import { ResolveEscalationModal, VPEscalation } from './ResolveEscalationModal';
 import { EmailComposerModal } from '../portfolio-health/EmailComposerModal';
 import { SuccessFeedbackModal } from '../portfolio-health/SuccessFeedbackModal';
 import { AIPredictionModal } from '../signals-board/AIPredictionModal';
-import { LifecycleTimeline } from './LifecycleTimeline';
 
 const RECIPIENT_TITLES: Record<string, string> = {
   'ananya.sen@aciesglobal.com': 'VP Finance',
@@ -428,8 +427,7 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
         </div>
       </div>
 
-      {/* Lifecycle Journey Timeline */}
-      <LifecycleTimeline isDarkMode={isDarkMode} />
+
 
       {/* Row 1: Executive Readiness Score (Top Section) */}
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
