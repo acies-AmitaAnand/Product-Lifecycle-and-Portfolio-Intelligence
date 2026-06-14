@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { 
   Layers, Filter, RefreshCw, BarChart2, PieChart, Info, HelpCircle, Save, Plus, Trash2, ArrowRight, Zap,
   Shield, Bell, Check, X, AlertTriangle, AlertCircle, TrendingUp, TrendingDown, Globe, Activity as ActivityIcon,
-  Mail, MapPin, Calendar, Download
+  Mail, MapPin, Calendar, Download, BookOpen
 } from 'lucide-react';
 import { 
   ResponsiveContainer, ScatterChart, Scatter, XAxis, YAxis, ZAxis, Tooltip, CartesianGrid, LabelList,
@@ -1407,6 +1407,7 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean; onAuditClick?: (metricNam
   } | null>(null);
 
   const [selectedSkuForModal, setSelectedSkuForModal] = useState<any>(null);
+  const [showExecutiveGuide, setShowExecutiveGuide] = useState<boolean>(false);
 
   // Dropdown filter states
   const [filterRegion, setFilterRegion] = useState('All');
@@ -2052,6 +2053,18 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean; onAuditClick?: (metricNam
       <div className="flex flex-wrap items-center gap-2 bg-white/60 dark:bg-white/5 border border-black/5 dark:border-white/10 p-2 rounded-sm shadow-sm text-[9px] font-bold uppercase tracking-wider">
         <span className="text-zinc-400 dark:text-zinc-500 mr-2 uppercase tracking-widest text-[8px]">Quick Jump:</span>
         <button 
+          onClick={() => setShowExecutiveGuide(!showExecutiveGuide)}
+          className={`px-2.5 py-1 rounded-sm cursor-pointer border-none font-bold outline-none transition-all flex items-center gap-1 ${
+            showExecutiveGuide 
+              ? 'text-white dark:text-acies-gray shadow-sm font-black' 
+              : 'hover:bg-black/5 dark:hover:bg-white/10 text-zinc-700 dark:text-zinc-350 bg-transparent'
+          }`}
+          style={{ backgroundColor: showExecutiveGuide ? accentColor : 'transparent' }}
+        >
+          📖 Executive Guide
+        </button>
+        <span className="text-zinc-300 dark:text-zinc-700">|</span>
+        <button 
           onClick={() => scrollToSection('vp-lifecycle-health')}
           className="px-2.5 py-1 hover:bg-black/5 dark:hover:bg-white/10 text-zinc-700 dark:text-zinc-350 rounded-sm cursor-pointer border-none bg-transparent font-bold outline-none"
         >
@@ -2086,6 +2099,46 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean; onAuditClick?: (metricNam
           📊 Pareto SKU Concentration
         </button>
       </div>
+
+      {showExecutiveGuide && (
+        <div className="glass-card p-5 flex flex-col gap-5 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-sm shadow-sm animate-fadeIn">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-black/5 dark:border-white/5 pb-3">
+            <div className="flex items-center gap-2">
+              <BookOpen size={16} style={{ color: accentColor }} />
+              <div>
+                <h3 className="font-display text-sm font-bold text-acies-gray dark:text-white">Portfolio Health Map: Executive Guide</h3>
+                <p className="text-[9px] text-zinc-400 dark:text-zinc-500 mt-0.5">
+                  Strategic rationale and business logic of the active portfolio monitoring modules
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <a 
+                href="/portfolio_health_guide.pdf" 
+                download="portfolio_health_guide.pdf"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 hover:bg-black/10 dark:hover:bg-white/10 text-[8.5px] font-bold uppercase tracking-widest transition-all rounded-sm cursor-pointer text-zinc-750 dark:text-zinc-300"
+              >
+                <Download size={11} />
+                Download PDF
+              </a>
+              <button 
+                onClick={() => setShowExecutiveGuide(false)}
+                className="p-1 hover:bg-black/5 dark:hover:bg-white/10 text-zinc-450 dark:text-zinc-500 rounded-sm cursor-pointer border-none bg-transparent"
+              >
+                <X size={13} />
+              </button>
+            </div>
+          </div>
+          
+          <div className="relative w-full rounded-sm overflow-hidden border border-black/10 dark:border-white/10 bg-white">
+            <iframe 
+              src="/portfolio_health_guide.html" 
+              className="w-full h-[600px] border-none block"
+              title="Executive Portfolio Health Guide"
+            />
+          </div>
+        </div>
+      )}
 
       {/* Portfolio Health & Lifecycle Distribution */}
       <div id="vp-lifecycle-health" className="scroll-mt-16">
