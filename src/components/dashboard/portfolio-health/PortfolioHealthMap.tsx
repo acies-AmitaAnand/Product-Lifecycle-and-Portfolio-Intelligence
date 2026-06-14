@@ -25,6 +25,8 @@ interface PortfolioHealthMapProps {
   isDarkMode: boolean;
   onAuditClick?: (metricName: string) => void;
   timelineRange: TimelineRange;
+  showExecutiveGuide?: boolean;
+  setShowExecutiveGuide?: (show: boolean) => void;
 }
 
 interface CustomSKUType {
@@ -1355,7 +1357,13 @@ const RevenuePerformanceMatrix: React.FC<RevenuePerformanceMatrixProps> = ({ sku
 // ══════════════════════════════════════════════════════════════════════════════
 // VP COMMAND CENTER SUB-COMPONENT
 // ══════════════════════════════════════════════════════════════════════════════
-const VPCommandCenter: React.FC<{ isDarkMode: boolean; onAuditClick?: (metricName: string) => void; timelineRange: TimelineRange }> = ({ isDarkMode, onAuditClick, timelineRange }) => {
+const VPCommandCenter: React.FC<{ 
+  isDarkMode: boolean; 
+  onAuditClick?: (metricName: string) => void; 
+  timelineRange: TimelineRange;
+  showExecutiveGuide?: boolean;
+  setShowExecutiveGuide?: (show: boolean) => void;
+}> = ({ isDarkMode, onAuditClick, timelineRange, showExecutiveGuide = false, setShowExecutiveGuide = () => {} }) => {
   const SKUS = getFilteredSKUS(GLOBAL_SKUS, timelineRange);
   const accentColor = isDarkMode ? '#a78bfa' : '#6d28d9';
   const gridStroke = isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
@@ -1407,7 +1415,6 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean; onAuditClick?: (metricNam
   } | null>(null);
 
   const [selectedSkuForModal, setSelectedSkuForModal] = useState<any>(null);
-  const [showExecutiveGuide, setShowExecutiveGuide] = useState<boolean>(false);
 
   // Dropdown filter states
   const [filterRegion, setFilterRegion] = useState('All');
@@ -2053,18 +2060,6 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean; onAuditClick?: (metricNam
       <div className="flex flex-wrap items-center gap-2 bg-white/60 dark:bg-white/5 border border-black/5 dark:border-white/10 p-2 rounded-sm shadow-sm text-[9px] font-bold uppercase tracking-wider">
         <span className="text-zinc-400 dark:text-zinc-500 mr-2 uppercase tracking-widest text-[8px]">Quick Jump:</span>
         <button 
-          onClick={() => setShowExecutiveGuide(!showExecutiveGuide)}
-          className={`px-2.5 py-1 rounded-sm cursor-pointer border-none font-bold outline-none transition-all flex items-center gap-1 ${
-            showExecutiveGuide 
-              ? 'text-white dark:text-acies-gray shadow-sm font-black' 
-              : 'hover:bg-black/5 dark:hover:bg-white/10 text-zinc-700 dark:text-zinc-350 bg-transparent'
-          }`}
-          style={{ backgroundColor: showExecutiveGuide ? accentColor : 'transparent' }}
-        >
-          📖 Executive Guide
-        </button>
-        <span className="text-zinc-300 dark:text-zinc-700">|</span>
-        <button 
           onClick={() => scrollToSection('vp-lifecycle-health')}
           className="px-2.5 py-1 hover:bg-black/5 dark:hover:bg-white/10 text-zinc-700 dark:text-zinc-350 rounded-sm cursor-pointer border-none bg-transparent font-bold outline-none"
         >
@@ -2503,10 +2498,25 @@ const VPCommandCenter: React.FC<{ isDarkMode: boolean; onAuditClick?: (metricNam
   );
 };
 
-export const PortfolioHealthMap: React.FC<PortfolioHealthMapProps> = ({ role, isDarkMode, onAuditClick, timelineRange }) => {
+export const PortfolioHealthMap: React.FC<PortfolioHealthMapProps> = ({ 
+  role, 
+  isDarkMode, 
+  onAuditClick, 
+  timelineRange, 
+  showExecutiveGuide, 
+  setShowExecutiveGuide 
+}) => {
   const SKUS = getFilteredSKUS(GLOBAL_SKUS, timelineRange);
   if (role === 'VP Product Management') {
-    return <VPCommandCenter isDarkMode={isDarkMode} onAuditClick={onAuditClick} timelineRange={timelineRange} />;
+    return (
+      <VPCommandCenter 
+        isDarkMode={isDarkMode} 
+        onAuditClick={onAuditClick} 
+        timelineRange={timelineRange} 
+        showExecutiveGuide={showExecutiveGuide}
+        setShowExecutiveGuide={setShowExecutiveGuide}
+      />
+    );
   }
 
   // Hash helpers for sub-tab routing
