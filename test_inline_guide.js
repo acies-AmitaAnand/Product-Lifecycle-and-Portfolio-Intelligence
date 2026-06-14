@@ -42,7 +42,8 @@ async function run() {
 
   console.log("Verifying inline guide elements are rendered...");
   const guideData = await page.evaluate(() => {
-    const heading = document.querySelector('h3');
+    const headings = Array.from(document.querySelectorAll('h3'));
+    const heading = headings.find(h => h.innerText.toLowerCase().includes('executive guide'));
     const headingText = heading ? heading.innerText.trim() : '';
     
     const downloadBtn = document.querySelector('a[download]');
