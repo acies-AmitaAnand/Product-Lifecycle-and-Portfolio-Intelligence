@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   TrendingUp, TrendingDown, Check, X, AlertTriangle, RefreshCw, Zap, Clock, Home, List, PieChart, BarChart2, Calendar, LayoutGrid,
-  LineChart as LucideLineChart, AreaChart as LucideAreaChart, Radar as LucideRadar, Activity
+  LineChart as LucideLineChart, AreaChart as LucideAreaChart, Radar as LucideRadar, Activity, ChevronDown, ChevronUp
 } from 'lucide-react';
 import { 
   ResponsiveContainer, AreaChart, Area, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, BarChart, Bar, Cell, PieChart as RePieChart, Pie, Legend,
@@ -661,6 +661,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
     return baseKpis.map(k => ({ ...k, sparkPoints: k.spark.map((v, i) => ({ index: i, value: v })) }));
   });
   const [lastRefreshed, setLastRefreshed] = useState<string>('Refreshed just now');
+  const [isBriefExpanded, setIsBriefExpanded] = useState(true);
 
   useEffect(() => {
     let baseKpis = VP_KPI_BASE;
@@ -964,6 +965,187 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
           Refresh Data
         </button>
       </div>
+
+      {/* Executive Brief Summary Card */}
+      {role === 'VP Product Management' && (
+        <div className="glass-card bg-gradient-to-r from-purple-900/10 via-purple-500/5 to-blue-900/10 border border-purple-500/20 dark:border-purple-400/30 p-4 rounded-sm shadow-md animate-fadeIn">
+          <div className="flex justify-between items-center pb-2 border-b border-purple-500/20 mb-3">
+            <div className="flex items-center gap-2">
+              <span className="text-[#a78bfa] shrink-0 font-bold text-base">📋</span>
+              <div>
+                <h3 className="font-display text-[13px] font-black uppercase tracking-wider text-acies-gray dark:text-white">Executive Brief & Strategic Summary</h3>
+                <p className="text-[8.5px] text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mt-0.5">30-Second VP Control Briefing</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="text-[10px] font-mono font-bold bg-purple-500/10 border border-purple-500/25 px-2 py-0.5 rounded-sm text-purple-600 dark:text-purple-300 flex items-center gap-1.5">
+                <span className="h-1.5 w-1.5 rounded-full bg-purple-400 animate-pulse"></span>
+                74% Score • Moderate Health
+              </span>
+              <button 
+                type="button"
+                onClick={() => setIsBriefExpanded(!isBriefExpanded)}
+                className="p-1 hover:bg-black/5 dark:hover:bg-white/10 text-zinc-450 dark:text-zinc-500 rounded-sm cursor-pointer border-none bg-transparent flex items-center justify-center animate-pulse"
+              >
+                {isBriefExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+              </button>
+            </div>
+          </div>
+
+          {isBriefExpanded ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-[11px] leading-relaxed text-zinc-700 dark:text-zinc-300">
+              
+              {/* COLUMN 1: PORTFOLIO STATUS & REGIONAL HIGHLIGHTS */}
+              <div className="space-y-4 pr-0 lg:pr-4 border-b md:border-b-0 md:border-r border-black/5 dark:border-white/5 pb-4 md:pb-0">
+                <div>
+                  <span className="text-[8px] font-black uppercase tracking-wider text-purple-600 dark:text-purple-400 block mb-1">1. Portfolio Health & Summary</span>
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <span className="text-xl font-display font-extrabold text-purple-600 dark:text-purple-300">74%</span>
+                    <span className="px-1.5 py-0.5 bg-yellow-500/15 border border-yellow-500/20 text-yellow-600 dark:text-yellow-400 text-[8px] font-black uppercase tracking-widest rounded-sm">Moderate-Good</span>
+                  </div>
+                  <p className="font-medium">
+                    Stable revenue growth offset by packaging supply bottlenecks and promotional margin erosion in snacks.
+                  </p>
+                </div>
+
+                <div>
+                  <span className="text-[8px] font-black uppercase tracking-wider text-purple-600 dark:text-purple-400 block mb-1.5">2. Regional Highlights</span>
+                  <div className="space-y-1">
+                    <div className="flex justify-between items-center border-b border-black/[0.03] dark:border-white/[0.03] pb-1">
+                      <span className="font-semibold text-zinc-500">Best Region:</span>
+                      <span className="font-bold text-green-500">India <span className="font-mono font-semibold opacity-75">(₹320Cr, +15% YoY)</span></span>
+                    </div>
+                    <div className="flex justify-between items-center border-b border-black/[0.03] dark:border-white/[0.03] pb-1">
+                      <span className="font-semibold text-zinc-500">Worst Region:</span>
+                      <span className="font-bold text-red-500">Americas <span className="font-mono font-semibold opacity-75">(₹180Cr, −6.4% YoY)</span></span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="font-semibold text-zinc-500">Growth Potential:</span>
+                      <span className="font-bold text-blue-500">APAC <span className="font-mono font-semibold opacity-75">(Eco-pack expansion)</span></span>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <span className="text-[8px] font-black uppercase tracking-wider text-purple-600 dark:text-purple-400 block mb-1">3. Launch Readiness Summary</span>
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="px-2 py-0.5 bg-red-500/15 border border-red-500/20 text-red-500 text-[8px] font-black uppercase tracking-widest rounded-sm">At Risk</span>
+                  </div>
+                  <p className="font-medium">
+                    BrandF Water Eco-Pack rollout delayed due to eco-pack supplier capacity constraints. Pre-launch gate blocked.
+                  </p>
+                </div>
+              </div>
+
+              {/* COLUMN 2: RISKS & OPPORTUNITIES */}
+              <div className="space-y-4 pr-0 lg:pr-4 border-b md:border-b-0 lg:border-r border-black/5 dark:border-white/5 pb-4 lg:pb-0">
+                <div>
+                  <span className="text-[8px] font-black uppercase tracking-wider text-red-500 block mb-1.5">4. Key Portfolio Risks</span>
+                  <div className="space-y-1.5">
+                    <div className="flex items-start gap-1.5">
+                      <span className="text-red-500 shrink-0 select-none">⚠️</span>
+                      <p className="leading-tight"><strong className="text-zinc-850 dark:text-zinc-200">Supply bottlenecks:</strong> Fabric Softener lead time surged to 35d causing 7 stockouts in APAC.</p>
+                    </div>
+                    <div className="flex items-start gap-1.5">
+                      <span className="text-red-500 shrink-0 select-none">⚠️</span>
+                      <p className="leading-tight"><strong className="text-zinc-850 dark:text-zinc-200">Margin erosion:</strong> Choco Wafers has 72% promo dependency, diluting gross margin to 34%.</p>
+                    </div>
+                    <div className="flex items-start gap-1.5">
+                      <span className="text-red-500 shrink-0 select-none">⚠️</span>
+                      <p className="leading-tight"><strong className="text-zinc-850 dark:text-zinc-200">Rollout Delay:</strong> Eco-pack bottleneck limits BrandF Water capacity.</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <span className="text-[8px] font-black uppercase tracking-wider text-green-500 block mb-1.5">5. Growth Opportunities</span>
+                  <div className="space-y-1.5">
+                    <div className="flex items-start gap-1.5">
+                      <span className="text-green-500 shrink-0 select-none">📈</span>
+                      <p className="leading-tight"><strong className="text-zinc-850 dark:text-zinc-200">Scale India supply:</strong> Capitalize on Herbal Shampoo (growing 28% YoY, 47% margin).</p>
+                    </div>
+                    <div className="flex items-start gap-1.5">
+                      <span className="text-green-500 shrink-0 select-none">📈</span>
+                      <p className="leading-tight"><strong className="text-zinc-850 dark:text-zinc-200">Premiumization:</strong> Shift volume from low-margin soaps to foaming face washes.</p>
+                    </div>
+                    <div className="flex items-start gap-1.5">
+                      <span className="text-green-500 shrink-0 select-none">📈</span>
+                      <p className="leading-tight"><strong className="text-zinc-850 dark:text-zinc-200">SKU rationalization:</strong> Prune bottom 10% underperforming SKUs to release working capital.</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <span className="text-[8px] font-black uppercase tracking-wider text-blue-500 block mb-1">6. SKU Insights</span>
+                  <p className="leading-tight"><strong className="text-zinc-850 dark:text-zinc-200">Top perform:</strong> Herbal Shampoo, Mango Fizz 500ml.</p>
+                  <p className="leading-tight mt-1"><strong className="text-zinc-850 dark:text-zinc-200">Need attention:</strong> Floor Cleaner (Avoid quadrant), Choco Wafers (Promo trap).</p>
+                </div>
+              </div>
+
+              {/* COLUMN 3: RECOMMENDED ACTIONS */}
+              <div className="space-y-2 lg:col-span-1">
+                <span className="text-[8px] font-black uppercase tracking-wider text-[#6d28d9] dark:text-[#a78bfa] block mb-1.5">7. Recommended Actions (Ranked)</span>
+                <div className="space-y-2">
+                  <div className="border border-purple-500/20 bg-purple-500/5 p-2 rounded-sm">
+                    <div className="flex justify-between items-center mb-0.5 text-[8.5px] font-black uppercase tracking-wider">
+                      <span className="text-purple-600 dark:text-purple-300 font-extrabold">1. Capacity Re-allocation</span>
+                      <span className="text-red-500 bg-red-500/10 px-1 py-0.2 rounded-sm text-[7.5px] font-black">Impact: Critical</span>
+                    </div>
+                    <p className="text-[9.5px] leading-snug">
+                      <span className="font-bold text-red-500">Risk:</span> Launch delay. <span className="font-bold text-purple-650 dark:text-purple-300">Action Required:</span> Re-allocate 15% manufacturing capacity to India/APAC to secure BrandF Water Eco-Pack launch.
+                    </p>
+                  </div>
+
+                  <div className="border border-black/10 dark:border-white/10 bg-black/2 dark:bg-white/2 p-2 rounded-sm">
+                    <div className="flex justify-between items-center mb-0.5 text-[8.5px] font-black uppercase tracking-wider">
+                      <span className="text-zinc-700 dark:text-zinc-350 font-extrabold">2. Choco Wafers Margin Audit</span>
+                      <span className="text-amber-500 bg-amber-500/10 px-1 py-0.2 rounded-sm text-[7.5px] font-black">Impact: High</span>
+                    </div>
+                    <p className="text-[9.5px] leading-snug">
+                      <span className="font-bold text-amber-500">Risk:</span> Margin erosion. <span className="font-bold text-zinc-750 dark:text-zinc-300">Action Required:</span> Adjust price index (+3.5%) and cap promo discounts.
+                    </p>
+                  </div>
+
+                  <div className="border border-black/10 dark:border-white/10 bg-black/2 dark:bg-white/2 p-2 rounded-sm">
+                    <div className="flex justify-between items-center mb-0.5 text-[8.5px] font-black uppercase tracking-wider">
+                      <span className="text-zinc-700 dark:text-zinc-350 font-extrabold">3. SKU Sunset Program</span>
+                      <span className="text-amber-500 bg-amber-500/10 px-1 py-0.2 rounded-sm text-[7.5px] font-black">Impact: High</span>
+                    </div>
+                    <p className="text-[9.5px] leading-snug">
+                      <span className="font-bold text-green-500">Opportunity:</span> Capital release. <span className="font-bold text-zinc-750 dark:text-zinc-300">Action Required:</span> Sunset 35 "Avoid" SKUs starting with Floor Cleaner.
+                    </p>
+                  </div>
+
+                  <div className="border border-black/10 dark:border-white/10 bg-black/2 dark:bg-white/2 p-2 rounded-sm">
+                    <div className="flex justify-between items-center mb-0.5 text-[8.5px] font-black uppercase tracking-wider">
+                      <span className="text-zinc-700 dark:text-zinc-350 font-extrabold">4. Onboard Secondary Supplier</span>
+                      <span className="text-blue-500 bg-blue-500/10 px-1 py-0.2 rounded-sm text-[7.5px] font-black">Impact: Medium</span>
+                    </div>
+                    <p className="text-[9.5px] leading-snug">
+                      <span className="font-bold text-red-500">Risk:</span> APAC Supply. <span className="font-bold text-zinc-750 dark:text-zinc-300">Action Required:</span> Onboard secondary Fabric Softener supplier.
+                    </p>
+                  </div>
+
+                  <div className="border border-black/10 dark:border-white/10 bg-black/2 dark:bg-white/2 p-2 rounded-sm">
+                    <div className="flex justify-between items-center mb-0.5 text-[8.5px] font-black uppercase tracking-wider">
+                      <span className="text-zinc-700 dark:text-zinc-350 font-extrabold">5. Apex Retail Expansion</span>
+                      <span className="text-blue-500 bg-blue-500/10 px-1 py-0.2 rounded-sm text-[7.5px] font-black">Impact: Medium</span>
+                    </div>
+                    <p className="text-[9.5px] leading-snug">
+                      <span className="font-bold text-green-500">Opportunity:</span> Revenue growth. <span className="font-bold text-zinc-750 dark:text-zinc-300">Action Required:</span> Re-negotiate Apex agreements for premium beverages.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          ) : (
+            <div className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 italic">
+              Brief collapsed. Summary: 74% Health (Moderate) • Best: India, Worst: Americas • BrandF launch at risk • 5 key actions ranked.
+            </div>
+          )}
+        </div>
+      )}
 
       {/* KPI Cards Strip */}
       <div className={`grid grid-cols-1 sm:grid-cols-2 ${role === 'VP Product Management' ? 'lg:grid-cols-3' : 'lg:grid-cols-4'} gap-3`}>
