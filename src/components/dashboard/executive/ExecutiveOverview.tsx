@@ -954,6 +954,16 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
       
       {/* Inline Refresh Options */}
       <div className="flex justify-end items-center gap-3 py-0.5">
+        {role === 'VP Product Management' && (
+          <button
+            type="button"
+            onClick={() => onAuditClick('Executive Guide')}
+            className="flex items-center gap-1.5 px-2.5 py-1 bg-purple-600 hover:bg-purple-750 text-white dark:bg-purple-650 dark:hover:bg-purple-550 border border-purple-500/20 text-[8.5px] font-bold uppercase tracking-widest transition-all cursor-pointer rounded-sm shadow-sm active:scale-95"
+          >
+            <BookOpen size={9} />
+            View Executive Guide
+          </button>
+        )}
         <span className="text-[8.5px] font-bold uppercase tracking-widest opacity-40 text-zinc-500 dark:text-zinc-400">
           {lastRefreshed}
         </span>
@@ -978,14 +988,6 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <button
-                type="button"
-                onClick={() => onAuditClick('Executive Guide')}
-                className="text-[9px] font-bold uppercase tracking-wider bg-purple-600 hover:bg-purple-750 text-white dark:bg-purple-650 dark:hover:bg-purple-550 px-2.5 py-1 rounded-sm border border-purple-500/30 transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 shadow-sm"
-              >
-                <BookOpen size={10} />
-                View Executive Guide
-              </button>
               <span className="text-[10px] font-mono font-bold bg-purple-500/10 border border-purple-500/25 px-2 py-0.5 rounded-sm text-purple-600 dark:text-purple-300 flex items-center gap-1.5">
                 <span className="h-1.5 w-1.5 rounded-full bg-purple-400 animate-pulse"></span>
                 74% Score • Moderate Health
