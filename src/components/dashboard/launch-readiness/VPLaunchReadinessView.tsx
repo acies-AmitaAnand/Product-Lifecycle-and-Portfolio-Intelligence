@@ -342,14 +342,20 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
 
 
   const handleExport = () => {
-    addToast('Report Export Initiated', 'Compiling PDF executive summary for launch pipeline.', '#3b82f6');
+    const link = document.createElement('a');
+    link.href = '/portfolio_health_guide.pdf';
+    link.download = 'portfolio_health_guide.pdf';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    addToast('Executive Summary Downloaded', 'Downloading Portfolio Health Map Executive Guide (PDF).', '#10b981');
   };
 
   return (
     <div className="space-y-6">
       {/* Filters + Action Bar */}
-      <div className="flex flex-col xl:flex-row justify-between items-stretch xl:items-center gap-4 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 px-5 py-3.5 rounded-sm shadow-sm">
-        <div className="flex flex-wrap items-center gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-3 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 px-4 py-2 rounded-sm shadow-sm">
+        <div className="flex flex-wrap items-center gap-2">
           <div className="flex items-center gap-1 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 px-2 py-1.5 rounded-sm">
             <Filter size={11} className="text-[#6d28d9] dark:text-[#a78bfa] shrink-0" />
             <span className="text-[9px] font-bold uppercase tracking-wider text-zinc-400">Filters</span>
@@ -411,20 +417,13 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
           )}
         </div>
 
-        <div className="flex items-center gap-3 justify-between">
-          <div className="flex items-center gap-1.5 text-[10px] text-zinc-400 font-bold font-mono">
-            <RefreshCw size={11} className="animate-spin text-zinc-400" />
-            <span>UPDATED: {lastRefreshed}</span>
-          </div>
-          <span className="h-4 w-px bg-black/10 dark:bg-white/15"></span>
-          <button 
-            onClick={handleExport}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 hover:bg-black/10 dark:hover:bg-white/10 text-[9px] font-bold uppercase tracking-wider rounded-sm text-zinc-600 dark:text-zinc-400 cursor-pointer"
-          >
-            <Download size={11} />
-            Export
-          </button>
-        </div>
+        <button 
+          onClick={handleExport}
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 hover:bg-black/10 dark:hover:bg-white/10 text-[9px] font-bold uppercase tracking-wider rounded-sm text-zinc-600 dark:text-zinc-400 cursor-pointer"
+        >
+          <Download size={11} />
+          Export
+        </button>
       </div>
 
 
