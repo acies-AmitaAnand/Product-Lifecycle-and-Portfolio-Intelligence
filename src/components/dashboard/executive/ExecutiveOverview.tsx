@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   TrendingUp, TrendingDown, Check, X, AlertTriangle, RefreshCw, Zap, Clock, Home, List, PieChart, BarChart2, Calendar, LayoutGrid,
-  LineChart as LucideLineChart, AreaChart as LucideAreaChart, Radar as LucideRadar, Activity, ChevronDown, ChevronUp
+  LineChart as LucideLineChart, AreaChart as LucideAreaChart, Radar as LucideRadar, Activity, ChevronDown, ChevronUp, BookOpen
 } from 'lucide-react';
 import { 
   ResponsiveContainer, AreaChart, Area, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, BarChart, Bar, Cell, PieChart as RePieChart, Pie, Legend,
@@ -978,6 +978,14 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
               </div>
             </div>
             <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => onAuditClick('Executive Guide')}
+                className="text-[9px] font-bold uppercase tracking-wider bg-purple-600 hover:bg-purple-750 text-white dark:bg-purple-650 dark:hover:bg-purple-550 px-2.5 py-1 rounded-sm border border-purple-500/30 transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 shadow-sm"
+              >
+                <BookOpen size={10} />
+                View Executive Guide
+              </button>
               <span className="text-[10px] font-mono font-bold bg-purple-500/10 border border-purple-500/25 px-2 py-0.5 rounded-sm text-purple-600 dark:text-purple-300 flex items-center gap-1.5">
                 <span className="h-1.5 w-1.5 rounded-full bg-purple-400 animate-pulse"></span>
                 74% Score • Moderate Health
