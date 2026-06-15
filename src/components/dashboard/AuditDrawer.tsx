@@ -276,159 +276,70 @@ export const AuditDrawer: React.FC<AuditDrawerProps> = ({ activeMetric, close, i
                 </div>
 
                 {/* Executive Guide Body */}
-                <div className="flex-1 p-8 space-y-6">
+                <div className="flex-1 p-8 space-y-6 overflow-y-auto">
                   
-                  {/* Executive Summary Card */}
-                  <div className="bg-gradient-to-r from-purple-50/50 to-indigo-50/50 dark:from-purple-950/20 dark:to-indigo-950/20 border border-purple-500/20 rounded-xl p-4.5 shadow-lg relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 w-28 h-28 bg-purple-500/5 blur-2xl pointer-events-none rounded-full" />
-                    <div className="flex items-center gap-1.5 mb-2.5">
-                      <BookOpen size={11} className="text-purple-500 dark:text-purple-400" />
-                      <span className="text-[8.5px] uppercase font-bold text-zinc-500 dark:text-zinc-300 tracking-wider">Executive Purpose</span>
+                  <div className="bg-gradient-to-r from-purple-50/50 to-indigo-50/50 dark:from-purple-950/20 dark:to-indigo-950/20 border border-purple-500/20 rounded-xl p-4 shadow-md relative overflow-hidden">
+                    <p className="text-xs text-zinc-650 dark:text-zinc-350 leading-relaxed font-semibold">
+                      This briefing compiles critical cross-tab insights and ranked recommendations. Instead of reviewing each separate module, use this bulleted summary to capture the most important portfolio actions immediately.
+                    </p>
+                  </div>
+
+                  <div className="space-y-5">
+                    {/* Bullet section 1 */}
+                    <div className="bg-purple-500/5 border border-purple-500/15 rounded-xl p-4.5 space-y-3 shadow-sm">
+                      <h4 className="text-xs font-black uppercase tracking-wider text-purple-700 dark:text-purple-300 flex items-center gap-1.5 border-b border-purple-500/10 pb-2">
+                        <Activity size={13} />
+                        1. Portfolio Health & Strategic Summary
+                      </h4>
+                      <ul className="space-y-2.5 pl-4 list-disc text-[11.5px] leading-relaxed text-zinc-650 dark:text-zinc-300">
+                        <li className="marker:text-purple-500"><strong>Moderate Portfolio Health:</strong> Overall score is at <span className="font-bold text-purple-600 dark:text-purple-400">74%</span>. Stable revenue growth is currently offset by packaging supply bottlenecks and promotional margin erosion in snacks.</li>
+                        <li className="marker:text-purple-500"><strong>India Leads Growth:</strong> Best-performing region with <span className="font-bold text-green-650 dark:text-green-400">₹320 Cr (+15% YoY)</span>.</li>
+                        <li className="marker:text-purple-500"><strong>Americas Underperforms:</strong> Worst-performing region with <span className="font-bold text-red-500">₹180 Cr (−6.4% YoY)</span>.</li>
+                        <li className="marker:text-purple-500"><strong>APAC Expansion:</strong> Holds the highest growth potential, driven by the Eco-Pack program.</li>
+                      </ul>
                     </div>
-                    <p className="text-xs text-zinc-650 dark:text-zinc-300 leading-relaxed font-medium">
-                      The <strong>Portfolio Health Map</strong> tab is the nerve center of the Product Lifecycle and Portfolio Intelligence application. It is designed specifically for the <strong>VP Product Management</strong> to monitor, analyze, and manage the health, complexity, and margin performance of the active 100-SKU portfolio.
-                    </p>
-                    <p className="text-xs text-zinc-650 dark:text-zinc-300 leading-relaxed font-medium mt-2">
-                      By consolidating commercial metrics (revenue, growth) with supply chain complexity markers (lead times, supplier fragmentation, stockouts), it translates transactional data into actionable portfolio decisions.
-                    </p>
-                  </div>
 
-                  {/* Critical Importance section */}
-                  <div className="space-y-3">
-                    <h4 className="text-xs font-black uppercase tracking-wider text-zinc-750 dark:text-zinc-200">Why is this Tab Critical for the VP?</h4>
-                    <p className="text-[11.5px] text-zinc-550 dark:text-zinc-450 leading-relaxed">
-                      Without this tab, the VP Product Management lacks visibility into how SKU count expansion drives operational complexity and eats away margins. Traditional reports separate sales performance from supply chain pain points. This tab unites them, allowing the VP to:
-                    </p>
-                    <ul className="space-y-2 pl-4 list-disc text-[11px] text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                      <li className="marker:text-purple-500 dark:marker:text-purple-450"><strong>Identify and resolve bottlenecks</strong> (such as stockouts or single-supplier vulnerabilities) that threaten revenue.</li>
-                      <li className="marker:text-purple-500 dark:marker:text-purple-450"><strong>Approve or defer high-value decisions</strong> (CAPEX facilities, NPD launches, and sunsetting campaigns) from a centralized desk.</li>
-                      <li className="marker:text-purple-500 dark:marker:text-purple-450"><strong>Model rationalization scenarios</strong> that balance complexity reduction (freeing safety stock capital) against revenue tail risk.</li>
-                    </ul>
-                  </div>
+                    {/* Bullet section 2 */}
+                    <div className="bg-red-500/5 border border-red-500/15 rounded-xl p-4.5 space-y-3 shadow-sm">
+                      <h4 className="text-xs font-black uppercase tracking-wider text-red-650 dark:text-red-400 flex items-center gap-1.5 border-b border-red-500/10 pb-2">
+                        <AlertTriangle size={13} />
+                        2. Key Portfolio & Launch Risks
+                      </h4>
+                      <ul className="space-y-2.5 pl-4 list-disc text-[11.5px] leading-relaxed text-zinc-650 dark:text-zinc-300">
+                        <li className="marker:text-red-500"><strong>BrandF Launch At Risk:</strong> Eco-pack rollout is delayed and the pre-launch gate is blocked due to supplier capacity constraints.</li>
+                        <li className="marker:text-red-500"><strong>Supply Chain Bottlenecks:</strong> Fabric Softener lead time surged to 35 days, causing 7 stockouts in APAC.</li>
+                        <li className="marker:text-red-500"><strong>Margin Erosion:</strong> Choco Wafers suffers from a high 72% promo dependency, diluting gross margin to 34%.</li>
+                      </ul>
+                    </div>
 
-                  {/* Accordions Group */}
-                  <div className="space-y-1">
-                    
-                    {/* 1. Portfolio Health Score Gauge */}
-                    <AccordionSection 
-                      title="1. Portfolio Health Score Gauge" 
-                      isOpen={guideExpanded.score} 
-                      onToggle={() => toggleGuideSection('score')}
-                      icon={<Activity size={14} />}
-                    >
-                      <div className="space-y-3">
-                        <div className="bg-purple-500/5 border-l-4 border-purple-500 p-3.5 rounded-r-md">
-                          <span className="text-[9.5px] font-extrabold uppercase tracking-wider text-purple-600 dark:text-purple-400 block mb-1">Why do we need it?</span>
-                          <p className="text-[11.5px] text-zinc-750 dark:text-zinc-300 leading-relaxed">
-                            It provides an instant diagnostic index (0-100%) of the active portfolio. The algorithm weighs gross margin compliance, complexity penalties (PCI), stockout frequencies, and positive lifecycle distribution.
-                          </p>
-                        </div>
-                        <div className="bg-zinc-50 dark:bg-zinc-900/60 p-3.5 border border-zinc-200 dark:border-zinc-800 rounded-md">
-                          <span className="text-[9.5px] font-extrabold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 block mb-1">Executive Utility for the VP:</span>
-                          <p className="text-[11px] text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                            Acts as the VP's high-level dashboard temperature check. If the score drops into "Critical Drag" (&lt;70%), it signals that tail SKUs are diluting margins and overloading the supply chain. If it remains "Optimal" (&ge;85%), the portfolio holds a healthy balance of cash cows and growth products.
-                          </p>
-                        </div>
-                      </div>
-                    </AccordionSection>
+                    {/* Bullet section 3 */}
+                    <div className="bg-green-500/5 border border-green-500/15 rounded-xl p-4.5 space-y-3 shadow-sm">
+                      <h4 className="text-xs font-black uppercase tracking-wider text-green-650 dark:text-green-450 flex items-center gap-1.5 border-b border-green-500/10 pb-2">
+                        <TrendingUp size={13} />
+                        3. Growth & SKU Insights
+                      </h4>
+                      <ul className="space-y-2.5 pl-4 list-disc text-[11.5px] leading-relaxed text-zinc-650 dark:text-zinc-300">
+                        <li className="marker:text-green-500"><strong>Herbal Shampoo Scaling:</strong> High-growth opportunity in India, growing at 28% YoY with a 47% gross margin.</li>
+                        <li className="marker:text-green-500"><strong>Premiumization Shift:</strong> Transitioning volume from low-margin soaps to foaming face washes to improve aggregate margins.</li>
+                        <li className="marker:text-green-500"><strong>Tail SKU Sunsetting:</strong> Pruning the bottom 10% underperforming SKUs will free locked-up safety stock capital.</li>
+                        <li className="marker:text-green-500"><strong>SKU Performance:</strong> Herbal Shampoo and Mango Fizz 500ml are top performers. Floor Cleaner (Avoid quadrant) and Choco Wafers (Promo trap) require immediate attention.</li>
+                      </ul>
+                    </div>
 
-                    {/* 2. Product Lifecycle Journey Timeline */}
-                    <AccordionSection 
-                      title="2. Product Lifecycle Journey Timeline" 
-                      isOpen={guideExpanded.timeline} 
-                      onToggle={() => toggleGuideSection('timeline')}
-                      icon={<TrendingUp size={14} />}
-                    >
-                      <div className="space-y-3">
-                        <div className="bg-purple-500/5 border-l-4 border-purple-500 p-3.5 rounded-r-md">
-                          <span className="text-[9.5px] font-extrabold uppercase tracking-wider text-purple-600 dark:text-purple-400 block mb-1">Why do we need it?</span>
-                          <p className="text-[11.5px] text-zinc-750 dark:text-zinc-300 leading-relaxed">
-                            Replaces passive distribution lists with a horizontal left-to-right journey timeline mapping the 100 SKUs into four distinct stages: <em>Introduction</em>, <em>Growth</em>, <em>Margin</em>, and <em>Decline</em>. It displays dynamic SKU counts, absolute revenues, and a visual up/down efficiency arrow comparing Revenue Share % vs. SKU Share %.
-                          </p>
-                        </div>
-                        <div className="bg-zinc-50 dark:bg-zinc-900/60 p-3.5 border border-zinc-200 dark:border-zinc-800 rounded-md">
-                          <span className="text-[9.5px] font-extrabold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 block mb-1">Executive Utility for the VP:</span>
-                          <p className="text-[11px] text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                            Ensures the VP can track commercial efficiency. The green/red arrows immediately identify underperforming lifecycle areas: for example, if the <em>Decline</em> stage holds 23% SKU share but only contributes 13% revenue (red arrow), it represents an inefficient drain on resources.
-                          </p>
-                        </div>
-                      </div>
-                    </AccordionSection>
-
-                    {/* 3. Executive Action Desk */}
-                    <AccordionSection 
-                      title="3. Executive Action Desk" 
-                      isOpen={guideExpanded.desk} 
-                      onToggle={() => toggleGuideSection('desk')}
-                      icon={<CheckCircle size={14} />}
-                    >
-                      <div className="space-y-3">
-                        <div className="bg-purple-500/5 border-l-4 border-purple-500 p-3.5 rounded-r-md">
-                          <span className="text-[9.5px] font-extrabold uppercase tracking-wider text-purple-600 dark:text-purple-400 block mb-1">Why do we need it?</span>
-                          <p className="text-[11.5px] text-zinc-750 dark:text-zinc-300 leading-relaxed">
-                            Centralizes three essential operational components:
-                          </p>
-                          <ul className="space-y-1.5 pl-4 list-disc text-[11px] text-zinc-650 dark:text-zinc-400 leading-relaxed mt-1">
-                            <li><strong>Executive Approval Board:</strong> Workflow queue for capital expenditure, budget approvals, or rationalization sign-offs.</li>
-                            <li><strong>Portfolio Health Alerts:</strong> Flagging immediate operational risks (stockout events, promo dependency, margin compression).</li>
-                            <li><strong>Decisions Pending Card:</strong> Direct triggers for AI-suggested actions, such as scaling successful products or approving sunset recommendations.</li>
-                          </ul>
-                        </div>
-                        <div className="bg-zinc-50 dark:bg-zinc-900/60 p-3.5 border border-zinc-200 dark:border-zinc-800 rounded-md">
-                          <span className="text-[9.5px] font-extrabold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 block mb-1">Executive Utility for the VP:</span>
-                          <p className="text-[11px] text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                            Reduces administrative latency. The VP can approve CAPEX or trigger SKU sunsetting directly from this desk, with the system immediately updating downstream datasets and sending automated notifications to category managers.
-                          </p>
-                        </div>
-                      </div>
-                    </AccordionSection>
-
-                    {/* 4. Investment vs. Return Quadrant Map */}
-                    <AccordionSection 
-                      title="4. Investment vs. Return Quadrant Map" 
-                      isOpen={guideExpanded.quadrant} 
-                      onToggle={() => toggleGuideSection('quadrant')}
-                      icon={<Database size={14} />}
-                    >
-                      <div className="space-y-3">
-                        <div className="bg-purple-500/5 border-l-4 border-purple-500 p-3.5 rounded-r-md">
-                          <span className="text-[9.5px] font-extrabold uppercase tracking-wider text-purple-600 dark:text-purple-400 block mb-1">Why do we need it?</span>
-                          <p className="text-[11.5px] text-zinc-750 dark:text-zinc-300 leading-relaxed">
-                            A scatter chart mapping all SKUs across growth rate (Y-axis) and gross margin (X-axis). It segments products into four capital allocation categories: <strong>Quick Wins</strong> (Scale/Protect), <strong>Strategic</strong> (Invest), <strong>Niche</strong> (Harvest), and <strong>Avoid</strong> (Rationalize).
-                          </p>
-                        </div>
-                        <div className="bg-zinc-50 dark:bg-zinc-900/60 p-3.5 border border-zinc-200 dark:border-zinc-800 rounded-md">
-                          <span className="text-[9.5px] font-extrabold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 block mb-1">Executive Utility for the VP:</span>
-                          <p className="text-[11px] text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                            Identifies capital reallocation opportunities. The VP can filter by region and see exactly which SKUs are in the "Avoid" quadrant, helping justify R&D cuts or margin adjustment mandates to regional directors.
-                          </p>
-                        </div>
-                      </div>
-                    </AccordionSection>
-
-                    {/* 5. Pareto SKU Concentration Simulator */}
-                    <AccordionSection 
-                      title="5. Pareto SKU Concentration Simulator" 
-                      isOpen={guideExpanded.pareto} 
-                      onToggle={() => toggleGuideSection('pareto')}
-                      icon={<Zap size={14} />}
-                    >
-                      <div className="space-y-3">
-                        <div className="bg-purple-500/5 border-l-4 border-purple-500 p-3.5 rounded-r-md">
-                          <span className="text-[9.5px] font-extrabold uppercase tracking-wider text-purple-600 dark:text-purple-400 block mb-1">Why do we need it?</span>
-                          <p className="text-[11.5px] text-zinc-750 dark:text-zinc-300 leading-relaxed">
-                            Models the classic 80/20 rule in portfolio management. In the default F&B active dataset, the top 30% of SKUs generate 62.88% of revenue. The slider lets the VP simulate rationalizing (cutting) the bottom tail from 20% to 60%.
-                          </p>
-                        </div>
-                        <div className="bg-zinc-50 dark:bg-zinc-900/60 p-3.5 border border-zinc-200 dark:border-zinc-800 rounded-md">
-                          <span className="text-[9.5px] font-extrabold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 block mb-1">Executive Utility for the VP:</span>
-                          <p className="text-[11px] text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                            Enables low-risk modeling of complexity reduction. The VP can slide the cut threshold and instantly see <strong>Safety Stock Freed</strong> (working capital savings) vs. <strong>Revenue Tail Risk</strong> (sales impact), allowing them to establish a balanced tail-cut threshold before executing a physical sunset campaign.
-                          </p>
-                        </div>
-                      </div>
-                    </AccordionSection>
-
+                    {/* Bullet section 4 */}
+                    <div className="bg-indigo-500/5 border border-indigo-500/15 rounded-xl p-4.5 space-y-3 shadow-sm">
+                      <h4 className="text-xs font-black uppercase tracking-wider text-indigo-650 dark:text-indigo-400 flex items-center gap-1.5 border-b border-indigo-500/10 pb-2">
+                        <CheckCircle size={13} />
+                        4. Ranked Recommended Actions
+                      </h4>
+                      <ul className="space-y-2.5 pl-4 list-disc text-[11.5px] leading-relaxed text-zinc-650 dark:text-zinc-300">
+                        <li className="marker:text-indigo-500"><strong>1. Capacity Re-allocation (Critical):</strong> Re-allocate 15% manufacturing capacity to India/APAC to secure BrandF Water Eco-Pack launch.</li>
+                        <li className="marker:text-indigo-500"><strong>2. Choco Wafers Margin Audit (High):</strong> Adjust price index (+3.5%) and cap promo discounts to halt margin dilution.</li>
+                        <li className="marker:text-indigo-500"><strong>3. SKU Sunset Program (High):</strong> Sunset 35 "Avoid" SKUs starting with Floor Cleaner to release working capital.</li>
+                        <li className="marker:text-indigo-500"><strong>4. Onboard Secondary Supplier (Medium):</strong> Onboard secondary Fabric Softener supplier to secure APAC supply chain.</li>
+                        <li className="marker:text-indigo-500"><strong>5. Apex Retail Expansion (Medium):</strong> Re-negotiate Apex agreements for premium beverages to boost growth.</li>
+                      </ul>
+                    </div>
                   </div>
                 </div>
               </>
