@@ -1149,11 +1149,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
               </div>
 
             </div>
-          ) : (
-            <div className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 italic">
-              Brief collapsed. Summary: 74% Health (Moderate) • Best: India, Worst: Americas • BrandF launch at risk • 5 key actions ranked.
-            </div>
-          )}
+          ) : null}
         </div>
       )}
 
