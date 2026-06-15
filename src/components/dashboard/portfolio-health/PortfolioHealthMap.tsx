@@ -2098,9 +2098,9 @@ const VPCommandCenter: React.FC<{
       </div>
 
       {/* Main Command Center Grid */}
-      <div id="vp-action-desk" className="grid grid-cols-1 xl:grid-cols-12 gap-6 scroll-mt-16">
+      <div id="vp-action-desk" className="grid grid-cols-1 lg:grid-cols-3 gap-6 scroll-mt-16">
         {/* LEFT COLUMN: EXECUTIVE APPROVAL BOARD */}
-        <div className="xl:col-span-4 space-y-6">
+        <div className="space-y-6">
           {/* Executive Approval Board */}
           <div className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm space-y-4">
             <div className="flex justify-between items-center pb-2 border-b border-black/5 dark:border-white/5">
@@ -2182,7 +2182,7 @@ const VPCommandCenter: React.FC<{
         </div>
 
         {/* CENTER COLUMN: PORTFOLIO HEALTH ALERTS */}
-        <div className="xl:col-span-4 space-y-6">
+        <div className="space-y-6">
           {/* Portfolio Health Alerts */}
           <div className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm space-y-4">
             <div className="flex justify-between items-center pb-2 border-b border-black/5 dark:border-white/5">
@@ -2223,7 +2223,7 @@ const VPCommandCenter: React.FC<{
         </div>
 
         {/* RIGHT COLUMN: DECISIONS */}
-        <div className="xl:col-span-4 space-y-6">
+        <div className="space-y-6">
           {/* Decisions Pending */}
           <div className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm space-y-4">
             <div className="flex justify-between items-center pb-2 border-b border-black/5 dark:border-white/5">
