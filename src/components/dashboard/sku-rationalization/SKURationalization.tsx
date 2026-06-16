@@ -482,6 +482,7 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
         setSimTab={state.setSimTab}
         setSelectedSkuName={state.setSelectedSkuName}
         setSelectedSkuDetails={(sku) => state.setSelectedSkuDetails(sku)}
+        timelineRange={timelineRange}
       />
 
       {/* Full-Screen Action Control Room Modal Overlay */}

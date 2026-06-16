@@ -139,6 +139,7 @@ export default function App() {
   const [launchTourActive, setLaunchTourActive] = useState(false);
   const [simulateDelay, setSimulateDelay] = useState(false);
   const [isProfitabilitySimulatorOpen, setIsProfitabilitySimulatorOpen] = useState<boolean>(false);
+  const [isExploreOpen, setIsExploreOpen] = useState<boolean>(false);
   const [showWelcomeGate, setShowWelcomeGate] = useState<boolean>(() => {
     const roleParam = getHashParam('role');
     if (roleParam !== null) return false;
@@ -264,7 +265,6 @@ export default function App() {
      return { ...tab, icon };
   });
 
-  const [isExploreOpen, setIsExploreOpen] = useState<boolean>(false);
 
   const handleSwitchPersona = () => {
     try {
@@ -294,6 +294,7 @@ export default function App() {
       />
     );
   }
+
 
   return (
     <div className="min-h-screen font-body bg-acies-offwhite dark:bg-acies-gray transition-colors pb-20">

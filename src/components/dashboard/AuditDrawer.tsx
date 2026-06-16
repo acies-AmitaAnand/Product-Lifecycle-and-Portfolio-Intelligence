@@ -112,6 +112,49 @@ const AccordionSection: React.FC<{
   );
 };
 
+const getEvolutionContent = (metric: string | null) => {
+  if (!metric) return null;
+  const normalized = metric.toLowerCase();
+  
+  if (normalized.includes('revenue') || normalized.includes('sales') || normalized.includes('growth')) {
+    return {
+      now: "Revenue is manually compiled from regional sales logs and trade invoices at the end of the month, resulting in a 3-4 week lag.",
+      ai: "The dashboard aggregates billing and transaction data daily, plotting actuals vs target trends and calculating forecast deviations.",
+      agentic: "Autonomous background agents monitor category velocities and run pricing elasticity scenario overrides, automatically alerting regional heads."
+    };
+  }
+  
+  if (normalized.includes('sku') || normalized.includes('active') || normalized.includes('density') || normalized.includes('assortment') || normalized.includes('complexity') || normalized.includes('portfolio')) {
+    return {
+      now: "Catalog SKUs proliferate unchecked. Discontinuation candidates are audited manually on Excel sheets, taking 7 months to execute.",
+      ai: "SKUs are dynamically mapped on a Value vs. Complexity bubble scatter chart, segmenting products into Grow, Keep, or Sunset quadrants.",
+      agentic: "The Sunset Agent automatically models demand transference, flags candidates, and freezes downstream packaging contracts on approval."
+    };
+  }
+  
+  if (normalized.includes('alert') || normalized.includes('signal') || normalized.includes('stockout')) {
+    return {
+      now: "Stockouts and competitor pricing actions are discovered late via manual email chains, leading to reactive supply firefighting.",
+      ai: "Agents aggregate real-time supplier lead times and warehouse alerts, bubbling them up inside the Smart Alerts Swarm.",
+      agentic: "Agents automatically re-route in-transit stock, adjust pricing bands to slow demand, and coordinate capex allocation requests."
+    };
+  }
+  
+  if (normalized.includes('margin') || normalized.includes('profit') || normalized.includes('yield') || normalized.includes('burden')) {
+    return {
+      now: "Cost-to-serve (CTS) is invisible at SKU level. Blended category margins hide margin-negative items, leading to profit leakage.",
+      ai: "Interactive Profitability Trees decompose Net Sales down to EBIT, mapping returns, logistics costs, and markdown erosion.",
+      agentic: "The Profitability Agent senses raw material cost inflation, models price offsets, and drafts supplier contract briefs automatically."
+    };
+  }
+  
+  return {
+    now: "Process metrics are compiled manually across teams using static Excel reports, leading to database and reporting reconciliation delays.",
+    ai: "Dynamic data feeds calculate and display metrics in real time, alerting operations when target benchmarks are missed.",
+    agentic: "Background agents coordinate cross-functional handoffs, update system safety thresholds, and execute closed-loop corrective tasks."
+  };
+};
+
 export const AuditDrawer: React.FC<AuditDrawerProps> = ({ activeMetric, close, isDarkMode }) => {
   // Map Home tab metrics to their respective Audit Drawer data keys
   const getMappedMetric = (metric: string | null): string | null => {
@@ -153,8 +196,9 @@ export const AuditDrawer: React.FC<AuditDrawerProps> = ({ activeMetric, close, i
 
   // Accordion open states
   const [expanded, setExpanded] = useState<Record<string, boolean>>({
-    impact: true,
-    trends: true,
+    evolution: true,
+    impact: false,
+    trends: false,
     calculations: false,
     lineage: false
   });
@@ -194,8 +238,9 @@ export const AuditDrawer: React.FC<AuditDrawerProps> = ({ activeMetric, close, i
   useEffect(() => {
     if (activeMetric) {
       setExpanded({
-        impact: true,
-        trends: true,
+        evolution: true,
+        impact: false,
+        trends: false,
         calculations: false,
         lineage: false
       });
@@ -495,6 +540,71 @@ export const AuditDrawer: React.FC<AuditDrawerProps> = ({ activeMetric, close, i
 
                   {/* Accordions Group */}
                   <div className="space-y-1">
+                    
+                    {/* How This Evolves Accordion */}
+                    <AccordionSection 
+                      title="How This Evolves (Agentic Bus)" 
+                      isOpen={expanded.evolution} 
+                      onToggle={() => toggleSection('evolution')}
+                      icon={<Zap size={14} className="text-purple-600 dark:text-purple-400" />}
+                    >
+                      {(() => {
+                        const evo = getEvolutionContent(mappedMetric);
+                        if (!evo) return null;
+                        return (
+                          <div className="space-y-4">
+                            <p className="text-[10.5px] text-zinc-550 dark:text-zinc-400 font-medium leading-relaxed">
+                              Acies Agentic Bus roadmap: How this metric/process transitions from reactive manual operations to closed-loop orchestrated agents.
+                            </p>
+                            
+                            {/* Vertical Timeline */}
+                            <div className="relative border-l-2 border-purple-500/25 pl-4 ml-2 space-y-4 pt-1">
+                              {/* Step 1: Now */}
+                              <div className="relative">
+                                <span className="absolute -left-[23px] top-0.5 flex h-3 w-3 items-center justify-center rounded-full bg-zinc-200 dark:bg-zinc-800 border-2 border-zinc-400 dark:border-zinc-600" />
+                                <div className="space-y-1">
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-[9.5px] font-extrabold uppercase tracking-wide text-zinc-500 dark:text-zinc-450">Now (Reactive & Manual)</span>
+                                    <span className="text-[7px] bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 px-1.5 py-0.2 rounded text-zinc-400 font-bold font-mono">AS-IS</span>
+                                  </div>
+                                  <p className="text-[11px] leading-relaxed text-zinc-650 dark:text-zinc-400">{evo.now}</p>
+                                </div>
+                              </div>
+                              
+                              {/* Step 2: AI-Assisted */}
+                              <div className="relative">
+                                <span className="absolute -left-[23px] top-0.5 flex h-3 w-3 items-center justify-center rounded-full bg-indigo-100 dark:bg-indigo-950 border-2 border-indigo-500 dark:border-indigo-400" />
+                                <div className="space-y-1">
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-[9.5px] font-extrabold uppercase tracking-wide text-indigo-600 dark:text-indigo-400">AI-Assisted (Descriptive & Analytical)</span>
+                                    <span className="text-[7px] bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-500/20 px-1.5 py-0.2 rounded text-indigo-500 font-bold font-mono">DASHBOARD</span>
+                                  </div>
+                                  <p className="text-[11px] leading-relaxed text-zinc-650 dark:text-zinc-400">{evo.ai}</p>
+                                </div>
+                              </div>
+                              
+                              {/* Step 3: Agentic Bus */}
+                              <div className="relative">
+                                <span className="absolute -left-[24px] -top-0.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-purple-600 text-white shadow shadow-purple-500/50">
+                                  <Sparkles size={8} className="animate-pulse" />
+                                </span>
+                                <div className="p-3 border border-purple-500/25 bg-purple-500/5 dark:bg-purple-950/15 rounded-xl space-y-1 shadow-sm relative overflow-hidden">
+                                  <div className="absolute top-0 right-0 w-16 h-16 bg-purple-500/5 blur-xl pointer-events-none rounded-full" />
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                      <span className="text-[9.5px] font-black uppercase tracking-wide text-purple-700 dark:text-purple-300">Agentic Bus (Orchestrated & Closed-Loop)</span>
+                                      <span className="text-[7px] bg-purple-600 text-white px-1.5 py-0.2 rounded font-extrabold font-mono uppercase tracking-wider">TO-BE</span>
+                                    </div>
+                                    <Zap size={10} className="text-purple-600 dark:text-purple-400 fill-purple-600 dark:fill-purple-400 animate-pulse" />
+                                  </div>
+                                  <p className="text-[11px] leading-relaxed text-zinc-750 dark:text-zinc-350 font-medium">{evo.agentic}</p>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })()}
+                    </AccordionSection>
                     
                     {/* 1. Business Impact Accordion */}
                     <AccordionSection 

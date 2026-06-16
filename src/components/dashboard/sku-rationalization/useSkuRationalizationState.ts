@@ -64,7 +64,8 @@ export function useSkuRationalizationState(role: Role, isDarkMode: boolean, time
       return false;
     };
     const sunsetCount  = locationFilteredSkus.filter(isSunset).length;
-    const revAtRisk    = locationFilteredSkus.filter(isSunset).reduce((sum, s) => sum + s.rev, 0);
+    const revAtRiskRaw  = locationFilteredSkus.filter(isSunset).reduce((sum, s) => sum + s.rev, 0);
+    const revAtRisk     = parseFloat(revAtRiskRaw.toFixed(2));
     const avgComplexity = locationFilteredSkus.reduce((sum, s) => sum + s.cx, 0) / (activeSkusCount || 1);
 
     const cards = [
@@ -253,7 +254,7 @@ export function useSkuRationalizationState(role: Role, isDarkMode: boolean, time
   }, [sunsetSubstituteSkuName, sunsetSubstituteOptions]);
 
   const totalRev = useMemo(
-    () => locationFilteredSkus.reduce((s, k) => s + k.rev, 0),
+    () => parseFloat(locationFilteredSkus.reduce((s, k) => s + k.rev, 0).toFixed(2)),
     [locationFilteredSkus]
   );
 
