@@ -222,7 +222,7 @@ const LifecycleHealthPanel: React.FC<LifecycleHealthPanelProps> = ({ skusList, i
   const stages = [
     { key: 'intro', label: 'Introduction', count: data.intro, pct: Math.round((data.intro / totalCount) * 100), revAmount: data.introRev, revPct: Math.round((data.introRev / totalRevVal) * 100), color: '#8b5cf6', list: data.list.intro, desc: 'New launches and pipeline concepts' },
     { key: 'growth', label: 'Growth', count: data.growth, pct: Math.round((data.growth / totalCount) * 100), revAmount: data.growthRev, revPct: Math.round((data.growthRev / totalRevVal) * 100), color: '#10b981', list: data.list.growth, desc: 'High growth and expanding volume' },
-    { key: 'margin', label: 'Margin', count: data.margin, pct: Math.round((data.margin / totalCount) * 100), revAmount: data.marginRev, revPct: Math.round((data.marginRev / totalRevVal) * 100), color: '#f59e0b', list: data.list.margin, desc: 'Mature cash cows with solid margins' },
+    { key: 'margin', label: 'Maturity', count: data.margin, pct: Math.round((data.margin / totalCount) * 100), revAmount: data.marginRev, revPct: Math.round((data.marginRev / totalRevVal) * 100), color: '#f59e0b', list: data.list.margin, desc: 'Mature cash cows with solid margins' },
     { key: 'decline', label: 'Decline', count: data.decline, pct: Math.round((data.decline / totalCount) * 100), revAmount: data.declineRev, revPct: Math.round((data.declineRev / totalRevVal) * 100), color: '#ef4444', list: data.list.decline, desc: 'Dwindling volumes and low margins' },
   ];
 
