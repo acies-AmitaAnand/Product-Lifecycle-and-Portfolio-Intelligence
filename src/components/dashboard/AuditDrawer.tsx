@@ -156,9 +156,7 @@ export const AuditDrawer: React.FC<AuditDrawerProps> = ({ activeMetric, close, i
     impact: true,
     trends: true,
     calculations: false,
-    lineage: false,
-    recommendations: true,
-    decisions: false
+    lineage: false
   });
 
   // Executive Guide accordion open states
@@ -199,9 +197,7 @@ export const AuditDrawer: React.FC<AuditDrawerProps> = ({ activeMetric, close, i
         impact: true,
         trends: true,
         calculations: false,
-        lineage: false,
-        recommendations: true,
-        decisions: false
+        lineage: false
       });
       setGuideExpanded({
         purpose: true,
@@ -587,34 +583,6 @@ export const AuditDrawer: React.FC<AuditDrawerProps> = ({ activeMetric, close, i
                           ))}
                         </div>
                       </div>
-                    </AccordionSection>
-
-                    {/* 5. Recommendations Accordion */}
-                    <AccordionSection 
-                      title="Recommendations" 
-                      isOpen={expanded.recommendations} 
-                      onToggle={() => toggleSection('recommendations')}
-                      icon={<CheckCircle size={14} />}
-                    >
-                      <div className="bg-emerald-500/5 border-l-4 border-emerald-500 p-4 rounded-r-md">
-                        <p className="text-[11.5px] text-zinc-700 dark:text-zinc-300 font-medium leading-relaxed">{content.action}</p>
-                      </div>
-                    </AccordionSection>
-
-                    {/* 6. Executive Decisions Accordion */}
-                    <AccordionSection 
-                      title="Executive Decisions" 
-                      isOpen={expanded.decisions} 
-                      onToggle={() => toggleSection('decisions')}
-                      icon={<HelpCircle size={14} />}
-                    >
-                      <ul className="space-y-2.5 pl-4 list-disc text-[11px] text-zinc-650 dark:text-zinc-400 leading-relaxed">
-                        {content.assumptions.map((item, idx) => (
-                          <li key={idx} className="marker:text-purple-500 dark:marker:text-purple-400">
-                            {item}
-                          </li>
-                        ))}
-                      </ul>
                     </AccordionSection>
                   </div>
                 </div>
