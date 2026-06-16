@@ -741,8 +741,10 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
 
   // Timer for adding live events
   useEffect(() => {
+    let nextDelay = 35000;
     const scheduleNextEvent = () => {
-      const delay = 1800 + Math.random() * 4200;
+      const delay = nextDelay;
+      nextDelay = nextDelay === 35000 ? 45000 : 35000; // Alternate between 35s and 45s
       return setTimeout(() => {
         const tmpl = EVENT_TEMPLATES[Math.floor(Math.random() * EVENT_TEMPLATES.length)];
         const msg = tmpl.msgs[Math.floor(Math.random() * tmpl.msgs.length)];
