@@ -26,20 +26,20 @@ interface AlertDetailContext {
 
 const ALERT_DETAILS_CONTEXT: Record<string, AlertDetailContext> = {
   a1: {
-    impact: 'Supply Chain Bottleneck',
-    problem: 'Severe transit delays at regional ports combined with raw material shortages for key chemical surfactants have triggered seven stockout events this quarter at major enterprise accounts.',
+    impact: 'Launch Delay Risk',
+    problem: 'The upcoming launch of Mango Fizz 750ml is experiencing critical packaging material bottle shortages from key regional suppliers, pushing the schedule back by 21 days.',
     metrics: [
-      { label: 'Current Lead Time', value: '35 Days' },
-      { label: 'Target Benchmark', value: '14 Days' },
-      { label: 'Safety Stock Level', value: '2 Days (Critically Low)' }
+      { label: 'Target Launch Date', value: 'Sep 15, 2026' },
+      { label: 'Readiness Score', value: '78%' },
+      { label: 'Schedule Variance', value: '-21 Days' }
     ],
-    financial: '₹1.4 Cr in estimated lost revenue due to unfulfilled purchase orders.',
+    financial: '₹2.5 Cr in projected first-quarter revenue deferred due to launch delay.',
     recommendations: [
-      'Initiate an emergency air-freight contract for raw surfactant concentrates to rebuild safety buffers.',
-      'Qualify and onboard a backup domestic supply partner to mitigate future shipping disruptions.',
-      'Notify key accounts and pre-schedule split shipments to keep shelf allocation active.'
+      'Initiate emergency qualification of backup bottle packaging supplier.',
+      'Pre-allocate initial production run to highest-margin regional distributors.',
+      'Adjust Q3 promotional marketing calendar to align with new launch window.'
     ],
-    directive: 'Approve SURFACT-2 emergency air-freight logistics override.'
+    directive: 'Approve secondary packaging supplier onboarding and launch date revision.'
   },
   a2: {
     impact: 'Margin Erosion',
@@ -58,20 +58,20 @@ const ALERT_DETAILS_CONTEXT: Record<string, AlertDetailContext> = {
     directive: 'Sign off on promotional discount phase-down program for Q4.'
   },
   a3: {
-    impact: 'Negative Revenue Trend',
-    problem: 'Despite intensive trade spend placements and promotional cycles, category revenue continues to contract. The regional Ready-To-Drink (RTD) market has reached saturation, rendering traditional discount hooks ineffective.',
+    impact: 'Margin Contraction',
+    problem: 'Laundry Pods Premium is experiencing high ingredient cost variance due to surfactant price spikes, eroding the gross margin below the target threshold.',
     metrics: [
-      { label: 'YoY Revenue Growth', value: '-4.0%' },
-      { label: 'Promo Spend Delta', value: '+18.0% YoY' },
-      { label: 'Category ROI', value: '-12.4% (Net Loss)' }
+      { label: 'Gross Margin', value: '31.0% (Target: 46.0%)' },
+      { label: 'Cost Variance', value: '+15.2% on Surfactants' },
+      { label: 'Revenue Impact', value: '₹0.65 Cr' }
     ],
-    financial: '₹0.5 Cr in net loss from ineffective promotional campaigns and trade allowances.',
+    financial: '₹0.65 Cr gross profit leakage if pricing strategy is not optimized.',
     recommendations: [
-      'Trigger a SKU rationalization review for slow-moving single-can variants (e.g. 250ml line).',
-      'Pivot category marketing budget away from underperforming traditional channels to booming organic segments.',
-      'Re-negotiate shelf-space minimums with distributors to support high-margin eco-friendly packaging formats.'
+      'Renegotiate contract prices with primary surfactant supplier.',
+      'Implement a selective price adjustment (cost pass-through) on premium SKUs.',
+      'Optimize the formulation mix to reduce reliance on high-cost raw materials.'
     ],
-    directive: 'Authorize category rationalization review and marketing budget reallocation.'
+    directive: 'Authorize SKU-level price adjustment and formulation optimization review.'
   },
   a4: {
     impact: 'Product Cannibalization',
@@ -90,36 +90,36 @@ const ALERT_DETAILS_CONTEXT: Record<string, AlertDetailContext> = {
     directive: 'Approve shelf re-layout and packaging segmentation directive.'
   },
   a5: {
-    impact: 'Operational Complexity',
-    problem: 'The Floor Cleaner category has expanded to 14 active scent and size variants, creating severe warehouse bottlenecks and high manufacturing changeover costs without driving incremental consumer sales.',
+    impact: 'Launch Readiness Check',
+    problem: 'BrandA Premium Energy is approaching its final launch gate with 88% readiness. However, channel placement and labeling compliance verification are pending final approval.',
     metrics: [
-      { label: 'Total active SKUs', value: '14 Variants' },
-      { label: 'Revenue Concentration', value: '80% driven by top 2 SKUs' },
-      { label: 'Carrying Costs Delta', value: '+22.0% (Excess stock)' }
+      { label: 'Overall Readiness', value: '88% (Target: 95%)' },
+      { label: 'Estimated 1st Year Rev', value: '₹24.5 Cr' },
+      { label: 'Gate Status', value: 'Pre-Launch (Gate 3)' }
     ],
-    financial: '₹0.35 Cr in excess capital locked up in slow-moving raw packaging and inventory.',
+    financial: '₹24.5 Cr in estimated first-year revenue dependent on timely gate sign-off.',
     recommendations: [
-      'Initiate an immediate SKU sunset program for the bottom 6 underperforming scent variants.',
-      'Consolidate raw bottle packaging inventory into a single standardized 1L shape.',
-      'Establish a strict return-on-complexity threshold for any future flavor or scent variant launches.'
+      'Accelerate final label compliance review with regulatory team.',
+      'Finalize supermarket shelf space allocations with key retail partners.',
+      'Authorize pre-launch inventory build of 5,000 cases.'
     ],
-    directive: 'Approve sunset plan for the bottom 6 floor cleaner scent variants.'
+    directive: 'Approve Pre-Launch Gate 3 sign-off and inventory release.'
   },
   a6: {
-    impact: 'Supply Scaling Opportunity',
-    problem: 'Herbal Shampoo is experiencing a substantial surge in organic e-commerce search volumes and retail pull. Current inventory levels are insufficient to support the accelerating demand curve, risking stockouts.',
+    impact: 'Margin Erosion',
+    problem: 'Dishwasher Pods 30ct margin is contracting due to overlapping promotional campaigns across major supermarket chains, leading to double-discounting.',
     metrics: [
-      { label: 'YoY Revenue Growth', value: '+28.0%' },
-      { label: 'E-commerce Search Index', value: '+140% MoM' },
-      { label: 'Production Capacity Util', value: '95% (Near Limit)' }
+      { label: 'Gross Margin', value: '34.0% (Target: 48.0%)' },
+      { label: 'Promo Discount Rate', value: '42.0%' },
+      { label: 'Volume Lift Delta', value: '+8.0% (Insufficient)' }
     ],
-    financial: '₹2.1 Cr in potential incremental revenue if supply chains can scale to demand capacity.',
+    financial: '₹0.75 Cr in promotion-related margin dilution during the current cycle.',
     recommendations: [
-      'Transition manufacturing floor schedules to prioritize shampoo lines over slow-moving face washes.',
-      'Negotiate bulk raw botanical ingredient contracts to secure materials for the next 12 months.',
-      'Expand distribution to regional supermarket accounts currently reporting zero stock coverage.'
+      'Suspend overlapping Q3 promotional campaigns for the 30ct format.',
+      'Transition trade promotions to volume-based rebates instead of front-end discounts.',
+      'Enforce minimum advertised price (MAP) guidelines across retail channels.'
     ],
-    directive: 'Sign off on factory production floor scheduling and bulk ingredient contract approvals.'
+    directive: 'Authorize temporary promotion suspension and trade term renegotiation.'
   }
 };
 

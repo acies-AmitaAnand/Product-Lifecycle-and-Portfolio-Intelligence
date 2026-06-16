@@ -356,12 +356,12 @@ export const SKUS = [
 ];
 
 export const VP_ALERTS = [
-  {id:'a1',sev:'critical' as const,title:'Fabric Softener — 7 stockout events this quarter',detail:'Supply · Lead time 35d vs 14d benchmark',ack:false},
+  {id:'a1',sev:'critical' as const,title:'Mango Fizz 750ml launch delay — packaging shortage',detail:'Launch · Delay risk: 21 days behind schedule',ack:false},
   {id:'a2',sev:'critical' as const,title:'Choco Wafers promo dependency at 72% — margin risk',detail:'Margin · Organic revenue only 28%',ack:false},
-  {id:'a3',sev:'warning' as const,title:'Green Tea RTD revenue −4% YoY with high promo load',detail:'Demand · Dual rationalization signal',ack:false},
+  {id:'a3',sev:'warning' as const,title:'Laundry Pods Premium — 15% cost variance on active ingredients',detail:'Margin · Gross margin contraction to 31%',ack:false},
   {id:'a4',sev:'warning' as const,title:'Beverages cannibalization risk elevated across variants',detail:'Cannibalization · Mango Fizz pair correlation −0.62',ack:false},
-  {id:'a5',sev:'warning' as const,title:'Floor Cleaner: highest complexity, lowest value',detail:'Supply · Rationalization priority #1',ack:false},
-  {id:'a6',sev:'info' as const,title:'Herbal Shampoo growing 28% — scale supply chain',detail:'Supply · Opportunity to expand',ack:false},
+  {id:'a5',sev:'warning' as const,title:'BrandA Premium Energy launch readiness at 88% — final gate pending',detail:'Launch · Target launch date Sep 15, 2026',ack:false},
+  {id:'a6',sev:'info' as const,title:'Dishwasher Pods 30ct promo overlap — margin erosion',detail:'Margin · Combined promo discount at 42%',ack:false},
 ];
 
 export const VP_APPROVALS = [
