@@ -1353,13 +1353,14 @@ const RevenuePerformanceMatrix: React.FC<RevenuePerformanceMatrixProps> = ({ sku
 };
 
 // ══════════════════════════════════════════════════════════════════════════════
-// VP COMMAND CENTER SUB-COMPONENT
+// COMMAND CENTER SUB-COMPONENT
 // ══════════════════════════════════════════════════════════════════════════════
 const VPCommandCenter: React.FC<{ 
   isDarkMode: boolean; 
   onAuditClick?: (metricName: string) => void; 
   timelineRange: TimelineRange;
-}> = ({ isDarkMode, onAuditClick, timelineRange }) => {
+  role: Role;
+}> = ({ isDarkMode, onAuditClick, timelineRange, role }) => {
   const SKUS = getFilteredSKUS(GLOBAL_SKUS, timelineRange);
   const accentColor = isDarkMode ? '#a78bfa' : '#6d28d9';
   const gridStroke = isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
@@ -1586,13 +1587,239 @@ const VPCommandCenter: React.FC<{
 
   const stockToasted = useRef(false);
 
+  // Master datasets for the 3 roles/lenses
+  const ALL_APPROVALS = [
+    // VP Product Management (Portfolio Strategy & Performance Lens)
+    { id: 'p_vp1', role: 'VP Product Management', type: 'Launch', title: 'Portfolio Roadmap: Authorize BrandF Soda 250ml slim-can product extension GTM charter — ₹4.5 Cr', age: '2 days', urgency: 'high', done: false },
+    { id: 'p_vp2', role: 'VP Product Management', type: 'CAPEX', title: 'CAPEX Allocation: Approve Q3 product packaging automation capital budget — ₹12.5 Cr', age: '6 days', urgency: 'high', done: false },
+    { id: 'p_vp3', role: 'VP Product Management', type: 'Launch', title: 'M&A Integration: Sign off on BrandC Snacks portfolio consolidation & product alignment', age: '4 days', urgency: 'medium', done: false },
+
+    // Product Manager (Operational & Execution Lens)
+    { id: 'p_pm1', role: 'Product Manager', type: 'Rationalize', title: 'SKU Rationalization: Phase 1 sunset proposal for 15 low-margin tail products', age: '2 days', urgency: 'high', done: false },
+    { id: 'p_pm2', role: 'Product Manager', type: 'Launch', title: 'Product Governance: Validate compliance certification for BrandB Chips product reformulation', age: '4 days', urgency: 'medium', done: false },
+    { id: 'p_pm3', role: 'Product Manager', type: 'Launch', title: 'Product Roadmap: Sign off on BrandD Toothpaste NPD launch readiness criteria', age: '6 days', urgency: 'high', done: false },
+
+    // Pricing and Margin Partner (Financial & Leakage Diagnostics Lens)
+    { id: 'p_pr1', role: 'Pricing and Margin Partner', type: 'Pricing', title: 'Pricing Policy: Establish BrandD Cheese +4.5% price index adjust to offset margin leakage', age: '3 days', urgency: 'high', done: false },
+    { id: 'p_pr2', role: 'Pricing and Margin Partner', type: 'Promo', title: 'Margin Integrity: Approve BrandC Chips maximum promotional discount depth limit of 15%', age: '5 days', urgency: 'medium', done: false },
+    { id: 'p_pr3', role: 'Pricing and Margin Partner', type: 'Promo', title: 'Revenue Diagnostics: Audit distributor price protection claim variance for BrandB Soap', age: '1 day', urgency: 'high', done: false },
+  ];
+
+  const ALL_BOTTLENECKS = [
+    // VP Product Management (Portfolio Strategy & Performance Lens)
+    {
+      role: 'VP Product Management',
+      label: 'BrandF Soda',
+      val: 90,
+      color: '#ef4444',
+      status: 'critical',
+      location: 'Southern Region (Chennai)',
+      cause: 'Severe brand dilution and sales drop-offs due to intense internal flavor cannibalization between Cola and Lime variants.',
+      suggestions: [
+        {
+          action: 'Re-position Lime flavor under the secondary BrandC sub-brand to segregate consumer target segments.',
+          impact: 'Stabilizes core Cola revenue; reduces line setup changes by 25%.',
+          contactName: 'Priya Sharma',
+          contactTitle: 'Lead Product Manager',
+          email: 'priya.sharma@aciesglobal.com',
+          draftBody: 'Hi Priya,\n\nRegarding the BrandF Soda cannibalization issues, let\'s execute the plan to re-position Lime under BrandC to protect our main Cola revenue.\n\nThanks,\nVP Product Management'
+        },
+        {
+          action: 'Approve formulation update to low-calorie stevia base to attract wellness consumers.',
+          impact: 'Raises brand growth by 4pp in premium channels.',
+          contactName: 'Dr. Elena Rostova',
+          contactTitle: 'NPD Product Lead',
+          email: 'elena.rostova@aciesglobal.com',
+          draftBody: 'Hi Elena,\n\nLet\'s move forward with the sugar-free stevia formulation update for BrandF Soda to shift consumer focus.\n\nThanks,\nVP Product Management'
+        }
+      ]
+    },
+    {
+      role: 'VP Product Management',
+      label: 'BrandD Cheese',
+      val: 89,
+      color: '#ef4444',
+      status: 'critical',
+      location: 'Western Region (Vapi)',
+      cause: 'Strategic brand dilution due to excessive SKU proliferation (12 low-volume tail variants) causing customer choice confusion.',
+      suggestions: [
+        {
+          action: 'Consolidate category options by sunsetting the bottom 4 performing variants.',
+          impact: 'Reclaims shelf space focus and lifts core BrandD sales by 8%.',
+          contactName: 'Pooja Iyer',
+          contactTitle: 'Category Product Manager',
+          email: 'pooja.iyer@aciesglobal.com',
+          draftBody: 'Hi Pooja,\n\nTo address choice confusion on BrandD Cheese, let\'s draft a proposal to consolidate our tail variants.\n\nThanks,\nVP Product Management'
+        }
+      ]
+    },
+    {
+      role: 'VP Product Management',
+      label: 'BrandC Snacks',
+      val: 88,
+      color: '#ef4444',
+      status: 'critical',
+      location: 'Northern Region (Baddi)',
+      cause: 'Post-acquisition brand architecture overlap between BrandC organic chips and premium nut lines, leading to consumer brand friction.',
+      suggestions: [
+        {
+          action: 'Pivot organic snacks line under a single cohesive brand architecture.',
+          impact: 'Clears shelf presentation; projects +15% category revenue uplift.',
+          contactName: 'Pooja Iyer',
+          contactTitle: 'Category Product Manager',
+          email: 'pooja.iyer@aciesglobal.com',
+          draftBody: 'Hi Pooja,\n\nRegarding the BrandC post-acquisition product overlap, let\'s prepare the plan to pivot all organic snacks under a unified brand architecture.\n\nThanks,\nVP Product Management'
+        },
+        {
+          action: 'Approve formulation update to premium packaging to justify price delta.',
+          impact: 'Lifts average basket margin by 4.2pp.',
+          contactName: 'K. Srinivasan',
+          contactTitle: 'Product Design Lead',
+          email: 'k.srinivasan@aciesglobal.com',
+          draftBody: 'Hi Srinivasan,\n\nLet\'s move forward with updating the product packaging design to premium eco-boxes to support our pricing delta.\n\nThanks,\nVP Product Management'
+        }
+      ]
+    },
+    {
+      role: 'VP Product Management',
+      label: 'BrandB Soap',
+      val: 84,
+      color: '#f59e0b',
+      status: 'warning',
+      location: 'Western Region (Vapi)',
+      cause: 'BrandB Soap formulation failing to meet the modern wellness consumer standards, leading to a steady drop in trial rates and product affinity.',
+      suggestions: [
+        {
+          action: 'Pivot brand formulation to organic base extracts to tap into the active natural care segment.',
+          impact: 'Revitalizes product affinity; projected +20% year-on-year sales acceleration.',
+          contactName: 'Dr. Elena Rostova',
+          contactTitle: 'NPD Product Lead',
+          email: 'elena.rostova@aciesglobal.com',
+          draftBody: 'Hi Elena,\n\nPlease accelerate the organic formulation pivot for BrandB Soap to align with natural care product trends.\n\nThanks,\nVP Product Management'
+        }
+      ]
+    },
+
+    // Product Manager (Operational & Execution Lens)
+    {
+      role: 'Product Manager',
+      label: 'BrandA Softener',
+      val: 92,
+      color: '#ef4444',
+      status: 'critical',
+      location: 'Western Region (Vapi)',
+      cause: 'Rapid customer sentiment decline and brand fatigue due to outdated foaming pump bottle design and poor usability ratings.',
+      suggestions: [
+        {
+          action: 'Launch an eco-friendly pump refill pouch format to revive brand interest.',
+          impact: 'Improves sustainability rating by 30% and reduces packaging material unit cost.',
+          contactName: 'K. Srinivasan',
+          contactTitle: 'Product Design Lead',
+          email: 'k.srinivasan@aciesglobal.com',
+          draftBody: 'Hi Srinivasan,\n\nPlease accelerate the eco-refill pouch design for BrandA Softener to resolve customer usability concerns.\n\nThanks,\nProduct Manager'
+        },
+        {
+          action: 'Review and audit the product packaging layout for a clean, modern aesthetic.',
+          impact: 'Improves trial rates by 15% in premium supermarket channels.',
+          contactName: 'Dr. Elena Rostova',
+          contactTitle: 'NPD Product Lead',
+          email: 'elena.rostova@aciesglobal.com',
+          draftBody: 'Hi Elena,\n\nCan we initiate a design audit on the Softener packaging to counter brand fatigue?\n\nThanks,\nProduct Manager'
+        }
+      ]
+    },
+    {
+      role: 'Product Manager',
+      label: 'BrandD Water',
+      val: 85,
+      color: '#f59e0b',
+      status: 'warning',
+      location: 'South East Asia (Penang)',
+      cause: 'Brand fatigue in Modern Trade channels due to a lack of pack size diversity failing to attract single-serve wellness shoppers.',
+      suggestions: [
+        {
+          action: 'Fast-track single-serve aluminum can format launch.',
+          impact: 'Opens new convenience store channels; projected +18% volume growth.',
+          contactName: 'Siddharth Roy',
+          contactTitle: 'NPD Product Lead',
+          email: 'siddharth.roy@aciesglobal.com',
+          draftBody: 'Hi Siddharth,\n\nPlease speed up the single-serve aluminum can launch for BrandD Water.\n\nThanks,\nProduct Manager'
+        }
+      ]
+    },
+
+    // Pricing and Margin Partner (Financial & Leakage Diagnostics Lens)
+    {
+      role: 'Pricing and Margin Partner',
+      label: 'BrandC Chips',
+      val: 91,
+      color: '#ef4444',
+      status: 'critical',
+      location: 'Northern Region (Baddi)',
+      cause: 'High promotional dependency (over 45% of sales on deep discount) resulting in gross margin dilution below the 35% category hurdle.',
+      suggestions: [
+        {
+          action: 'Cap promotional discount depth at 15% and redirect marketing budget to brand campaigns.',
+          impact: 'Reclaims 3.2% category gross margin; protects brand health.',
+          contactName: 'Rajesh Verma',
+          contactTitle: 'Director of Commercial Portfolio',
+          email: 'rajesh.verma@aciesglobal.com',
+          draftBody: 'Hi Rajesh,\n\nRegarding the BrandC Chips margin compression, please initiate a promotional discount cap at 15%.\n\nThanks,\nPricing Partner'
+        },
+        {
+          action: 'Adjust promotion timing to avoid direct overlap with competitor discount cycles.',
+          impact: 'Protects organic sales and avoids unnecessary margin dilution.',
+          contactName: 'Amit Mehta',
+          contactTitle: 'Product Pricing Director',
+          email: 'amit.mehta@aciesglobal.com',
+          draftBody: 'Hi Amit,\n\nPlease review our promotional calendar for BrandC Chips to avoid direct overlaps with competitor cycles.\n\nThanks,\nPricing Partner'
+        }
+      ]
+    },
+    {
+      role: 'Pricing and Margin Partner',
+      label: 'BrandE Water',
+      val: 89,
+      color: '#ef4444',
+      status: 'critical',
+      location: 'Western Region (Pune)',
+      cause: 'Revenue leakage from uncoordinated distributor price protection claims and retail coupon stackings.',
+      suggestions: [
+        {
+          action: 'Implement a strict retail promotion matching cap and audit distributor claims.',
+          impact: 'Recovers 4.5% in lost margin revenue; stops promotion overruns.',
+          contactName: 'Ananya Sen',
+          contactTitle: 'Director of Portfolio Finance',
+          email: 'ananya.sen@aciesglobal.com',
+          draftBody: 'Hi Ananya,\n\nPlease establish an audit framework for BrandE Water distributor price protection claims to prevent further leakage.\n\nThanks,\nPricing Partner'
+        }
+      ]
+    }
+  ];
+
+  const ALL_DECISIONS = [
+    // VP Product Management (Portfolio Strategy & Performance Lens)
+    { id: 'd_vp1', role: 'VP Product Management', icon: '⚡', iconBg: 'rgba(239,68,68,0.1)', iconColor: '#ef4444', title: 'Portfolio Strategy: Consolidate BrandD Cheese product line (rationalize 4 tail variants)', sub: 'SKU Proliferation · Brand Dilution', stats: [['Tail SKUs', '12 variants'], ['Tail Sales', '<1.2% total'], ['Margin Drag', '-1.8%'], ['Action', 'Sunset 4 SKUs']], done: false },
+    { id: 'd_vp2', role: 'VP Product Management', icon: '📦', iconBg: 'rgba(59,130,246,0.1)', iconColor: '#3b82f6', title: 'Strategic Investment: Scale BrandF Water portfolio footprint to capture double-digit growth', sub: 'Category Leader · +12.4% YoY', stats: [['Net Sales', '₹17.03 Cr'], ['Margin', '40%'], ['Growth', '12.4% YoY'], ['Opportunity', 'Expand footprint']], done: false },
+
+    // Product Manager (Operational & Execution Lens)
+    { id: 'd_pm1', role: 'Product Manager', icon: '⚡', iconBg: 'rgba(239,68,68,0.1)', iconColor: '#ef4444', title: 'Product Redesign: Refurbish BrandA Softener foaming pump packaging design to resolve sentiment decline', sub: 'Sentiment Decline · Usability', stats: [['Tail SKUs', '2.1 / 5'], ['Sentiment', '-32%'], ['Refill conversion', '18%'], ['Action', 'Eco refill pouch']], done: false },
+    { id: 'd_pm2', role: 'Product Manager', icon: '📦', iconBg: 'rgba(59,130,246,0.1)', iconColor: '#3b82f6', title: 'NPD Roadmap: Launch BrandD Water single-serve aluminum can variant', sub: 'NPD Launch · Modern Trade', stats: [['Target Market', 'Convenience'], ['Projected growth', '+18% vol'], ['Material cost', '-5.5%'], ['Status', 'FDA ready']], done: false },
+
+    // Pricing and Margin Partner (Financial & Leakage Diagnostics Lens)
+    { id: 'd_pr1', role: 'Pricing and Margin Partner', icon: '⚡', iconBg: 'rgba(239,68,68,0.1)', iconColor: '#ef4444', title: 'Promo Policy: Enforce BrandC Chips promotional discount cap to protect gross margins', sub: 'Promo Dependency · Margin Dilution', stats: [['Promo Share', '45%'], ['Category Margin', '32.1%'], ['Hurdle limit', '35%'], ['Cap proposed', '15% max']], done: false },
+    { id: 'd_pr2', role: 'Pricing and Margin Partner', icon: '📦', iconBg: 'rgba(59,130,246,0.1)', iconColor: '#3b82f6', title: 'Revenue Diagnostics: Audit BrandE Water price protection claims to prevent margin leakage', sub: 'Revenue Leakage · Distributor', stats: [['Claim volume', '₹2.8 Cr'], ['Leakage est', '14.2%'], ['Audit timeline', '14 days'], ['Action', 'Set matching limits']], done: false }
+  ];
+
   // Alerts
   const [alerts, setAlerts] = useState([
-    { id: 'a1', sev: 'critical', sevC: '#ef4444', title: 'Fabric Softener — 7 stockout events this quarter', desc: 'Supply · Lead time 35d vs 14d benchmark · APAC affected', dismissed: false },
-    { id: 'a2', sev: 'critical', sevC: '#ef4444', title: 'Choco Wafers promo dependency 72% — margin at risk', desc: 'Margin · Only 28% organic revenue. Budget review required.', dismissed: false },
-    { id: 'a3', sev: 'warning', sevC: '#f59e0b', title: 'Americas forecast attainment dropped to 78%', desc: 'Finance · Q4 shortfall of ₹12Cr projected if trend continues', dismissed: false },
-    { id: 'a4', sev: 'warning', sevC: '#f59e0b', title: 'Beverages cannibalization — Mango Fizz variants', desc: 'Demand · Promo correlation −0.62 between 250ml and 500ml', dismissed: false },
-    { id: 'a5', sev: 'info', sevC: '#3b82f6', title: 'Herbal Shampoo growing 28% YoY — supply scale opportunity', desc: 'Supply · Lead time 11d allows rapid ramp-up', dismissed: false },
+    { id: 'a1', sev: 'critical', sevC: '#ef4444', title: 'Product Design Alert: BrandA Softener outdated packaging design', desc: 'Execution · Drop in trial rate · Western Region (Vapi) affected', dismissed: false },
+    { id: 'a2', sev: 'critical', sevC: '#ef4444', title: 'Margin Risk Alert: BrandC Chips promo dependency exceeds threshold', desc: 'Margin · Only 55% organic revenue. Budget cap review required.', dismissed: false },
+    { id: 'a3', sev: 'warning', sevC: '#f59e0b', title: 'Portfolio Risk Alert: BrandD Cheese SKU proliferation causing brand dilution', desc: 'Strategy · 12 low-volume tail variants confuse consumers', dismissed: false },
+    { id: 'a4', sev: 'warning', sevC: '#f59e0b', title: 'Portfolio Risk Alert: Flavor cannibalization between BrandF Soda variants', desc: 'Strategy · Lime and Cola flavor overlap dilutes core brand', dismissed: false },
+    { id: 'a5', sev: 'info', sevC: '#3b82f6', title: 'Roadmap Opportunity: Scale BrandF Water portfolio footprint', desc: 'Strategy · High margin category leader', dismissed: false },
+    { id: 'a6', sev: 'critical', sevC: '#ef4444', title: 'Portfolio Risk Alert: BrandC Snacks post-acquisition brand architecture overlap', desc: 'Strategy · Overlap between organic chips and premium nut lines · Northern Region (Baddi) affected', dismissed: false },
+    { id: 'a7', sev: 'warning', sevC: '#f59e0b', title: 'Product Quality Alert: BrandB Soap formulation failing modern wellness standards', desc: 'Strategy · Trial rate and product affinity decline · Western Region (Vapi) affected', dismissed: false },
   ]);
 
   const handleDismissAlert = (id: string, title: string) => {
@@ -1601,34 +1828,27 @@ const VPCommandCenter: React.FC<{
   };
 
   // Decisions
-  const [decisions, setDecisions] = useState([
-    { id: 'd1', icon: '⚡', iconBg: 'rgba(239,68,68,0.1)', iconColor: '#ef4444', title: 'Rationalize Floor Cleaner', sub: 'Complexity 0.81 · Value 0.22', stats: [['Revenue at risk', '₹38 Cr'], ['Margin', '15%'], ['Complexity rank', '#1'], ['Stockouts', '7 events']], done: false },
-    { id: 'd2', icon: '📦', iconBg: 'rgba(59,130,246,0.1)', iconColor: '#3b82f6', title: 'Scale Herbal Shampoo supply', sub: 'Growth 28% · Lead time 11d', stats: [['Current rev', '₹108 Cr'], ['Growth', '28% YoY'], ['Margin', '47%'], ['Supply gap', '₹22 Cr']], done: false },
-  ]);
+  const [decisions, setDecisions] = useState(ALL_DECISIONS);
 
   const handleApproveDecision = (id: string, title: string) => {
-    setDecisions(prev => prev.filter(d => d.id !== id));
+    setDecisions(prev => prev.map(d => d.id === id ? { ...d, done: true } : d));
     addToast('Decision Recorded', `Approved: "${title}"`, '#10b981');
   };
 
   const handleDeferDecision = (id: string, title: string) => {
-    setDecisions(prev => prev.filter(d => d.id !== id));
+    setDecisions(prev => prev.map(d => d.id === id ? { ...d, done: true } : d));
     addToast('Decision Deferred', `Deferred: "${title}"`, '#f59e0b');
   };
 
   // Approvals
-  const [approvals, setApprovals] = useState([
-    { id: 'p3', type: 'CAPEX', title: 'New cold-chain facility — ₹18 Cr', age: '6 days', urgency: 'high', done: false },
-    { id: 'p2', type: 'Promo', title: 'Choco Wafers Q4 promo extension', age: '4 days', urgency: 'medium', done: false },
-    { id: 'p1', type: 'Launch', title: 'Mango Fizz 750ml — ₹4.2 Cr', age: '2 days', urgency: 'high', done: false },
-  ]);
+  const [approvals, setApprovals] = useState(ALL_APPROVALS);
 
   const handleScheduleMeeting = (id: string, title: string) => {
     setActiveApprovalMeeting(id);
   };
 
   const handleRemindLater = (id: string, title: string) => {
-    setApprovals(prev => prev.filter(a => a.id !== id));
+    setApprovals(prev => prev.map(a => a.id === id ? { ...a, done: true } : a));
     addToast('Reminder Set', `Snoozed. Will remind you in 2 hours for: "${title}"`, '#f59e0b');
   };
 
@@ -1644,204 +1864,12 @@ const VPCommandCenter: React.FC<{
     { name: 'EMEA', rev: '₹311 Cr', pct: 88, delta: '+2.0%', up: true },
   ];
 
-  const bottlenecks = [
-    {
-      label: 'Fabric Softener',
-      val: 95,
-      color: '#ef4444',
-      status: 'critical',
-      location: 'Penang, Malaysia (SEA Hub)',
-      cause: 'High promotional dependency (over 45% of sales on deep discount) resulting in gross margin dilution below the 35% category hurdle.',
-      suggestions: [
-        {
-          action: 'Cap promotional discount depth at 15% and redirect marketing budget to brand equity campaigns.',
-          impact: 'Reclaims 3.2% category gross margin; protects brand health.',
-          contactName: 'Marcus Ng',
-          contactTitle: 'Marketing Director',
-          email: 'marcus.ng@aciesglobal.com',
-          draftBody: 'Hi Marcus,\n\nRegarding the Fabric Softener margin compression risk at the SEA Hub, please initiate a promotional discount cap at 15% and redirect the remaining spend to brand equity building.\n\nThanks,\nVP Product Management'
-        },
-        {
-          action: 'Introduce a premium eco-friendly line extension with 52% gross margin to shift product mix.',
-          impact: 'Raises blended category margin by 2.4pp within two quarters.',
-          contactName: 'Dr. Elena Rostova',
-          contactTitle: 'R&D Product Lead',
-          email: 'elena.rostova@aciesglobal.com',
-          draftBody: 'Hi Elena,\n\nTo raise our blended Fabric Softener category margins, can we accelerate the premium eco-friendly line extension formulation with a target gross margin of 52%?\n\nThanks,\nVP Product Management'
-        },
-        {
-          action: 'Rationalize the lowest-performing pack size (250ml) to eliminate high manufacturing overhead.',
-          impact: 'Reduces SKU complexity; frees up 15% line capacity.',
-          contactName: 'Vijay Kumar',
-          contactTitle: 'APAC Portfolio Analyst',
-          email: 'vijay.kumar@aciesglobal.com',
-          draftBody: 'Hi Vijay,\n\nPlease conduct a rationalization audit for the Fabric Softener 250ml SKU. Eliminating this low-performing pack size will resolve complexity issues at the Penang plant.\n\nThanks,\nVP Product Management'
-        }
-      ]
-    },
-    {
-      label: 'Floor Cleaner',
-      val: 89,
-      color: '#ef4444',
-      status: 'critical',
-      location: 'Baddi, HP (North India Plant)',
-      cause: 'Severe cannibalization by adjacent private-label brands eating into Floor Cleaner market share in convenience channels.',
-      suggestions: [
-        {
-          action: 'Re-position product packaging with custom value-add bundles to capture premium household segments.',
-          impact: 'Recovers 15% volume loss; builds strong category distinction.',
-          contactName: 'Rohan Sharma',
-          contactTitle: 'Brand Manager',
-          email: 'rohan.sharma@aciesglobal.com',
-          draftBody: 'Hi Rohan,\n\nDue to private-label cannibalization, please execute the repositioning plan for Floor Cleaner with premium value-add bundles for convenience channels.\n\nThanks,\nVP Product Management'
-        },
-        {
-          action: 'Adjust pricing tier to create a clear separation from entry-level competitor price points.',
-          impact: 'Stops market share erosion; improves price premium index.',
-          contactName: 'Amit Mehta',
-          contactTitle: 'Pricing Strategy Lead',
-          email: 'amit.mehta@aciesglobal.com',
-          draftBody: 'Hi Amit,\n\nPlease run a pricing elasticity simulation for Floor Cleaner to establish a clearer separation from competitor entry-level pricing tiers.\n\nThanks,\nVP Product Management'
-        },
-        {
-          action: 'Focus distribution on high-growth regional hubs to maximize sales velocity of high-margin Citrus SKU.',
-          impact: 'Increases overall category profitability by 5%.',
-          contactName: 'Pooja Iyer',
-          contactTitle: 'Citrus Category Manager',
-          email: 'pooja.iyer@aciesglobal.com',
-          draftBody: 'Hi Pooja,\n\nTo combat cannibalization in North India, please focus our distribution footprint on Citrus SKUs to maximize high-margin sales velocity.\n\nThanks,\nVP Product Management'
-        }
-      ]
-    },
-    {
-      label: 'Green Tea RTD',
-      val: 81,
-      color: '#f59e0b',
-      status: 'warning',
-      location: 'Pune, India (Blending & Bottling)',
-      cause: 'Volume decline in Modern Trade channels due to lack of pack size diversity, failing to capture single-serve wellness shoppers.',
-      suggestions: [
-        {
-          action: 'Fast-track the alternative single-serve aluminum can format to attract convenience and eco-conscious consumers.',
-          impact: 'Opens new convenience store channels; projected +18% volume growth.',
-          contactName: 'Siddharth Roy',
-          contactTitle: 'NPD Project Lead',
-          email: 'siddharth.roy@aciesglobal.com',
-          draftBody: 'Hi Siddharth,\n\nTo address Green Tea RTD volume declines, please bring forward the single-serve aluminum can format launch to capture single-serve wellness shoppers.\n\nThanks,\nVP Product Management'
-        },
-        {
-          action: 'Transfer safety stock allocations towards high-velocity wellness and fitness retail accounts.',
-          impact: 'Boosts sell-through rate; reduces slow-moving regional stock.',
-          contactName: 'Nisha Patel',
-          contactTitle: 'Demand Planning Lead',
-          email: 'nisha.patel@aciesglobal.com',
-          draftBody: 'Hi Nisha,\n\nPlease reallocate Green Tea safety stock buffers away from lagging depots and direct them to high-velocity wellness accounts.\n\nThanks,\nVP Product Management'
-        },
-        {
-          action: 'Implement a priority customer allocation strategy to safeguard top-performing national accounts.',
-          impact: 'Protects high-value contracts; maintains core brand revenue.',
-          contactName: 'Rajesh Verma',
-          contactTitle: 'VP Sales',
-          email: 'rajesh.verma@aciesglobal.com',
-          draftBody: 'Hi Rajesh,\n\nPlease implement priority distribution routing for Green Tea to ensure our top-performing national accounts receive full allocations.\n\nThanks,\nVP Product Management'
-        }
-      ]
-    },
-    {
-      label: 'Choco Wafers',
-      val: 74,
-      color: '#f59e0b',
-      status: 'warning',
-      location: 'Ghent, Belgium (EMEA Confectionery Unit)',
-      cause: 'Gross margin pressure due to ingredient price inflation, threatening brand contribution targets in Europe.',
-      suggestions: [
-        {
-          action: 'Negotiate long-term contract pricing with South American supply partners to stabilize ingredient cost.',
-          impact: 'Stabilizes cost-of-goods-sold; protects margins against futures price spikes.',
-          contactName: 'Jean-Pierre Dubois',
-          contactTitle: 'Commodities Hedging Director',
-          email: 'jp.dubois@aciesglobal.com',
-          draftBody: 'Hi Jean-Pierre,\n\nGiven the cocoa cost pressure on Choco Wafers, please coordinate with our South American partners to negotiate long-term hedged contracts.\n\nThanks,\nVP Product Management'
-        },
-        {
-          action: 'Reformulate pack mix to increase share of multi-pack family boxes which command a higher margin.',
-          impact: 'Offsets raw ingredient cost pressure; raises average price per unit.',
-          contactName: 'Sarah Jenkins',
-          contactTitle: 'Product Scientist',
-          email: 'sarah.jenkins@aciesglobal.com',
-          draftBody: 'Hi Sarah,\n\nTo safeguard Wafer gross margins, please check the feasibility of shifting our packaging mix toward high-margin family multi-packs.\n\nThanks,\nVP Product Management'
-        },
-        {
-          action: 'Optimize distribution footprint to reduce high freight costs for cold-chain chocolate logistics.',
-          impact: 'Saves 4% in distribution overhead; offsets packaging surcharges.',
-          contactName: 'Dieter Maes',
-          contactTitle: 'Logistics Planner',
-          email: 'dieter.maes@aciesglobal.com',
-          draftBody: 'Hi Dieter,\n\nPlease review our cold-chain distribution routes for Choco Wafers to identify freight efficiencies and offset recent ingredient price hikes.\n\nThanks,\nVP Product Management'
-        }
-      ]
-    },
-    {
-      label: 'Foam Face Wash',
-      val: 62,
-      color: '#f59e0b',
-      status: 'warning',
-      location: 'Chennai, Tamil Nadu (Cosmetics Hub)',
-      cause: 'Customer sentiment decline and brand fatigue due to outdated foaming pump bottle design, losing share to younger competitors.',
-      suggestions: [
-        {
-          action: 'Launch an eco-friendly pump refill pouch format to revive brand interest and lower packaging cost.',
-          impact: 'Improves sustainability rating by 30%; reduces unit cost.',
-          contactName: 'K. Srinivasan',
-          contactTitle: 'Packaging R&D Lead',
-          email: 'k.srinivasan@aciesglobal.com',
-          draftBody: 'Hi Srinivasan,\n\nTo counter brand fatigue on Foam Face Wash, let\'s speed up the eco-refill pouch packaging redesign. This will lower unit costs and capture green shoppers.\n\nThanks,\nVP Product Management'
-        },
-        {
-          action: 'Introduce double-pack bundle promotions in cosmetics stores to drive multi-purchase trial rates.',
-          impact: 'Increases household penetration; clears slow-moving inventory.',
-          contactName: 'Priyanka Rao',
-          contactTitle: 'Trade Marketing Manager',
-          email: 'priyanka.rao@aciesglobal.com',
-          draftBody: 'Hi Priyanka,\n\nPlease draft a double-pack promotional bundle proposal for Foam Face Wash to drive cosmetics store trial rates and clear stock.\n\nThanks,\nVP Product Management'
-        },
-        {
-          action: 'Enforce distributor stock-replenishment limits for Tier-2 accounts to protect high-margin Tier-1 pharmacy allocations.',
-          impact: 'Prevents stockouts of high-velocity SKUs in premium channels.',
-          contactName: 'Gautam Sen',
-          contactTitle: 'National Distribution Manager',
-          email: 'gautam.sen@aciesglobal.com',
-          draftBody: 'Hi Gautam,\n\nTo manage pharmacy channel stocks of Foam Face Wash, please apply safety buffers protecting Tier-1 pharmacy store supply.\n\nThanks,\nVP Product Management'
-        }
-      ]
-    },
-    {
-      label: 'Herbal Shampoo',
-      val: 18,
-      color: '#10b981',
-      status: 'ok',
-      location: 'Vapi, Gujarat (Western Hub)',
-      cause: 'Under-distribution in high-margin general trade outlets despite strong organic consumer search volume.',
-      suggestions: [
-        {
-          action: 'Onboard regional distributor networks to expand retail reach to 10k additional general trade outlets.',
-          impact: 'Captures untapped demand; projects +12% category sales growth.',
-          contactName: 'Vikram Solanki',
-          contactTitle: 'Channel Development Lead',
-          email: 'vikram.solanki@aciesglobal.com',
-          draftBody: 'Hi Vikram,\n\nHerbal Shampoo is under-distributed. Please draft an onboarding plan for regional general trade distributors to add 10,000 new outlets.\n\nThanks,\nVP Product Management'
-        },
-        {
-          action: 'Partner with regional salons to drive product trials and premium brand positioning.',
-          impact: 'Builds premium brand authority; drives retail sell-out.',
-          contactName: 'Rajendra Patel',
-          contactTitle: 'Regional Sales Manager',
-          email: 'rajendra.patel@aciesglobal.com',
-          draftBody: 'Hi Rajendra,\n\nPlease set up local salon promotional partnerships for Herbal Shampoo to drive premium brand authority and trials.\n\nThanks,\nVP Product Management'
-        }
-      ]
-    }
-  ];
+  const bottlenecks = ALL_BOTTLENECKS;
+
+  // Filtered lists for the active role's lens
+  const filteredApprovals = approvals.filter(a => a.role === role && !a.done);
+  const filteredBottlenecks = bottlenecks.filter(b => b.role === role);
+  const filteredDecisions = decisions.filter(d => d.role === role && !d.done);
 
   // Chart data
   const monthlyRevenueData = [
@@ -2105,12 +2133,12 @@ const VPCommandCenter: React.FC<{
           <div className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm space-y-4">
             <div className="flex justify-between items-center pb-2 border-b border-black/5 dark:border-white/5">
               <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Executive Approval Board</span>
-              <span className="text-[8px] font-bold uppercase tracking-wider text-[#8b5cf6] bg-[#8b5cf6]/10 px-2 py-0.5 rounded-full">{approvals.length} Pending</span>
+              <span className="text-[8px] font-bold uppercase tracking-wider text-[#8b5cf6] bg-[#8b5cf6]/10 px-2 py-0.5 rounded-full">{filteredApprovals.length} Pending</span>
             </div>
             
             <div className="space-y-3.5 max-h-[500px] overflow-y-auto pr-1">
-              {approvals.length > 0 ? (
-                approvals.map(a => (
+              {filteredApprovals.length > 0 ? (
+                filteredApprovals.map(a => (
                   <div 
                     key={a.id} 
                     className={`p-4 border rounded-xl flex flex-col gap-3.5 shadow-sm transition-all duration-200 ${
@@ -2187,10 +2215,10 @@ const VPCommandCenter: React.FC<{
           <div className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm space-y-4">
             <div className="flex justify-between items-center pb-2 border-b border-black/5 dark:border-white/5">
               <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Portfolio Health Alerts</span>
-              <span className="text-[8px] font-bold uppercase tracking-wider text-red-500 bg-red-500/10 px-2 py-0.5 rounded-full">2 Critical</span>
+              <span className="text-[8px] font-bold uppercase tracking-wider text-red-500 bg-red-500/10 px-2 py-0.5 rounded-full">{filteredBottlenecks.filter(b => b.status === 'critical').length} Critical</span>
             </div>
             <div className="space-y-3">
-              {bottlenecks.map(b => (
+              {filteredBottlenecks.map(b => (
                 <div key={b.label} className="border-b border-black/[0.03] dark:border-white/[0.03] pb-2 last:border-b-0 animate-fadeIn">
                   <div 
                     className="w-full flex items-center justify-between gap-2.5 text-[11px] hover:bg-black/[0.01] dark:hover:bg-white/5 p-2 rounded-sm transition-all text-left"
@@ -2228,12 +2256,12 @@ const VPCommandCenter: React.FC<{
           <div className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm space-y-4">
             <div className="flex justify-between items-center pb-2 border-b border-black/5 dark:border-white/5">
               <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Decisions Pending</span>
-              <span className="text-[8px] font-bold uppercase tracking-wider text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded-full">{decisions.length} Pending</span>
+              <span className="text-[8px] font-bold uppercase tracking-wider text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded-full">{filteredDecisions.length} Pending</span>
             </div>
             
             <div className="space-y-4 max-h-[350px] overflow-y-auto pr-1">
-              {decisions.length > 0 ? (
-                decisions.map(d => (
+              {filteredDecisions.length > 0 ? (
+                filteredDecisions.map(d => (
                   <div key={d.id} className="border border-black/10 dark:border-white/10 rounded-sm bg-zinc-50/50 dark:bg-white/5 overflow-hidden">
                     <div className="p-3 flex items-start gap-2.5 border-b border-black/5 dark:border-white/5">
                       <div className="w-7 h-7 rounded-sm flex items-center justify-center text-sm shrink-0 font-bold" style={{ backgroundColor: d.iconBg, color: d.iconColor }}>
@@ -2461,6 +2489,22 @@ export const PortfolioHealthMap: React.FC<PortfolioHealthMapProps> = ({
   onAuditClick, 
   timelineRange 
 }) => {
+  return (
+    <VPCommandCenter 
+      isDarkMode={isDarkMode} 
+      onAuditClick={onAuditClick} 
+      timelineRange={timelineRange} 
+      role={role}
+    />
+  );
+};
+
+export const PortfolioHealthMapOld: React.FC<PortfolioHealthMapProps> = ({ 
+  role, 
+  isDarkMode, 
+  onAuditClick, 
+  timelineRange 
+}) => {
   const SKUS = getFilteredSKUS(GLOBAL_SKUS, timelineRange);
   if (role === 'VP Product Management') {
     return (
@@ -2468,6 +2512,7 @@ export const PortfolioHealthMap: React.FC<PortfolioHealthMapProps> = ({
         isDarkMode={isDarkMode} 
         onAuditClick={onAuditClick} 
         timelineRange={timelineRange} 
+        role={role}
       />
     );
   }

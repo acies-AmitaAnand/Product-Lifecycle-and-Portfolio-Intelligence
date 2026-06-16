@@ -40,56 +40,94 @@ export const ScheduleMeetingModal: React.FC<ScheduleMeetingModalProps> = ({
       return [
         {
           action: 'Audit Capital Allocation & Finance Sync',
-          impact: 'Secures Q3 CAPEX reserves for facility buildout',
+          impact: 'Secures Q3 CAPEX reserves for brand acquisitions',
           contactName: 'Ananya Sen',
-          contactTitle: 'VP Finance',
+          contactTitle: 'Director of Portfolio Finance',
           email: 'ananya.sen@aciesglobal.com',
           draftBody: `Hi Ananya,\n\nI want to schedule an urgent meeting to sync on the CAPEX allocation for the "${approval.title}". Let's align on the Q3 capital reserves.\n\nThanks,\nVP Product Management`
         },
         {
-          action: 'Cold-Chain Supplier Procurement Alignment',
-          impact: 'Vets compliant temperature-controlled logistics vendors',
-          contactName: 'Vikram Solanki',
-          contactTitle: 'QC Manager & Logistics Lead',
-          email: 'vikram.solanki@aciesglobal.com',
-          draftBody: `Hi Vikram,\n\nLet's schedule a meeting to review the qualified cold-chain suppliers for the "${approval.title}" buildout to ensure QA standards are met.\n\nThanks,\nVP Product Management`
+          action: 'Brand Compliance & Regulatory Sync',
+          impact: 'Vets brand trademark registrations and legal compliance',
+          contactName: 'Amit Verma',
+          contactTitle: 'NPD Product Lead',
+          email: 'amit.verma@aciesglobal.com',
+          draftBody: `Hi Amit,\n\nLet's schedule a meeting to review trademark compliance and legal filings for the "${approval.title}".\n\nThanks,\nVP Product Management`
         }
       ];
     } else if (approval.type === 'Promo') {
       return [
         {
           action: 'Pricing Floor & Gross Margin Integrity Check',
-          impact: 'Ensures margin floor won\'t collapse below the 20% limit',
+          impact: 'Ensures margin floor won\'t collapse below the 35% limit',
           contactName: 'Priya Sharma',
-          contactTitle: 'Brand Director',
+          contactTitle: 'Lead Product Manager',
           email: 'priya.sharma@aciesglobal.com',
           draftBody: `Hi Priya,\n\nI\'d like to schedule a brief meeting to verify the gross margin protection and pricing floors for the "${approval.title}". Let\'s review Q4 ROI.\n\nThanks,\nVP Product Management`
         },
         {
-          action: 'Inventory Stock Allocation & Fulfillment Sync',
-          impact: 'Aligns supply levels to prevent promo-driven stockout events',
-          contactName: 'Rajendra Patel',
-          contactTitle: 'Vapi Hub Director',
-          email: 'rajendra.patel@aciesglobal.com',
-          draftBody: `Hi Rajendra,\n\nLet's schedule a meeting to sync on warehouse inventory levels and stock allocation for the upcoming "${approval.title}". We need to prevent stockouts.\n\nThanks,\nVP Product Management`
+          action: 'Retail Account Alignment',
+          impact: 'Aligns key account retail margins and promotional calendar',
+          contactName: 'Karan Johar',
+          contactTitle: 'Director of Commercial Portfolio',
+          email: 'karan.johar@aciesglobal.com',
+          draftBody: `Hi Karan,\n\nLet's schedule a meeting to review the key account margin structures for the upcoming "${approval.title}".\n\nThanks,\nVP Product Management`
+        }
+      ];
+    } else if (approval.type === 'Pricing') {
+      return [
+        {
+          action: 'Margin Integrity & Pricing Elasticity Sync',
+          impact: 'Ensures price increases do not lead to volume drop-offs',
+          contactName: 'Amit Mehta',
+          contactTitle: 'Product Pricing Director',
+          email: 'amit.mehta@aciesglobal.com',
+          draftBody: `Hi Amit,\n\nI want to schedule a sync to review the price elasticity model for "${approval.title}". Let's align on protecting gross margins.\n\nThanks,\nVP Product Management`
+        },
+        {
+          action: 'Finance & P&L Impact Review',
+          impact: 'Confirms contribution margin targets across all channels',
+          contactName: 'Ananya Sen',
+          contactTitle: 'Director of Portfolio Finance',
+          email: 'ananya.sen@aciesglobal.com',
+          draftBody: `Hi Ananya,\n\nLet's align on the P&L impact of the price adjustment proposal: "${approval.title}".\n\nThanks,\nVP Product Management`
+        }
+      ];
+    } else if (approval.type === 'Rationalize') {
+      return [
+        {
+          action: 'SKU De-listing & Retail Alignment',
+          impact: 'Coordinates retail de-listing timeline and shelf space reallocation',
+          contactName: 'Karan Johar',
+          contactTitle: 'Director of Commercial Portfolio',
+          email: 'karan.johar@aciesglobal.com',
+          draftBody: `Hi Karan,\n\nLet's schedule a meeting to coordinate the retail de-listing timeline and shelf space transitions for "${approval.title}".\n\nThanks,\nVP Product Management`
+        },
+        {
+          action: 'Brand Marketing Budget Reallocation',
+          impact: 'Reallocates brand marketing and promotional spend to high-margin growth SKUs',
+          contactName: 'Priya Sharma',
+          contactTitle: 'Lead Product Manager',
+          email: 'priya.sharma@aciesglobal.com',
+          draftBody: `Hi Priya,\n\nWe need to schedule a meeting to review how the "${approval.title}" rationalization will allow us to reallocate marketing resources to our growth portfolio.\n\nThanks,\nVP Product Management`
         }
       ];
     } else {
       // Launch / default
       return [
         {
-          action: 'GTM Pricing & Product Packaging Review',
-          impact: 'Ensures launch molds are certified and QA approved',
+          action: 'GTM Brand Positioning & Package Design Review',
+          impact: 'Ensures brand positioning and packaging design are certified',
           contactName: 'Amit Verma',
-          contactTitle: 'NPD Lead',
+          contactTitle: 'NPD Product Lead',
           email: 'amit.verma@aciesglobal.com',
-          draftBody: `Hi Amit,\n\nI'd like to schedule a meeting to review packaging compliance, molds certification, and first-year pricing models for "${approval.title}".\n\nThanks,\nVP Product Management`
+          draftBody: `Hi Amit,\n\nI'd like to schedule a meeting to review package designs and first-year pricing models for "${approval.title}".\n\nThanks,\nVP Product Management`
         },
         {
-          action: 'Regional Retail Placement & Key Account Launch Sync',
+          action: 'Regional Retail Placement Sync',
           impact: 'Confirms front-row shelf allocations across 240 key stores',
           contactName: 'Karan Johar',
-          contactTitle: 'Retail Relations Director',
+          contactTitle: 'Director of Commercial Portfolio',
           email: 'karan.johar@aciesglobal.com',
           draftBody: `Hi Karan,\n\nLet's schedule a meeting to review the regional shelf placement contracts and account launches for "${approval.title}". We want optimal positioning.\n\nThanks,\nVP Product Management`
         }
@@ -134,7 +172,7 @@ export const ScheduleMeetingModal: React.FC<ScheduleMeetingModalProps> = ({
         <div>
           <p className="font-bold text-[9px] uppercase tracking-widest text-zinc-400 mb-1">Approval Request context</p>
           <p className="text-zinc-655 dark:text-zinc-350 leading-relaxed font-normal">
-            To proceed with this item, a cross-functional alignment session is required with the departments owning the execution risks, operational logistics, and capital reserves.
+            To proceed with this item, a cross-functional alignment session is required with the departments owning the execution risks, commercial strategies, and capital reserves.
           </p>
         </div>
 
