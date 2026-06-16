@@ -490,6 +490,7 @@ interface InvestmentMarginMapProps {
   isDarkMode: boolean;
   onSelectSku?: (sku: any) => void;
   addToast?: (title: string, body: string, color: string) => void;
+  onScheduleMeeting?: (title: string, type: string) => void;
 }
 
 const getInvestmentMarginData = (skusList: any[]): InvestmentMarginSku[] => {
@@ -592,7 +593,7 @@ const getInvestmentMarginData = (skusList: any[]): InvestmentMarginSku[] => {
   });
 };
 
-const InvestmentMarginMap: React.FC<InvestmentMarginMapProps> = ({ skusList, isDarkMode, onSelectSku, addToast }) => {
+const InvestmentMarginMap: React.FC<InvestmentMarginMapProps> = ({ skusList, isDarkMode, onSelectSku, addToast, onScheduleMeeting }) => {
   const [activeQuad, setActiveQuad] = useState<'quickwin' | 'strategic' | 'niche' | 'avoid'>('quickwin');
   const [viewMode, setViewMode] = useState<'quadrant' | 'category'>('quadrant');
   const [activeCat, setActiveCat] = useState<string>('Beverages');
@@ -916,7 +917,13 @@ const InvestmentMarginMap: React.FC<InvestmentMarginMapProps> = ({ skusList, isD
                   {item.quadrant === 'quickwin' && (
                     <button
                       type="button"
-                      onClick={() => handleApproveInvestment(item.name, item.investment)}
+                      onClick={() => {
+                        if (onScheduleMeeting) {
+                          onScheduleMeeting(item.name, 'CAPEX');
+                        } else {
+                          handleApproveInvestment(item.name, item.investment);
+                        }
+                      }}
                       className="px-2 py-1 bg-emerald-600 dark:bg-emerald-500 text-white dark:text-zinc-950 hover:opacity-90 rounded-sm text-[8.5px] font-extrabold uppercase tracking-wider cursor-pointer border-none flex items-center gap-1 outline-none"
                     >
                       <Plus size={10} />
@@ -954,6 +961,7 @@ interface RevenuePerformanceMatrixProps {
   isDarkMode: boolean;
   onSelectSku?: (sku: any) => void;
   addToast?: (title: string, body: string, color: string) => void;
+  onScheduleMeeting?: (title: string, type: string) => void;
 }
 
 const getRevPerfData = (skusList: any[]): RevPerfSku[] => {
@@ -991,7 +999,7 @@ const getRevPerfData = (skusList: any[]): RevPerfSku[] => {
   });
 };
 
-const RevenuePerformanceMatrix: React.FC<RevenuePerformanceMatrixProps> = ({ skusList, isDarkMode, onSelectSku, addToast }) => {
+const RevenuePerformanceMatrix: React.FC<RevenuePerformanceMatrixProps> = ({ skusList, isDarkMode, onSelectSku, addToast, onScheduleMeeting }) => {
   const [activeQuad, setActiveQuad] = useState<'high_performer' | 'underperformer' | 'hidden_growth' | 'attention'>('high_performer');
   const [viewMode, setViewMode] = useState<'quadrant' | 'category'>('quadrant');
   const [activeCat, setActiveCat] = useState<string>('Beverages');
@@ -1332,7 +1340,16 @@ const RevenuePerformanceMatrix: React.FC<RevenuePerformanceMatrixProps> = ({ sku
                   </button>
                   <button
                     type="button"
-                    onClick={() => handleAuthorizeStrategy(item.name, item.quadrant)}
+                    onClick={() => {
+                      if (onScheduleMeeting) {
+                        const meetingType = item.quadrant === 'high_performer' ? 'Pricing' :
+                                            item.quadrant === 'underperformer' ? 'Rationalize' :
+                                            item.quadrant === 'hidden_growth' ? 'Launch' : 'Pricing';
+                        onScheduleMeeting(item.name, meetingType);
+                      } else {
+                        handleAuthorizeStrategy(item.name, item.quadrant);
+                      }
+                    }}
                     className="px-2 py-1 bg-purple-600 dark:bg-purple-500 text-white dark:text-zinc-950 hover:opacity-90 rounded-sm text-[8.5px] font-extrabold uppercase tracking-wider cursor-pointer border-none flex items-center gap-1 outline-none"
                   >
                     Authorize Strategy
@@ -1398,7 +1415,7 @@ const VPCommandCenter: React.FC<{
   const [selectedHealthTier, setSelectedHealthTier] = useState<string | null>(null);
   const [selectedMonth, setSelectedMonth] = useState<string | null>(null);
   const [activeBottleneck, setActiveBottleneck] = useState<string | null>(null);
-  const [activeApprovalMeeting, setActiveApprovalMeeting] = useState<string | null>(null);
+  const [activeApprovalMeeting, setActiveApprovalMeeting] = useState<any | null>(null);
   const [composerOpen, setComposerOpen] = useState(false);
   const [composerEmail, setComposerEmail] = useState({ to: '', subject: '', body: '', name: '', action: '' });
   const [successFeedback, setSuccessFeedback] = useState<{
@@ -2312,6 +2329,16 @@ const VPCommandCenter: React.FC<{
           isDarkMode={isDarkMode} 
           onSelectSku={setSelectedSkuForModal} 
           addToast={addToast} 
+          onScheduleMeeting={(title, type) => {
+            setActiveApprovalMeeting({
+              id: 'dyn-inv-' + Date.now(),
+              title: `Investment: ${title}`,
+              type: type,
+              age: '1d',
+              urgency: 'high',
+              done: false
+            });
+          }}
         />
       </div>
 
@@ -2322,6 +2349,16 @@ const VPCommandCenter: React.FC<{
           isDarkMode={isDarkMode} 
           onSelectSku={setSelectedSkuForModal} 
           addToast={addToast} 
+          onScheduleMeeting={(title, type) => {
+            setActiveApprovalMeeting({
+              id: 'dyn-strat-' + Date.now(),
+              title: `Strategy: ${title}`,
+              type: type,
+              age: '1d',
+              urgency: 'high',
+              done: false
+            });
+          }}
         />
       </div>
 
@@ -2437,10 +2474,17 @@ const VPCommandCenter: React.FC<{
       {/* Schedule Sync Meeting Modal */}
       <ScheduleMeetingModal 
         isOpen={!!activeApprovalMeeting}
-        approval={approvals.find(x => x.id === activeApprovalMeeting) || null}
+        approval={
+          activeApprovalMeeting && typeof activeApprovalMeeting === 'object' 
+            ? activeApprovalMeeting 
+            : approvals.find(x => x.id === activeApprovalMeeting) || null
+        }
         onClose={() => setActiveApprovalMeeting(null)}
         onRequestAction={(email, name, subject, body) => {
-          openEmailComposer(email, name, subject, body, activeApprovalMeeting || undefined);
+          const actionId = activeApprovalMeeting && typeof activeApprovalMeeting === 'object'
+            ? activeApprovalMeeting.id
+            : activeApprovalMeeting || undefined;
+          openEmailComposer(email, name, subject, body, actionId);
         }}
       />
 
