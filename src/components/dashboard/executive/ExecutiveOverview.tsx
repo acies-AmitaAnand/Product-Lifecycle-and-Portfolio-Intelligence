@@ -17,8 +17,9 @@ import { RegionalForecastModal } from './RegionalForecastModal';
 import { EmailComposerModal } from '../portfolio-health/EmailComposerModal';
 import { TrendMonthForecastModal } from './TrendMonthForecastModal';
 import { CategoryPerformanceDetailsModal } from './CategoryPerformanceDetailsModal';
-import { SmartAlertDetailsModal } from './SmartAlertDetailsModal';
+import { SmartAlertDetailsModal, AlertData } from './SmartAlertDetailsModal';
 import { EventsCalendarModal } from '../portfolio-health/EventsCalendarModal';
+import { ScheduleMeetingModal } from '../portfolio-health/ScheduleMeetingModal';
 
 interface CustomerInsight {
   name: string;
@@ -794,6 +795,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
   const [selectedTrendMonth, setSelectedTrendMonth] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedAlert, setSelectedAlert] = useState<any>(null);
+  const [activeAlertMeeting, setActiveAlertMeeting] = useState<AlertData | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
 
@@ -1838,10 +1840,31 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
         isOpen={!!selectedAlert}
         alert={selectedAlert}
         onClose={() => setSelectedAlert(null)}
-        onApprove={(alertId, directiveText) => {
-          setAlerts(prev => prev.filter(a => a.id !== alertId));
-          addToast("Directive authorized", `Directive authorized: "${directiveText}"`, "#10b981");
+        onScheduleMeeting={(alert) => {
+          setActiveAlertMeeting(alert);
           setSelectedAlert(null);
+        }}
+      />
+
+      {/* Schedule Sync Meeting Modal */}
+      <ScheduleMeetingModal 
+        isOpen={!!activeAlertMeeting}
+        approval={activeAlertMeeting ? {
+          id: activeAlertMeeting.id,
+          title: activeAlertMeeting.title,
+          type: activeAlertMeeting.id === 'a1' || activeAlertMeeting.id === 'a5' ? 'Launch' :
+                activeAlertMeeting.id === 'a2' || activeAlertMeeting.id === 'a6' ? 'Promo' :
+                activeAlertMeeting.id === 'a3' ? 'Pricing' : 'Rationalize',
+          age: '1d',
+          urgency: activeAlertMeeting.sev === 'critical' ? 'high' : 'medium',
+          done: false
+        } : null}
+        onClose={() => setActiveAlertMeeting(null)}
+        onRequestAction={(email, name, subject, body) => {
+          setEmailData({ to: email, name, subject, body });
+          setIsEmailOpen(true);
+          setAlerts(prev => prev.filter(a => a.id !== activeAlertMeeting?.id));
+          setActiveAlertMeeting(null);
         }}
       />
 

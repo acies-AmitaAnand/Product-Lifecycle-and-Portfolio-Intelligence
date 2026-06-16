@@ -5,10 +5,10 @@
 
 import React from 'react';
 import { 
-  X, AlertTriangle, Info, ShieldAlert, TrendingDown, DollarSign, Activity, FileText, CheckCircle2 
+  X, AlertTriangle, Info, ShieldAlert, TrendingDown, DollarSign, Activity, FileText, Calendar 
 } from 'lucide-react';
 
-interface AlertData {
+export interface AlertData {
   id: string;
   sev: 'critical' | 'warning' | 'info';
   title: string;
@@ -127,14 +127,14 @@ interface SmartAlertDetailsModalProps {
   isOpen: boolean;
   alert: AlertData | null;
   onClose: () => void;
-  onApprove: (alertId: string, directiveText: string) => void;
+  onScheduleMeeting: (alert: AlertData) => void;
 }
 
 export const SmartAlertDetailsModal: React.FC<SmartAlertDetailsModalProps> = ({
   isOpen,
   alert,
   onClose,
-  onApprove
+  onScheduleMeeting
 }) => {
   if (!isOpen || !alert) return null;
 
@@ -248,12 +248,12 @@ export const SmartAlertDetailsModal: React.FC<SmartAlertDetailsModalProps> = ({
           <button 
             type="button"
             onClick={() => {
-              onApprove(alert.id, data.directive);
+              onScheduleMeeting(alert);
             }}
-            className="flex items-center gap-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white font-extrabold uppercase tracking-widest rounded transition-colors cursor-pointer border-none"
+            className="flex items-center gap-1.5 px-3.5 py-2 border rounded-lg text-[10.5px] font-bold tracking-wide transition-all duration-150 cursor-pointer border-blue-200 text-blue-600 bg-blue-50/50 hover:bg-blue-600 hover:text-white dark:border-blue-500/35 dark:text-blue-400 dark:bg-blue-500/5 dark:hover:bg-blue-500 dark:hover:text-white"
           >
-            <CheckCircle2 size={13} />
-            {data.directive}
+            <Calendar size={13} />
+            Schedule a Meeting
           </button>
           
           <button 
