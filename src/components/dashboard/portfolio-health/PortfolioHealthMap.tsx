@@ -1540,10 +1540,10 @@ const VPCommandCenter: React.FC<{
 
   // Dynamically calculate KPIs based on filtered SKUs and jittering offset
   const filteredCount = filteredSKUs.length || 1;
-  const dynamicTotalRev = filteredSKUs.reduce((sum, s) => sum + s.rev, 0) * 0.3915;
+  const dynamicTotalRev = filteredSKUs.reduce((sum, s) => sum + s.rev, 0) * (851.2 / 8419.74);
   const dynamicSkuCount = filteredSKUs.length;
   const dynamicGrowth = (filteredSKUs.reduce((sum, s) => sum + s.growth, 0) / filteredCount) * 100;
-  const dynamicOrders = filteredSKUs.reduce((sum, s) => sum + s.rev, 0) * (4218 / 2174);
+  const dynamicOrders = filteredSKUs.reduce((sum, s) => sum + s.rev, 0) * (4218 / 8419.74);
   const dynamicFcast = 94.6 + (filteredSKUs.reduce((sum, s) => sum + s.margin, 0) / filteredCount - 35.1) * 0.1;
 
   // Apply scale offsets
