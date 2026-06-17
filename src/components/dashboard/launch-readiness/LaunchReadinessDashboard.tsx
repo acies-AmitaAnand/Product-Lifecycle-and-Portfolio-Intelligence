@@ -28,7 +28,7 @@ export const LaunchReadinessDashboard: React.FC<LaunchReadinessDashboardProps> =
   role, isDarkMode, onAuditClick, tourActive, onTourClose, simulateDelay, setSimulateDelay 
 }) => {
   if (role === 'VP Product Management') {
-    return <VPLaunchReadinessView isDarkMode={isDarkMode} simulateDelay={simulateDelay} setSimulateDelay={setSimulateDelay} />;
+    return <VPLaunchReadinessView isDarkMode={isDarkMode} simulateDelay={simulateDelay} setSimulateDelay={setSimulateDelay} onAuditClick={onAuditClick} />;
   }
   const accentColor = isDarkMode ? '#a78bfa' : '#6d28d9';
   const [skuName, setSkuName] = useState('Mango Fizz 500ml');
