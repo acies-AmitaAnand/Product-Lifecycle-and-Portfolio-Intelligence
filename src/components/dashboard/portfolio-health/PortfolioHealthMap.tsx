@@ -2310,7 +2310,7 @@ const VPCommandCenter: React.FC<{
           {/* Portfolio Health Alerts */}
           <div className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm space-y-4">
             <div className="flex justify-between items-center pb-2 border-b border-black/5 dark:border-white/5">
-              <span className="text-[11px] font-extrabold uppercase tracking-widest text-red-600 dark:text-red-400 border-l-2 border-red-600 dark:border-red-400 pl-2">Portfolio Health Alerts</span>
+              <span className="text-[11px] font-extrabold uppercase tracking-widest text-[#6d28d9] dark:text-[#a78bfa] border-l-2 border-[#6d28d9] dark:border-[#a78bfa] pl-2">Portfolio Health Alerts</span>
               <span className="text-[8px] font-bold uppercase tracking-wider text-red-500 bg-red-500/10 px-2 py-0.5 rounded-full">{filteredBottlenecks.filter(b => b.status === 'critical').length} Critical</span>
             </div>
             <div className="space-y-3">
