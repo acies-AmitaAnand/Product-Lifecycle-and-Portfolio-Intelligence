@@ -2222,7 +2222,7 @@ const VPCommandCenter: React.FC<{
       </div>
 
       {/* Main Command Center Grid */}
-      <div id="vp-action-desk" className="grid grid-cols-1 lg:grid-cols-3 gap-6 scroll-mt-16">
+      <div id="vp-action-desk" className="grid grid-cols-1 lg:grid-cols-2 gap-6 scroll-mt-16">
         {/* LEFT COLUMN: EXECUTIVE APPROVAL BOARD */}
         <div className="space-y-6">
           {/* Executive Approval Board */}
@@ -2346,59 +2346,7 @@ const VPCommandCenter: React.FC<{
           </div>
         </div>
 
-        {/* RIGHT COLUMN: DECISIONS */}
-        <div className="space-y-6">
-          {/* Decisions Pending */}
-          <div className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm space-y-4">
-            <div className="flex justify-between items-center pb-2 border-b border-black/5 dark:border-white/5">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Decisions Pending</span>
-              <span className="text-[8px] font-bold uppercase tracking-wider text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded-full">{filteredDecisions.length} Pending</span>
-            </div>
-            
-            <div className="space-y-4 max-h-[350px] overflow-y-auto pr-1">
-              {filteredDecisions.length > 0 ? (
-                filteredDecisions.map(d => (
-                  <div key={d.id} className="border border-black/10 dark:border-white/10 rounded-sm bg-zinc-50/50 dark:bg-white/5 overflow-hidden">
-                    <div className="p-3 flex items-start gap-2.5 border-b border-black/5 dark:border-white/5">
-                      <div className="w-7 h-7 rounded-sm flex items-center justify-center text-sm shrink-0 font-bold" style={{ backgroundColor: d.iconBg, color: d.iconColor }}>
-                        {d.icon}
-                      </div>
-                      <div>
-                        <h4 className="text-[11px] font-bold text-zinc-800 dark:text-zinc-200">{d.title}</h4>
-                        <p className="text-[9px] text-zinc-400 dark:text-zinc-500 mt-0.5">{d.sub}</p>
-                      </div>
-                    </div>
-                    <div className="p-3 space-y-1.5">
-                      {d.stats.map(([label, val]) => (
-                        <div key={label} className="flex justify-between items-center text-[10px] border-b border-black/[0.03] dark:border-white/[0.03] pb-1">
-                          <span className="text-zinc-500">{label}</span>
-                          <span className="font-semibold text-zinc-800 dark:text-zinc-200 font-mono">{val}</span>
-                        </div>
-                      ))}
-                    </div>
-                    <div className="flex border-t border-black/5 dark:border-white/5">
-                      <button 
-                        onClick={() => handleApproveDecision(d.id, d.title)} 
-                        className="flex-1 py-2 text-center text-[9px] font-bold uppercase tracking-wider text-white bg-[#6d28d9] dark:bg-[#a78bfa] hover:opacity-95 transition-opacity cursor-pointer border-none"
-                      >
-                        Approve
-                      </button>
-                      <button 
-                        onClick={() => handleDeferDecision(d.id, d.title)} 
-                        className="flex-1 py-2 text-center text-[9px] font-bold uppercase tracking-wider text-zinc-550 dark:text-zinc-350 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer border-none bg-transparent border-l border-black/5 dark:border-white/5"
-                      >
-                        Defer
-                      </button>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <p className="text-center text-[10px] text-zinc-500 font-bold py-4">No pending decisions</p>
-              )}
-            </div>
-          </div>
 
-        </div>
       </div>
 
       {/* AI Investment vs Return Margin Map */}
