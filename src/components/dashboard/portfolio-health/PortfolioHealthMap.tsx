@@ -187,8 +187,8 @@ const LifecycleHealthPanel: React.FC<LifecycleHealthPanelProps> = ({ skusList, i
   const data = calculatePortfolioHealth(skusList);
   
   // Circular progress ring setup
-  const radius = 40;
-  const strokeWidth = 6;
+  const radius = 54;
+  const strokeWidth = 8;
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (data.score / 100) * circumference;
   
@@ -229,13 +229,13 @@ const LifecycleHealthPanel: React.FC<LifecycleHealthPanelProps> = ({ skusList, i
   return (
     <div className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
       {/* LEFT COLUMN: GAUGE & HEALTH */}
-      <div className="lg:col-span-4 flex items-center gap-5 border-r border-black/5 dark:border-white/5 pr-4 h-full">
+      <div className="lg:col-span-4 flex flex-col items-center justify-center gap-4 border-r border-black/5 dark:border-white/5 pr-4 h-full py-2">
         <div className="relative flex items-center justify-center shrink-0">
-          <svg className="w-24 h-24 transform -rotate-90">
-            <circle cx="48" cy="48" r={radius} stroke={isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'} strokeWidth={strokeWidth} fill="transparent" />
+          <svg className="w-32 h-32 transform -rotate-90">
+            <circle cx="64" cy="64" r={radius} stroke={isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'} strokeWidth={strokeWidth} fill="transparent" />
             <circle 
-              cx="48" 
-              cy="48" 
+              cx="64" 
+              cy="64" 
               r={radius} 
               stroke={ratingStroke} 
               strokeWidth={strokeWidth} 
@@ -247,18 +247,18 @@ const LifecycleHealthPanel: React.FC<LifecycleHealthPanelProps> = ({ skusList, i
             />
           </svg>
           <div className="absolute flex flex-col items-center justify-center">
-            <span className="text-xl font-display font-extrabold text-acies-gray dark:text-white leading-none">{data.score}%</span>
-            <span className="text-[7px] text-zinc-400 font-extrabold tracking-wider leading-none mt-1">HEALTH</span>
+            <span className="text-2xl font-display font-extrabold text-acies-gray dark:text-white leading-none">{data.score}%</span>
+            <span className="text-[8px] text-zinc-400 font-extrabold tracking-wider leading-none mt-1">HEALTH</span>
           </div>
         </div>
-        <div className="space-y-2">
+        <div className="space-y-2 text-center">
           <div>
             <span className="text-[9px] font-bold uppercase tracking-widest text-zinc-400 block mb-1">Portfolio Health Score</span>
             <span className={`text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-sm border ${ratingColorClass}`}>
               {ratingLabel}
             </span>
           </div>
-          <p className="text-[10px] text-zinc-500 leading-relaxed font-medium">
+          <p className="text-[10px] text-zinc-500 leading-relaxed font-medium px-2">
             {insightText}
           </p>
         </div>
