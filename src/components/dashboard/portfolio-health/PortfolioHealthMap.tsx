@@ -281,7 +281,7 @@ const LifecycleHealthPanel: React.FC<LifecycleHealthPanelProps> = ({ skusList, i
         {/* Horizontal Journey Timeline */}
         <div className="relative w-full py-4 mb-4 select-none">
           {/* Thin connector line behind nodes */}
-          <div className="absolute top-[38px] left-[12.5%] right-[12.5%] h-[2px] bg-zinc-200 dark:bg-zinc-800 z-0"></div>
+          <div className="absolute top-[48px] left-[12.5%] right-[12.5%] h-[2px] bg-zinc-200 dark:bg-zinc-800 z-0"></div>
 
           {/* Timeline nodes */}
           <div className="relative z-10 flex justify-between items-start w-full">
@@ -308,7 +308,7 @@ const LifecycleHealthPanel: React.FC<LifecycleHealthPanelProps> = ({ skusList, i
                 >
                   {/* Circular Badge showing SKU Share % */}
                   <div 
-                    className={`w-11 h-11 rounded-full flex items-center justify-center font-display font-extrabold text-[10px] border-4 bg-white dark:bg-zinc-900 shadow-md transition-all duration-300 group-hover:scale-110 cursor-pointer ${borderCol} ${textCol}`}
+                    className={`w-16 h-16 rounded-full flex items-center justify-center font-display font-extrabold text-xs border-[5px] bg-white dark:bg-zinc-900 shadow-md transition-all duration-300 group-hover:scale-110 cursor-pointer ${borderCol} ${textCol}`}
                     title={`${stage.label} stage SKU share: ${stage.pct}%`}
                   >
                     <span className="text-zinc-800 dark:text-white font-mono">{stage.pct}%</span>
