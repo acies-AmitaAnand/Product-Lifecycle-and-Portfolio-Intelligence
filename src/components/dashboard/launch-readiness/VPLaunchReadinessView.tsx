@@ -624,10 +624,10 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
                 title: 'Active pipeline SKUs',
                 skus: filteredProducts
               })}
-              className="bg-zinc-100/80 dark:bg-zinc-900/60 border border-black/5 dark:border-white/5 p-4 rounded-xl hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98]"
+              className="bg-zinc-100/80 dark:bg-zinc-900/60 border border-black/5 dark:border-white/5 p-2.5 px-3 rounded-sm hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98]"
             >
-              <p className="text-[10px] font-bold text-zinc-400">Active pipeline SKUs</p>
-              <h4 className="text-2xl font-display font-extrabold text-zinc-850 dark:text-white mt-1.5 leading-none">{activePipelineSKUs}</h4>
+              <p className="text-[9px] font-bold text-zinc-400">Active pipeline SKUs</p>
+              <h4 className="text-xl font-display font-extrabold text-zinc-850 dark:text-white mt-1 leading-none">{activePipelineSKUs}</h4>
             </div>
 
             <div 
@@ -635,10 +635,10 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
                 title: 'In development+ SKUs',
                 skus: filteredProducts.filter(p => p.stage === 'Ideation' || p.stage === 'Development' || p.stage === 'Testing')
               })}
-              className="bg-zinc-100/80 dark:bg-zinc-900/60 border border-black/5 dark:border-white/5 p-4 rounded-xl hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98]"
+              className="bg-zinc-100/80 dark:bg-zinc-900/60 border border-black/5 dark:border-white/5 p-2.5 px-3 rounded-sm hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98]"
             >
-              <p className="text-[10px] font-bold text-zinc-400">In development+</p>
-              <h4 className="text-2xl font-display font-extrabold text-zinc-850 dark:text-white mt-1.5 leading-none">{inDevelopmentPlus}</h4>
+              <p className="text-[9px] font-bold text-zinc-400">In development+</p>
+              <h4 className="text-xl font-display font-extrabold text-zinc-850 dark:text-white mt-1 leading-none">{inDevelopmentPlus}</h4>
             </div>
 
             <div 
@@ -646,10 +646,10 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
                 title: 'Near launch SKUs',
                 skus: filteredProducts.filter(p => p.stage === 'Pre-market')
               })}
-              className="bg-zinc-100/80 dark:bg-zinc-900/60 border border-black/5 dark:border-white/5 p-4 rounded-xl hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98]"
+              className="bg-zinc-100/80 dark:bg-zinc-900/60 border border-black/5 dark:border-white/5 p-2.5 px-3 rounded-sm hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98]"
             >
-              <p className="text-[10px] font-bold text-zinc-400">Near launch</p>
-              <h4 className="text-2xl font-display font-extrabold text-zinc-850 dark:text-white mt-1.5 leading-none">{nearLaunchCount}</h4>
+              <p className="text-[9px] font-bold text-zinc-400">Near launch</p>
+              <h4 className="text-xl font-display font-extrabold text-zinc-850 dark:text-white mt-1 leading-none">{nearLaunchCount}</h4>
             </div>
 
             <div 
@@ -657,10 +657,10 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
                 title: 'Launched SKUs',
                 skus: filteredProducts.filter(p => p.stage === 'Launch')
               })}
-              className="bg-zinc-100/80 dark:bg-zinc-900/60 border border-black/5 dark:border-white/5 p-4 rounded-xl hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98]"
+              className="bg-zinc-100/80 dark:bg-zinc-900/60 border border-black/5 dark:border-white/5 p-2.5 px-3 rounded-sm hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98]"
             >
-              <p className="text-[10px] font-bold text-zinc-400">Launched</p>
-              <h4 className="text-2xl font-display font-extrabold text-zinc-850 dark:text-white mt-1.5 leading-none">{launchedCount}</h4>
+              <p className="text-[9px] font-bold text-zinc-400">Launched</p>
+              <h4 className="text-xl font-display font-extrabold text-zinc-850 dark:text-white mt-1 leading-none">{launchedCount}</h4>
             </div>
           </div>
 
@@ -758,17 +758,17 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
             <div className="space-y-2 max-h-[280px] overflow-y-auto pr-1">
               {escalations.length > 0 ? (
                 escalations.map(esc => (
-                  <div key={esc.id} className="p-3 border border-black/5 dark:border-white/10 rounded-sm bg-zinc-50/50 dark:bg-white/5 flex items-start gap-2.5 justify-between">
+                  <div key={esc.id} className="p-2 px-2.5 border border-black/5 dark:border-white/10 rounded-sm bg-zinc-50/50 dark:bg-white/5 flex items-start gap-2.5 justify-between">
                     <div className="flex items-start gap-2 min-w-0">
-                      <span className="w-2.5 h-2.5 rounded-full shrink-0 mt-1" style={{ backgroundColor: esc.color }} />
+                      <span className="w-2 h-2 rounded-full shrink-0 mt-1" style={{ backgroundColor: esc.color }} />
                       <div className="min-w-0">
-                        <h4 className="text-[11px] font-bold text-zinc-800 dark:text-zinc-200 truncate" title={esc.title}>{esc.title}</h4>
-                        <p className="text-[9px] text-zinc-500 mt-0.5 truncate">{esc.sub} · <span className="font-semibold text-red-500">{esc.impact}</span></p>
+                        <h4 className="text-[10px] font-bold text-zinc-800 dark:text-zinc-200 truncate" title={esc.title}>{esc.title}</h4>
+                        <p className="text-[8.5px] text-zinc-500 mt-0.5 truncate">{esc.sub} · <span className="font-semibold text-red-500">{esc.impact}</span></p>
                       </div>
                     </div>
                     <button 
                       onClick={() => setActiveResolveEscalation(esc.id)}
-                      className="px-2 py-1 shrink-0 border border-[#6d28d9]/35 text-[#6d28d9] dark:text-[#a78bfa] bg-[#6d28d9]/5 hover:bg-[#6d28d9] hover:text-white rounded-sm text-[8px] font-bold uppercase tracking-wider transition-all cursor-pointer font-sans"
+                      className="px-1.5 py-0.5 shrink-0 border border-[#6d28d9]/35 text-[#6d28d9] dark:text-[#a78bfa] bg-[#6d28d9]/5 hover:bg-[#6d28d9] hover:text-white rounded-sm text-[8px] font-bold uppercase tracking-wider transition-all cursor-pointer font-sans"
                     >
                       Resolve
                     </button>
