@@ -1716,6 +1716,44 @@ const VPCommandCenter: React.FC<{
         }
       ]
     },
+    {
+      role: 'VP Product Management',
+      label: 'BrandG Dairy',
+      val: 86,
+      color: '#f59e0b',
+      status: 'warning',
+      location: 'Eastern Region (Kolkata)',
+      cause: 'Lactose-free variant launching delay due to cold-chain logistics capacity constraints in transit hubs.',
+      suggestions: [
+        {
+          action: 'Authorize premium third-party reefer fleet lease for Eastern distribution corridor.',
+          impact: 'Reduces launch transit lead time by 12 days; secures early market footprint.',
+          contactName: 'Amit Sen',
+          contactTitle: 'Supply Chain Director',
+          email: 'amit.sen@aciesglobal.com',
+          draftBody: 'Hi Amit,\n\nPlease authorize the lease of premium reefer trucks for our Lactose-free Dairy launch in the East.\n\nThanks,\nVP Product Management'
+        }
+      ]
+    },
+    {
+      role: 'VP Product Management',
+      label: 'BrandH Personal Care',
+      val: 92,
+      color: '#ef4444',
+      status: 'critical',
+      location: 'Southern Region (Bengaluru)',
+      cause: 'Eco-friendly bamboo toothbrush line experiencing high bristles shedding defect rate (5.4% vs 0.5% hurdle).',
+      suggestions: [
+        {
+          action: 'Trigger manufacturing line shutdown for ultrasonic bristle anchor calibration.',
+          impact: 'Brings defect rate back to benchmark <0.5%; protects brand quality reputation.',
+          contactName: 'Dr. Elena Rostova',
+          contactTitle: 'NPD Product Lead',
+          email: 'elena.rostova@aciesglobal.com',
+          draftBody: 'Hi Elena,\n\nPlease trigger a line shutdown for bristle anchor calibration to fix the bamboo toothbrush defect rate.\n\nThanks,\nVP Product Management'
+        }
+      ]
+    },
 
     // Product Manager (Operational & Execution Lens)
     {
@@ -1761,6 +1799,25 @@ const VPCommandCenter: React.FC<{
           contactTitle: 'NPD Product Lead',
           email: 'siddharth.roy@aciesglobal.com',
           draftBody: 'Hi Siddharth,\n\nPlease speed up the single-serve aluminum can launch for BrandD Water.\n\nThanks,\nProduct Manager'
+        }
+      ]
+    },
+    {
+      role: 'Product Manager',
+      label: 'BrandJ Snacks',
+      val: 87,
+      color: '#f59e0b',
+      status: 'warning',
+      location: 'Western Region (Pune)',
+      cause: 'Rancidity reports on high-fat nut mixes due to packaging foil barrier thickness variation.',
+      suggestions: [
+        {
+          action: 'Upgrade to triple-layer nitrogen flush film barrier packing.',
+          impact: 'Extends shelf life from 3 months to 9 months; resolves customer returns.',
+          contactName: 'K. Srinivasan',
+          contactTitle: 'Product Design Lead',
+          email: 'k.srinivasan@aciesglobal.com',
+          draftBody: 'Hi Srinivasan,\n\nPlease upgrade the snack foil barrier thickness to triple-layer nitrogen flush film immediately.\n\nThanks,\nProduct Manager'
         }
       ]
     },
@@ -1811,6 +1868,25 @@ const VPCommandCenter: React.FC<{
           draftBody: 'Hi Ananya,\n\nPlease establish an audit framework for BrandE Water distributor price protection claims to prevent further leakage.\n\nThanks,\nPricing Partner'
         }
       ]
+    },
+    {
+      role: 'Pricing and Margin Partner',
+      label: 'BrandK Household',
+      val: 93,
+      color: '#ef4444',
+      status: 'critical',
+      location: 'Northern Region (Baddi)',
+      cause: 'Raw chemical surfactant price spike (linear alkylbenzene sulfonate +25%) eroding laundry detergent margins by 4.8pp.',
+      suggestions: [
+        {
+          action: 'Initiate value-engineering review to substitute surfactant base with bio-derived enzymes.',
+          impact: 'Restores 3.5pp margin while improving product biodegradability profile.',
+          contactName: 'Ananya Sen',
+          contactTitle: 'Director of Portfolio Finance',
+          email: 'ananya.sen@aciesglobal.com',
+          draftBody: 'Hi Ananya,\n\nPlease kick off the formulation value-engineering review for the laundry detergent line to offset surfactant cost inflation.\n\nThanks,\nPricing Partner'
+        }
+      ]
     }
   ];
 
@@ -1837,6 +1913,9 @@ const VPCommandCenter: React.FC<{
     { id: 'a5', sev: 'info', sevC: '#3b82f6', title: 'Roadmap Opportunity: Scale BrandF Water portfolio footprint', desc: 'Strategy · High margin category leader', dismissed: false },
     { id: 'a6', sev: 'critical', sevC: '#ef4444', title: 'Portfolio Risk Alert: BrandC Snacks post-acquisition brand architecture overlap', desc: 'Strategy · Overlap between organic chips and premium nut lines · Northern Region (Baddi) affected', dismissed: false },
     { id: 'a7', sev: 'warning', sevC: '#f59e0b', title: 'Product Quality Alert: BrandB Soap formulation failing modern wellness standards', desc: 'Strategy · Trial rate and product affinity decline · Western Region (Vapi) affected', dismissed: false },
+    { id: 'a8', sev: 'warning', sevC: '#f59e0b', title: 'Logistics Alert: BrandG Dairy cold-chain capacity bottlenecks', desc: 'Supply · Transit delay for lactose-free launches · Eastern Region (Kolkata) affected', dismissed: false },
+    { id: 'a9', sev: 'critical', sevC: '#ef4444', title: 'Quality Alert: BrandH Personal Care bamboo toothbrush bristle defects', desc: 'Execution · Defect rate exceeds limits · Southern Region (Bengaluru) affected', dismissed: false },
+    { id: 'a10', sev: 'critical', sevC: '#ef4444', title: 'Margin Alert: BrandK Household surfactant material cost variance', desc: 'Margin · Raw material price hikes erode category margins · Northern Region (Baddi) affected', dismissed: false },
   ]);
 
   const handleDismissAlert = (id: string, title: string) => {
