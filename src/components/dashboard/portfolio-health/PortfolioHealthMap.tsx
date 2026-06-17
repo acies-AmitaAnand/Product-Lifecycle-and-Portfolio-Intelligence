@@ -2272,7 +2272,7 @@ const VPCommandCenter: React.FC<{
                     </div>
 
                     {/* Action buttons with icons */}
-                    <div className="flex gap-2 justify-start pt-1">
+                    <div className="flex gap-2 justify-center pt-1">
                       <button 
                         onClick={() => handleScheduleMeeting(a.id, a.title)} 
                         className={`px-3.5 py-2 border rounded-lg text-[10.5px] font-bold tracking-wide transition-all duration-150 cursor-pointer flex items-center gap-1.5 ${
