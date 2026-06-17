@@ -181,9 +181,10 @@ interface LifecycleHealthPanelProps {
   skusList: any[];
   isDarkMode: boolean;
   onSelectSku?: (sku: any) => void;
+  onAuditClick?: (metric: string) => void;
 }
 
-const LifecycleHealthPanel: React.FC<LifecycleHealthPanelProps> = ({ skusList, isDarkMode, onSelectSku }) => {
+const LifecycleHealthPanel: React.FC<LifecycleHealthPanelProps> = ({ skusList, isDarkMode, onSelectSku, onAuditClick }) => {
   const data = calculatePortfolioHealth(skusList);
   
   // Circular progress ring setup
@@ -230,7 +231,11 @@ const LifecycleHealthPanel: React.FC<LifecycleHealthPanelProps> = ({ skusList, i
     <div className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
       {/* LEFT COLUMN: GAUGE & HEALTH */}
       <div className="lg:col-span-4 flex flex-col items-center justify-center gap-4 border-r border-black/5 dark:border-white/5 pr-4 h-full py-2">
-        <div className="relative flex items-center justify-center shrink-0">
+        <div 
+          onClick={() => onAuditClick?.('Portfolio Health Score')}
+          className="relative flex items-center justify-center shrink-0 cursor-pointer hover:scale-105 active:scale-95 transition-all duration-200 group"
+          title="Click to audit Portfolio Health Score"
+        >
           <svg className="w-32 h-32 transform -rotate-90">
             <circle cx="64" cy="64" r={radius} stroke={isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'} strokeWidth={strokeWidth} fill="transparent" />
             <circle 
@@ -2218,7 +2223,7 @@ const VPCommandCenter: React.FC<{
 
       {/* Portfolio Health & Lifecycle Distribution */}
       <div id="vp-lifecycle-health" className="scroll-mt-16">
-        <LifecycleHealthPanel skusList={filteredSKUs} isDarkMode={isDarkMode} onSelectSku={setSelectedSkuForModal} />
+        <LifecycleHealthPanel skusList={filteredSKUs} isDarkMode={isDarkMode} onSelectSku={setSelectedSkuForModal} onAuditClick={onAuditClick} />
       </div>
 
       {/* Main Command Center Grid */}

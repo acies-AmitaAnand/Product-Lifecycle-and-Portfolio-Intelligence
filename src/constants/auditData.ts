@@ -894,5 +894,28 @@ export const AUDIT_DATA: Record<string, AuditContent> = {
       ['Dairy', '0.55', 'Organic Yogurt line', 'Medium'],
       ['Personal Care', '0.40', 'Body Wash sizes', 'Low']
     ]
+  },
+  'Portfolio Health Score': {
+    title: 'Portfolio Health Score',
+    value: '84%',
+    soWhat: 'Overall portfolio health stands at 84% (Stable/On-Track), but is dragged down by 23 decline-phase SKUs contributing to long-tail maintenance costs.',
+    action: 'Initiate variant rationalization for the 23 tail SKUs in the decline stage to reduce inventory complexity.',
+    columns: [
+      { name: 'sku_stage', type: 'string [DIRECT]', desc: 'Lifecycle stage classification of the SKU (Introduction, Growth, Maturity, Decline).' },
+      { name: 'margin_contribution', type: 'float [DIRECT]', desc: 'Gross margin contribution percentage of the SKU to the category.' }
+    ],
+    formula: 'H_{\\text{score}} = 100 - \\% \\text{ SKUs in Decline Stage with negative margin contribution}',
+    formulaDescription: 'Percentage score tracking the proportion of active, healthy growth and mature SKUs against low-margin decline phase variants.',
+    assumptions: [
+      'Decline classification: Assumes products categorized as Decline with less than 2% volume share represent a drag on portfolio resources.'
+    ],
+    trendTitle: 'Lifecycle Stage Distribution',
+    trendHeaders: ['Stage', 'SKU Count', 'Revenue Contribution', 'Health Status'],
+    trendRows: [
+      ['Introduction', '12 SKUs', '₹12.5 Cr (9%)', 'Healthy / Launching'],
+      ['Growth', '28 SKUs', '₹45.2 Cr (34%)', 'Optimal / High Growth'],
+      ['Maturity', '45 SKUs', '₹62.1 Cr (47%)', 'Stable / Cash Cow'],
+      ['Decline', '23 SKUs', '₹13.2 Cr (10%)', 'Elevated Risk / Tail Drag']
+    ]
   }
 };
