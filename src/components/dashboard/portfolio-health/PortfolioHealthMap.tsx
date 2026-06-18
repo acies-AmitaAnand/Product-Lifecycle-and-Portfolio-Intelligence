@@ -272,7 +272,7 @@ const LifecycleHealthPanel: React.FC<LifecycleHealthPanelProps> = ({ skusList, i
       {/* RIGHT COLUMN: TIMELINE JOURNEY AND SUMMARY CARDS */}
       <div className="lg:col-span-8 space-y-4">
         <div className="flex justify-between items-center pb-1 border-b border-black/5 dark:border-white/5">
-          <span className="text-[9px] font-bold uppercase tracking-widest text-zinc-400 block">Product Lifecycle Journey Timeline</span>
+          <span className="text-[9px] font-extrabold uppercase tracking-widest text-[#6d28d9] dark:text-[#a78bfa] border-l-2 border-[#6d28d9] dark:border-[#a78bfa] pl-2 block">Product Lifecycle Journey Timeline</span>
           <span className="text-[8px] font-bold px-1.5 py-0.5 rounded-sm bg-black/5 dark:bg-white/5 text-zinc-500 dark:text-zinc-400 uppercase">
             Active Portfolio View
           </span>
