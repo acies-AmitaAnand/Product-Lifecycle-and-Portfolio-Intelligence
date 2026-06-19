@@ -486,8 +486,7 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
           </div>
         </div>
 
-        {/* Right KPI Cards Grid */}
-        <div className="lg:col-span-8 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        <div className="lg:col-span-8 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
           
           <div 
             onClick={() => setSelectedStageSKUs({
