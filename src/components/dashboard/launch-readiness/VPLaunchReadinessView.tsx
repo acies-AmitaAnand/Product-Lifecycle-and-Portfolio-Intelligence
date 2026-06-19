@@ -285,7 +285,7 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
     };
   });
 
-  const radius = 45;
+  const radius = 54;
   const strokeWidth = 8;
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (overallReadiness / 100) * circumference;
@@ -431,35 +431,23 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
 
 
       {/* Row 1: Executive Readiness Score (Top Section) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
         
         {/* Left Circular Gauge Banner */}
-        <div className="lg:col-span-4 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm flex items-center justify-between relative overflow-hidden group">
+        <div className="xl:col-span-3 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm flex flex-col items-center justify-center text-center gap-4 relative overflow-hidden group">
           <div className="absolute top-0 right-0 p-3 opacity-5 rotate-12 pointer-events-none text-[#6d28d9] dark:text-[#a78bfa]">
             <Rocket size={100} />
           </div>
           
-          <div className="space-y-2 z-10 text-left">
-            <span className="text-[9px] font-bold uppercase tracking-widest text-[#6d28d9] dark:text-[#a78bfa]">Hero Metric</span>
-            <h3 className="text-sm font-display font-extrabold text-zinc-800 dark:text-zinc-200">Overall Launch Readiness</h3>
-            <p className="text-[10px] text-zinc-500 dark:text-zinc-400 leading-snug max-w-[180px]">
-              Average score across {totalLaunches} active pipeline SKUs.
-            </p>
-            <div className="flex items-center gap-1 text-[9px] font-bold text-emerald-500 mt-1">
-              <TrendingUp size={11} />
-              <span>+2.4% vs last week</span>
-            </div>
-          </div>
-
           <div 
             onClick={() => onAuditClick?.('Overall Readiness %')}
-            className="relative flex items-center justify-center shrink-0 w-28 h-28 cursor-pointer hover:scale-105 active:scale-95 transition-all duration-200 z-10"
+            className="relative flex items-center justify-center shrink-0 w-32 h-32 cursor-pointer hover:scale-105 active:scale-95 transition-all duration-200"
             title="Click to audit Overall Launch Readiness"
           >
-            <svg className="w-28 h-28 transform -rotate-90">
+            <svg className="w-32 h-32 transform -rotate-90">
               <circle 
-                cx="56" 
-                cy="56" 
+                cx="64" 
+                cy="64" 
                 r={radius} 
                 className="text-black/5 dark:text-white/5" 
                 strokeWidth={strokeWidth} 
@@ -467,8 +455,8 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
                 fill="transparent" 
               />
               <circle 
-                cx="56" 
-                cy="56" 
+                cx="64" 
+                cy="64" 
                 r={radius} 
                 className="text-[#6d28d9] dark:text-[#a78bfa]" 
                 strokeWidth={strokeWidth} 
@@ -480,13 +468,26 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
               />
             </svg>
             <div className="absolute text-center">
-              <span className="text-xl font-display font-black text-zinc-850 dark:text-zinc-150">{overallReadiness}%</span>
-              <p className="text-[8px] uppercase tracking-widest text-zinc-400 font-bold leading-none mt-0.5">Ready</p>
+              <span className="text-2xl font-display font-black text-zinc-850 dark:text-zinc-150">{overallReadiness}%</span>
+              <p className="text-[9px] uppercase tracking-widest text-zinc-400 font-bold leading-none mt-0.5">Ready</p>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <span className="text-[9px] font-bold uppercase tracking-widest text-[#6d28d9] dark:text-[#a78bfa]">Hero Metric</span>
+            <h3 className="text-sm font-display font-extrabold text-zinc-800 dark:text-zinc-200">Overall Launch Readiness</h3>
+            <p className="text-[10px] text-zinc-500 dark:text-zinc-400 leading-snug max-w-[200px]">
+              Average score across {totalLaunches} active pipeline SKUs.
+            </p>
+            <div className="flex items-center justify-center gap-1 text-[9px] font-bold text-emerald-500 mt-1">
+              <TrendingUp size={11} />
+              <span>+2.4% vs last week</span>
             </div>
           </div>
         </div>
 
-        <div className="lg:col-span-8 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
+        {/* Right KPI Cards Grid */}
+        <div className="xl:col-span-6 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-3 gap-4">
           
           <div 
             onClick={() => setSelectedStageSKUs({
@@ -577,10 +578,10 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
       </div>
 
       {/* Row 2: Launch Pipeline Overview | Risk & Escalation Center */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
         
         {/* Launch Pipeline Overview */}
-        <div className="lg:col-span-7 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm space-y-4">
+        <div className="xl:col-span-6 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm space-y-4">
           <div className="flex justify-between items-center pb-2 border-b border-black/5 dark:border-white/5">
             <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Launch Pipeline Overview</span>
             <div className="flex items-center gap-3">
@@ -745,7 +746,7 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
         </div>
 
         {/* Risk & Escalation Center */}
-        <div className="lg:col-span-5 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm flex flex-col justify-between">
+        <div className="xl:col-span-6 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm flex flex-col justify-between">
           <div className="space-y-4">
             <div className="flex justify-between items-center pb-2 border-b border-black/5 dark:border-white/5">
               <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Risk & Escalation Center</span>
@@ -754,7 +755,7 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
               </span>
             </div>
 
-            <div className="space-y-2 max-h-[280px] overflow-y-auto pr-1">
+            <div className="space-y-2 max-h-[330px] overflow-y-auto pr-1">
               {escalations.length > 0 ? (
                 escalations.map(esc => (
                   <div key={esc.id} className="p-2 px-2.5 border border-black/5 dark:border-white/10 rounded-sm bg-zinc-50/50 dark:bg-white/5 flex items-start gap-2.5 justify-between">
@@ -783,8 +784,8 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
       </div>
 
       {/* Financial & AI Predictions */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <div className="lg:col-span-7 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm space-y-4">
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
+        <div className="xl:col-span-7 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm space-y-4">
           <div className="flex justify-between items-center pb-2 border-b border-black/5 dark:border-white/5">
             <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Financial Impact</span>
             <div className="flex items-center border border-black/10 dark:border-white/10 rounded-md overflow-hidden bg-black/5 dark:bg-white/5 p-0.5 ml-1 shrink-0">
@@ -971,7 +972,7 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
           </div>
         </div>
 
-        <div className="lg:col-span-5 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm space-y-4">
+        <div className="xl:col-span-5 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm space-y-4">
           <div className="flex justify-between items-center pb-2 border-b border-black/5 dark:border-white/5">
             <div className="flex items-center gap-2">
               <Zap size={12} className="text-[#6d28d9] dark:text-[#a78bfa]" />
@@ -1152,9 +1153,9 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
           </button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
           {/* Toggles Column */}
-          <div className="lg:col-span-5 space-y-3">
+          <div className="xl:col-span-5 space-y-3">
             <span className="text-[9px] font-bold uppercase tracking-wider text-zinc-400 block mb-2">Mitigation Controls by Stage</span>
             {stagesList.map(st => {
               const isActive = mitigatedStages.includes(st);
@@ -1244,7 +1245,7 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
           </div>
 
           {/* Chart & Summary Column */}
-          <div className="lg:col-span-7 flex flex-col justify-between space-y-4">
+          <div className="xl:col-span-7 flex flex-col justify-between space-y-4">
             {/* Chart Area */}
             <div className="bg-zinc-50/50 dark:bg-white/5 border border-black/5 dark:border-white/5 p-4 rounded-sm">
               <span className="text-[9px] font-bold uppercase tracking-wider text-zinc-400 block mb-3">Cost vs. Revenue Exposure (Baseline vs. Simulated)</span>
