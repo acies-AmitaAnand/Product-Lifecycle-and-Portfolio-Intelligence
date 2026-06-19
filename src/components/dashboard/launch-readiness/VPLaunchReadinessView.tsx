@@ -612,6 +612,24 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
     addToast('Executive Summary Downloaded', 'Downloading Portfolio Health Map Executive Guide (PDF).', '#10b981');
   };
 
+  // Launch readiness level attributes
+  let ratingLabel = 'CRITICAL / DELAYED';
+  let ratingColorClass = 'bg-red-500/10 text-red-500 border-red-500/20';
+  let ratingStroke = '#ef4444';
+  let insightText = `Critical delays and high-risk regulatory blockers detected. VP intervention is highly recommended.`;
+  
+  if (overallReadiness >= 85) {
+    ratingLabel = 'OPTIMAL / ON-TRACK';
+    ratingColorClass = 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20';
+    ratingStroke = '#10b981';
+    insightText = 'Launch readiness is optimal. Excellent progress across all segments with minimal blockers.';
+  } else if (overallReadiness >= 70) {
+    ratingLabel = 'WATCH / AT-RISK';
+    ratingColorClass = 'bg-amber-500/10 text-amber-500 border-amber-500/20';
+    ratingStroke = '#f59e0b';
+    insightText = `${delayedCount} pipeline products are experiencing delay threats, dragging the readiness score. Mitigation required.`;
+  }
+
   return (
     <div className="space-y-6">
       {/* Filters + Action Bar */}
@@ -691,64 +709,51 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
         
         {/* Left Circular Gauge Banner */}
-        <div className="xl:col-span-3 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm flex items-center justify-between gap-4 relative overflow-hidden group text-left">
-          <div className="absolute top-0 right-0 p-3 opacity-5 rotate-12 pointer-events-none text-[#6d28d9] dark:text-[#a78bfa]">
-            <Rocket size={100} />
-          </div>
-          
-          <div className="space-y-2 z-10">
-            <span className="text-[9px] font-bold uppercase tracking-widest text-[#6d28d9] dark:text-[#a78bfa]">Hero Metric</span>
-            <h3 className="text-xs font-display font-extrabold text-zinc-800 dark:text-zinc-200">Overall Launch Readiness</h3>
-            <p className="text-[10px] text-zinc-500 dark:text-zinc-400 leading-snug max-w-[150px]">
-              Average score across {totalLaunches} active pipeline SKUs.
-            </p>
-            <div className="flex items-center gap-1 text-[9px] font-bold text-emerald-500 mt-1">
-              <TrendingUp size={11} />
-              <span>+2.4% vs last week</span>
-            </div>
-          </div>
-
+        <div className="xl:col-span-3 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm flex flex-col items-center justify-center text-center gap-4 relative overflow-hidden group">
           <div 
             onClick={() => onAuditClick?.('Overall Readiness %')}
-            className="relative flex items-center justify-center shrink-0 w-24 h-24 cursor-pointer hover:scale-105 active:scale-95 transition-all duration-200 z-10"
+            className="relative flex items-center justify-center shrink-0 cursor-pointer hover:scale-105 active:scale-95 transition-all duration-200 group"
             title="Click to audit Overall Launch Readiness"
           >
-            <svg className="w-24 h-24 transform -rotate-90" viewBox="0 0 110 110">
+            <svg className="w-32 h-32 transform -rotate-90">
+              <circle cx="64" cy="64" r={radius} stroke={isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'} strokeWidth={strokeWidth} fill="transparent" />
               <circle 
-                cx="55" 
-                cy="55" 
+                cx="64" 
+                cy="64" 
                 r={radius} 
-                className="text-black/5 dark:text-white/5" 
+                stroke={ratingStroke} 
                 strokeWidth={strokeWidth} 
-                stroke="currentColor" 
                 fill="transparent" 
-              />
-              <circle 
-                cx="55" 
-                cy="55" 
-                r={radius} 
-                className="text-[#6d28d9] dark:text-[#a78bfa]" 
-                strokeWidth={strokeWidth} 
-                strokeDasharray={circumference} 
-                strokeDashoffset={strokeDashoffset} 
-                strokeLinecap="round" 
-                stroke="currentColor" 
-                fill="transparent" 
+                strokeDasharray={circumference}
+                strokeDashoffset={strokeDashoffset}
+                strokeLinecap="round"
+                className="transition-all duration-1000 ease-out"
               />
             </svg>
-            <div className="absolute text-center">
-              <span className="text-base font-display font-black text-zinc-850 dark:text-zinc-150">{overallReadiness}%</span>
-              <p className="text-[7px] uppercase tracking-widest text-zinc-400 font-bold leading-none mt-0.5">Ready</p>
+            <div className="absolute flex flex-col items-center justify-center">
+              <span className="text-2xl font-display font-extrabold text-zinc-800 dark:text-white leading-none">{overallReadiness}%</span>
+              <span className="text-[8px] text-zinc-400 font-extrabold tracking-wider leading-none mt-1">READY</span>
             </div>
           </div>
-        </div>
-              {/* Right Panel: Stage Gate Status Tracker */}
-        <div className="xl:col-span-9 lg:col-span-8 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm flex flex-col justify-between space-y-4 text-left">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 pb-2 border-b border-black/5 dark:border-white/5">
+          <div className="space-y-2 text-center">
             <div>
-              <span className="text-[9px] font-bold uppercase tracking-widest text-[#6d28d9] dark:text-[#a78bfa]">Governance Dashboard</span>
-              <h3 className="text-sm font-display font-extrabold text-zinc-800 dark:text-zinc-200">Stage Gate Status Tracker</h3>
+              <span className="text-[9px] font-bold uppercase tracking-widest text-zinc-400 block mb-1">Launch Readiness Score</span>
+              <span className={`text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-sm border ${ratingColorClass}`}>
+                {ratingLabel}
+              </span>
             </div>
+            <p className="text-[10px] text-zinc-500 leading-relaxed font-medium px-2">
+              {insightText}
+            </p>
+          </div>
+        </div>
+
+        {/* Right Panel: Stage Gate Status Tracker */}
+        <div className="xl:col-span-9 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm flex flex-col justify-between space-y-4 text-left">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-1 border-b border-black/5 dark:border-white/5 gap-2">
+            <span className="text-[9px] font-extrabold uppercase tracking-widest text-[#6d28d9] dark:text-[#a78bfa] border-l-2 border-[#6d28d9] dark:border-[#a78bfa] pl-2 block">
+              Stage Gate Status Tracker
+            </span>
             
             <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
               <div className="relative flex-1 sm:flex-initial">
@@ -781,90 +786,78 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
             </div>
           </div>
 
-          {/* Timeline Summary Stats Strip */}
-          <div className="grid grid-cols-5 gap-2 bg-black/5 dark:bg-white/5 p-2 rounded-sm text-center">
-            <div>
-              <p className="text-[8px] font-bold uppercase text-zinc-400">Total Gates</p>
-              <p className="text-xs font-black text-zinc-800 dark:text-zinc-200">{totalGatesCount}</p>
-            </div>
-            <div>
-              <p className="text-[8px] font-bold uppercase text-emerald-500">Passed</p>
-              <p className="text-xs font-black text-emerald-500">{passedGatesCount}</p>
-            </div>
-            <div>
-              <p className="text-[8px] font-bold uppercase text-red-500">Failed</p>
-              <p className="text-xs font-black text-red-500">{failedGatesCount}</p>
-            </div>
-            <div>
-              <p className="text-[8px] font-bold uppercase text-amber-500">Waived</p>
-              <p className="text-xs font-black text-amber-500">{waivedGatesCount}</p>
-            </div>
-            <div>
-              <p className="text-[8px] font-bold uppercase text-[#6d28d9] dark:text-[#a78bfa]">Completion</p>
-              <p className="text-xs font-black text-[#6d28d9] dark:text-[#a78bfa]">{completionPct}%</p>
-            </div>
-          </div>
-
           {/* Timeline Milestones Graphic */}
-          <div className="relative py-6 flex items-center justify-between w-full">
+          <div className="relative w-full py-4 mb-4 select-none">
             {/* Connector Line */}
-            <div className="absolute left-6 right-6 top-1/2 -translate-y-1/2 h-[2px] bg-zinc-200 dark:bg-zinc-750 z-0" />
+            <div className="absolute top-[48px] left-[10%] right-[10%] h-[2px] bg-zinc-200 dark:bg-zinc-750 z-0" />
             
-            {selectedProductGates.gates.map((gate, idx) => {
-              let nodeColor = 'bg-zinc-200 dark:bg-zinc-800 text-zinc-400 border-zinc-200 dark:border-zinc-700';
-              let Icon = HelpCircle;
-              
-              if (gate.status === 'Passed') {
-                nodeColor = 'bg-emerald-500 text-white border-emerald-500 shadow-sm shadow-emerald-500/20';
-                Icon = CheckCircle2;
-              } else if (gate.status === 'Failed') {
-                nodeColor = 'bg-red-500 text-white border-red-500 shadow-sm shadow-red-500/20 animate-pulse';
-                Icon = XCircle;
-              } else if (gate.status === 'Waived') {
-                nodeColor = 'bg-amber-500 text-white border-amber-500 shadow-sm shadow-amber-500/20';
-                Icon = AlertCircle;
-              } else if (gate.status === 'Pending') {
-                const currentStageName = selectedProductGates.gates.find(g => g.status === 'Pending')?.stageName;
-                if (gate.stageName === currentStageName) {
-                  nodeColor = 'bg-blue-500 text-white border-blue-500 shadow-sm shadow-blue-500/20';
-                  Icon = Clock;
-                } else {
-                  nodeColor = 'bg-zinc-200 dark:bg-zinc-800 text-zinc-400 border-zinc-300 dark:border-zinc-750';
-                  Icon = HelpCircle;
+            {/* Timeline nodes */}
+            <div className="relative z-10 flex justify-between items-start w-full">
+              {selectedProductGates.gates.map((gate, idx) => {
+                let borderCol = 'border-zinc-200 dark:border-zinc-800';
+                let textCol = 'text-zinc-400 dark:text-zinc-600';
+                let Icon = HelpCircle;
+                
+                if (gate.status === 'Passed') {
+                  borderCol = 'border-emerald-500';
+                  textCol = 'text-emerald-500';
+                  Icon = CheckCircle2;
+                } else if (gate.status === 'Failed') {
+                  borderCol = 'border-red-500';
+                  textCol = 'text-red-500 animate-pulse';
+                  Icon = XCircle;
+                } else if (gate.status === 'Waived') {
+                  borderCol = 'border-amber-500';
+                  textCol = 'text-amber-500';
+                  Icon = AlertCircle;
+                } else if (gate.status === 'Pending') {
+                  const currentStageName = selectedProductGates.gates.find(g => g.status === 'Pending')?.stageName;
+                  if (gate.stageName === currentStageName) {
+                    borderCol = 'border-blue-500';
+                    textCol = 'text-blue-500';
+                    Icon = Clock;
+                  } else {
+                    borderCol = 'border-zinc-200 dark:border-zinc-800';
+                    textCol = 'text-zinc-400 dark:text-zinc-650';
+                    Icon = HelpCircle;
+                  }
                 }
-              }
 
-              const isCurrent = gate.stageName === selectedStageName;
+                const isCurrent = gate.stageName === selectedStageName;
 
-              return (
-                <button
-                  key={gate.stageName}
-                  onClick={() => {
-                    setSelectedStageName(gate.stageName);
-                    setIsDrawerOpen(true);
-                  }}
-                  className={`flex flex-col items-center group relative z-10 focus:outline-none transition-transform hover:scale-105 active:scale-95 bg-transparent border-none p-0 cursor-pointer`}
-                >
-                  <div className={`w-9 h-9 rounded-full flex items-center justify-center border-2 transition-all ${
-                    isCurrent 
-                      ? 'ring-2 ring-offset-2 ring-blue-500 dark:ring-offset-zinc-900 border-blue-500' 
-                      : 'border-transparent'
-                  } ${nodeColor}`}>
-                    <Icon size={18} />
-                  </div>
-                  
-                  <span className="text-[9px] font-extrabold text-zinc-700 dark:text-zinc-300 mt-2 block group-hover:text-blue-500">
-                    {gate.stageName}
-                  </span>
-                  <span className="text-[7px] text-zinc-450 dark:text-zinc-550 block leading-none font-semibold mt-0.5">
-                    {gate.reviewDate !== '--' ? gate.reviewDate : 'Planned'}
-                  </span>
-                  <span className="text-[7px] text-zinc-400 block max-w-[70px] truncate mt-0.5" title={gate.reviewer}>
-                    {gate.reviewer.split(' ')[0]}
-                  </span>
-                </button>
-              );
-            })}
+                return (
+                  <button
+                    key={gate.stageName}
+                    onClick={() => {
+                      setSelectedStageName(gate.stageName);
+                      setIsDrawerOpen(true);
+                    }}
+                    className="flex flex-col items-center group relative z-10 focus:outline-none transition-transform hover:scale-105 active:scale-95 bg-transparent border-none p-0 cursor-pointer w-1/5"
+                  >
+                    <div className={`w-16 h-16 rounded-full flex items-center justify-center border-[5px] bg-white dark:bg-zinc-900 shadow-md transition-all duration-300 group-hover:scale-110 ${
+                      isCurrent 
+                        ? 'ring-2 ring-offset-2 ring-blue-500 dark:ring-offset-zinc-900' 
+                        : ''
+                    } ${borderCol} ${textCol}`}>
+                      <Icon size={24} />
+                    </div>
+                    
+                    <span className={`text-[10px] font-extrabold tracking-wide mt-2 text-zinc-800 dark:text-zinc-200 group-hover:${textCol} transition-colors`}>
+                      {gate.stageName}
+                    </span>
+                    <span className="text-[9px] font-bold text-zinc-400 dark:text-zinc-555 mt-0.5">
+                      {gate.reviewDate !== '--' ? gate.reviewDate : 'Planned'}
+                    </span>
+                    <span className="text-[9px] font-extrabold text-zinc-750 dark:text-zinc-300 font-mono mt-0.5 truncate max-w-[80px]" title={gate.reviewer}>
+                      {gate.reviewer.split(' ')[0]} {gate.reviewer.split(' ')[1] || ''}
+                    </span>
+                    <span className={`text-[8px] font-bold mt-0.5 ${textCol}`}>
+                      {gate.status}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           {/* VP Risk Alerts Center */}
@@ -904,8 +897,8 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
                           {alert.status}
                         </span>
                       </div>
-                      <p className="text-[8px] text-zinc-450 dark:text-zinc-550 font-medium">
-                        <strong className="text-zinc-550">Impact:</strong> {alert.impact}
+                      <p className="text-[8px] text-zinc-450 dark:text-zinc-555 font-medium">
+                        <strong className="text-zinc-555">Impact:</strong> {alert.impact}
                       </p>
                     </div>
                     <div className="text-right">
@@ -925,8 +918,75 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
               )}
             </div>
           </div>
-        </div>
 
+          {/* Summary Metric Cards */}
+          <div className="grid grid-cols-5 gap-3 pt-3 border-t border-black/5 dark:border-white/5">
+            {/* Total Gates */}
+            <div className="bg-black/5 dark:bg-white/5 rounded-sm p-2.5 border border-black/5 dark:border-white/5 flex flex-col justify-between">
+              <span className="text-[7.5px] text-zinc-400 dark:text-zinc-500 font-bold uppercase tracking-wider block">
+                Total Gates
+              </span>
+              <div className="flex items-baseline gap-1 mt-0.5">
+                <span className="text-sm font-display font-extrabold text-zinc-800 dark:text-white">
+                  {totalGatesCount}
+                </span>
+                <span className="text-[8px] text-zinc-500 uppercase font-bold">Gates</span>
+              </div>
+            </div>
+
+            {/* Passed */}
+            <div className="bg-black/5 dark:bg-white/5 rounded-sm p-2.5 border border-black/5 dark:border-white/5 flex flex-col justify-between">
+              <span className="text-[7.5px] text-zinc-400 dark:text-zinc-500 font-bold uppercase tracking-wider block">
+                Passed
+              </span>
+              <div className="flex items-baseline gap-1 mt-0.5">
+                <span className="text-sm font-display font-extrabold text-emerald-500">
+                  {passedGatesCount}
+                </span>
+                <span className="text-[8px] text-emerald-500 uppercase font-bold">Passed</span>
+              </div>
+            </div>
+
+            {/* Failed */}
+            <div className="bg-black/5 dark:bg-white/5 rounded-sm p-2.5 border border-black/5 dark:border-white/5 flex flex-col justify-between">
+              <span className="text-[7.5px] text-zinc-400 dark:text-zinc-500 font-bold uppercase tracking-wider block">
+                Failed
+              </span>
+              <div className="flex items-baseline gap-1 mt-0.5">
+                <span className="text-sm font-display font-extrabold text-red-500">
+                  {failedGatesCount}
+                </span>
+                <span className="text-[8px] text-red-500 uppercase font-bold">Failed</span>
+              </div>
+            </div>
+
+            {/* Waived */}
+            <div className="bg-black/5 dark:bg-white/5 rounded-sm p-2.5 border border-black/5 dark:border-white/5 flex flex-col justify-between">
+              <span className="text-[7.5px] text-zinc-400 dark:text-zinc-500 font-bold uppercase tracking-wider block">
+                Waived
+              </span>
+              <div className="flex items-baseline gap-1 mt-0.5">
+                <span className="text-sm font-display font-extrabold text-amber-500">
+                  {waivedGatesCount}
+                </span>
+                <span className="text-[8px] text-amber-500 uppercase font-bold">Waived</span>
+              </div>
+            </div>
+
+            {/* Completion Rate */}
+            <div className="bg-black/5 dark:bg-white/5 rounded-sm p-2.5 border border-black/5 dark:border-white/5 flex flex-col justify-between">
+              <span className="text-[7.5px] text-zinc-400 dark:text-zinc-555 font-bold uppercase tracking-wider block">
+                Completion Rate
+              </span>
+              <div className="flex items-baseline gap-1 mt-0.5">
+                <span className="text-sm font-display font-extrabold text-[#6d28d9] dark:text-[#a78bfa]">
+                  {completionPct}%
+                </span>
+                <span className="text-[8px] text-zinc-555 uppercase font-bold">Rate</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Row 1.5: Relocated KPI Cards (Full Width Row) */}
