@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Filter, RefreshCw, Download, Zap, BarChart2, PieChart as PieIcon, Shield, ShieldAlert, DollarSign, Activity, Play, Check, AlertTriangle, Rocket, TrendingUp, Grid, Table, X, Layers
+  Filter, RefreshCw, Download, Zap, BarChart2, PieChart as PieIcon, Shield, ShieldAlert, DollarSign, Activity, Play, Check, AlertTriangle, Rocket, TrendingUp, Grid, Table, X, Layers,
+  Calendar, User, Plus, Search, ChevronRight, HelpCircle, CheckCircle2, XCircle, AlertCircle, Clock, FileText
 } from 'lucide-react';
 import { 
   ResponsiveContainer, BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -11,6 +12,139 @@ import { ResolveEscalationModal, VPEscalation } from './ResolveEscalationModal';
 import { EmailComposerModal } from '../portfolio-health/EmailComposerModal';
 import { SuccessFeedbackModal } from '../portfolio-health/SuccessFeedbackModal';
 import { AIPredictionModal } from '../signals-board/AIPredictionModal';
+
+export interface StageGateRecord {
+  stageName: 'Concept' | 'Development' | 'Validation' | 'Launch Ready' | 'Live';
+  gateName: string;
+  reviewer: string;
+  reviewDate: string;
+  status: 'Passed' | 'Failed' | 'Waived' | 'Pending';
+  riskRating: 'No Risk' | 'High Risk' | 'Medium/High Risk' | 'Attention Required';
+  approvalNotes: string;
+  supportingDocs: string[];
+  auditTrail: { timestamp: string; action: string; user: string }[];
+}
+
+export interface ProductStageGates {
+  productId: string;
+  productName: string;
+  category: string;
+  region: string;
+  brand: string;
+  owner: string;
+  gates: StageGateRecord[];
+}
+
+const STAGE_NAMES: ('Concept' | 'Development' | 'Validation' | 'Launch Ready' | 'Live')[] = [
+  'Concept', 'Development', 'Validation', 'Launch Ready', 'Live'
+];
+
+const STAGE_OWNERS: Record<string, string> = {
+  'Concept': 'Amit Verma (NPD Lead)',
+  'Development': 'Vikram Solanki (QC & Logistics)',
+  'Validation': 'Priya Sharma (Brand Director)',
+  'Launch Ready': 'Karan Johar (Retail Relations)',
+  'Live': 'John D. (Launch Manager)'
+};
+
+const generateInitialStageGates = (products: VPLaunchProduct[]): ProductStageGates[] => {
+  return products.map(p => {
+    let currentStageIndex = 0;
+    if (p.stage === 'Ideation') currentStageIndex = 0;
+    else if (p.stage === 'Development') currentStageIndex = 1;
+    else if (p.stage === 'Testing') currentStageIndex = 2;
+    else if (p.stage === 'Pre-market') currentStageIndex = 3;
+    else if (p.stage === 'Launch') currentStageIndex = 4;
+
+    const gates: StageGateRecord[] = STAGE_NAMES.map((stageName, idx) => {
+      let status: 'Passed' | 'Failed' | 'Waived' | 'Pending' = 'Pending';
+      let riskRating: 'No Risk' | 'High Risk' | 'Medium/High Risk' | 'Attention Required' = 'Attention Required';
+      let approvalNotes = '';
+      let reviewer = STAGE_OWNERS[stageName];
+      let reviewDate = '';
+
+      if (idx < currentStageIndex) {
+        status = 'Passed';
+        riskRating = 'No Risk';
+        approvalNotes = `Gate review completed and approved successfully. All exit criteria met.`;
+        reviewDate = `2026-03-${10 + idx * 5}`;
+      } else if (idx === currentStageIndex) {
+        status = 'Pending';
+        riskRating = 'Attention Required';
+        approvalNotes = `Gate review currently active and under evaluation.`;
+        reviewDate = `2026-06-15`;
+      } else {
+        status = 'Pending';
+        riskRating = 'Attention Required';
+        approvalNotes = `Not started. Waiting for previous gates to clear.`;
+        reviewDate = '--';
+      }
+
+      if (p.id === 'LP24' && stageName === 'Development') {
+        status = 'Failed';
+        riskRating = 'High Risk';
+        approvalNotes = `CRITICAL FAILURE: Packaging material shortage identified. Co-packer capacity constraint creates a 15-day delay on critical path.`;
+        reviewDate = '2026-06-12';
+      } else if (p.id === 'LP19' && stageName === 'Validation') {
+        status = 'Waived';
+        riskRating = 'Medium/High Risk';
+        approvalNotes = `WAIVED BY VP OVERRIDE: Logistics lead approved temporary waiver on local packaging standards to meet regional window. Review in Q3.`;
+        reviewDate = '2026-06-14';
+      } else if (p.id === 'LP25' && stageName === 'Validation') {
+        status = 'Failed';
+        riskRating = 'High Risk';
+        approvalNotes = `CRITICAL FAILURE: EU regulatory compliance check failed on ingredient labels. EU market hold enforced.`;
+        reviewDate = '2026-06-10';
+      } else if (p.id === 'LP20' && stageName === 'Validation') {
+        status = 'Failed';
+        riskRating = 'High Risk';
+        approvalNotes = `CRITICAL FAILURE: Formulation testing failed sweetness guidelines for region. Formulating V2.`;
+        reviewDate = '2026-06-11';
+      }
+
+      if (status === 'Waived') {
+        riskRating = 'Medium/High Risk';
+      } else if (status === 'Failed') {
+        riskRating = 'High Risk';
+      } else if (status === 'Passed') {
+        riskRating = 'No Risk';
+      }
+
+      const gateName = `${stageName} Gate Review`;
+      const docs = [
+        `${stageName}_Checklist_v1.pdf`,
+        `${stageName}_Review_Signoff.xlsx`
+      ];
+
+      return {
+        stageName,
+        gateName,
+        reviewer,
+        reviewDate,
+        status,
+        riskRating,
+        approvalNotes,
+        supportingDocs: docs,
+        auditTrail: [
+          { timestamp: '2026-06-01 09:00', action: 'Gate Review Initialized', user: 'System' },
+          ...(status !== 'Pending' ? [
+            { timestamp: `${reviewDate} 14:30`, action: `Status marked as ${status}`, user: reviewer }
+          ] : [])
+        ]
+      };
+    });
+
+    return {
+      productId: p.id,
+      productName: p.name,
+      category: p.category,
+      region: p.region,
+      brand: p.brand,
+      owner: p.owner,
+      gates
+    };
+  });
+};
 
 const RECIPIENT_TITLES: Record<string, string> = {
   'ananya.sen@aciesglobal.com': 'VP Finance',
@@ -93,6 +227,95 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
   const [isPredictionModalOpen, setIsPredictionModalOpen] = useState(false);
   const [predictionModalType, setPredictionModalType] = useState<'stockout' | 'elasticity' | 'margin' | 'demand' | 'delay' | null>(null);
   const [selectedStageSKUs, setSelectedStageSKUs] = useState<{ title: string; meaning?: string; skus: VPLaunchProduct[] } | null>(null);
+
+  const [stageGates, setStageGates] = useState<ProductStageGates[]>(() => generateInitialStageGates(VP_PRODUCTS));
+  const [selectedProductId, setSelectedProductId] = useState<string>('LP01');
+  const [selectedStageName, setSelectedStageName] = useState<'Concept' | 'Development' | 'Validation' | 'Launch Ready' | 'Live'>('Concept');
+  const [trackerSearch, setTrackerSearch] = useState('');
+  const [trackerFilterStatus, setTrackerFilterStatus] = useState<string>('All');
+  const [trackerFilterOwner, setTrackerFilterOwner] = useState<string>('All');
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [vpCommentText, setVpCommentText] = useState('');
+
+  const handleForcePass = (productId: string, stageName: string) => {
+    setStageGates(prev => prev.map(pg => {
+      if (pg.productId !== productId) return pg;
+      return {
+        ...pg,
+        gates: pg.gates.map(g => {
+          if (g.stageName !== stageName) return g;
+          return {
+            ...g,
+            status: 'Passed' as const,
+            riskRating: 'No Risk' as const,
+            approvalNotes: `FORCE PASSED BY VP OVERRIDE: Exit criteria manually approved by VP on ${new Date().toLocaleDateString()}.`,
+            auditTrail: [
+              ...g.auditTrail,
+              {
+                timestamp: new Date().toISOString().replace('T', ' ').substring(0, 16),
+                action: 'Force Passed by VP Override',
+                user: 'VP of Product Management'
+              }
+            ]
+          };
+        })
+      };
+    }));
+    addToast('Gate Force Passed', `Stage "${stageName}" manually approved by VP.`, '#10b981');
+  };
+
+  const handleWaiveGate = (productId: string, stageName: string) => {
+    setStageGates(prev => prev.map(pg => {
+      if (pg.productId !== productId) return pg;
+      return {
+        ...pg,
+        gates: pg.gates.map(g => {
+          if (g.stageName !== stageName) return g;
+          return {
+            ...g,
+            status: 'Waived' as const,
+            riskRating: 'Medium/High Risk' as const,
+            approvalNotes: `WAIVED BY VP OVERRIDE: Temporary waiver granted by VP on ${new Date().toLocaleDateString()}. Review in Q3.`,
+            auditTrail: [
+              ...g.auditTrail,
+              {
+                timestamp: new Date().toISOString().replace('T', ' ').substring(0, 16),
+                action: 'Waived by VP Override',
+                user: 'VP of Product Management'
+              }
+            ]
+          };
+        })
+      };
+    }));
+    addToast('Gate Waived', `Stage "${stageName}" successfully waived by VP.`, '#f59e0b');
+  };
+
+  const handleAddComment = (productId: string, stageName: string, comment: string) => {
+    if (!comment.trim()) return;
+    setStageGates(prev => prev.map(pg => {
+      if (pg.productId !== productId) return pg;
+      return {
+        ...pg,
+        gates: pg.gates.map(g => {
+          if (g.stageName !== stageName) return g;
+          return {
+            ...g,
+            auditTrail: [
+              ...g.auditTrail,
+              {
+                timestamp: new Date().toISOString().replace('T', ' ').substring(0, 16),
+                action: `Comment: ${comment}`,
+                user: 'VP of Product Management'
+              }
+            ]
+          };
+        })
+      };
+    }));
+    setVpCommentText('');
+    addToast('Comment Posted', 'VP comment appended to the gate audit trail.', '#3b82f6');
+  };
 
   useEffect(() => {
     const updateTime = () => {
@@ -342,6 +565,42 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
   const exposureReduced = parseFloat((totalBaseExposure - totalSimExposure).toFixed(2));
   const roiMitigation = spentVariance > 0 ? parseFloat((exposureReduced / spentVariance).toFixed(1)) : 0;
 
+  const selectedProductGates = stageGates.find(sg => sg.productId === selectedProductId) || stageGates[0];
+  const selectedStage = selectedProductGates.gates.find(g => g.stageName === selectedStageName) || selectedProductGates.gates[0];
+
+  const totalGatesCount = selectedProductGates.gates.length;
+  const passedGatesCount = selectedProductGates.gates.filter(g => g.status === 'Passed').length;
+  const failedGatesCount = selectedProductGates.gates.filter(g => g.status === 'Failed').length;
+  const waivedGatesCount = selectedProductGates.gates.filter(g => g.status === 'Waived').length;
+  const completionPct = Math.round(((passedGatesCount + waivedGatesCount) / totalGatesCount) * 100);
+
+  const riskAlerts = stageGates.flatMap(pg => {
+    const matchRegion = filterRegion === 'All' || pg.region === filterRegion;
+    const matchCategory = filterCategory === 'All' || pg.category === filterCategory;
+    if (!matchRegion || !matchCategory) return [];
+
+    return pg.gates.filter(g => g.status === 'Failed' || g.status === 'Waived').map(g => {
+      let impact = 'Attention Required';
+      if (pg.productId === 'LP24') impact = '15d Launch Delay / Critical Path';
+      else if (pg.productId === 'LP19') impact = 'Q3 Compliance Review Pending';
+      else if (pg.productId === 'LP25') impact = 'EU Market Hold / Regulatory Block';
+      else if (pg.productId === 'LP20') impact = 'Formulation Sugar Standard Deviation';
+      else {
+        impact = g.status === 'Failed' ? 'High Risk - Launch Blocked' : 'Medium Risk - Timeline Waiver';
+      }
+
+      return {
+        productId: pg.productId,
+        productName: pg.productName,
+        stageName: g.stageName,
+        status: g.status,
+        owner: g.reviewer,
+        impact,
+        severity: g.status === 'Failed' ? 'High' : 'Medium',
+        date: g.reviewDate
+      };
+    });
+  }).sort((a, b) => (a.status === 'Failed' ? -1 : 1));
 
   const handleExport = () => {
     const link = document.createElement('a');
@@ -483,94 +742,278 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
             </div>
           </div>
         </div>
+              {/* Right Panel: Stage Gate Status Tracker */}
+        <div className="xl:col-span-9 lg:col-span-8 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm flex flex-col justify-between space-y-4 text-left">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 pb-2 border-b border-black/5 dark:border-white/5">
+            <div>
+              <span className="text-[9px] font-bold uppercase tracking-widest text-[#6d28d9] dark:text-[#a78bfa]">Governance Dashboard</span>
+              <h3 className="text-sm font-display font-extrabold text-zinc-800 dark:text-zinc-200">Stage Gate Status Tracker</h3>
+            </div>
+            
+            <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+              <div className="relative flex-1 sm:flex-initial">
+                <Search size={11} className="absolute left-2.5 top-2.5 text-zinc-400" />
+                <input
+                  type="text"
+                  placeholder="Search products..."
+                  value={trackerSearch}
+                  onChange={(e) => setTrackerSearch(e.target.value)}
+                  className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-sm pl-8 pr-2.5 py-1.5 text-[9px] font-bold text-zinc-650 dark:text-zinc-350 outline-none w-full sm:w-36 focus:border-blue-500/50"
+                />
+              </div>
 
-        {/* Right KPI Cards Grid */}
-        <div className="xl:col-span-5 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-3 gap-4">
-          
-          <div 
-            onClick={() => setSelectedStageSKUs({
-              title: 'On Track Launches',
-              meaning: 'SKUs with a Launch Readiness Score of 75% or higher, indicating that all major activities (regulatory compliance, marketing plans, inventory routing) are progressing optimally with low risk of launch delay.',
-              skus: filteredProducts.filter(p => p.readiness >= 75)
-            })}
-            className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-3 rounded-sm shadow-sm flex flex-col justify-between h-24 hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98]"
-          >
-            <p className="text-[8px] font-bold uppercase tracking-widest text-zinc-400">On Track</p>
-            <h4 className="text-xl font-display font-extrabold text-emerald-500 leading-none">{onTrackCount}</h4>
-            <p className="text-[9px] text-zinc-400 font-semibold uppercase">Status: Optimal</p>
+              <select
+                value={selectedProductId}
+                onChange={(e) => {
+                  setSelectedProductId(e.target.value);
+                  setSelectedStageName('Concept');
+                }}
+                className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-sm p-1.5 text-[9px] font-bold text-zinc-650 dark:text-zinc-350 outline-none cursor-pointer"
+              >
+                {stageGates
+                  .filter(sg => sg.productName.toLowerCase().includes(trackerSearch.toLowerCase()))
+                  .map(sg => (
+                    <option key={sg.productId} value={sg.productId}>
+                      {sg.productId} - {sg.productName}
+                    </option>
+                  ))}
+              </select>
+            </div>
           </div>
 
-          <div 
-            onClick={() => setSelectedStageSKUs({
-              title: 'Delayed Launches',
-              meaning: 'SKUs with a Launch Readiness Score below 50%. These have encountered critical bottlenecks (such as severe supply chain delays or lack of regulatory approvals) and require immediate executive attention and mitigation.',
-              skus: filteredProducts.filter(p => p.readiness < 50)
-            })}
-            className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-3 rounded-sm shadow-sm flex flex-col justify-between h-24 hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98]"
-          >
-            <p className="text-[8px] font-bold uppercase tracking-widest text-zinc-400">Delayed</p>
-            <h4 className="text-xl font-display font-extrabold text-red-500 leading-none">{delayedCount}</h4>
-            <p className="text-[9px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">Needs Focus</p>
+          {/* Timeline Summary Stats Strip */}
+          <div className="grid grid-cols-5 gap-2 bg-black/5 dark:bg-white/5 p-2 rounded-sm text-center">
+            <div>
+              <p className="text-[8px] font-bold uppercase text-zinc-400">Total Gates</p>
+              <p className="text-xs font-black text-zinc-800 dark:text-zinc-200">{totalGatesCount}</p>
+            </div>
+            <div>
+              <p className="text-[8px] font-bold uppercase text-emerald-500">Passed</p>
+              <p className="text-xs font-black text-emerald-500">{passedGatesCount}</p>
+            </div>
+            <div>
+              <p className="text-[8px] font-bold uppercase text-red-500">Failed</p>
+              <p className="text-xs font-black text-red-500">{failedGatesCount}</p>
+            </div>
+            <div>
+              <p className="text-[8px] font-bold uppercase text-amber-500">Waived</p>
+              <p className="text-xs font-black text-amber-500">{waivedGatesCount}</p>
+            </div>
+            <div>
+              <p className="text-[8px] font-bold uppercase text-[#6d28d9] dark:text-[#a78bfa]">Completion</p>
+              <p className="text-xs font-black text-[#6d28d9] dark:text-[#a78bfa]">{completionPct}%</p>
+            </div>
           </div>
 
-          <div 
-            onClick={() => setSelectedStageSKUs({
-              title: 'At Risk Launches',
-              meaning: 'SKUs with a Launch Readiness Score between 50% and 74%. These are demonstrating early warning signs or minor deviations from target timelines, requiring active supervision and preventative measures.',
-              skus: filteredProducts.filter(p => p.readiness >= 50 && p.readiness < 75)
+          {/* Timeline Milestones Graphic */}
+          <div className="relative py-6 flex items-center justify-between w-full">
+            {/* Connector Line */}
+            <div className="absolute left-6 right-6 top-1/2 -translate-y-1/2 h-[2px] bg-zinc-200 dark:bg-zinc-750 z-0" />
+            
+            {selectedProductGates.gates.map((gate, idx) => {
+              let nodeColor = 'bg-zinc-200 dark:bg-zinc-800 text-zinc-400 border-zinc-200 dark:border-zinc-700';
+              let Icon = HelpCircle;
+              
+              if (gate.status === 'Passed') {
+                nodeColor = 'bg-emerald-500 text-white border-emerald-500 shadow-sm shadow-emerald-500/20';
+                Icon = CheckCircle2;
+              } else if (gate.status === 'Failed') {
+                nodeColor = 'bg-red-500 text-white border-red-500 shadow-sm shadow-red-500/20 animate-pulse';
+                Icon = XCircle;
+              } else if (gate.status === 'Waived') {
+                nodeColor = 'bg-amber-500 text-white border-amber-500 shadow-sm shadow-amber-500/20';
+                Icon = AlertCircle;
+              } else if (gate.status === 'Pending') {
+                const currentStageName = selectedProductGates.gates.find(g => g.status === 'Pending')?.stageName;
+                if (gate.stageName === currentStageName) {
+                  nodeColor = 'bg-blue-500 text-white border-blue-500 shadow-sm shadow-blue-500/20';
+                  Icon = Clock;
+                } else {
+                  nodeColor = 'bg-zinc-200 dark:bg-zinc-800 text-zinc-400 border-zinc-300 dark:border-zinc-750';
+                  Icon = HelpCircle;
+                }
+              }
+
+              const isCurrent = gate.stageName === selectedStageName;
+
+              return (
+                <button
+                  key={gate.stageName}
+                  onClick={() => {
+                    setSelectedStageName(gate.stageName);
+                    setIsDrawerOpen(true);
+                  }}
+                  className={`flex flex-col items-center group relative z-10 focus:outline-none transition-transform hover:scale-105 active:scale-95 bg-transparent border-none p-0 cursor-pointer`}
+                >
+                  <div className={`w-9 h-9 rounded-full flex items-center justify-center border-2 transition-all ${
+                    isCurrent 
+                      ? 'ring-2 ring-offset-2 ring-blue-500 dark:ring-offset-zinc-900 border-blue-500' 
+                      : 'border-transparent'
+                  } ${nodeColor}`}>
+                    <Icon size={18} />
+                  </div>
+                  
+                  <span className="text-[9px] font-extrabold text-zinc-700 dark:text-zinc-300 mt-2 block group-hover:text-blue-500">
+                    {gate.stageName}
+                  </span>
+                  <span className="text-[7px] text-zinc-450 dark:text-zinc-550 block leading-none font-semibold mt-0.5">
+                    {gate.reviewDate !== '--' ? gate.reviewDate : 'Planned'}
+                  </span>
+                  <span className="text-[7px] text-zinc-400 block max-w-[70px] truncate mt-0.5" title={gate.reviewer}>
+                    {gate.reviewer.split(' ')[0]}
+                  </span>
+                </button>
+              );
             })}
-            className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-3 rounded-sm shadow-sm flex flex-col justify-between h-24 hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98]"
-          >
-            <p className="text-[8px] font-bold uppercase tracking-widest text-zinc-400">At Risk</p>
-            <h4 className="text-xl font-display font-extrabold text-amber-500 leading-none">{atRiskCount}</h4>
-            <p className="text-[9px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">Watching</p>
           </div>
 
-          <div 
-            onClick={() => setSelectedStageSKUs({
-              title: 'Next 60 Days Pipeline',
-              meaning: 'SKUs currently in the active pipeline (Development, Testing, or Pre-market phases) scheduled to transition to market launch within the upcoming 60-day window.',
-              skus: filteredProducts.filter(p => p.stage !== 'Launch' && p.stage !== 'Ideation')
-            })}
-            className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-3 rounded-sm shadow-sm flex flex-col justify-between h-24 hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98]"
-          >
-            <p className="text-[8px] font-bold uppercase tracking-widest text-zinc-400">Next 60 Days</p>
-            <h4 className="text-xl font-display font-extrabold text-blue-500 leading-none">
-              {filteredProducts.filter(p => p.stage !== 'Launch' && p.stage !== 'Ideation').length}
-            </h4>
-            <p className="text-[9px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">Readying</p>
+          {/* VP Risk Alerts Center */}
+          <div className="bg-red-500/5 dark:bg-red-500/5 border border-red-500/10 rounded-sm p-3 space-y-2">
+            <div className="flex items-center gap-1.5 pb-1.5 border-b border-red-500/10 justify-between">
+              <div className="flex items-center gap-1.5">
+                <ShieldAlert size={12} className="text-red-500 shrink-0" />
+                <span className="text-[9px] font-bold uppercase tracking-wider text-red-500">VP Risk Alerts & Blockers</span>
+              </div>
+              <span className="text-[8px] font-bold text-red-400 uppercase bg-red-500/10 px-1.5 py-0.5 rounded-sm">
+                {riskAlerts.length} Attention Required
+              </span>
+            </div>
+            
+            <div className="max-h-24 overflow-y-auto space-y-1.5 pr-1">
+              {riskAlerts.length > 0 ? (
+                riskAlerts.map((alert, idx) => (
+                  <div
+                    key={idx}
+                    onClick={() => {
+                      setSelectedProductId(alert.productId);
+                      setSelectedStageName(alert.stageName);
+                      setIsDrawerOpen(true);
+                    }}
+                    className="flex items-center justify-between p-1.5 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 rounded-sm cursor-pointer transition-all border-l-3 border-l-red-500 text-left"
+                  >
+                    <div className="space-y-0.5">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[9px] font-extrabold text-zinc-800 dark:text-zinc-200">
+                          {alert.productName}
+                        </span>
+                        <span className={`text-[7px] font-bold uppercase px-1 rounded-sm ${
+                          alert.status === 'Failed' 
+                            ? 'bg-red-500/10 text-red-500' 
+                            : 'bg-amber-500/10 text-amber-500'
+                        }`}>
+                          {alert.status}
+                        </span>
+                      </div>
+                      <p className="text-[8px] text-zinc-450 dark:text-zinc-550 font-medium">
+                        <strong className="text-zinc-550">Impact:</strong> {alert.impact}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-[8px] font-bold text-zinc-500 block">
+                        Gate: {alert.stageName}
+                      </span>
+                      <span className="text-[7px] text-zinc-450 block">
+                        {alert.owner.split(' ')[0]} • {alert.date}
+                      </span>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-4">
+                  <p className="text-[9px] text-zinc-400 italic">No stage gate exceptions. All reviews completed or pending on schedule.</p>
+                </div>
+              )}
+            </div>
           </div>
+        </div>
 
-          <div 
-            onClick={() => setSelectedStageSKUs({
-              title: 'Revenue Exposure',
-              meaning: 'The total potential revenue at stake from launches that are currently Delayed or At Risk (Launch Readiness Score below 75%). This helps prioritize resource allocation based on financial impact.',
-              skus: filteredProducts.filter(p => p.readiness < 75)
-            })}
-            className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-3 rounded-sm shadow-sm flex flex-col justify-between h-24 hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98]"
-          >
-            <p className="text-[8px] font-bold uppercase tracking-widest text-zinc-400">Rev Exposure</p>
-            <h4 className="text-xl font-display font-extrabold text-orange-500 leading-none">
-              ${revenueExposure.toFixed(1)}M
-            </h4>
-            <p className="text-[9px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">At-Risk/Delayed</p>
-          </div>
+      </div>
 
-          <div 
-            onClick={() => setSelectedStageSKUs({
-              title: 'Market Coverage Scope',
-              meaning: 'Geographic deployment and readiness metric representing the percentage of target regions or distribution nodes that have successfully completed all pre-market requirements.',
-              skus: filteredProducts
-            })}
-            className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-3 rounded-sm shadow-sm flex flex-col justify-between h-24 hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98]"
-          >
-            <p className="text-[8px] font-bold uppercase tracking-widest text-zinc-400">Market Coverage</p>
-            <h4 className="text-xl font-display font-extrabold text-[#6d28d9] dark:text-[#a78bfa] leading-none">
-              {marketCoverage}%
-            </h4>
-            <p className="text-[9px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">Geo Readiness</p>
-          </div>
+      {/* Row 1.5: Relocated KPI Cards (Full Width Row) */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        
+        <div 
+          onClick={() => setSelectedStageSKUs({
+            title: 'On Track Launches',
+            meaning: 'SKUs with a Launch Readiness Score of 75% or higher, indicating that all major activities (regulatory compliance, marketing plans, inventory routing) are progressing optimally with low risk of launch delay.',
+            skus: filteredProducts.filter(p => p.readiness >= 75)
+          })}
+          className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm flex flex-col justify-between h-28 hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] text-left"
+        >
+          <p className="text-[8px] font-bold uppercase tracking-widest text-zinc-400">On Track</p>
+          <h4 className="text-2xl font-display font-extrabold text-emerald-500 leading-none">{onTrackCount}</h4>
+          <p className="text-[9px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">Status: Optimal</p>
+        </div>
 
+        <div 
+          onClick={() => setSelectedStageSKUs({
+            title: 'Delayed Launches',
+            meaning: 'SKUs with a Launch Readiness Score below 50%. These have encountered critical bottlenecks (such as severe supply chain delays or lack of regulatory approvals) and require immediate executive attention and mitigation.',
+            skus: filteredProducts.filter(p => p.readiness < 50)
+          })}
+          className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm flex flex-col justify-between h-28 hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] text-left"
+        >
+          <p className="text-[8px] font-bold uppercase tracking-widest text-zinc-400">Delayed</p>
+          <h4 className="text-2xl font-display font-extrabold text-red-500 leading-none">{delayedCount}</h4>
+          <p className="text-[9px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">Needs Focus</p>
+        </div>
+
+        <div 
+          onClick={() => setSelectedStageSKUs({
+            title: 'At Risk Launches',
+            meaning: 'SKUs with a Launch Readiness Score between 50% and 74%. These are demonstrating early warning signs or minor deviations from target timelines, requiring active supervision and preventative measures.',
+            skus: filteredProducts.filter(p => p.readiness >= 50 && p.readiness < 75)
+          })}
+          className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm flex flex-col justify-between h-28 hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] text-left"
+        >
+          <p className="text-[8px] font-bold uppercase tracking-widest text-zinc-400">At Risk</p>
+          <h4 className="text-2xl font-display font-extrabold text-amber-500 leading-none">{atRiskCount}</h4>
+          <p className="text-[9px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">Watching</p>
+        </div>
+
+        <div 
+          onClick={() => setSelectedStageSKUs({
+            title: 'Next 60 Days Pipeline',
+            meaning: 'SKUs currently in the active pipeline (Development, Testing, or Pre-market phases) scheduled to transition to market launch within the upcoming 60-day window.',
+            skus: filteredProducts.filter(p => p.stage !== 'Launch' && p.stage !== 'Ideation')
+          })}
+          className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm flex flex-col justify-between h-28 hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] text-left"
+        >
+          <p className="text-[8px] font-bold uppercase tracking-widest text-zinc-400">Next 60 Days</p>
+          <h4 className="text-2xl font-display font-extrabold text-blue-500 leading-none">
+            {filteredProducts.filter(p => p.stage !== 'Launch' && p.stage !== 'Ideation').length}
+          </h4>
+          <p className="text-[9px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">Readying</p>
+        </div>
+
+        <div 
+          onClick={() => setSelectedStageSKUs({
+            title: 'Revenue Exposure',
+            meaning: 'The total potential revenue at stake from launches that are currently Delayed or At Risk (Launch Readiness Score below 75%). This helps prioritize resource allocation based on financial impact.',
+            skus: filteredProducts.filter(p => p.readiness < 75)
+          })}
+          className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm flex flex-col justify-between h-28 hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] text-left"
+        >
+          <p className="text-[8px] font-bold uppercase tracking-widest text-zinc-400">Rev Exposure</p>
+          <h4 className="text-2xl font-display font-extrabold text-orange-500 leading-none">
+            ${revenueExposure.toFixed(1)}M
+          </h4>
+          <p className="text-[9px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">At-Risk/Delayed</p>
+        </div>
+
+        <div 
+          onClick={() => setSelectedStageSKUs({
+            title: 'Market Coverage Scope',
+            meaning: 'Geographic deployment and readiness metric representing the percentage of target regions or distribution nodes that have successfully completed all pre-market requirements.',
+            skus: filteredProducts
+          })}
+          className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm flex flex-col justify-between h-28 hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] text-left"
+        >
+          <p className="text-[8px] font-bold uppercase tracking-widest text-zinc-400">Market Coverage</p>
+          <h4 className="text-2xl font-display font-extrabold text-[#6d28d9] dark:text-[#a78bfa] leading-none">
+            {marketCoverage}%
+          </h4>
+          <p className="text-[9px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">Geo Readiness</p>
         </div>
 
         {/* Risk & Escalation Center */}
@@ -1540,6 +1983,198 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
             </div>
           </div>
         </div>
+      )}
+
+      {/* Slide-out Gate Review Details Drawer */}
+      {isDrawerOpen && (
+        <>
+          {/* Backdrop */}
+          <div 
+            className="fixed inset-0 bg-black/60 backdrop-blur-xs z-[110] transition-opacity duration-300"
+            onClick={() => setIsDrawerOpen(false)}
+          />
+          
+          {/* Drawer container */}
+          <div className="fixed top-0 right-0 bottom-0 w-full max-w-md bg-white dark:bg-zinc-950 border-l border-black/10 dark:border-white/10 shadow-2xl z-[120] flex flex-col animate-slideOver overflow-hidden">
+            {/* Drawer Header */}
+            <div className="p-4 border-b border-black/5 dark:border-white/5 flex items-center justify-between bg-black/[0.02] dark:bg-white/[0.02]">
+              <div>
+                <span className="text-[8px] font-bold uppercase tracking-widest text-blue-500">
+                  {selectedProductGates.productId} • {selectedProductGates.productName}
+                </span>
+                <h3 className="text-xs font-display font-black text-zinc-850 dark:text-zinc-100">
+                  {selectedStage.gateName}
+                </h3>
+              </div>
+              <button
+                onClick={() => setIsDrawerOpen(false)}
+                className="p-1 hover:bg-black/5 dark:hover:bg-white/5 rounded-full text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-205 cursor-pointer transition-colors border-none bg-transparent"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            {/* Drawer Body */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-4 text-left">
+              {/* Gate metadata cards */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="bg-black/5 dark:bg-white/5 p-2.5 rounded-sm">
+                  <span className="text-[7px] font-bold uppercase text-zinc-450 block mb-1">Gate Owner</span>
+                  <div className="flex items-center gap-1.5">
+                    <User size={11} className="text-zinc-550 dark:text-zinc-450" />
+                    <span className="text-[9px] font-extrabold text-zinc-700 dark:text-zinc-300">
+                      {selectedStage.reviewer}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="bg-black/5 dark:bg-white/5 p-2.5 rounded-sm">
+                  <span className="text-[7px] font-bold uppercase text-zinc-450 block mb-1">Review Date</span>
+                  <div className="flex items-center gap-1.5">
+                    <Calendar size={11} className="text-zinc-550 dark:text-zinc-455" />
+                    <span className="text-[9px] font-extrabold text-zinc-700 dark:text-zinc-300">
+                      {selectedStage.reviewDate}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Status and Risk Rating */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="bg-black/5 dark:bg-white/5 p-2.5 rounded-sm">
+                  <span className="text-[7px] font-bold uppercase text-zinc-450 block mb-1">Gate Status</span>
+                  <span className={`inline-flex items-center gap-1 text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full ${
+                    selectedStage.status === 'Passed' ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' :
+                    selectedStage.status === 'Failed' ? 'bg-red-500/10 text-red-500 border border-red-500/20' :
+                    selectedStage.status === 'Waived' ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20' :
+                    'bg-blue-500/10 text-blue-500 border border-blue-500/20'
+                  }`}>
+                    {selectedStage.status === 'Passed' && <CheckCircle2 size={9} />}
+                    {selectedStage.status === 'Failed' && <XCircle size={9} />}
+                    {selectedStage.status === 'Waived' && <AlertCircle size={9} />}
+                    {selectedStage.status === 'Pending' && <Clock size={9} />}
+                    {selectedStage.status}
+                  </span>
+                </div>
+
+                <div className="bg-black/5 dark:bg-white/5 p-2.5 rounded-sm">
+                  <span className="text-[7px] font-bold uppercase text-zinc-450 block mb-1">Risk Assessment</span>
+                  <span className={`inline-flex items-center gap-1 text-[9px] font-extrabold px-2 py-0.5 rounded-full ${
+                    selectedStage.riskRating === 'No Risk' ? 'bg-emerald-500/10 text-emerald-500' :
+                    selectedStage.riskRating === 'High Risk' ? 'bg-red-500/10 text-red-500' :
+                    selectedStage.riskRating === 'Medium/High Risk' ? 'bg-amber-500/10 text-amber-500' :
+                    'bg-blue-500/10 text-blue-500'
+                  }`}>
+                    {selectedStage.riskRating}
+                  </span>
+                </div>
+              </div>
+
+              {/* Approval Notes */}
+              <div className="space-y-1">
+                <span className="text-[8px] font-bold uppercase text-zinc-450">Approval / Review Notes</span>
+                <div className="p-3 bg-black/5 dark:bg-white/5 rounded-sm border border-black/5 dark:border-white/5 text-[9px] text-zinc-700 dark:text-zinc-350 leading-relaxed">
+                  {selectedStage.approvalNotes}
+                </div>
+              </div>
+
+              {/* Supporting Documents */}
+              <div className="space-y-1.5">
+                <span className="text-[8px] font-bold uppercase text-zinc-450">Supporting Documents</span>
+                <div className="space-y-1">
+                  {selectedStage.supportingDocs.map((doc, idx) => (
+                    <div 
+                      key={idx}
+                      className="flex items-center justify-between p-2 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 rounded-sm text-[8px] text-zinc-650 dark:text-zinc-350 font-bold transition-all cursor-pointer"
+                    >
+                      <div className="flex items-center gap-1.5">
+                        <FileText size={11} className="text-zinc-450 dark:text-zinc-550" />
+                        <span>{doc}</span>
+                      </div>
+                      <span className="text-blue-500 hover:underline">Download</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Audit Trail */}
+              <div className="space-y-1.5">
+                <span className="text-[8px] font-bold uppercase text-zinc-450">Audit Trail</span>
+                <div className="border border-black/5 dark:border-white/5 rounded-sm overflow-hidden bg-zinc-50/20 dark:bg-white/5">
+                  <div className="p-2 bg-black/[0.02] dark:bg-white/5 text-[7px] font-bold uppercase tracking-wider text-zinc-400 border-b border-black/5 dark:border-white/5 grid grid-cols-3">
+                    <div>Timestamp</div>
+                    <div>Action</div>
+                    <div>User</div>
+                  </div>
+                  <div className="divide-y divide-black/5 dark:divide-white/5 max-h-24 overflow-y-auto">
+                    {selectedStage.auditTrail.map((log, idx) => (
+                      <div key={idx} className="p-2 text-[8px] grid grid-cols-3 text-zinc-600 dark:text-zinc-400 font-medium">
+                        <div className="font-mono">{log.timestamp}</div>
+                        <div className="font-bold text-zinc-700 dark:text-zinc-300">{log.action}</div>
+                        <div className="truncate">{log.user}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* VP Overrides Section */}
+              <div className="pt-3 border-t border-black/10 dark:border-white/10 space-y-3">
+                <span className="text-[8px] font-bold uppercase text-red-500 flex items-center gap-1">
+                  <Shield size={11} />
+                  VP Governance Overrides
+                </span>
+                
+                <div className="flex gap-2">
+                  <button
+                    disabled={selectedStage.status === 'Passed'}
+                    onClick={() => handleForcePass(selectedProductGates.productId, selectedStage.stageName)}
+                    className="flex-1 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 disabled:hover:bg-emerald-600 text-white font-bold text-[9px] uppercase tracking-wider rounded-sm cursor-pointer border-none transition-all flex items-center justify-center gap-1"
+                  >
+                    <CheckCircle2 size={11} />
+                    Force Pass Gate
+                  </button>
+
+                  <button
+                    disabled={selectedStage.status === 'Waived'}
+                    onClick={() => handleWaiveGate(selectedProductGates.productId, selectedStage.stageName)}
+                    className="flex-1 py-2 bg-amber-600 hover:bg-amber-700 disabled:opacity-40 disabled:hover:bg-amber-600 text-white font-bold text-[9px] uppercase tracking-wider rounded-sm cursor-pointer border-none transition-all flex items-center justify-center gap-1"
+                  >
+                    <AlertTriangle size={11} />
+                    Waive Gate
+                  </button>
+                </div>
+
+                {/* Comment Section */}
+                <div className="space-y-1.5">
+                  <textarea
+                    placeholder="Append comment or escalation directive to this gate..."
+                    value={vpCommentText}
+                    onChange={(e) => setVpCommentText(e.target.value)}
+                    className="w-full h-12 p-2 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-sm text-[9px] text-zinc-750 dark:text-zinc-200 outline-none focus:border-blue-500/50 resize-none font-sans"
+                  />
+                  <button
+                    onClick={() => handleAddComment(selectedProductGates.productId, selectedStage.stageName, vpCommentText)}
+                    className="w-full py-1.5 bg-blue-600 hover:bg-blue-750 text-white font-bold text-[9px] uppercase tracking-wider rounded-sm cursor-pointer border-none transition-all flex items-center justify-center gap-1"
+                  >
+                    <Plus size={11} />
+                    Post Comment
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Drawer Footer */}
+            <div className="p-4 border-t border-black/5 dark:border-white/5 flex justify-end bg-black/[0.01] dark:bg-white/[0.01]">
+              <button
+                onClick={() => setIsDrawerOpen(false)}
+                className="px-4 py-2 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 hover:bg-black/10 dark:hover:bg-white/10 rounded-sm text-[9px] font-extrabold uppercase tracking-wider text-zinc-700 dark:text-zinc-300 transition-all cursor-pointer border-none"
+              >
+                Close Drawer
+              </button>
+            </div>
+          </div>
+        </>
       )}
     </div>
   );
