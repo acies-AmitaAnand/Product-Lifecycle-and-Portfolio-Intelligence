@@ -832,7 +832,7 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
               </span>
             </div>
             
-            <div className="max-h-24 overflow-y-auto space-y-1.5 pr-1">
+            <div className="max-h-48 overflow-y-auto space-y-1.5 pr-1">
               {riskAlerts.length > 0 ? (
                 riskAlerts.map((alert, idx) => (
                   <div
