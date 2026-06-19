@@ -708,48 +708,8 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
       {/* Row 1: Executive Readiness Score (Top Section) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
-        {/* Left Circular Gauge Banner */}
-        <div className="lg:col-span-3 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm flex flex-col items-center justify-center text-center gap-4 relative overflow-hidden group">
-          <div 
-            onClick={() => onAuditClick?.('Overall Readiness %')}
-            className="relative flex items-center justify-center shrink-0 cursor-pointer hover:scale-105 active:scale-95 transition-all duration-200 group"
-            title="Click to audit Overall Launch Readiness"
-          >
-            <svg className="w-32 h-32 transform -rotate-90">
-              <circle cx="64" cy="64" r={radius} stroke={isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'} strokeWidth={strokeWidth} fill="transparent" />
-              <circle 
-                cx="64" 
-                cy="64" 
-                r={radius} 
-                stroke={ratingStroke} 
-                strokeWidth={strokeWidth} 
-                fill="transparent" 
-                strokeDasharray={circumference}
-                strokeDashoffset={strokeDashoffset}
-                strokeLinecap="round"
-                className="transition-all duration-1000 ease-out"
-              />
-            </svg>
-            <div className="absolute flex flex-col items-center justify-center">
-              <span className="text-2xl font-display font-extrabold text-zinc-800 dark:text-white leading-none">{overallReadiness}%</span>
-              <span className="text-[8px] text-zinc-400 font-extrabold tracking-wider leading-none mt-1">READY</span>
-            </div>
-          </div>
-          <div className="space-y-2 text-center">
-            <div>
-              <span className="text-[9px] font-bold uppercase tracking-widest text-zinc-400 block mb-1">Launch Readiness Score</span>
-              <span className={`text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-sm border ${ratingColorClass}`}>
-                {ratingLabel}
-              </span>
-            </div>
-            <p className="text-[10px] text-zinc-500 leading-relaxed font-medium px-2">
-              {insightText}
-            </p>
-          </div>
-        </div>
-
-        {/* Right Panel: Stage Gate Status Tracker */}
-        <div className="lg:col-span-9 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm flex flex-col justify-between space-y-4 text-left">
+        {/* Full-width Panel: Stage Gate Status Tracker */}
+        <div className="lg:col-span-12 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm flex flex-col justify-between space-y-4 text-left">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-1 border-b border-black/5 dark:border-white/5 gap-2">
             <span className="text-[9px] font-extrabold uppercase tracking-widest text-[#6d28d9] dark:text-[#a78bfa] border-l-2 border-[#6d28d9] dark:border-[#a78bfa] pl-2 block">
               Stage Gate Status Tracker
@@ -992,8 +952,48 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
       {/* Row 1.5: KPI Cards + Risk & Escalation Center */}
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
         
-        {/* Left: KPI Cards Grid (arranged 3 up and 3 down) */}
-        <div className="xl:col-span-8 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-3 gap-4">
+        {/* Left: Overall Launch Readiness Gauge */}
+        <div className="xl:col-span-3 lg:col-span-4 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm flex flex-col items-center justify-center text-center gap-4 relative overflow-hidden group">
+          <div 
+            onClick={() => onAuditClick?.('Overall Readiness %')}
+            className="relative flex items-center justify-center shrink-0 cursor-pointer hover:scale-105 active:scale-95 transition-all duration-200 group"
+            title="Click to audit Overall Launch Readiness"
+          >
+            <svg className="w-32 h-32 transform -rotate-90">
+              <circle cx="64" cy="64" r={radius} stroke={isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'} strokeWidth={strokeWidth} fill="transparent" />
+              <circle 
+                cx="64" 
+                cy="64" 
+                r={radius} 
+                stroke={ratingStroke} 
+                strokeWidth={strokeWidth} 
+                fill="transparent" 
+                strokeDasharray={circumference}
+                strokeDashoffset={strokeDashoffset}
+                strokeLinecap="round"
+                className="transition-all duration-1000 ease-out"
+              />
+            </svg>
+            <div className="absolute flex flex-col items-center justify-center">
+              <span className="text-2xl font-display font-extrabold text-zinc-800 dark:text-white leading-none">{overallReadiness}%</span>
+              <span className="text-[8px] text-zinc-400 font-extrabold tracking-wider leading-none mt-1">READY</span>
+            </div>
+          </div>
+          <div className="space-y-2 text-center">
+            <div>
+              <span className="text-[9px] font-bold uppercase tracking-widest text-zinc-400 block mb-1">Launch Readiness Score</span>
+              <span className={`text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-sm border ${ratingColorClass}`}>
+                {ratingLabel}
+              </span>
+            </div>
+            <p className="text-[10px] text-zinc-500 leading-relaxed font-medium px-2">
+              {insightText}
+            </p>
+          </div>
+        </div>
+
+        {/* Middle: KPI Cards Grid (arranged 3 up and 3 down) */}
+        <div className="xl:col-span-6 lg:col-span-8 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-3 gap-4">
           
           <div 
             onClick={() => setSelectedStageSKUs({
@@ -1082,7 +1082,7 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
         </div>
 
         {/* Right: Risk & Escalation Center */}
-        <div className="xl:col-span-4 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm flex flex-col justify-between">
+        <div className="xl:col-span-3 lg:col-span-12 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm flex flex-col justify-between">
           <div className="space-y-4">
             <div className="flex justify-between items-center pb-2 border-b border-black/5 dark:border-white/5">
               <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Risk & Escalation Center</span>
