@@ -989,95 +989,100 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
         </div>
       </div>
 
-      {/* Row 1.5: Relocated KPI Cards (Full Width Row) */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+      {/* Row 1.5: KPI Cards + Risk & Escalation Center */}
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
         
-        <div 
-          onClick={() => setSelectedStageSKUs({
-            title: 'On Track Launches',
-            meaning: 'SKUs with a Launch Readiness Score of 75% or higher, indicating that all major activities (regulatory compliance, marketing plans, inventory routing) are progressing optimally with low risk of launch delay.',
-            skus: filteredProducts.filter(p => p.readiness >= 75)
-          })}
-          className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm flex flex-col justify-between h-28 hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] text-left"
-        >
-          <p className="text-[8px] font-bold uppercase tracking-widest text-zinc-400">On Track</p>
-          <h4 className="text-2xl font-display font-extrabold text-emerald-500 leading-none">{onTrackCount}</h4>
-          <p className="text-[9px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">Status: Optimal</p>
+        {/* Left: KPI Cards Grid (arranged 3 up and 3 down) */}
+        <div className="xl:col-span-8 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-3 gap-4">
+          
+          <div 
+            onClick={() => setSelectedStageSKUs({
+              title: 'On Track Launches',
+              meaning: 'SKUs with a Launch Readiness Score of 75% or higher, indicating that all major activities (regulatory compliance, marketing plans, inventory routing) are progressing optimally with low risk of launch delay.',
+              skus: filteredProducts.filter(p => p.readiness >= 75)
+            })}
+            className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-3 rounded-sm shadow-sm flex flex-col justify-between h-24 hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] text-left"
+          >
+            <p className="text-[8px] font-bold uppercase tracking-widest text-zinc-400">On Track</p>
+            <h4 className="text-xl font-display font-extrabold text-emerald-500 leading-none">{onTrackCount}</h4>
+            <p className="text-[9px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">Status: Optimal</p>
+          </div>
+
+          <div 
+            onClick={() => setSelectedStageSKUs({
+              title: 'Delayed Launches',
+              meaning: 'SKUs with a Launch Readiness Score below 50%. These have encountered critical bottlenecks (such as severe supply chain delays or lack of regulatory approvals) and require immediate executive attention and mitigation.',
+              skus: filteredProducts.filter(p => p.readiness < 50)
+            })}
+            className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-3 rounded-sm shadow-sm flex flex-col justify-between h-24 hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] text-left"
+          >
+            <p className="text-[8px] font-bold uppercase tracking-widest text-zinc-400">Delayed</p>
+            <h4 className="text-xl font-display font-extrabold text-red-500 leading-none">{delayedCount}</h4>
+            <p className="text-[9px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">Needs Focus</p>
+          </div>
+
+          <div 
+            onClick={() => setSelectedStageSKUs({
+              title: 'At Risk Launches',
+              meaning: 'SKUs with a Launch Readiness Score between 50% and 74%. These are demonstrating early warning signs or minor deviations from target timelines, requiring active supervision and preventative measures.',
+              skus: filteredProducts.filter(p => p.readiness >= 50 && p.readiness < 75)
+            })}
+            className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-3 rounded-sm shadow-sm flex flex-col justify-between h-24 hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] text-left"
+          >
+            <p className="text-[8px] font-bold uppercase tracking-widest text-zinc-400">At Risk</p>
+            <h4 className="text-xl font-display font-extrabold text-amber-500 leading-none">{atRiskCount}</h4>
+            <p className="text-[9px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">Watching</p>
+          </div>
+
+          <div 
+            onClick={() => setSelectedStageSKUs({
+              title: 'Next 60 Days Pipeline',
+              meaning: 'SKUs currently in the active pipeline (Development, Testing, or Pre-market phases) scheduled to transition to market launch within the upcoming 60-day window.',
+              skus: filteredProducts.filter(p => p.stage !== 'Launch' && p.stage !== 'Ideation')
+            })}
+            className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-3 rounded-sm shadow-sm flex flex-col justify-between h-24 hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] text-left"
+          >
+            <p className="text-[8px] font-bold uppercase tracking-widest text-zinc-400">Next 60 Days</p>
+            <h4 className="text-xl font-display font-extrabold text-blue-500 leading-none">
+              {filteredProducts.filter(p => p.stage !== 'Launch' && p.stage !== 'Ideation').length}
+            </h4>
+            <p className="text-[9px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">Readying</p>
+          </div>
+
+          <div 
+            onClick={() => setSelectedStageSKUs({
+              title: 'Revenue Exposure',
+              meaning: 'The total potential revenue at stake from launches that are currently Delayed or At Risk (Launch Readiness Score below 75%). This helps prioritize resource allocation based on financial impact.',
+              skus: filteredProducts.filter(p => p.readiness < 75)
+            })}
+            className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-3 rounded-sm shadow-sm flex flex-col justify-between h-24 hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] text-left"
+          >
+            <p className="text-[8px] font-bold uppercase tracking-widest text-zinc-400">Rev Exposure</p>
+            <h4 className="text-xl font-display font-extrabold text-orange-500 leading-none">
+              ${revenueExposure.toFixed(1)}M
+            </h4>
+            <p className="text-[9px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">At-Risk/Delayed</p>
+          </div>
+
+          <div 
+            onClick={() => setSelectedStageSKUs({
+              title: 'Market Coverage Scope',
+              meaning: 'Geographic deployment and readiness metric representing the percentage of target regions or distribution nodes that have successfully completed all pre-market requirements.',
+              skus: filteredProducts
+            })}
+            className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-3 rounded-sm shadow-sm flex flex-col justify-between h-24 hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] text-left"
+          >
+            <p className="text-[8px] font-bold uppercase tracking-widest text-zinc-400">Market Coverage</p>
+            <h4 className="text-xl font-display font-extrabold text-[#6d28d9] dark:text-[#a78bfa] leading-none">
+              {marketCoverage}%
+            </h4>
+            <p className="text-[9px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">Geo Readiness</p>
+          </div>
+
         </div>
 
-        <div 
-          onClick={() => setSelectedStageSKUs({
-            title: 'Delayed Launches',
-            meaning: 'SKUs with a Launch Readiness Score below 50%. These have encountered critical bottlenecks (such as severe supply chain delays or lack of regulatory approvals) and require immediate executive attention and mitigation.',
-            skus: filteredProducts.filter(p => p.readiness < 50)
-          })}
-          className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm flex flex-col justify-between h-28 hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] text-left"
-        >
-          <p className="text-[8px] font-bold uppercase tracking-widest text-zinc-400">Delayed</p>
-          <h4 className="text-2xl font-display font-extrabold text-red-500 leading-none">{delayedCount}</h4>
-          <p className="text-[9px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">Needs Focus</p>
-        </div>
-
-        <div 
-          onClick={() => setSelectedStageSKUs({
-            title: 'At Risk Launches',
-            meaning: 'SKUs with a Launch Readiness Score between 50% and 74%. These are demonstrating early warning signs or minor deviations from target timelines, requiring active supervision and preventative measures.',
-            skus: filteredProducts.filter(p => p.readiness >= 50 && p.readiness < 75)
-          })}
-          className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm flex flex-col justify-between h-28 hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] text-left"
-        >
-          <p className="text-[8px] font-bold uppercase tracking-widest text-zinc-400">At Risk</p>
-          <h4 className="text-2xl font-display font-extrabold text-amber-500 leading-none">{atRiskCount}</h4>
-          <p className="text-[9px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">Watching</p>
-        </div>
-
-        <div 
-          onClick={() => setSelectedStageSKUs({
-            title: 'Next 60 Days Pipeline',
-            meaning: 'SKUs currently in the active pipeline (Development, Testing, or Pre-market phases) scheduled to transition to market launch within the upcoming 60-day window.',
-            skus: filteredProducts.filter(p => p.stage !== 'Launch' && p.stage !== 'Ideation')
-          })}
-          className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm flex flex-col justify-between h-28 hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] text-left"
-        >
-          <p className="text-[8px] font-bold uppercase tracking-widest text-zinc-400">Next 60 Days</p>
-          <h4 className="text-2xl font-display font-extrabold text-blue-500 leading-none">
-            {filteredProducts.filter(p => p.stage !== 'Launch' && p.stage !== 'Ideation').length}
-          </h4>
-          <p className="text-[9px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">Readying</p>
-        </div>
-
-        <div 
-          onClick={() => setSelectedStageSKUs({
-            title: 'Revenue Exposure',
-            meaning: 'The total potential revenue at stake from launches that are currently Delayed or At Risk (Launch Readiness Score below 75%). This helps prioritize resource allocation based on financial impact.',
-            skus: filteredProducts.filter(p => p.readiness < 75)
-          })}
-          className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm flex flex-col justify-between h-28 hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] text-left"
-        >
-          <p className="text-[8px] font-bold uppercase tracking-widest text-zinc-400">Rev Exposure</p>
-          <h4 className="text-2xl font-display font-extrabold text-orange-500 leading-none">
-            ${revenueExposure.toFixed(1)}M
-          </h4>
-          <p className="text-[9px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">At-Risk/Delayed</p>
-        </div>
-
-        <div 
-          onClick={() => setSelectedStageSKUs({
-            title: 'Market Coverage Scope',
-            meaning: 'Geographic deployment and readiness metric representing the percentage of target regions or distribution nodes that have successfully completed all pre-market requirements.',
-            skus: filteredProducts
-          })}
-          className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm flex flex-col justify-between h-28 hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] text-left"
-        >
-          <p className="text-[8px] font-bold uppercase tracking-widest text-zinc-400">Market Coverage</p>
-          <h4 className="text-2xl font-display font-extrabold text-[#6d28d9] dark:text-[#a78bfa] leading-none">
-            {marketCoverage}%
-          </h4>
-          <p className="text-[9px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">Geo Readiness</p>
-        </div>
-
-        {/* Risk & Escalation Center */}
-        <div className="xl:col-span-4 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm flex flex-col justify-between">
+        {/* Right: Risk & Escalation Center */}
+        <div className="xl:col-span-4 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm flex flex-col justify-between">
           <div className="space-y-4">
             <div className="flex justify-between items-center pb-2 border-b border-black/5 dark:border-white/5">
               <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Risk & Escalation Center</span>
