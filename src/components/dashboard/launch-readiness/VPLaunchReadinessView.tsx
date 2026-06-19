@@ -691,20 +691,32 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
         
         {/* Left Circular Gauge Banner */}
-        <div className="xl:col-span-3 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm flex flex-col items-center justify-center text-center gap-4 relative overflow-hidden group">
+        <div className="xl:col-span-3 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm flex items-center justify-between gap-4 relative overflow-hidden group text-left">
           <div className="absolute top-0 right-0 p-3 opacity-5 rotate-12 pointer-events-none text-[#6d28d9] dark:text-[#a78bfa]">
             <Rocket size={100} />
           </div>
           
+          <div className="space-y-2 z-10">
+            <span className="text-[9px] font-bold uppercase tracking-widest text-[#6d28d9] dark:text-[#a78bfa]">Hero Metric</span>
+            <h3 className="text-xs font-display font-extrabold text-zinc-800 dark:text-zinc-200">Overall Launch Readiness</h3>
+            <p className="text-[10px] text-zinc-500 dark:text-zinc-400 leading-snug max-w-[150px]">
+              Average score across {totalLaunches} active pipeline SKUs.
+            </p>
+            <div className="flex items-center gap-1 text-[9px] font-bold text-emerald-500 mt-1">
+              <TrendingUp size={11} />
+              <span>+2.4% vs last week</span>
+            </div>
+          </div>
+
           <div 
             onClick={() => onAuditClick?.('Overall Readiness %')}
-            className="relative flex items-center justify-center shrink-0 w-32 h-32 cursor-pointer hover:scale-105 active:scale-95 transition-all duration-200"
+            className="relative flex items-center justify-center shrink-0 w-24 h-24 cursor-pointer hover:scale-105 active:scale-95 transition-all duration-200 z-10"
             title="Click to audit Overall Launch Readiness"
           >
-            <svg className="w-32 h-32 transform -rotate-90">
+            <svg className="w-24 h-24 transform -rotate-90" viewBox="0 0 110 110">
               <circle 
-                cx="64" 
-                cy="64" 
+                cx="55" 
+                cy="55" 
                 r={radius} 
                 className="text-black/5 dark:text-white/5" 
                 strokeWidth={strokeWidth} 
@@ -712,8 +724,8 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
                 fill="transparent" 
               />
               <circle 
-                cx="64" 
-                cy="64" 
+                cx="55" 
+                cy="55" 
                 r={radius} 
                 className="text-[#6d28d9] dark:text-[#a78bfa]" 
                 strokeWidth={strokeWidth} 
@@ -725,20 +737,8 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
               />
             </svg>
             <div className="absolute text-center">
-              <span className="text-2xl font-display font-black text-zinc-850 dark:text-zinc-150">{overallReadiness}%</span>
-              <p className="text-[9px] uppercase tracking-widest text-zinc-400 font-bold leading-none mt-0.5">Ready</p>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <span className="text-[9px] font-bold uppercase tracking-widest text-[#6d28d9] dark:text-[#a78bfa]">Hero Metric</span>
-            <h3 className="text-sm font-display font-extrabold text-zinc-800 dark:text-zinc-200">Overall Launch Readiness</h3>
-            <p className="text-[10px] text-zinc-500 dark:text-zinc-400 leading-snug max-w-[200px]">
-              Average score across {totalLaunches} active pipeline SKUs.
-            </p>
-            <div className="flex items-center justify-center gap-1 text-[9px] font-bold text-emerald-500 mt-1">
-              <TrendingUp size={11} />
-              <span>+2.4% vs last week</span>
+              <span className="text-base font-display font-black text-zinc-850 dark:text-zinc-150">{overallReadiness}%</span>
+              <p className="text-[7px] uppercase tracking-widest text-zinc-400 font-bold leading-none mt-0.5">Ready</p>
             </div>
           </div>
         </div>
