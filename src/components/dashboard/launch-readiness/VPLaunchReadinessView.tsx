@@ -428,13 +428,11 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
         </button>
       </div>
 
-
-
       {/* Row 1: Executive Readiness Score (Top Section) */}
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
         
         {/* Left Circular Gauge Banner */}
-        <div className="xl:col-span-4 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm flex flex-col items-center justify-center text-center gap-4 relative overflow-hidden group">
+        <div className="xl:col-span-3 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm flex flex-col items-center justify-center text-center gap-4 relative overflow-hidden group">
           <div className="absolute top-0 right-0 p-3 opacity-5 rotate-12 pointer-events-none text-[#6d28d9] dark:text-[#a78bfa]">
             <Rocket size={100} />
           </div>
@@ -487,7 +485,7 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
         </div>
 
         {/* Right KPI Cards Grid */}
-        <div className="xl:col-span-8 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
+        <div className="xl:col-span-5 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-3 gap-4">
           
           <div 
             onClick={() => setSelectedStageSKUs({
@@ -575,13 +573,49 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
 
         </div>
 
+        {/* Risk & Escalation Center */}
+        <div className="xl:col-span-4 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm flex flex-col justify-between">
+          <div className="space-y-4">
+            <div className="flex justify-between items-center pb-2 border-b border-black/5 dark:border-white/5">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Risk & Escalation Center</span>
+              <span className="text-[8px] font-bold uppercase tracking-wider text-red-500 bg-red-500/10 px-2 py-0.5 rounded-full">
+                {escalations.length} unresolved delays
+              </span>
+            </div>
+
+            <div className="space-y-2 max-h-[148px] overflow-y-auto pr-1">
+              {escalations.length > 0 ? (
+                escalations.map(esc => (
+                  <div key={esc.id} className="p-2 px-2.5 border border-black/5 dark:border-white/10 rounded-sm bg-zinc-50/50 dark:bg-white/5 flex items-start gap-2.5 justify-between">
+                    <div className="flex items-start gap-2 min-w-0">
+                      <span className="w-2 h-2 rounded-full shrink-0 mt-1" style={{ backgroundColor: esc.color }} />
+                      <div className="min-w-0">
+                        <h4 className="text-[10px] font-bold text-zinc-800 dark:text-zinc-200 truncate" title={esc.title}>{esc.title}</h4>
+                        <p className="text-[8.5px] text-zinc-500 mt-0.5 truncate">{esc.sub} · <span className="font-semibold text-red-500">{esc.impact}</span></p>
+                      </div>
+                    </div>
+                    <button 
+                      onClick={() => setActiveResolveEscalation(esc.id)}
+                      className="px-1.5 py-0.5 shrink-0 border border-[#6d28d9]/35 text-[#6d28d9] dark:text-[#a78bfa] bg-[#6d28d9]/5 hover:bg-[#6d28d9] hover:text-white rounded-sm text-[8px] font-bold uppercase tracking-wider transition-all cursor-pointer font-sans"
+                    >
+                      Resolve
+                    </button>
+                  </div>
+                ))
+              ) : (
+                <p className="text-center text-[10px] text-zinc-500 py-12">✓ All escalations cleared</p>
+              )}
+            </div>
+          </div>
+        </div>
+
       </div>
 
-      {/* Row 2: Launch Pipeline Overview | Risk & Escalation Center */}
+      {/* Row 2: Launch Pipeline Overview */}
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
         
         {/* Launch Pipeline Overview */}
-        <div className="xl:col-span-7 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm space-y-4">
+        <div className="xl:col-span-12 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm space-y-4">
           <div className="flex justify-between items-center pb-2 border-b border-black/5 dark:border-white/5">
             <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Launch Pipeline Overview</span>
             <div className="flex items-center gap-3">
@@ -744,43 +778,6 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
             </div>
           )}
         </div>
-
-        {/* Risk & Escalation Center */}
-        <div className="xl:col-span-5 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm flex flex-col justify-between">
-          <div className="space-y-4">
-            <div className="flex justify-between items-center pb-2 border-b border-black/5 dark:border-white/5">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Risk & Escalation Center</span>
-              <span className="text-[8px] font-bold uppercase tracking-wider text-red-500 bg-red-500/10 px-2 py-0.5 rounded-full">
-                {escalations.length} unresolved delays
-              </span>
-            </div>
-
-            <div className="space-y-2 max-h-[330px] overflow-y-auto pr-1">
-              {escalations.length > 0 ? (
-                escalations.map(esc => (
-                  <div key={esc.id} className="p-2 px-2.5 border border-black/5 dark:border-white/10 rounded-sm bg-zinc-50/50 dark:bg-white/5 flex items-start gap-2.5 justify-between">
-                    <div className="flex items-start gap-2 min-w-0">
-                      <span className="w-2 h-2 rounded-full shrink-0 mt-1" style={{ backgroundColor: esc.color }} />
-                      <div className="min-w-0">
-                        <h4 className="text-[10px] font-bold text-zinc-800 dark:text-zinc-200 truncate" title={esc.title}>{esc.title}</h4>
-                        <p className="text-[8.5px] text-zinc-500 mt-0.5 truncate">{esc.sub} · <span className="font-semibold text-red-500">{esc.impact}</span></p>
-                      </div>
-                    </div>
-                    <button 
-                      onClick={() => setActiveResolveEscalation(esc.id)}
-                      className="px-1.5 py-0.5 shrink-0 border border-[#6d28d9]/35 text-[#6d28d9] dark:text-[#a78bfa] bg-[#6d28d9]/5 hover:bg-[#6d28d9] hover:text-white rounded-sm text-[8px] font-bold uppercase tracking-wider transition-all cursor-pointer font-sans"
-                    >
-                      Resolve
-                    </button>
-                  </div>
-                ))
-              ) : (
-                <p className="text-center text-[10px] text-zinc-500 py-12">✓ All escalations cleared</p>
-              )}
-            </div>
-          </div>
-        </div>
-
       </div>
 
       {/* Financial & AI Predictions */}
