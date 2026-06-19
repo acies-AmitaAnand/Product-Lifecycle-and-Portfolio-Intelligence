@@ -434,7 +434,7 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
         
         {/* Left Circular Gauge Banner */}
-        <div className="xl:col-span-4 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm flex flex-col items-center justify-center text-center gap-4 relative overflow-hidden group">
+        <div className="xl:col-span-3 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm flex flex-col items-center justify-center text-center gap-4 relative overflow-hidden group">
           <div className="absolute top-0 right-0 p-3 opacity-5 rotate-12 pointer-events-none text-[#6d28d9] dark:text-[#a78bfa]">
             <Rocket size={100} />
           </div>
@@ -487,7 +487,7 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
         </div>
 
         {/* Right KPI Cards Grid */}
-        <div className="xl:col-span-8 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-3 gap-4">
+        <div className="xl:col-span-6 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-3 gap-4">
           
           <div 
             onClick={() => setSelectedStageSKUs({
