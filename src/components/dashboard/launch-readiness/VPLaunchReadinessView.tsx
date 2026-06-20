@@ -708,8 +708,48 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
       {/* Row 1: Executive Readiness Score (Top Section) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
-        {/* Full-width Panel: Stage Gate Status Tracker */}
-        <div className="lg:col-span-12 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm flex flex-col justify-between space-y-4 text-left">
+        {/* Left: Overall Launch Readiness Gauge */}
+        <div className="lg:col-span-3 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm flex flex-col items-center justify-center text-center gap-4 relative overflow-hidden group">
+          <div 
+            onClick={() => onAuditClick?.('Overall Readiness %')}
+            className="relative flex items-center justify-center shrink-0 cursor-pointer hover:scale-105 active:scale-95 transition-all duration-200 group"
+            title="Click to audit Overall Launch Readiness"
+          >
+            <svg className="w-32 h-32 transform -rotate-90">
+              <circle cx="64" cy="64" r={radius} stroke={isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'} strokeWidth={strokeWidth} fill="transparent" />
+              <circle 
+                cx="64" 
+                cy="64" 
+                r={radius} 
+                stroke={ratingStroke} 
+                strokeWidth={strokeWidth} 
+                fill="transparent" 
+                strokeDasharray={circumference}
+                strokeDashoffset={strokeDashoffset}
+                strokeLinecap="round"
+                className="transition-all duration-1000 ease-out"
+              />
+            </svg>
+            <div className="absolute flex flex-col items-center justify-center">
+              <span className="text-2xl font-display font-extrabold text-zinc-850 dark:text-white leading-none">{overallReadiness}%</span>
+              <span className="text-[8px] text-zinc-400 font-extrabold tracking-wider leading-none mt-1">READY</span>
+            </div>
+          </div>
+          <div className="space-y-2 text-center">
+            <div>
+              <span className="text-[9px] font-bold uppercase tracking-widest text-zinc-400 block mb-1">Launch Readiness Score</span>
+              <span className={`text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-sm border ${ratingColorClass}`}>
+                {ratingLabel}
+              </span>
+            </div>
+            <p className="text-[10px] text-zinc-500 leading-relaxed font-medium px-2">
+              {insightText}
+            </p>
+          </div>
+        </div>
+
+        {/* Stage Gate Status Tracker */}
+        <div className="lg:col-span-9 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm flex flex-col justify-between space-y-4 text-left">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-1 border-b border-black/5 dark:border-white/5 gap-2">
             <span className="text-[9px] font-extrabold uppercase tracking-widest text-[#6d28d9] dark:text-[#a78bfa] border-l-2 border-[#6d28d9] dark:border-[#a78bfa] pl-2 block">
               Stage Gate Status Tracker
@@ -949,181 +989,11 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
         </div>
       </div>
 
-      {/* Row 1.5: KPI Cards + Risk & Escalation Center */}
-      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
-        
-        {/* Left: Overall Launch Readiness Gauge */}
-        <div className="xl:col-span-3 lg:col-span-4 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm flex flex-col items-center justify-center text-center gap-4 relative overflow-hidden group">
-          <div 
-            onClick={() => onAuditClick?.('Overall Readiness %')}
-            className="relative flex items-center justify-center shrink-0 cursor-pointer hover:scale-105 active:scale-95 transition-all duration-200 group"
-            title="Click to audit Overall Launch Readiness"
-          >
-            <svg className="w-32 h-32 transform -rotate-90">
-              <circle cx="64" cy="64" r={radius} stroke={isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'} strokeWidth={strokeWidth} fill="transparent" />
-              <circle 
-                cx="64" 
-                cy="64" 
-                r={radius} 
-                stroke={ratingStroke} 
-                strokeWidth={strokeWidth} 
-                fill="transparent" 
-                strokeDasharray={circumference}
-                strokeDashoffset={strokeDashoffset}
-                strokeLinecap="round"
-                className="transition-all duration-1000 ease-out"
-              />
-            </svg>
-            <div className="absolute flex flex-col items-center justify-center">
-              <span className="text-2xl font-display font-extrabold text-zinc-800 dark:text-white leading-none">{overallReadiness}%</span>
-              <span className="text-[8px] text-zinc-400 font-extrabold tracking-wider leading-none mt-1">READY</span>
-            </div>
-          </div>
-          <div className="space-y-2 text-center">
-            <div>
-              <span className="text-[9px] font-bold uppercase tracking-widest text-zinc-400 block mb-1">Launch Readiness Score</span>
-              <span className={`text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-sm border ${ratingColorClass}`}>
-                {ratingLabel}
-              </span>
-            </div>
-            <p className="text-[10px] text-zinc-500 leading-relaxed font-medium px-2">
-              {insightText}
-            </p>
-          </div>
-        </div>
-
-        {/* Middle: KPI Cards Grid (arranged 3 up and 3 down) */}
-        <div className="xl:col-span-6 lg:col-span-8 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-3 gap-4">
-          
-          <div 
-            onClick={() => setSelectedStageSKUs({
-              title: 'On Track Launches',
-              meaning: 'SKUs with a Launch Readiness Score of 75% or higher, indicating that all major activities (regulatory compliance, marketing plans, inventory routing) are progressing optimally with low risk of launch delay.',
-              skus: filteredProducts.filter(p => p.readiness >= 75)
-            })}
-            className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-3 rounded-sm shadow-sm flex flex-col justify-between h-24 hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] text-left"
-          >
-            <p className="text-[8px] font-bold uppercase tracking-widest text-zinc-400">On Track</p>
-            <h4 className="text-xl font-display font-extrabold text-emerald-500 leading-none">{onTrackCount}</h4>
-            <p className="text-[9px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">Status: Optimal</p>
-          </div>
-
-          <div 
-            onClick={() => setSelectedStageSKUs({
-              title: 'Delayed Launches',
-              meaning: 'SKUs with a Launch Readiness Score below 50%. These have encountered critical bottlenecks (such as severe supply chain delays or lack of regulatory approvals) and require immediate executive attention and mitigation.',
-              skus: filteredProducts.filter(p => p.readiness < 50)
-            })}
-            className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-3 rounded-sm shadow-sm flex flex-col justify-between h-24 hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] text-left"
-          >
-            <p className="text-[8px] font-bold uppercase tracking-widest text-zinc-400">Delayed</p>
-            <h4 className="text-xl font-display font-extrabold text-red-500 leading-none">{delayedCount}</h4>
-            <p className="text-[9px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">Needs Focus</p>
-          </div>
-
-          <div 
-            onClick={() => setSelectedStageSKUs({
-              title: 'At Risk Launches',
-              meaning: 'SKUs with a Launch Readiness Score between 50% and 74%. These are demonstrating early warning signs or minor deviations from target timelines, requiring active supervision and preventative measures.',
-              skus: filteredProducts.filter(p => p.readiness >= 50 && p.readiness < 75)
-            })}
-            className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-3 rounded-sm shadow-sm flex flex-col justify-between h-24 hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] text-left"
-          >
-            <p className="text-[8px] font-bold uppercase tracking-widest text-zinc-400">At Risk</p>
-            <h4 className="text-xl font-display font-extrabold text-amber-500 leading-none">{atRiskCount}</h4>
-            <p className="text-[9px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">Watching</p>
-          </div>
-
-          <div 
-            onClick={() => setSelectedStageSKUs({
-              title: 'Next 60 Days Pipeline',
-              meaning: 'SKUs currently in the active pipeline (Development, Testing, or Pre-market phases) scheduled to transition to market launch within the upcoming 60-day window.',
-              skus: filteredProducts.filter(p => p.stage !== 'Launch' && p.stage !== 'Ideation')
-            })}
-            className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-3 rounded-sm shadow-sm flex flex-col justify-between h-24 hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] text-left"
-          >
-            <p className="text-[8px] font-bold uppercase tracking-widest text-zinc-400">Next 60 Days</p>
-            <h4 className="text-xl font-display font-extrabold text-blue-500 leading-none">
-              {filteredProducts.filter(p => p.stage !== 'Launch' && p.stage !== 'Ideation').length}
-            </h4>
-            <p className="text-[9px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">Readying</p>
-          </div>
-
-          <div 
-            onClick={() => setSelectedStageSKUs({
-              title: 'Revenue Exposure',
-              meaning: 'The total potential revenue at stake from launches that are currently Delayed or At Risk (Launch Readiness Score below 75%). This helps prioritize resource allocation based on financial impact.',
-              skus: filteredProducts.filter(p => p.readiness < 75)
-            })}
-            className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-3 rounded-sm shadow-sm flex flex-col justify-between h-24 hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] text-left"
-          >
-            <p className="text-[8px] font-bold uppercase tracking-widest text-zinc-400">Rev Exposure</p>
-            <h4 className="text-xl font-display font-extrabold text-orange-500 leading-none">
-              ${revenueExposure.toFixed(1)}M
-            </h4>
-            <p className="text-[9px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">At-Risk/Delayed</p>
-          </div>
-
-          <div 
-            onClick={() => setSelectedStageSKUs({
-              title: 'Market Coverage Scope',
-              meaning: 'Geographic deployment and readiness metric representing the percentage of target regions or distribution nodes that have successfully completed all pre-market requirements.',
-              skus: filteredProducts
-            })}
-            className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-3 rounded-sm shadow-sm flex flex-col justify-between h-24 hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] text-left"
-          >
-            <p className="text-[8px] font-bold uppercase tracking-widest text-zinc-400">Market Coverage</p>
-            <h4 className="text-xl font-display font-extrabold text-[#6d28d9] dark:text-[#a78bfa] leading-none">
-              {marketCoverage}%
-            </h4>
-            <p className="text-[9px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">Geo Readiness</p>
-          </div>
-
-        </div>
-
-        {/* Right: Risk & Escalation Center */}
-        <div className="xl:col-span-3 lg:col-span-12 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm flex flex-col justify-between">
-          <div className="space-y-4">
-            <div className="flex justify-between items-center pb-2 border-b border-black/5 dark:border-white/5">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Risk & Escalation Center</span>
-              <span className="text-[8px] font-bold uppercase tracking-wider text-red-500 bg-red-500/10 px-2 py-0.5 rounded-full">
-                {escalations.length} unresolved delays
-              </span>
-            </div>
-
-            <div className="space-y-2 max-h-[148px] overflow-y-auto pr-1">
-              {escalations.length > 0 ? (
-                escalations.map(esc => (
-                  <div key={esc.id} className="p-2 px-2.5 border border-black/5 dark:border-white/10 rounded-sm bg-zinc-50/50 dark:bg-white/5 flex items-start gap-2.5 justify-between">
-                    <div className="flex items-start gap-2 min-w-0">
-                      <span className="w-2 h-2 rounded-full shrink-0 mt-1" style={{ backgroundColor: esc.color }} />
-                      <div className="min-w-0">
-                        <h4 className="text-[10px] font-bold text-zinc-800 dark:text-zinc-200 truncate" title={esc.title}>{esc.title}</h4>
-                        <p className="text-[8.5px] text-zinc-500 mt-0.5 truncate">{esc.sub} · <span className="font-semibold text-red-500">{esc.impact}</span></p>
-                      </div>
-                    </div>
-                    <button 
-                      onClick={() => setActiveResolveEscalation(esc.id)}
-                      className="px-1.5 py-0.5 shrink-0 border border-[#6d28d9]/35 text-[#6d28d9] dark:text-[#a78bfa] bg-[#6d28d9]/5 hover:bg-[#6d28d9] hover:text-white rounded-sm text-[8px] font-bold uppercase tracking-wider transition-all cursor-pointer font-sans"
-                    >
-                      Resolve
-                    </button>
-                  </div>
-                ))
-              ) : (
-                <p className="text-center text-[10px] text-zinc-500 py-12">✓ All escalations cleared</p>
-              )}
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-      {/* Row 2: Launch Pipeline Overview */}
-      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
+      {/* Row 2: Launch Pipeline Overview & Risk Center */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
         {/* Launch Pipeline Overview */}
-        <div className="xl:col-span-12 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm space-y-4">
+        <div className="lg:col-span-8 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm space-y-4">
           <div className="flex justify-between items-center pb-2 border-b border-black/5 dark:border-white/5">
             <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Launch Pipeline Overview</span>
             <div className="flex items-center gap-3">
@@ -1286,6 +1156,43 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
             </div>
           )}
         </div>
+
+        {/* Risk & Escalation Center */}
+        <div className="lg:col-span-4 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm flex flex-col justify-between">
+          <div className="space-y-4">
+            <div className="flex justify-between items-center pb-2 border-b border-black/5 dark:border-white/5">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Risk & Escalation Center</span>
+              <span className="text-[8px] font-bold uppercase tracking-wider text-red-500 bg-red-500/10 px-2 py-0.5 rounded-full">
+                {escalations.length} unresolved delays
+              </span>
+            </div>
+
+            <div className="space-y-2 max-h-[320px] overflow-y-auto pr-1">
+              {escalations.length > 0 ? (
+                escalations.map(esc => (
+                  <div key={esc.id} className="p-2 px-2.5 border border-black/5 dark:border-white/10 rounded-sm bg-zinc-50/50 dark:bg-white/5 flex items-start gap-2.5 justify-between">
+                    <div className="flex items-start gap-2 min-w-0">
+                      <span className="w-2 h-2 rounded-full shrink-0 mt-1" style={{ backgroundColor: esc.color }} />
+                      <div className="min-w-0">
+                        <h4 className="text-[10px] font-bold text-zinc-800 dark:text-zinc-200 truncate" title={esc.title}>{esc.title}</h4>
+                        <p className="text-[8.5px] text-zinc-500 mt-0.5 truncate">{esc.sub} · <span className="font-semibold text-red-500">{esc.impact}</span></p>
+                      </div>
+                    </div>
+                    <button 
+                      onClick={() => setActiveResolveEscalation(esc.id)}
+                      className="px-1.5 py-0.5 shrink-0 border border-[#6d28d9]/35 text-[#6d28d9] dark:text-[#a78bfa] bg-[#6d28d9]/5 hover:bg-[#6d28d9] hover:text-white rounded-sm text-[8px] font-bold uppercase tracking-wider transition-all cursor-pointer font-sans"
+                    >
+                      Resolve
+                    </button>
+                  </div>
+                ))
+              ) : (
+                <p className="text-center text-[10px] text-zinc-500 py-12">✓ All escalations cleared</p>
+              )}
+            </div>
+          </div>
+        </div>
+
       </div>
 
       {/* Financial & AI Predictions */}
