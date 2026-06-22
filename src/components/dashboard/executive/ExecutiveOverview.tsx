@@ -1023,7 +1023,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
               <div className="flex items-center justify-between mt-0.5">
                 <span className={`text-[8px] font-extrabold uppercase tracking-widest px-1.5 py-0.5 rounded-sm flex items-center gap-1 ${trendColor}`}>
                   {trendIcon}
-                  {Math.abs(k.trend)}{k.label === 'Total Revenue' ? ' M' : k.label === 'Gross Margin' ? 'pp' : ''} MoM
+                  {k.label === 'Total Revenue' ? '$' : ''}{Math.abs(k.trend)}{k.label === 'Total Revenue' ? 'M' : k.label === 'Gross Margin' ? 'pp' : ''} MoM
                 </span>
                 
                 {/* Micro Sparkline Chart */}
