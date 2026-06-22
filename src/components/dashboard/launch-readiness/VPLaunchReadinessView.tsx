@@ -199,6 +199,54 @@ const VP_PRODUCTS: VPLaunchProduct[] = [
   { id: 'LP25', name: 'BrandC Chocolate Oats', category: 'Snacks', brand: 'BrandC', region: 'Americas', stage: 'Pre-market', quarter: 'Q4 2026', readiness: 48, risk: 'High', revExposure: 2.1, budget: 1.5, spent: 0.8, owner: 'Lisa R.' }
 ];
 
+const getHexagonStyles = (status: 'Passed' | 'Failed' | 'Waived' | 'Pending', isCurrentPending: boolean, isDarkMode: boolean) => {
+  if (status === 'Passed') {
+    return {
+      fill: isDarkMode ? 'rgba(74, 222, 128, 0.15)' : '#c6e8b3',
+      stroke: isDarkMode ? '#4ade80' : '#4b852f',
+      text: isDarkMode ? '#4ade80' : '#4b852f',
+    };
+  }
+  if (status === 'Failed') {
+    return {
+      fill: isDarkMode ? 'rgba(239, 68, 68, 0.15)' : '#fecaca',
+      stroke: isDarkMode ? '#f87171' : '#dc2626',
+      text: isDarkMode ? '#f87171' : '#dc2626',
+    };
+  }
+  if (status === 'Waived') {
+    return {
+      fill: isDarkMode ? 'rgba(251, 191, 36, 0.15)' : '#fef3c7',
+      stroke: isDarkMode ? '#fbbf24' : '#d97706',
+      text: isDarkMode ? '#fbbf24' : '#d97706',
+    };
+  }
+  // Pending
+  if (isCurrentPending) {
+    return {
+      fill: isDarkMode ? 'rgba(96, 165, 250, 0.15)' : '#bfdbfe',
+      stroke: isDarkMode ? '#60a5fa' : '#2563eb',
+      text: isDarkMode ? '#60a5fa' : '#2563eb',
+    };
+  }
+  return {
+    fill: isDarkMode ? 'rgba(255, 255, 255, 0.02)' : '#fafafa',
+    stroke: isDarkMode ? '#27272a' : '#e4e4e7',
+    text: isDarkMode ? '#71717a' : '#71717a',
+  };
+};
+
+const formatReviewerName = (name: string) => {
+  const parts = name.split(' ');
+  if (parts.length <= 1) return name;
+  const firstName = parts[0];
+  const lastName = parts[1];
+  if (lastName === 'Verma') {
+    return `${firstName} ${lastName}`;
+  }
+  return `${firstName} ${lastName[0]}.`;
+};
+
 interface VPLaunchReadinessViewProps {
   isDarkMode: boolean;
   simulateDelay?: boolean;
@@ -927,71 +975,92 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
           </div>
 
           {/* Timeline Milestones Graphic */}
-          <div className="relative w-full py-4 mb-4 select-none">
-            {/* Connector Line */}
-            <div className="absolute top-[48px] left-[10%] right-[10%] h-[2px] bg-zinc-200 dark:bg-zinc-750 z-0" />
+          <div className="relative w-full py-6 mb-4 select-none">
+            {/* Connector Arrows */}
+            {[0, 1, 2, 3].map(idx => (
+              <div 
+                key={idx}
+                className="absolute text-zinc-300 dark:text-zinc-700"
+                style={{ 
+                  left: `${20 + idx * 20}%`, 
+                  transform: 'translateX(-50%)', 
+                  top: '36px' 
+                }}
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M14 8l4 4m0 0l-4 4m4-4H6" />
+                </svg>
+              </div>
+            ))}
             
             {/* Timeline nodes */}
             <div className="relative z-10 flex justify-between items-start w-full">
               {selectedProductGates.gates.map((gate, idx) => {
-                let borderCol = 'border-zinc-200 dark:border-zinc-800';
-                let textCol = 'text-zinc-400 dark:text-zinc-600';
                 let Icon = HelpCircle;
+                let isCurrentPending = false;
                 
                 if (gate.status === 'Passed') {
-                  borderCol = 'border-emerald-500';
-                  textCol = 'text-emerald-500';
-                  Icon = CheckCircle2;
+                  Icon = Check;
                 } else if (gate.status === 'Failed') {
-                  borderCol = 'border-red-500';
-                  textCol = 'text-red-500 animate-pulse';
-                  Icon = XCircle;
+                  Icon = X;
                 } else if (gate.status === 'Waived') {
-                  borderCol = 'border-amber-500';
-                  textCol = 'text-amber-500';
-                  Icon = AlertCircle;
+                  Icon = AlertTriangle;
                 } else if (gate.status === 'Pending') {
                   const currentStageName = selectedProductGates.gates.find(g => g.status === 'Pending')?.stageName;
                   if (gate.stageName === currentStageName) {
-                    borderCol = 'border-blue-500';
-                    textCol = 'text-blue-500';
+                    isCurrentPending = true;
                     Icon = Clock;
                   } else {
-                    borderCol = 'border-zinc-200 dark:border-zinc-800';
-                    textCol = 'text-zinc-400 dark:text-zinc-650';
                     Icon = HelpCircle;
                   }
                 }
 
                 const isCurrent = gate.stageName === selectedStageName;
+                const colors = getHexagonStyles(gate.status, isCurrentPending, isDarkMode);
 
                 return (
                   <button
                     key={gate.stageName}
                     onClick={() => {
                       setSelectedStageName(gate.stageName);
+                      setDrawerProductId(selectedProductId);
                       setIsDrawerOpen(true);
                     }}
                     className="flex flex-col items-center group relative z-10 focus:outline-none transition-transform hover:scale-105 active:scale-95 bg-transparent border-none p-0 cursor-pointer w-1/5"
                   >
-                    <div className={`w-16 h-16 rounded-full flex items-center justify-center border-[5px] bg-white dark:bg-zinc-900 shadow-md transition-all duration-300 group-hover:scale-110 ${
-                      isCurrent 
-                        ? 'ring-2 ring-offset-2 ring-blue-500 dark:ring-offset-zinc-900' 
-                        : ''
-                    } ${borderCol} ${textCol}`}>
-                      <Icon size={24} />
+                    <div className="relative w-16 h-16 flex items-center justify-center transition-all duration-300 group-hover:scale-110 mb-2">
+                      <svg className="absolute inset-0 w-full h-full filter drop-shadow-md" viewBox="0 0 64 64">
+                        <polygon 
+                          points="32,2 58,17 58,47 32,62 6,47 6,17" 
+                          fill={colors.fill} 
+                          stroke={colors.stroke} 
+                          strokeWidth="3.5" 
+                        />
+                        {isCurrent && (
+                          <polygon 
+                            points="32,0 60,16 60,48 32,64 4,48 4,16" 
+                            fill="transparent" 
+                            stroke="#3b82f6" 
+                            strokeWidth="2.5" 
+                            strokeDasharray="3 3"
+                          />
+                        )}
+                      </svg>
+                      <div className="relative z-10" style={{ color: colors.stroke }}>
+                        <Icon size={20} strokeWidth={3} />
+                      </div>
                     </div>
                     
-                    <span className={`text-[10px] font-extrabold tracking-wide mt-2 text-zinc-800 dark:text-zinc-200 group-hover:${textCol} transition-colors`}>
-                      {gate.stageName}
+                    <span className="text-[11px] font-bold tracking-wide text-zinc-900 dark:text-zinc-150 font-display">
+                      {gate.stageName === 'Launch Ready' ? 'Launch ready' : gate.stageName}
                     </span>
-                    <span className="text-[9px] font-bold text-zinc-400 dark:text-zinc-555 mt-0.5">
+                    <span className="text-[10px] text-zinc-500 mt-0.5 font-medium">
                       {gate.reviewDate !== '--' ? gate.reviewDate : 'Planned'}
                     </span>
-                    <span className="text-[9px] font-extrabold text-zinc-750 dark:text-zinc-300 font-mono mt-0.5 truncate max-w-[80px]" title={gate.reviewer}>
-                      {gate.reviewer.split(' ')[0]} {gate.reviewer.split(' ')[1] || ''}
+                    <span className="text-[10px] text-zinc-500 mt-0.5 font-medium truncate max-w-[80px]" title={gate.reviewer}>
+                      {formatReviewerName(gate.reviewer)}
                     </span>
-                    <span className={`text-[8px] font-bold mt-0.5 ${textCol}`}>
+                    <span className="text-[10px] font-bold mt-0.5" style={{ color: colors.text }}>
                       {gate.status}
                     </span>
                   </button>
