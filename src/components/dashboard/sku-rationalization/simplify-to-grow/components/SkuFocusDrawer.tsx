@@ -30,7 +30,7 @@ export const SkuFocusDrawer: React.FC<SkuFocusDrawerProps> = ({ sku, onClose, on
   const ippvComponents = [
     { label: 'Return on Sales (ROS)', value: sku.ros * 100, max: 60, unit: '%', color: '#6366f1' },
     { label: 'Household Penetration', value: sku.householdPenetration * 100, max: 100, unit: '%', color: '#0ea5e9' },
-    { label: 'Unit Profit Pool (₹Cr)', value: sku.unitProfitPool, max: 80, unit: 'Cr', color: '#10b981' },
+    { label: 'Unit Profit Pool ($M)', value: sku.unitProfitPool, max: 80, unit: 'M', color: '#10b981' },
   ];
 
   return (
@@ -123,12 +123,12 @@ export const SkuFocusDrawer: React.FC<SkuFocusDrawerProps> = ({ sku, onClose, on
                 ].map(d => (
                   <div key={d.label} className="flex items-center justify-between gap-2">
                     <span className="text-[8px] text-zinc-500 dark:text-zinc-400 font-bold flex-1">{d.label}</span>
-                    <span className="text-[9px] font-black" style={{ color: d.color }}>₹{d.value}L</span>
+                    <span className="text-[9px] font-black" style={{ color: d.color }}>${d.value}L</span>
                   </div>
                 ))}
                 <div className="border-t border-black/10 dark:border-white/10 pt-2.5 flex justify-between">
                   <span className="text-[8.5px] font-black text-zinc-750 dark:text-zinc-400">Total Hidden Supply Chain Cost</span>
-                  <span className="text-[10px] font-black text-amber-500">₹{sku.totalHiddenCost}L</span>
+                  <span className="text-[10px] font-black text-amber-500">${sku.totalHiddenCost}L</span>
                 </div>
               </div>
             </div>
@@ -138,7 +138,7 @@ export const SkuFocusDrawer: React.FC<SkuFocusDrawerProps> = ({ sku, onClose, on
               <div className="text-[8px] font-black uppercase tracking-widest text-zinc-500 dark:text-zinc-400">SKU Vitals &amp; Commercial Health</div>
               <div className="grid grid-cols-2 gap-3">
                 {[
-                  { label: 'Revenue', value: `₹${sku.rev}Cr`, color: '#6366f1' },
+                  { label: 'Revenue', value: `$${sku.rev}M`, color: '#6366f1' },
                   { label: 'Gross Margin', value: `${sku.margin}%`, color: '#10b981' },
                   { label: 'Growth Rate', value: `${growth >= 0 ? '+' : ''}${growth.toFixed(1)}%`, color: growth >= 0 ? '#10b981' : '#ef4444' },
                   { label: 'Promo Dependency', value: `${(sku.promo * 100).toFixed(0)}%`, color: sku.promo > 0.5 ? '#ef4444' : '#f59e0b' },

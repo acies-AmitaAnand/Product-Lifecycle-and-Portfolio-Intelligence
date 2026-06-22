@@ -464,7 +464,7 @@ export default function App() {
                       return [
                         {
                           label: 'Net Profit',
-                          value: '₹95.2 Cr',
+                          value: '$95.2 M',
                           trend: 'up',
                           trendValue: 'MTD Blended',
                           info: 'Net profit contribution from active products after raw material costs, freight overheads, and promotional dilution.',
@@ -472,7 +472,7 @@ export default function App() {
                         },
                         {
                           label: 'Gross Profit',
-                          value: '₹308.1 Cr',
+                          value: '$308.1 M',
                           trend: 'up',
                           trendValue: '36.2% Gross Margin',
                           info: 'Total gross profit margin across categories before supply chain and promotional expenses.',
@@ -488,7 +488,7 @@ export default function App() {
                         },
                         {
                           label: 'Total SG&A Overhead',
-                          value: '₹117.7 Cr',
+                          value: '$117.7 M',
                           trend: 'neutral',
                           trendValue: 'Fixed & Variable Mix',
                           info: 'Selling, General and Administrative expenses including regional shipping, warehousing overheads, and currency hedging margins.',

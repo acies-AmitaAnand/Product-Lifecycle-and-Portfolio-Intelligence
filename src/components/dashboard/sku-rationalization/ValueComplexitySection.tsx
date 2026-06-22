@@ -140,7 +140,7 @@ export const ValueComplexitySection: React.FC<ValueComplexitySectionProps> = ({
                     <div className="flex-1 min-w-0">
                       <div className="text-acies-gray dark:text-white truncate font-bold text-[10px]">{sku.name}</div>
                       <div className="text-[7.5px] text-zinc-450 font-bold uppercase tracking-wider">
-                        Complexity {sku.cx.toFixed(2)} · Value {sku.val.toFixed(2)} · ₹{sku.rev}Cr
+                        Complexity {sku.cx.toFixed(2)} · Value {sku.val.toFixed(2)} · ${sku.rev}M
                       </div>
                     </div>
                     <div className="flex items-center gap-1.5 shrink-0">

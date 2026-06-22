@@ -111,7 +111,7 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
   const transferenceVolume = parseFloat((revA * (transferenceRate / 100)).toFixed(2));
   const marginDiffUplift = transferenceVolume * ((marginB - marginA) / 100);
   const complexitySavings = revA * 0.05;
-  const annualSavingsLakhs = Math.round((marginDiffUplift + complexitySavings) * 100);
+  const annualSavingsThousands = Math.round((marginDiffUplift + complexitySavings) * 1000);
 
   const skuA = state.skuA;
   const skuB = state.skuB;
@@ -130,7 +130,7 @@ export const SKURationalization: React.FC<SKURationalizationProps> = ({ role, is
     transferenceVolume,
     marginDiffUplift,
     complexitySavings,
-    annualSavingsLakhs,
+    annualSavingsThousands,
     exitDateDays,
     pricingPriceShift,
     supplySafetyStockShift,

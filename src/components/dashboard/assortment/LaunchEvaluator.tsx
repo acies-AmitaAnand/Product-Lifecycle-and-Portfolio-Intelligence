@@ -12,8 +12,8 @@ export const LaunchEvaluator: React.FC<LaunchEvaluatorProps> = ({ onStageAction 
   const [isStaged, setIsStaged] = useState(false);
 
   // Constants for Mango Fizz 750ml Launch Candidate
-  const launchBudget = 4.2; // ₹ Cr
-  const baseLaunchVolumeRevenue = 8.4; // ₹ Cr projected gross sales
+  const launchBudget = 4.2; // $ M
+  const baseLaunchVolumeRevenue = 8.4; // $ M projected gross sales
 
   // Pricing impact on volume (higher price = lower gross volume)
   const priceElasticity = -2.0;
@@ -45,7 +45,7 @@ export const LaunchEvaluator: React.FC<LaunchEvaluatorProps> = ({ onStageAction 
       id: `launch-mango-fizz-750ml-${Date.now()}`,
       type: 'launch',
       title: 'Launch Mango Fizz 750ml Variant',
-      details: `Launch 750ml variant at ${priceMultiplier}x pricing. projected sales: ₹${projectedGrossSales.toFixed(2)} Cr (${(100 - cannibalizationRisk).toFixed(0)}% accretive).`,
+      details: `Launch 750ml variant at ${priceMultiplier}x pricing. projected sales: $${projectedGrossSales.toFixed(2)} M (${(100 - cannibalizationRisk).toFixed(0)}% accretive).`,
       revenueImpact: parseFloat((accretiveSales).toFixed(2)), // net new revenue added
       marginImpact: parseFloat((netMarginProfitLift).toFixed(2)), // net margin profit gained
       complexityImpact: -complexityCostPoints, // negative because it increases complexity (not savings)
@@ -86,7 +86,7 @@ export const LaunchEvaluator: React.FC<LaunchEvaluatorProps> = ({ onStageAction 
             </div>
             <div className="flex justify-between font-bold">
               <span className="text-zinc-400">Development Budget:</span>
-              <span className="text-rose-500">₹{launchBudget.toFixed(1)} Cr</span>
+              <span className="text-rose-500">${launchBudget.toFixed(1)} M</span>
             </div>
             <div className="flex justify-between font-bold">
               <span className="text-zinc-400">Target Gross Margin:</span>
@@ -148,7 +148,7 @@ export const LaunchEvaluator: React.FC<LaunchEvaluatorProps> = ({ onStageAction 
             <div>
               <div className="flex justify-between text-[8px] font-bold text-zinc-400 mb-1">
                 <span>Accretive Demand (New Market Expansion)</span>
-                <span className="text-emerald-500 font-mono">₹{accretiveSales.toFixed(2)} Cr ({ (100 - cannibalizationRisk).toFixed(0)}%)</span>
+                <span className="text-emerald-500 font-mono">${accretiveSales.toFixed(2)} M ({ (100 - cannibalizationRisk).toFixed(0)}%)</span>
               </div>
               <div className="w-full bg-black/10 dark:bg-zinc-800 h-2.5 rounded overflow-hidden">
                 <div 
@@ -161,7 +161,7 @@ export const LaunchEvaluator: React.FC<LaunchEvaluatorProps> = ({ onStageAction 
             <div>
               <div className="flex justify-between text-[8px] font-bold text-zinc-400 mb-1">
                 <span>Cannibalized Demand (Substitution of 500ml)</span>
-                <span className="text-rose-500 font-mono">₹{cannibalizedSales.toFixed(2)} Cr ({cannibalizationRisk}%)</span>
+                <span className="text-rose-500 font-mono">${cannibalizedSales.toFixed(2)} M ({cannibalizationRisk}%)</span>
               </div>
               <div className="w-full bg-black/10 dark:bg-zinc-800 h-2.5 rounded overflow-hidden">
                 <div 
@@ -191,7 +191,7 @@ export const LaunchEvaluator: React.FC<LaunchEvaluatorProps> = ({ onStageAction 
               <div className="flex justify-between items-center py-2 px-3 bg-black/[0.02] dark:bg-white/[0.02] border border-black/5 dark:border-white/5 rounded-sm">
                 <span className="text-zinc-500">Projected Gross Sales</span>
                 <span className="font-bold font-mono text-zinc-800 dark:text-zinc-200">
-                  ₹{projectedGrossSales.toFixed(2)} Cr
+                  ${projectedGrossSales.toFixed(2)} M
                 </span>
               </div>
 
@@ -199,7 +199,7 @@ export const LaunchEvaluator: React.FC<LaunchEvaluatorProps> = ({ onStageAction 
               <div className="flex justify-between items-center py-2 px-3 bg-black/[0.02] dark:bg-white/[0.02] border border-black/5 dark:border-white/5 rounded-sm">
                 <span className="text-zinc-500">Net-New Revenue (Accretive)</span>
                 <span className="font-bold font-mono text-emerald-500">
-                  +₹{accretiveSales.toFixed(2)} Cr
+                  +${accretiveSales.toFixed(2)} M
                 </span>
               </div>
 
@@ -207,7 +207,7 @@ export const LaunchEvaluator: React.FC<LaunchEvaluatorProps> = ({ onStageAction 
               <div className="flex justify-between items-center py-2.5 px-3 bg-black/[0.02] dark:bg-white/[0.02] border border-black/5 dark:border-white/5 rounded-sm border-l-2 border-l-purple-500">
                 <span className="font-bold text-zinc-700 dark:text-zinc-350">Net Margin Profit Lift</span>
                 <span className="font-bold font-mono text-purple-500">
-                  +₹{netMarginProfitLift.toFixed(2)} Cr
+                  +${netMarginProfitLift.toFixed(2)} M
                 </span>
               </div>
 

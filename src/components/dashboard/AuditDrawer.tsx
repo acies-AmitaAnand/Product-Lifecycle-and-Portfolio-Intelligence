@@ -289,8 +289,8 @@ export const AuditDrawer: React.FC<AuditDrawerProps> = ({ activeMetric, close, i
                       </h4>
                       <ul className="space-y-2.5 pl-4 list-disc text-[11.5px] leading-relaxed text-zinc-650 dark:text-zinc-300">
                         <li className="marker:text-purple-500"><strong>Moderate Portfolio Health:</strong> Overall score is at <span className="font-bold text-purple-600 dark:text-purple-400">74%</span>. Stable revenue growth is currently offset by packaging supply bottlenecks and promotional margin erosion in snacks.</li>
-                        <li className="marker:text-purple-500"><strong>India Leads Growth:</strong> Best-performing region with <span className="font-bold text-green-650 dark:text-green-400">₹320 Cr (+15% YoY)</span>.</li>
-                        <li className="marker:text-purple-500"><strong>Americas Underperforms:</strong> Worst-performing region with <span className="font-bold text-red-500">₹180 Cr (−6.4% YoY)</span>.</li>
+                        <li className="marker:text-purple-500"><strong>India Leads Growth:</strong> Best-performing region with <span className="font-bold text-green-650 dark:text-green-400">$320 M (+15% YoY)</span>.</li>
+                        <li className="marker:text-purple-500"><strong>Americas Underperforms:</strong> Worst-performing region with <span className="font-bold text-red-500">$180 M (−6.4% YoY)</span>.</li>
                         <li className="marker:text-purple-500"><strong>APAC Expansion:</strong> Holds the highest growth potential, driven by the Eco-Pack program.</li>
                       </ul>
                     </div>
@@ -478,7 +478,7 @@ export const AuditDrawer: React.FC<AuditDrawerProps> = ({ activeMetric, close, i
                                             <div className="flex items-center gap-2 text-[8.5px] text-zinc-500 dark:text-zinc-400 font-mono">
                                               <span>Margin: <span className="font-bold text-zinc-700 dark:text-zinc-300">{sku.margin}%</span></span>
                                               <span>·</span>
-                                              <span>Sales: <span className="font-bold text-zinc-700 dark:text-zinc-300">₹{sku.rev} Cr</span></span>
+                                              <span>Sales: <span className="font-bold text-zinc-700 dark:text-zinc-300">${sku.rev} M</span></span>
                                             </div>
                                           </div>
                                         ))}

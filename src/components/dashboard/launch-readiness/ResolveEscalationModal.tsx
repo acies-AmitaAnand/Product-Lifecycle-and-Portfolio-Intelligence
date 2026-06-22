@@ -70,7 +70,7 @@ export const ResolveEscalationModal: React.FC<ResolveEscalationModalProps> = ({
       return [
         {
           action: 'Co-packer Capacity Allocation Review',
-          impact: 'Aligns secondary production lines to mitigate ₹10Cr revenue risk',
+          impact: 'Aligns secondary production lines to mitigate $10Cr revenue risk',
           contactName: 'Rajendra Patel',
           contactTitle: 'Vapi Hub Director',
           email: 'rajendra.patel@aciesglobal.com',

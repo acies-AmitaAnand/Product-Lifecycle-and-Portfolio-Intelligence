@@ -121,7 +121,7 @@ export const CannibalizationAnalystView: React.FC<CannibalizationAnalystViewProp
             <div>
               <h3 className="text-xs font-bold uppercase tracking-widest text-acies-gray dark:text-white">Substitution Risk Scatter Map</h3>
               <p className="text-[9px] text-zinc-555 font-bold uppercase tracking-widest mt-0.5">
-                Bubble size = revenue at risk (₹ Cr) • Click a bubble to load pair in scorer
+                Bubble size = revenue at risk ($ M) • Click a bubble to load pair in scorer
               </p>
             </div>
             <div className="flex items-center gap-1.5 shrink-0">
@@ -181,7 +181,7 @@ export const CannibalizationAnalystView: React.FC<CannibalizationAnalystViewProp
                       <div style={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, borderRadius: 8, padding: '8px 12px', minWidth: 175 }}>
                         <p style={{ color: tooltipText, fontWeight: 800, fontSize: 10, marginBottom: 4 }}>{d.name}</p>
                         <p style={{ color: riskColor, fontWeight: 700, fontSize: 8, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 2 }}>{riskLevel} · {(d.risk * 100).toFixed(0)}% Score</p>
-                        <p style={{ color: tooltipText, fontSize: 9, opacity: 0.7, marginBottom: 4 }}>₹{d.revAtRisk} Cr revenue at risk</p>
+                        <p style={{ color: tooltipText, fontSize: 9, opacity: 0.7, marginBottom: 4 }}>${d.revAtRisk} M revenue at risk</p>
                         <p style={{ color: '#8b5cf6', fontSize: 8, fontWeight: 700 }}>↗ Click to load pair in scorer</p>
                       </div>
                     );

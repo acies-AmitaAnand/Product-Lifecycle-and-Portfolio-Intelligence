@@ -50,7 +50,7 @@ export const DrilldownFilters: React.FC<DrilldownFiltersProps> = ({
   };
 
   const metrics = [
-    { key: 'rev'    as const, label: 'Revenue',     sub: '₹ Crore',  icon: '💰' },
+    { key: 'rev'    as const, label: 'Revenue',     sub: '$ Million',  icon: '💰' },
     { key: 'margin' as const, label: 'Margin',      sub: '% Gross',  icon: '📊' },
     { key: 'otif'   as const, label: 'Fulfillment', sub: 'OTIF %',   icon: '🚚' },
   ];

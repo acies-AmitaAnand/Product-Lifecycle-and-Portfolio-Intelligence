@@ -399,7 +399,7 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
   const [escalations, setEscalations] = useState([
     { id: 'esc1', title: 'Packaging Material Shortage', sub: 'BrandC Biscuits Eco', severity: 'High', impact: '15d Launch Delay', status: 'Pending', color: '#ef4444' },
     { id: 'esc2', title: 'EU Regulatory Approval', sub: 'BrandC Chocolate Oats', severity: 'Medium', impact: 'EU Market Hold', status: 'Pending', color: '#f59e0b' },
-    { id: 'esc3', title: 'Co-packer Capacity Constraint', sub: 'BrandD Organic Yogurt', severity: 'High', impact: '₹10Cr Revenue Risk', status: 'Pending', color: '#ef4444' },
+    { id: 'esc3', title: 'Co-packer Capacity Constraint', sub: 'BrandD Organic Yogurt', severity: 'High', impact: '$10Cr Revenue Risk', status: 'Pending', color: '#ef4444' },
     { id: 'esc4', title: 'Label Compliance Issue', sub: 'BrandG Glass Cleaner', severity: 'Low', impact: 'Minor packaging rerun', status: 'Pending', color: '#3b82f6' }
   ]);
 
@@ -548,7 +548,7 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
     
     return {
       name: cat,
-      'Proj Rev (₹ Cr)': parseFloat(revenue.toFixed(1)),
+      'Proj Rev ($ M)': parseFloat(revenue.toFixed(1)),
       'Budget ($M)': parseFloat(budget.toFixed(1)),
       'Spent ($M)': parseFloat(spent.toFixed(1)),
       'Revenue at risk': parseFloat(revAtRisk.toFixed(1)),

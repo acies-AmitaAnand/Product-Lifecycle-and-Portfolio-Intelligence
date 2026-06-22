@@ -58,7 +58,7 @@ export const ExecutiveCart: React.FC<ExecutiveCartProps> = ({ stagedActions, onR
                 )}
                 <span className="text-zinc-400">Rev:</span>
                 <span className={totalRevenue >= 0 ? 'text-emerald-500' : 'text-rose-500'}>
-                  {totalRevenue >= 0 ? '+' : ''}₹{totalRevenue.toFixed(2)} Cr
+                  {totalRevenue >= 0 ? '+' : ''}${totalRevenue.toFixed(2)} M
                 </span>
               </div>
 
@@ -66,7 +66,7 @@ export const ExecutiveCart: React.FC<ExecutiveCartProps> = ({ stagedActions, onR
                 <Check size={11} className="text-emerald-500" />
                 <span className="text-zinc-400">Margin:</span>
                 <span className={totalMargin >= 0 ? 'text-emerald-500 font-extrabold' : 'text-rose-500'}>
-                  {totalMargin >= 0 ? '+' : ''}₹{totalMargin.toFixed(2)} Cr
+                  {totalMargin >= 0 ? '+' : ''}${totalMargin.toFixed(2)} M
                 </span>
               </div>
 
@@ -169,10 +169,10 @@ export const ExecutiveCart: React.FC<ExecutiveCartProps> = ({ stagedActions, onR
                           {/* Item level metrics breakdown */}
                           <div className="flex gap-3 text-[7.5px] font-bold text-zinc-450 pt-1 font-mono">
                             <span className={action.revenueImpact >= 0 ? 'text-emerald-500' : 'text-rose-500'}>
-                              Rev: {action.revenueImpact >= 0 ? '+' : ''}₹{action.revenueImpact.toFixed(2)}Cr
+                              Rev: {action.revenueImpact >= 0 ? '+' : ''}${action.revenueImpact.toFixed(2)}M
                             </span>
                             <span className="text-emerald-500">
-                              Profit: +₹{action.marginImpact.toFixed(2)}Cr
+                              Profit: +${action.marginImpact.toFixed(2)}M
                             </span>
                             {action.complexityImpact > 0 && (
                               <span className="text-blue-500">
@@ -204,14 +204,14 @@ export const ExecutiveCart: React.FC<ExecutiveCartProps> = ({ stagedActions, onR
                       <div className="p-2 border border-black/5 dark:border-white/5 rounded bg-white dark:bg-zinc-850 flex items-center justify-between">
                         <span className="text-zinc-500">Net Sales Impact</span>
                         <span className={totalRevenue >= 0 ? 'text-emerald-500' : 'text-rose-500'}>
-                          {totalRevenue >= 0 ? '+' : ''}₹{totalRevenue.toFixed(2)} Cr
+                          {totalRevenue >= 0 ? '+' : ''}${totalRevenue.toFixed(2)} M
                         </span>
                       </div>
                       
                       <div className="p-2 border border-black/5 dark:border-white/5 rounded bg-white dark:bg-zinc-850 flex items-center justify-between">
                         <span className="text-zinc-500">Net Profit Lift</span>
                         <span className={totalMargin >= 0 ? 'text-emerald-500 font-extrabold' : 'text-rose-500'}>
-                          {totalMargin >= 0 ? '+' : ''}₹{totalMargin.toFixed(2)} Cr
+                          {totalMargin >= 0 ? '+' : ''}${totalMargin.toFixed(2)} M
                         </span>
                       </div>
 

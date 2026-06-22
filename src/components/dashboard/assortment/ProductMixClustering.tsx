@@ -114,7 +114,7 @@ export const ProductMixClustering: React.FC<ProductMixClusteringProps> = ({ isDa
         complexityImpact: parseFloat((mixIntensity * 0.05).toFixed(1)),
         spaceImpact: 0
       });
-      alert(`Product Mix Optimization Plan staged successfully! Projected absolute profit lift of ₹${absoluteProfitLift.toFixed(2)} Cr.`);
+      alert(`Product Mix Optimization Plan staged successfully! Projected absolute profit lift of $${absoluteProfitLift.toFixed(2)} M.`);
     }
   };
 
@@ -176,7 +176,7 @@ export const ProductMixClustering: React.FC<ProductMixClusteringProps> = ({ isDa
               <div className="p-3 bg-black/5 dark:bg-white/5 rounded-sm">
                 <span className="text-[8px] text-zinc-500 block uppercase font-bold">Net Profit Boost</span>
                 <span className="text-sm font-extrabold text-emerald-500 mt-1 block font-mono">
-                  +₹{absoluteProfitLift.toFixed(2)} Cr
+                  +${absoluteProfitLift.toFixed(2)} M
                 </span>
               </div>
             </div>

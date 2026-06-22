@@ -72,7 +72,7 @@ export const SkuIntelligenceModal: React.FC<SkuIntelligenceModalProps> = ({
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           <div className="bg-black/5 dark:bg-white/5 p-3 rounded-xl border border-black/5 dark:border-white/5">
             <span className="text-[8px] font-bold uppercase tracking-widest text-zinc-400 block">Annual Sales</span>
-            <span className="text-base font-black text-acies-gray dark:text-white mt-1 block">₹{sku.rev} Cr</span>
+            <span className="text-base font-black text-acies-gray dark:text-white mt-1 block">${sku.rev} M</span>
             <span className="text-[7.5px] font-bold text-zinc-450 dark:text-zinc-555 uppercase">Category sales impact</span>
           </div>
           

@@ -60,7 +60,7 @@ export const RegionalAssortmentGrid: React.FC<RegionalAssortmentGridProps> = ({ 
     // Dynamic metrics updates for header overrides
     const simulatedDensity = `${100 - val} SKUs`;
     const simulatedBurden = `${((68 - val) / 100 * 100).toFixed(1)}%`;
-    const simulatedYield = `₹${(3.02 + val * 0.012).toFixed(2)} Cr`;
+    const simulatedYield = `$${(3.02 + val * 0.012).toFixed(2)} M`;
     const simulatedCannibalization = (0.62 - val * 0.009).toFixed(2);
 
     onSliderChange({
@@ -115,7 +115,7 @@ export const RegionalAssortmentGrid: React.FC<RegionalAssortmentGridProps> = ({ 
       onSliderChange({
         densityVal: '100 SKUs',
         burdenVal: '68.0%',
-        yieldVal: '₹3.02 Cr',
+        yieldVal: '$3.02 M',
         cannibalizationVal: '0.62',
         skusDelisted: 0,
         marginLift: 0,
@@ -434,7 +434,7 @@ export const RegionalAssortmentGrid: React.FC<RegionalAssortmentGridProps> = ({ 
               onSliderChange({
                 densityVal: '100 SKUs',
                 burdenVal: '68.0%',
-                yieldVal: '₹3.02 Cr',
+                yieldVal: '$3.02 M',
                 cannibalizationVal: '0.62',
                 skusDelisted: 0,
                 marginLift: 0,

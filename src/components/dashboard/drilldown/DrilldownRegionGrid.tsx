@@ -82,14 +82,14 @@ export const DrilldownRegionGrid: React.FC<DrilldownRegionGridProps> = ({
 
     switch (regionKey) {
       case 'APAC':
-        return { rev: { actual: 312 * mult, target: 290 * mult, unit: '₹ Cr' }, margin: { ...regionSpecific.margin, unit: '%' }, otif: { ...regionSpecific.otif, unit: '%' } };
+        return { rev: { actual: 312 * mult, target: 290 * mult, unit: '$ M' }, margin: { ...regionSpecific.margin, unit: '%' }, otif: { ...regionSpecific.otif, unit: '%' } };
       case 'Americas':
-        return { rev: { actual: 228 * mult, target: 240 * mult, unit: '₹ Cr' }, margin: { ...regionSpecific.margin, unit: '%' }, otif: { ...regionSpecific.otif, unit: '%' } };
+        return { rev: { actual: 228 * mult, target: 240 * mult, unit: '$ M' }, margin: { ...regionSpecific.margin, unit: '%' }, otif: { ...regionSpecific.otif, unit: '%' } };
       case 'EMEA':
-        return { rev: { actual: 311 * mult, target: 305 * mult, unit: '₹ Cr' }, margin: { ...regionSpecific.margin, unit: '%' }, otif: { ...regionSpecific.otif, unit: '%' } };
+        return { rev: { actual: 311 * mult, target: 305 * mult, unit: '$ M' }, margin: { ...regionSpecific.margin, unit: '%' }, otif: { ...regionSpecific.otif, unit: '%' } };
       case 'LATAM':
       default:
-        return { rev: { actual: 145 * mult, target: 155 * mult, unit: '₹ Cr' }, margin: { ...regionSpecific.margin, unit: '%' }, otif: { ...regionSpecific.otif, unit: '%' } };
+        return { rev: { actual: 145 * mult, target: 155 * mult, unit: '$ M' }, margin: { ...regionSpecific.margin, unit: '%' }, otif: { ...regionSpecific.otif, unit: '%' } };
     }
   };
 

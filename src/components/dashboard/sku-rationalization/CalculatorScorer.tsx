@@ -313,12 +313,12 @@ export const CalculatorScorer: React.FC<CalculatorScorerProps> = ({
               <div className="p-3 bg-black/5 dark:bg-[#121214]/60 border border-black/5 dark:border-white/5 rounded text-center">
                 <p className="text-[8px] font-bold uppercase tracking-widest opacity-45 mb-1">Variant A (To delist)</p>
                 <h5 className="text-[11px] font-bold truncate text-acies-gray dark:text-white" title={skuA}>{skuA}</h5>
-                <p className="text-[9px] font-bold text-zinc-450 dark:text-zinc-500 mt-0.5">₹{revA} Cr · Margin {marginA}%</p>
+                <p className="text-[9px] font-bold text-zinc-450 dark:text-zinc-500 mt-0.5">${revA} M · Margin {marginA}%</p>
               </div>
               <div className="p-3 bg-black/5 dark:bg-[#121214]/60 border border-black/5 dark:border-white/5 rounded text-center">
                 <p className="text-[8px] font-bold uppercase tracking-widest opacity-45 mb-1">Variant B (Substitute)</p>
                 <h5 className="text-[11px] font-bold truncate text-acies-gray dark:text-white" title={skuB}>{skuB}</h5>
-                <p className="text-[9px] font-bold text-zinc-450 dark:text-zinc-500 mt-0.5">₹{revB} Cr · Margin {marginB}%</p>
+                <p className="text-[9px] font-bold text-zinc-450 dark:text-zinc-500 mt-0.5">${revB} M · Margin {marginB}%</p>
               </div>
               <div className="p-3 bg-black/5 dark:bg-[#121214]/60 border border-black/5 dark:border-white/5 rounded text-center">
                 <p className="text-[8px] font-bold uppercase tracking-widest opacity-45 mb-1">Cross Correlation</p>
@@ -401,7 +401,7 @@ export const CalculatorScorer: React.FC<CalculatorScorerProps> = ({
                         <div className="flex flex-col text-right">
                           <span className="text-[7.5px] font-bold text-zinc-400 uppercase leading-none">Net Profit</span>
                           <span className={`text-[11px] font-extrabold leading-none mt-1 ${profitIsPositive ? 'text-emerald-500' : 'text-red-500'}`}>
-                            {scen.metrics.netProfit >= 0 ? '+' : ''}₹{scen.metrics.netProfit.toFixed(1)} Cr
+                            {scen.metrics.netProfit >= 0 ? '+' : ''}${scen.metrics.netProfit.toFixed(1)} M
                           </span>
                         </div>
                       </div>
@@ -451,21 +451,21 @@ export const CalculatorScorer: React.FC<CalculatorScorerProps> = ({
                     <span className="w-2.5 h-2.5 rounded bg-emerald-500 block shrink-0" />
                     <div className="flex-1 flex justify-between">
                       <span className="text-zinc-500 dark:text-zinc-400">Sibling Retained:</span>
-                      <span className="text-emerald-500">₹{transferredRev.toFixed(1)} Cr</span>
+                      <span className="text-emerald-500">${transferredRev.toFixed(1)} M</span>
                     </div>
                   </div>
                   <div className="flex items-center gap-2 px-3 py-2 bg-red-500/5 border border-red-500/10 rounded-lg">
                     <span className="w-2.5 h-2.5 rounded bg-red-500 block shrink-0" />
                     <div className="flex-1 flex justify-between">
                       <span className="text-zinc-500 dark:text-zinc-400">Competitor Leak:</span>
-                      <span className="text-red-500">₹{leakedRev.toFixed(1)} Cr</span>
+                      <span className="text-red-500">${leakedRev.toFixed(1)} M</span>
                     </div>
                   </div>
                   <div className="flex items-center gap-2 px-3 py-2 bg-amber-500/5 border border-amber-500/10 rounded-lg">
                     <span className="w-2.5 h-2.5 rounded bg-amber-500 block shrink-0" />
                     <div className="flex-1 flex justify-between">
                       <span className="text-zinc-500 dark:text-zinc-400">Category Defect:</span>
-                      <span className="text-amber-500">₹{defectionRev.toFixed(1)} Cr</span>
+                      <span className="text-amber-500">${defectionRev.toFixed(1)} M</span>
                     </div>
                   </div>
                 </div>
@@ -476,7 +476,7 @@ export const CalculatorScorer: React.FC<CalculatorScorerProps> = ({
                 <div className="p-3 bg-black/5 dark:bg-[#121214]/40 border border-black/5 dark:border-white/5 rounded-lg text-center space-y-0.5">
                   <p className="text-[8px] font-bold uppercase tracking-widest text-zinc-400">Net Revenue Shift</p>
                   <h5 className={`text-base font-display font-extrabold ${netRevenueImpact >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
-                    {netRevenueImpact >= 0 ? '+' : ''}₹{netRevenueImpact.toFixed(1)} Cr
+                    {netRevenueImpact >= 0 ? '+' : ''}${netRevenueImpact.toFixed(1)} M
                   </h5>
                   <p className="text-[8.5px] font-bold text-zinc-500 uppercase tracking-wide">
                     {((netRevenueImpact / (revA || 1)) * 100).toFixed(0)}% of SKU A
@@ -485,7 +485,7 @@ export const CalculatorScorer: React.FC<CalculatorScorerProps> = ({
                 <div className="p-3 bg-black/5 dark:bg-[#121214]/40 border border-black/5 dark:border-white/5 rounded-lg text-center space-y-0.5">
                   <p className="text-[8px] font-bold uppercase tracking-widest text-zinc-400">Absolute Profit Impact</p>
                   <h5 className={`text-base font-display font-extrabold ${netProfitImpact >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
-                    {netProfitImpact >= 0 ? '+' : ''}₹{netProfitImpact.toFixed(2)} Cr
+                    {netProfitImpact >= 0 ? '+' : ''}${netProfitImpact.toFixed(2)} M
                   </h5>
                   <p className="text-[8.5px] font-bold text-zinc-500 uppercase tracking-wide">
                     {netProfitImpact >= 0 ? 'Margin Leverage' : 'Profit Compression'}
@@ -510,7 +510,7 @@ export const CalculatorScorer: React.FC<CalculatorScorerProps> = ({
                     <strong className="font-bold block text-emerald-700 dark:text-emerald-200 text-[11px] mb-0.5 uppercase tracking-wide">
                       ✨ Positive Margin Leverage Detected
                     </strong>
-                    Delisting the lower-margin SKU A ({marginA}%) and redirecting demand to the higher-margin substitute SKU B ({marginB}%) increases net absolute portfolio profitability by <strong className="font-extrabold">₹{netProfitImpact.toFixed(2)} Cr</strong>, despite some revenue defection. This represents an optimal consolidation scenario.
+                    Delisting the lower-margin SKU A ({marginA}%) and redirecting demand to the higher-margin substitute SKU B ({marginB}%) increases net absolute portfolio profitability by <strong className="font-extrabold">${netProfitImpact.toFixed(2)} M</strong>, despite some revenue defection. This represents an optimal consolidation scenario.
                   </div>
                 </div>
               ) : (
@@ -520,7 +520,7 @@ export const CalculatorScorer: React.FC<CalculatorScorerProps> = ({
                     <strong className="font-bold block text-red-700 dark:text-red-200 text-[11px] mb-0.5 uppercase tracking-wide">
                       ⚠️ Margin Dilution Risk
                     </strong>
-                    Delisting SKU A leads to a net profit decline of <strong className="font-extrabold">₹{Math.abs(netProfitImpact).toFixed(2)} Cr</strong> because the substitute SKU B&apos;s margin ({marginB}%) is not high enough to compensate for the leaked demand ({Math.round(100 - activeDtr)}%). Consider executing a price increase on SKU A or launching structural cost-cutting on SKU B first.
+                    Delisting SKU A leads to a net profit decline of <strong className="font-extrabold">${Math.abs(netProfitImpact).toFixed(2)} M</strong> because the substitute SKU B&apos;s margin ({marginB}%) is not high enough to compensate for the leaked demand ({Math.round(100 - activeDtr)}%). Consider executing a price increase on SKU A or launching structural cost-cutting on SKU B first.
                   </div>
                 </div>
               )}

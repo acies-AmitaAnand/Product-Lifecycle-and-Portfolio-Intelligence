@@ -36,7 +36,7 @@ export const ComplexityPl: React.FC<ComplexityPlProps> = ({
         <h3 className="text-xs font-bold uppercase tracking-widest text-amber-600 dark:text-amber-400">
           ③ Complexity P&amp;L — Three Hidden Cost Drivers
         </h3>
-        <span className="ml-auto text-[7px] font-bold uppercase tracking-wider text-zinc-400 px-2 py-0.5 rounded-full border border-black/10 dark:border-white/10">₹ Lakhs · Click a category to filter</span>
+        <span className="ml-auto text-[7px] font-bold uppercase tracking-wider text-zinc-400 px-2 py-0.5 rounded-full border border-black/10 dark:border-white/10">$ Thousands · Click a category to filter</span>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 text-zinc-800 dark:text-white">
@@ -76,7 +76,7 @@ export const ComplexityPl: React.FC<ComplexityPlProps> = ({
                 <XAxis dataKey="cat" tick={{ fill: tick, fontSize: 8, fontWeight: 'bold' }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fill: tick, fontSize: 8 }} axisLine={false} tickLine={false} />
                 <Tooltip contentStyle={{ backgroundColor: ttBg, borderColor: ttBorder, fontSize: '9px' }}
-                  formatter={(v: any, name: string) => [`₹${v}L`, name]}
+                  formatter={(v: any, name: string) => [`$${v}k`, name]}
                   content={({ active, payload, label }) => {
                     if (!active || !payload?.length) return null;
                     const cat = categories.find(c => c.cat === label);
@@ -105,13 +105,13 @@ export const ComplexityPl: React.FC<ComplexityPlProps> = ({
                         {payload.map((p: any) => (
                           <div key={p.name} className="flex justify-between gap-4 py-0.5">
                             <span className="text-zinc-500 dark:text-zinc-400 font-bold">{p.name}</span>
-                            <span className="font-black" style={{ color: p.fill }}>₹{p.value}L</span>
+                            <span className="font-black" style={{ color: p.fill }}>${p.value}k</span>
                           </div>
                         ))}
                         {cat && worstSkuName && (
                           <div className="mt-2 pt-2 border-t border-black/5 dark:border-white/5 text-zinc-500 dark:text-zinc-400 flex flex-col gap-0.5">
                             <span className="font-black text-zinc-500 dark:text-zinc-400">{culpritLabel}:</span>
-                            <span className="font-bold text-amber-500">{worstSkuName} (₹{worstSkuCost}L)</span>
+                            <span className="font-bold text-amber-500">{worstSkuName} (${worstSkuCost}k)</span>
                           </div>
                         )}
                       </div>
@@ -207,7 +207,7 @@ export const ComplexityPl: React.FC<ComplexityPlProps> = ({
                   <span className="text-[9px] font-black uppercase tracking-widest" style={{ color: CAT_COLORS[cat.cat] }}>{cat.cat}</span>
                   <div className="flex items-center gap-1.5">
                     <span className="text-[7px] text-zinc-500 dark:text-zinc-400 font-bold">{cat.totalCount} SKUs</span>
-                    <span className="text-[8px] font-black text-amber-500">₹{cat.totalHiddenCost}L</span>
+                    <span className="text-[8px] font-black text-amber-500">${cat.totalHiddenCost}k</span>
                   </div>
                 </div>
                 
@@ -219,7 +219,7 @@ export const ComplexityPl: React.FC<ComplexityPlProps> = ({
                     }`}
                     style={{ opacity: costDriverFilter === 'All' || costDriverFilter === 'downtime' ? 1 : 0.4 }}
                   >
-                    <div className="text-[8px] font-black text-red-500">₹{cat.productionDowntime}L</div>
+                    <div className="text-[8px] font-black text-red-500">${cat.productionDowntime}k</div>
                     <div className="text-[6px] text-zinc-500 dark:text-zinc-400 font-bold uppercase tracking-wider leading-tight">Downtime</div>
                   </button>
                   
@@ -230,7 +230,7 @@ export const ComplexityPl: React.FC<ComplexityPlProps> = ({
                     }`}
                     style={{ opacity: costDriverFilter === 'All' || costDriverFilter === 'transport' ? 1 : 0.4 }}
                   >
-                    <div className="text-[8px] font-black text-amber-500">₹{cat.transportOverhead}L</div>
+                    <div className="text-[8px] font-black text-amber-500">${cat.transportOverhead}k</div>
                     <div className="text-[6px] text-zinc-500 dark:text-zinc-400 font-bold uppercase tracking-wider leading-tight">Transport</div>
                   </button>
                   
@@ -241,7 +241,7 @@ export const ComplexityPl: React.FC<ComplexityPlProps> = ({
                     }`}
                     style={{ opacity: costDriverFilter === 'All' || costDriverFilter === 'waste' ? 1 : 0.4 }}
                   >
-                    <div className="text-[8px] font-black text-purple-500">₹{cat.wasteWriteOff}L</div>
+                    <div className="text-[8px] font-black text-purple-500">${cat.wasteWriteOff}k</div>
                     <div className="text-[6px] text-zinc-500 dark:text-zinc-400 font-bold uppercase tracking-wider leading-tight">Waste</div>
                   </button>
                 </div>
@@ -290,7 +290,7 @@ export const ComplexityPl: React.FC<ComplexityPlProps> = ({
                                 <div style={{ width: `${(s.wasteWriteOffCost / (s.totalHiddenCost || 1)) * 100}%`, backgroundColor: '#8b5cf6' }} />
                               </div>
                             </div>
-                            <span className="text-[8px] font-black text-amber-500 shrink-0">₹{shownCost}L</span>
+                            <span className="text-[8px] font-black text-amber-500 shrink-0">${shownCost}k</span>
                           </div>
                         );
                       })}

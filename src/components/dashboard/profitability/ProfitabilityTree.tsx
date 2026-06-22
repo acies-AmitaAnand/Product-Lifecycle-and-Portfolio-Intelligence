@@ -44,8 +44,8 @@ const marginVelocityAlerts = [
 ];
 
 const breakevenSKUs = [
-  { name: 'Fabric Softener', detail: 'Household · Rev ₹28Cr', margin: 15, color: '#ef4444' },
-  { name: 'Floor Cleaner', detail: 'Household · Rev ₹30Cr', margin: 19, color: '#f59e0b' },
+  { name: 'Fabric Softener', detail: 'Household · Rev $28Cr', margin: 15, color: '#ef4444' },
+  { name: 'Floor Cleaner', detail: 'Household · Rev $30Cr', margin: 19, color: '#f59e0b' },
 ];
 
 const VPProfitabilityTreeView: React.FC<{ 
@@ -175,7 +175,7 @@ const VPProfitabilityTreeView: React.FC<{
       bg: 'rgba(16,185,129,0.06)',
       dotColor: '#10b981',
       items: [
-        { label: 'Product-wise revenue', val: `₹${Math.round(851 * scale * noise('pt-rev-product'))} Cr`, badge: '▲ 8.4%', bc: 'rgba(16,185,129,0.15)', bcolor: '#10b981' },
+        { label: 'Product-wise revenue', val: `$${Math.round(851 * scale * noise('pt-rev-product'))} M`, badge: '▲ 8.4%', bc: 'rgba(16,185,129,0.15)', bcolor: '#10b981' },
         { label: 'SKU-wise revenue', val: `${Math.round(100 + getDeterministicNoise('active_skus_pt', timelineRange)*3)} SKUs`, badge: '', bc: '', bcolor: '' },
         { label: 'Category contribution', val: '5 categories', badge: '', bc: '', bcolor: '' },
       ]
@@ -188,10 +188,10 @@ const VPProfitabilityTreeView: React.FC<{
       bg: 'rgba(239,68,68,0.06)',
       dotColor: '#ef4444',
       items: [
-        { label: 'Manufacturing costs', val: `₹${Math.round(312 * scale * noise('pt-mfg-cost'))} Cr`, badge: '', bc: '', bcolor: '' },
-        { label: 'Transportation costs', val: `₹${Math.round(68 * scale * noise('pt-trans-cost'))} Cr`, badge: '▲ 4%', bc: 'rgba(239,68,68,0.12)', bcolor: '#ef4444' },
-        { label: 'Packaging costs', val: `₹${Math.round(44 * scale * noise('pt-pack-cost'))} Cr`, badge: '', bc: '', bcolor: '' },
-        { label: 'Marketing expenses', val: `₹${Math.round(91 * scale * noise('pt-mkt-cost'))} Cr`, badge: '', bc: '', bcolor: '' },
+        { label: 'Manufacturing costs', val: `$${Math.round(312 * scale * noise('pt-mfg-cost'))} M`, badge: '', bc: '', bcolor: '' },
+        { label: 'Transportation costs', val: `$${Math.round(68 * scale * noise('pt-trans-cost'))} M`, badge: '▲ 4%', bc: 'rgba(239,68,68,0.12)', bcolor: '#ef4444' },
+        { label: 'Packaging costs', val: `$${Math.round(44 * scale * noise('pt-pack-cost'))} M`, badge: '', bc: '', bcolor: '' },
+        { label: 'Marketing expenses', val: `$${Math.round(91 * scale * noise('pt-mkt-cost'))} M`, badge: '', bc: '', bcolor: '' },
       ]
     },
     {
@@ -215,7 +215,7 @@ const VPProfitabilityTreeView: React.FC<{
       bg: 'rgba(245,158,11,0.06)',
       dotColor: '#f59e0b',
       items: [
-        { label: 'Cost to maintain each SKU', val: `₹${(4.2 * (1 + getDeterministicNoise('pt-c2s-cost', timelineRange)*0.05)).toFixed(1)} Cr avg`, badge: '', bc: '', bcolor: '' },
+        { label: 'Cost to maintain each SKU', val: `$${(4.2 * (1 + getDeterministicNoise('pt-c2s-cost', timelineRange)*0.05)).toFixed(1)} M avg`, badge: '', bc: '', bcolor: '' },
         { label: 'Active complex designs', val: `${Math.round(14 + getDeterministicNoise('active_designs_pt', timelineRange)*2)} items`, badge: '', bc: '', bcolor: '' },
       ]
     },
@@ -227,8 +227,8 @@ const VPProfitabilityTreeView: React.FC<{
       bg: 'rgba(239,68,68,0.06)',
       dotColor: '#ef4444',
       items: [
-        { label: 'Excess inventory', val: `₹${Math.round(28 * scale * noise('pt-leak-inv'))} Cr`, badge: 'Critical', bc: 'rgba(239,68,68,0.15)', bcolor: '#ef4444' },
-        { label: 'Packaging complexity', val: `₹${Math.round(14 * scale * noise('pt-leak-pack'))} Cr`, badge: 'High', bc: 'rgba(245,158,11,0.12)', bcolor: '#f59e0b' },
+        { label: 'Excess inventory', val: `$${Math.round(28 * scale * noise('pt-leak-inv'))} M`, badge: 'Critical', bc: 'rgba(239,68,68,0.15)', bcolor: '#ef4444' },
+        { label: 'Packaging complexity', val: `$${Math.round(14 * scale * noise('pt-leak-pack'))} M`, badge: 'High', bc: 'rgba(245,158,11,0.12)', bcolor: '#f59e0b' },
       ]
     },
     {
@@ -449,7 +449,7 @@ const VPProfitabilityTreeView: React.FC<{
         <div className="space-y-0.5">
           <p className="text-[10px] font-bold uppercase tracking-widest text-[#8b5cf6] dark:text-purple-300">🤖 AI Profitability Diagnosis</p>
           <p className="text-[11px] font-medium leading-relaxed text-zinc-700 dark:text-zinc-300">
-            Portfolio gross margin increased <span className="text-emerald-500 font-extrabold">+1.1pp to 36.2%</span>. Total P&L leakage cost of <span className="text-[#8b5cf6] font-extrabold">₹64 Cr</span> represents 7.5% of total revenue. Promo erosion is high, with <span className="text-red-500 font-extrabold">{activeErosionPromos} active campaigns</span> destroying margin.
+            Portfolio gross margin increased <span className="text-emerald-500 font-extrabold">+1.1pp to 36.2%</span>. Total P&L leakage cost of <span className="text-[#8b5cf6] font-extrabold">$64 M</span> represents 7.5% of total revenue. Promo erosion is high, with <span className="text-red-500 font-extrabold">{activeErosionPromos} active campaigns</span> destroying margin.
           </p>
         </div>
       </div>
@@ -1009,7 +1009,7 @@ const VPProfitabilityTreeView: React.FC<{
                   tick={{ fill: tickColor, fontSize: 9, fontWeight: 600 }}
                   axisLine={false}
                   tickLine={false}
-                  tickFormatter={(v) => `₹${v}Cr`}
+                  tickFormatter={(v) => `$${v}M`}
                 />
                 <YAxis
                   yAxisId="right"
@@ -1032,11 +1032,11 @@ const VPProfitabilityTreeView: React.FC<{
                           <p className="font-bold text-xs text-zinc-200 border-b border-white/10 pb-1 mb-1">{label}</p>
                           <div className="flex items-center justify-between gap-4">
                             <span className="text-zinc-400">Spend:</span>
-                            <span className="font-mono">₹{spendVal}Cr</span>
+                            <span className="font-mono">${spendVal}M</span>
                           </div>
                           <div className="flex items-center justify-between gap-4">
                             <span className="text-zinc-400">Revenue:</span>
-                            <span className="font-mono text-[#52d69b]">₹{revenueVal}Cr</span>
+                            <span className="font-mono text-[#52d69b]">${revenueVal}M</span>
                           </div>
                           <div className="flex items-center justify-between gap-4">
                             <span className="text-zinc-400">ROI:</span>
@@ -1175,8 +1175,8 @@ const VPProfitabilityTreeView: React.FC<{
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4 border-t border-black/5 dark:border-white/5">
             <div className="p-4 bg-black/[0.01] dark:bg-white/[0.01] border border-black/5 dark:border-white/5 rounded-lg space-y-1">
               <p className="text-[8px] font-extrabold uppercase tracking-widest text-zinc-400">NEW REVENUE</p>
-              <h5 className="text-base font-display font-black text-blue-500">₹{scenarioRev.toFixed(1)}Cr</h5>
-              <p className="text-[9px] font-mono text-emerald-500 font-extrabold">₹{(scenarioRev - 851.2).toFixed(1)}Cr MTD</p>
+              <h5 className="text-base font-display font-black text-blue-500">${scenarioRev.toFixed(1)}M</h5>
+              <p className="text-[9px] font-mono text-emerald-500 font-extrabold">${(scenarioRev - 851.2).toFixed(1)}M MTD</p>
             </div>
             <div className="p-4 bg-black/[0.01] dark:bg-white/[0.01] border border-black/5 dark:border-white/5 rounded-lg space-y-1">
               <p className="text-[8px] font-extrabold uppercase tracking-widest text-zinc-400">NEW GROSS MARGIN</p>
@@ -1186,7 +1186,7 @@ const VPProfitabilityTreeView: React.FC<{
             <div className="p-4 bg-black/[0.01] dark:bg-white/[0.01] border border-black/5 dark:border-white/5 rounded-lg space-y-1">
               <p className="text-[8px] font-extrabold uppercase tracking-widest text-zinc-400">GP IMPACT</p>
               <h5 className={`text-base font-display font-black ${scenarioGpImpact >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
-                ₹{scenarioGpImpact >= 0 ? '+' : ''}{scenarioGpImpact.toFixed(1)}Cr
+                ${scenarioGpImpact >= 0 ? '+' : ''}{scenarioGpImpact.toFixed(1)}M
               </h5>
               <p className="text-[9px] font-mono text-emerald-500 font-extrabold">Reclaimed</p>
             </div>
@@ -1499,7 +1499,7 @@ export const ProfitabilityTree: React.FC<ProfitabilityTreeProps> = ({
             />
           </div>
           <div className="flex flex-col gap-1">
-            <label className="text-[8px] font-bold uppercase tracking-widest opacity-40">Selling Price (₹)</label>
+            <label className="text-[8px] font-bold uppercase tracking-widest opacity-40">Selling Price ($)</label>
             <input 
               type="number" 
               value={price}
@@ -1508,7 +1508,7 @@ export const ProfitabilityTree: React.FC<ProfitabilityTreeProps> = ({
             />
           </div>
           <div className="flex flex-col gap-1">
-            <label className="text-[8px] font-bold uppercase tracking-widest opacity-40">Purchase Cost (₹)</label>
+            <label className="text-[8px] font-bold uppercase tracking-widest opacity-40">Purchase Cost ($)</label>
             <input 
               type="number" 
               value={cost}
@@ -1517,7 +1517,7 @@ export const ProfitabilityTree: React.FC<ProfitabilityTreeProps> = ({
             />
           </div>
           <div className="flex flex-col gap-1">
-            <label className="text-[8px] font-bold uppercase tracking-widest opacity-40">Logistics Cost (₹)</label>
+            <label className="text-[8px] font-bold uppercase tracking-widest opacity-40">Logistics Cost ($)</label>
             <input 
               type="number" 
               value={logistics}
@@ -1526,7 +1526,7 @@ export const ProfitabilityTree: React.FC<ProfitabilityTreeProps> = ({
             />
           </div>
           <div className="flex flex-col gap-1">
-            <label className="text-[8px] font-bold uppercase tracking-widest opacity-40">Promo Spend (₹ Cr)</label>
+            <label className="text-[8px] font-bold uppercase tracking-widest opacity-40">Promo Spend ($ M)</label>
             <input 
               type="number" 
               value={promo}
@@ -1536,7 +1536,7 @@ export const ProfitabilityTree: React.FC<ProfitabilityTreeProps> = ({
             />
           </div>
           <div className="flex flex-col gap-1">
-            <label className="text-[8px] font-bold uppercase tracking-widest opacity-40">Overhead (₹ Cr)</label>
+            <label className="text-[8px] font-bold uppercase tracking-widest opacity-40">Overhead ($ M)</label>
             <input 
               type="number" 
               value={overhead}
@@ -1639,16 +1639,16 @@ export const ProfitabilityTree: React.FC<ProfitabilityTreeProps> = ({
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <div className="p-3 bg-black/5 dark:bg-white/5 rounded-sm text-center">
                 <p className="text-[8px] font-bold uppercase tracking-widest opacity-45 mb-1">Revenue</p>
-                <h5 className="text-base font-display font-extrabold text-blue-500">₹{Math.round(rev)}Cr</h5>
+                <h5 className="text-base font-display font-extrabold text-blue-500">${Math.round(rev)}M</h5>
               </div>
               <div className="p-3 bg-black/5 dark:bg-white/5 rounded-sm text-center">
                 <p className="text-[8px] font-bold uppercase tracking-widest opacity-45 mb-1">Gross Margin</p>
-                <h5 className="text-base font-display font-extrabold text-green-500">₹{Math.round(gm)}Cr ({gmPct}%)</h5>
+                <h5 className="text-base font-display font-extrabold text-green-500">${Math.round(gm)}M ({gmPct}%)</h5>
               </div>
               <div className="p-3 bg-black/5 dark:bg-white/5 rounded-sm text-center">
                 <p className="text-[8px] font-bold uppercase tracking-widest opacity-45 mb-1">EBIT / EBITDA</p>
                 <h5 className={`text-base font-display font-extrabold ${ebit > 0 ? 'text-green-500' : 'text-red-500'}`}>
-                  ₹{Math.round(ebit)}Cr ({ebitPct}%)
+                  ${Math.round(ebit)}M ({ebitPct}%)
                 </h5>
               </div>
               <div className="p-3 bg-black/5 dark:bg-white/5 rounded-sm text-center">
@@ -1668,12 +1668,12 @@ export const ProfitabilityTree: React.FC<ProfitabilityTreeProps> = ({
                 <BarChart data={waterfallChartData} margin={{ top: 20, right: 10, left: -25, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridStroke} />
                   <XAxis dataKey="name" tick={{ fill: tickColor, fontSize: 9 }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fill: tickColor, fontSize: 9 }} label={{ value: '₹ Crore', angle: -90, position: 'insideLeft', fill: tickColor, fontSize: 10 }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fill: tickColor, fontSize: 9 }} label={{ value: '$ Million', angle: -90, position: 'insideLeft', fill: tickColor, fontSize: 10 }} axisLine={false} tickLine={false} />
                   <Tooltip 
                     contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, color: tooltipText }}
                     itemStyle={{ fontSize: 11 }}
                     formatter={(value: any, name: any, props: any) => {
-                      return [`₹${props.payload.displayVal}Cr`, 'Value'];
+                      return [`$${props.payload.displayVal}M`, 'Value'];
                     }}
                   />
                   {/* Bottom transparent spacer bar for waterfall stack */}
@@ -1707,16 +1707,16 @@ export const ProfitabilityTree: React.FC<ProfitabilityTreeProps> = ({
                     <div className="space-y-1.5 text-[10px] font-semibold text-zinc-500 dark:text-zinc-400">
                       <div className="flex justify-between">
                         <span>Revenue:</span>
-                        <span className="text-blue-500 font-extrabold">₹{s.rev}Cr</span>
+                        <span className="text-blue-500 font-extrabold">${s.rev}M</span>
                       </div>
                       <div className="flex justify-between">
                         <span>Gross Margin:</span>
-                        <span className="text-green-500 font-extrabold">₹{s.gm}Cr ({s.gmPct}%)</span>
+                        <span className="text-green-500 font-extrabold">${s.gm}M ({s.gmPct}%)</span>
                       </div>
                       <div className="flex justify-between">
                         <span>EBITDA:</span>
                         <span className={`font-extrabold ${s.ebit > 0 ? 'text-green-500' : 'text-red-500'}`}>
-                          ₹{s.ebit}Cr ({s.ebitPct}%)
+                          ${s.ebit}M ({s.ebitPct}%)
                         </span>
                       </div>
                     </div>

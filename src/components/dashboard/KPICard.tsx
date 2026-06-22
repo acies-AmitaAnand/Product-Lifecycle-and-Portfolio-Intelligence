@@ -49,7 +49,7 @@ const KPI_TOOLTIPS: Record<string, { soWhat: string; action: string }> = {
   },
   // Tab 3 (Profitability Tree) KPIs
   'Net Profit': {
-    soWhat: 'Net profitability reaches ₹95.2 Cr, driven by strong growth in core beverages, but impacted by rising raw milk COGS in Dairy.',
+    soWhat: 'Net profitability reaches $95.2 M, driven by strong growth in core beverages, but impacted by rising raw milk COGS in Dairy.',
     action: 'Re-negotiate milk procurement contracts and increase high-margin snack items distribution focus.'
   },
   'Gross margin %': {
@@ -57,16 +57,16 @@ const KPI_TOOLTIPS: Record<string, { soWhat: string; action: string }> = {
     action: 'Cap promotional discount depths at 15% and enforce margin pricing corridors.'
   },
   'Gross Profit': {
-    soWhat: 'Gross profit reached ₹308.1 Cr, driven by strong volumes in carbonated beverages and snacks.',
+    soWhat: 'Gross profit reached $308.1 M, driven by strong volumes in carbonated beverages and snacks.',
     action: 'Optimize supply chain logistics to reduce supplier COGS and protect the margins.'
   },
   'Revenue MTD': {
-    soWhat: 'MTD revenue reaches ₹851.2 Cr (8.4% increase vs last month), driven by a demand surge in natural beverages.',
+    soWhat: 'MTD revenue reaches $851.2 M (8.4% increase vs last month), driven by a demand surge in natural beverages.',
     action: 'Expedite distribution channel replenishments in high-velocity retail stores to capture demand.'
   },
   'Launch ROI': {
     soWhat: 'Expected launch return stands at 1.85x ROI, buoyed by the upcoming premium Mango Fizz 750ml rollout.',
-    action: 'Approve the ₹4.2 Cr launch budget and run early cross-promotions with snacks.'
+    action: 'Approve the $4.2 M launch budget and run early cross-promotions with snacks.'
   },
   // Tab 4 (SKU Rationalization) KPIs
   'Portfolio SKUs': {
@@ -78,7 +78,7 @@ const KPI_TOOLTIPS: Record<string, { soWhat: string; action: string }> = {
     action: 'Execute phase-out for the bottom 3 performers immediately to reclaim supplier administrative capacity.'
   },
   'Revenue at Risk': {
-    soWhat: 'Total revenue exposure is ₹148 Cr if all 6 sunset candidates are pruned simultaneously without substitution transfer.',
+    soWhat: 'Total revenue exposure is $148 M if all 6 sunset candidates are pruned simultaneously without substitution transfer.',
     action: 'Enforce product replacement recommendations (e.g. redirecting demand to hero Mango Fizz or Soap variants).'
   },
   'Avg Complexity': {
@@ -116,10 +116,10 @@ const KPI_METRIC_CONFIGS: Record<string, { target: string; color: string; hist: 
   'Rationalize Candidates': { target: '40 SKUs', color: '#8b5cf6', hist: [30, 32, 33, 34, 35, 35, 35, 35] },
   
   // Profitability
-  'Net Profit': { target: '₹100 Cr', color: '#10b981', hist: [85, 88, 90, 92, 93, 94, 94.8, 95.2] },
+  'Net Profit': { target: '$100 M', color: '#10b981', hist: [85, 88, 90, 92, 93, 94, 94.8, 95.2] },
   'Gross margin %': { target: '38%', color: '#3b82f6', hist: [35.1, 35.4, 35.6, 35.8, 36.0, 36.1, 36.2, 36.2] },
-  'Gross Profit': { target: '₹320 Cr', color: '#10b981', hist: [290, 295, 300, 302, 304, 306, 307.5, 308.1] },
-  'Revenue MTD': { target: '₹900 Cr', color: '#3b82f6', hist: [780, 795, 808, 821, 833, 843, 850, 851.2] },
+  'Gross Profit': { target: '$320 M', color: '#10b981', hist: [290, 295, 300, 302, 304, 306, 307.5, 308.1] },
+  'Revenue MTD': { target: '$900 M', color: '#3b82f6', hist: [780, 795, 808, 821, 833, 843, 850, 851.2] },
   'Launch ROI': { target: '1.50x', color: '#f59e0b', hist: [1.2, 1.3, 1.5, 1.6, 1.7, 1.8, 1.83, 1.85] },
   
   // Signals Board

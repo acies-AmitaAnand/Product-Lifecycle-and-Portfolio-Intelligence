@@ -131,7 +131,7 @@ export const DrilldownSkuGrid: React.FC<DrilldownSkuGridProps> = ({
               <div className="border-t border-black/5 dark:border-white/10 pt-2 flex items-center justify-between w-full text-[8.5px]">
                 <div className="flex items-center gap-1.5 text-zinc-500 dark:text-zinc-400 font-bold uppercase">
                   <span>Rev:</span>
-                  <span className="font-extrabold text-zinc-800 dark:text-white font-mono">₹{item.rev} Cr</span>
+                  <span className="font-extrabold text-zinc-800 dark:text-white font-mono">${item.rev} M</span>
                 </div>
 
                 <div className="flex items-center gap-2">

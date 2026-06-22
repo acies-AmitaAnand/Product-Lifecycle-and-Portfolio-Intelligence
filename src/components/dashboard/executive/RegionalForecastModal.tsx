@@ -71,7 +71,7 @@ export const RegionalForecastModal: React.FC<RegionalForecastModalProps> = ({
           email: 'vijay.kumar@aciesglobal.com',
           body: `Hi Vijay,
 
-Following our Q2 regional review of the APAC region (which is overperforming by +7.6% at ₹312 Cr), we are facing capacity bottlenecks for our high-demand SKUs. 
+Following our Q2 regional review of the APAC region (which is overperforming by +7.6% at $312 M), we are facing capacity bottlenecks for our high-demand SKUs. 
 
 Specifically, Baddi manufacturing component shortages are threatening stock availability for Herbal Shampoo and Mango Fizz. 
 
@@ -88,7 +88,7 @@ Executive Director`
           email: 'rajesh.verma@aciesglobal.com',
           body: `Hi Rajesh,
 
-Our convenience channel in APAC is growing at +15% WoW but remains under-allocated in promotional spend (contributing only ₹35 Cr of the ₹312 Cr actuals).
+Our convenience channel in APAC is growing at +15% WoW but remains under-allocated in promotional spend (contributing only $35 M of the $312 M actuals).
 
 I recommend launching a localized digital promo campaign targeting urban convenience outlets to sustain this velocity. Please present a budget outline by Wednesday.
 
@@ -113,7 +113,7 @@ Executive Director`
       ];
       insights = [
         'Severe margin erosion on Choco Wafers due to excess trade discount dependency (72%).',
-        'Supply chain bottleneck: Fabric Softener (Vapi Hub) recorded 7 major stockouts, causing ₹6.2 Cr in lost demand.',
+        'Supply chain bottleneck: Fabric Softener (Vapi Hub) recorded 7 major stockouts, causing $6.2 M in lost demand.',
         'High raw material costs in packaging plastics driving down category gross margins to 32.5%.'
       ];
       actions = [
@@ -125,7 +125,7 @@ Executive Director`
           email: 'rajesh.verma@aciesglobal.com',
           body: `Hi Rajesh,
 
-The Americas region has fallen short of target by -5.0% (actual ₹228 Cr vs target ₹240 Cr). A primary driver is margin compression in hypermarkets, particularly on Choco Wafers.
+The Americas region has fallen short of target by -5.0% (actual $228 M vs target $240 M). A primary driver is margin compression in hypermarkets, particularly on Choco Wafers.
 
 Our discount reliance stands at 72% here. We need to implement a strict trade promo ceiling of 35% and pivot to organic brand activations. Please draft a policy outline.
 
@@ -177,7 +177,7 @@ Executive Director`
           email: 'vijay.kumar@aciesglobal.com',
           body: `Hi Vijay,
 
-EMEA performance is stable (+2.0% actual ₹311 Cr), but supplier complexity is introducing container delay risks. 
+EMEA performance is stable (+2.0% actual $311 M), but supplier complexity is introducing container delay risks. 
 
 I propose implementing a port-diversification protocol, routing shipments through Northern rail hubs to bypass congested docks. Please map the logistics flow and transit cost implications.
 
@@ -240,17 +240,17 @@ Executive Director`
         <div className="grid grid-cols-3 gap-3">
           <div className="p-3 bg-zinc-50 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded">
             <p className="font-bold text-[8.5px] uppercase tracking-widest text-zinc-400 mb-1">Actual Sales</p>
-            <p className="text-lg font-display font-bold text-acies-yellow">₹{region.actual} Cr</p>
+            <p className="text-lg font-display font-bold text-acies-yellow">${region.actual} M</p>
           </div>
           <div className="p-3 bg-zinc-50 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded">
             <p className="font-bold text-[8.5px] uppercase tracking-widest text-zinc-400 mb-1">Target Sales</p>
-            <p className="text-lg font-display font-bold text-zinc-800 dark:text-white">₹{region.target} Cr</p>
+            <p className="text-lg font-display font-bold text-zinc-800 dark:text-white">${region.target} M</p>
           </div>
           <div className="p-3 bg-zinc-50 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded">
             <p className="font-bold text-[8.5px] uppercase tracking-widest text-zinc-400 mb-1">Variance Achievement</p>
             <div className="flex items-center gap-1">
               <span className={`text-lg font-display font-bold ${variance >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                {variance >= 0 ? '+' : ''}{variance.toFixed(1)} Cr ({pctAchievement.toFixed(1)}%)
+                {variance >= 0 ? '+' : ''}{variance.toFixed(1)} M ({pctAchievement.toFixed(1)}%)
               </span>
               {variance >= 0 ? (
                 <TrendingUp size={14} className="text-green-500" />
@@ -275,7 +275,7 @@ Executive Director`
                   <div key={cat.name} className="space-y-1">
                     <div className="flex justify-between items-center text-[10px] font-semibold text-zinc-700 dark:text-zinc-300">
                       <span>{cat.name}</span>
-                      <span>₹{cat.sales} Cr ({pct}%)</span>
+                      <span>${cat.sales} M ({pct}%)</span>
                     </div>
                     <div className="w-full h-1.5 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
                       <div className={`h-full ${cat.color}`} style={{ width: `${pct}%` }} />
@@ -297,7 +297,7 @@ Executive Director`
                   <div key={ch.name} className="space-y-1">
                     <div className="flex justify-between items-center text-[10px] font-semibold text-zinc-700 dark:text-zinc-300">
                       <span>{ch.name}</span>
-                      <span>₹{ch.sales} Cr ({pct}%)</span>
+                      <span>${ch.sales} M ({pct}%)</span>
                     </div>
                     <div className="w-full h-1.5 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
                       <div className={`h-full ${ch.color}`} style={{ width: `${pct}%` }} />

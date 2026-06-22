@@ -336,8 +336,8 @@ export const AUDIT_DATA: Record<string, AuditContent> = {
   },
   'Net Profit': {
     title: 'Net Profit',
-    value: '₹95.2 Cr',
-    soWhat: 'Net profitability reaches ₹95.2 Cr, driven by strong growth in core beverages, but impacted by rising raw milk COGS in Dairy.',
+    value: '$95.2 M',
+    soWhat: 'Net profitability reaches $95.2 M, driven by strong growth in core beverages, but impacted by rising raw milk COGS in Dairy.',
     action: 'Re-negotiate milk procurement contracts and increase high-margin snack items distribution focus.',
     columns: [
       { name: 'gross_revenue', type: 'float [DIRECT]', desc: 'Gross sales revenue generated.' },
@@ -352,10 +352,10 @@ export const AUDIT_DATA: Record<string, AuditContent> = {
     trendTitle: 'Net Profit and Volatility by Category',
     trendHeaders: ['Category', 'Revenue Contribution', 'Net Margin %', 'Volatility'],
     trendRows: [
-      ['Beverages', '₹280 Cr', '14.2%', 'Low'],
-      ['Snacks', '₹260 Cr', '11.8%', 'Medium'],
-      ['Dairy', '₹180 Cr', '8.5%', 'High'],
-      ['Personal Care', '₹131 Cr', '12.1%', 'Medium']
+      ['Beverages', '$280 M', '14.2%', 'Low'],
+      ['Snacks', '$260 M', '11.8%', 'Medium'],
+      ['Dairy', '$180 M', '8.5%', 'High'],
+      ['Personal Care', '$131 M', '12.1%', 'Medium']
     ]
   },
   'Gross margin %': {
@@ -383,8 +383,8 @@ export const AUDIT_DATA: Record<string, AuditContent> = {
   },
   'Gross Profit': {
     title: 'Gross Profit',
-    value: '₹308.1 Cr',
-    soWhat: 'Gross profit contribution stands at ₹308.1 Cr (36.2% of sales), driven by Beverages and Snacks categories, but restricted by packaging material inflation in Personal Care.',
+    value: '$308.1 M',
+    soWhat: 'Gross profit contribution stands at $308.1 M (36.2% of sales), driven by Beverages and Snacks categories, but restricted by packaging material inflation in Personal Care.',
     action: 'Optimize raw material procurement contracts and consolidate vendor logistics to reduce COGS.',
     columns: [
       { name: 'net_sales', type: 'float [DIRECT]', desc: 'Primary sales revenue generated.' },
@@ -399,16 +399,16 @@ export const AUDIT_DATA: Record<string, AuditContent> = {
     trendTitle: 'Gross Profit by Category',
     trendHeaders: ['Category', 'Revenue Contribution', 'Gross Margin %', 'Gross Profit'],
     trendRows: [
-      ['Beverages', '₹280 Cr', '38.45%', '₹107.7 Cr'],
-      ['Snacks', '₹260 Cr', '38.53%', '₹100.2 Cr'],
-      ['Dairy', '₹180 Cr', '38.50%', '₹69.3 Cr'],
-      ['Personal Care', '₹131 Cr', '39.52%', '₹51.8 Cr']
+      ['Beverages', '$280 M', '38.45%', '$107.7 M'],
+      ['Snacks', '$260 M', '38.53%', '$100.2 M'],
+      ['Dairy', '$180 M', '38.50%', '$69.3 M'],
+      ['Personal Care', '$131 M', '39.52%', '$51.8 M']
     ]
   },
   'Revenue MTD': {
     title: 'Total Revenue',
-    value: '₹851.2 Cr',
-    soWhat: 'MTD revenue reaches ₹851.2 Cr, showing +8.4% growth compared to last month. Beverages continue to dominate, contributing 37.1% of total sales.',
+    value: '$851.2 M',
+    soWhat: 'MTD revenue reaches $851.2 M, showing +8.4% growth compared to last month. Beverages continue to dominate, contributing 37.1% of total sales.',
     action: 'Reallocate logistics priority to high-demand beverage SKUs in APAC and EMEA to sustain volume.',
     columns: [
       { name: 'net_sales', type: 'float [DIRECT]', desc: 'Revenue per transaction row (units sold × price).' },
@@ -422,16 +422,16 @@ export const AUDIT_DATA: Record<string, AuditContent> = {
     trendTitle: 'MTD Revenue by Region',
     trendHeaders: ['Region', 'MTD Revenue', 'Growth MoM', 'Target'],
     trendRows: [
-      ['APAC', '₹312 Cr', '+7.6%', '₹330 Cr'],
-      ['EMEA', '₹311 Cr', '+2.0%', '₹320 Cr'],
-      ['Americas', '₹228.2 Cr', '-5.0%', '₹250 Cr']
+      ['APAC', '$312 M', '+7.6%', '$330 M'],
+      ['EMEA', '$311 M', '+2.0%', '$320 M'],
+      ['Americas', '$228.2 M', '-5.0%', '$250 M']
     ]
   },
   'Launch ROI': {
     title: 'Launch ROI',
     value: '1.85x',
     soWhat: 'Expected launch return stands at 1.85x ROI, buoyed by the upcoming premium Mango Fizz 750ml rollout.',
-    action: 'Approve the ₹4.2 Cr launch budget and run early cross-promotions with snacks.',
+    action: 'Approve the $4.2 M launch budget and run early cross-promotions with snacks.',
     columns: [
       { name: 'projected_revenue', type: 'float [DIRECT]', desc: 'Projected first-year sales revenue.' },
       { name: 'launch_budget', type: 'float [DIRECT]', desc: 'Total initial marketing and logistics launch budget.' }
@@ -444,9 +444,9 @@ export const AUDIT_DATA: Record<string, AuditContent> = {
     trendTitle: 'Expected ROI for Active Launches',
     trendHeaders: ['Launch Concept', 'Projected Revenue', 'Budget Allocated', 'Expected ROI'],
     trendRows: [
-      ['BrandA Premium Energy', '₹24.5 Cr', '₹12.0 Cr', '2.04x'],
-      ['BrandD Organic Yogurt', '₹18.2 Cr', '₹10.5 Cr', '1.73x'],
-      ['Mango Fizz 750ml Launch', '₹8.4 Cr', '₹4.2 Cr', '2.00x']
+      ['BrandA Premium Energy', '$24.5 M', '$12.0 M', '2.04x'],
+      ['BrandD Organic Yogurt', '$18.2 M', '$10.5 M', '1.73x'],
+      ['Mango Fizz 750ml Launch', '$8.4 M', '$4.2 M', '2.00x']
     ]
   },
   'Portfolio SKUs': {
@@ -490,18 +490,18 @@ export const AUDIT_DATA: Record<string, AuditContent> = {
     trendTitle: 'Identified Sunset Candidate Variants',
     trendHeaders: ['Sunset SKU', 'Category', 'Commercial Value', 'Complexity Index', 'Net Sales'],
     trendRows: [
-      ['Fabric Softener', 'Household', '0.22', '0.81', '₹28 Cr'],
-      ['Floor Cleaner', 'Household', '0.29', '0.74', '₹38 Cr'],
-      ['Aloe Face Wash', 'Personal Care', '0.28', '0.78', '₹32 Cr'],
-      ['BrandB Yogurt 1kg', 'Dairy', '0.35', '0.68', '₹42 Cr'],
-      ['BrandE Yogurt (Straw)', 'Dairy', '0.29', '0.72', '₹35 Cr'],
-      ['Choco Wafers', 'Snacks', '0.34', '0.71', '₹44 Cr']
+      ['Fabric Softener', 'Household', '0.22', '0.81', '$28 M'],
+      ['Floor Cleaner', 'Household', '0.29', '0.74', '$38 M'],
+      ['Aloe Face Wash', 'Personal Care', '0.28', '0.78', '$32 M'],
+      ['BrandB Yogurt 1kg', 'Dairy', '0.35', '0.68', '$42 M'],
+      ['BrandE Yogurt (Straw)', 'Dairy', '0.29', '0.72', '$35 M'],
+      ['Choco Wafers', 'Snacks', '0.34', '0.71', '$44 M']
     ]
   },
   'Revenue at Risk': {
     title: 'Revenue at Risk',
-    value: '₹148 Cr',
-    soWhat: 'Total revenue exposure is ₹148 Cr if all 6 sunset candidates are pruned simultaneously without substitution transfer.',
+    value: '$148 M',
+    soWhat: 'Total revenue exposure is $148 M if all 6 sunset candidates are pruned simultaneously without substitution transfer.',
     action: 'Enforce product replacement recommendations (e.g. redirecting demand to hero Mango Fizz or Soap variants).',
     columns: [
       { name: 'revenue', type: 'float [DIRECT]', desc: 'Direct annual revenue contribution of the sunset candidate SKU.' }
@@ -514,12 +514,12 @@ export const AUDIT_DATA: Record<string, AuditContent> = {
     trendTitle: 'Sunset Candidate Revenue Exposure',
     trendHeaders: ['Sunset SKU', 'Category', 'Annual Sales', 'Volume Share'],
     trendRows: [
-      ['Choco Wafers', 'Snacks', '₹44 Cr', '29.7%'],
-      ['BrandB Yogurt 1kg', 'Dairy', '₹42 Cr', '28.4%'],
-      ['Floor Cleaner', 'Household', '₹38 Cr', '25.7%'],
-      ['BrandE Yogurt (Straw)', 'Dairy', '₹35 Cr', '23.6%'],
-      ['Aloe Face Wash', 'Personal Care', '₹32 Cr', '21.6%'],
-      ['Fabric Softener', 'Household', '₹28 Cr', '18.9%']
+      ['Choco Wafers', 'Snacks', '$44 M', '29.7%'],
+      ['BrandB Yogurt 1kg', 'Dairy', '$42 M', '28.4%'],
+      ['Floor Cleaner', 'Household', '$38 M', '25.7%'],
+      ['BrandE Yogurt (Straw)', 'Dairy', '$35 M', '23.6%'],
+      ['Aloe Face Wash', 'Personal Care', '$32 M', '21.6%'],
+      ['Fabric Softener', 'Household', '$28 M', '18.9%']
     ]
   },
   'Avg Complexity': {
@@ -634,8 +634,8 @@ export const AUDIT_DATA: Record<string, AuditContent> = {
   },
   'Portfolio Revenue': {
     title: 'Portfolio Revenue',
-    value: '₹851.4 Cr',
-    soWhat: 'Month-to-date total portfolio revenue is ₹851.4 Cr, tracking slightly behind the target of ₹900 Cr. Top-line velocity remains heavily supported by the Beverages segment (37.1%), while minor supply chain bottlenecks in Personal Care introduce slight margin exposure.',
+    value: '$851.4 M',
+    soWhat: 'Month-to-date total portfolio revenue is $851.4 M, tracking slightly behind the target of $900 M. Top-line velocity remains heavily supported by the Beverages segment (37.1%), while minor supply chain bottlenecks in Personal Care introduce slight margin exposure.',
     action: 'Accelerate high-growth SKU allocations in APAC/EMEA hubs and run price-elasticity models for key volumetric drivers.',
     columns: [
       { name: 'net_sales', type: 'float [DIRECT]', desc: 'Revenue per transaction row (units sold × price after discounts).' },
@@ -644,19 +644,19 @@ export const AUDIT_DATA: Record<string, AuditContent> = {
     formula: 'R_{portfolio} = \\sum_{i=1}^{M} S_i',
     formulaDescription: 'Portfolio Revenue is the total sales revenue generated across all products in our catalog during the current month.',
     assumptions: [
-      'Target baseline: The target of ₹900 Cr is set based on historical seasonal runs and Q2 category forecasts.',
+      'Target baseline: The target of $900 M is set based on historical seasonal runs and Q2 category forecasts.',
       'Active items: Includes all revenue-generating SKUs across all regions (APAC, EMEA, Americas).'
     ],
     trendTitle: 'Portfolio Revenue Performance vs. Target',
     trendHeaders: ['Month', 'Actual Revenue', 'Growth MoM', 'Target'],
     trendRows: [
-      ['Jan', '₹780 Cr', '+5.2%', '₹800 Cr'],
-      ['Feb', '₹795 Cr', '+1.9%', '₹812 Cr'],
-      ['Mar', '₹808 Cr', '+1.6%', '₹824 Cr'],
-      ['Apr', '₹821 Cr', '+1.6%', '₹836 Cr'],
-      ['May', '₹833 Cr', '+1.5%', '₹848 Cr'],
-      ['Jun', '₹843 Cr', '+1.2%', '₹860 Cr'],
-      ['Jul MTD', '₹851.4 Cr', '+1.0%', '₹900 Cr']
+      ['Jan', '$780 M', '+5.2%', '$800 M'],
+      ['Feb', '$795 M', '+1.9%', '$812 M'],
+      ['Mar', '$808 M', '+1.6%', '$824 M'],
+      ['Apr', '$821 M', '+1.6%', '$836 M'],
+      ['May', '$833 M', '+1.5%', '$848 M'],
+      ['Jun', '$843 M', '+1.2%', '$860 M'],
+      ['Jul MTD', '$851.4 M', '+1.0%', '$900 M']
     ]
   },
   'Portfolio SKU Count': {
@@ -851,8 +851,8 @@ export const AUDIT_DATA: Record<string, AuditContent> = {
   },
   'Assortment Gross Yield': {
     title: 'Assortment Gross Yield',
-    value: '₹3.02 Cr',
-    soWhat: 'Average gross profit contribution per active listing is ₹3.02 Cr, lagging behind the ₹3.50 Cr corporate benchmark by -1.1% due to promo dependency.',
+    value: '$3.02 M',
+    soWhat: 'Average gross profit contribution per active listing is $3.02 M, lagging behind the $3.50 M corporate benchmark by -1.1% due to promo dependency.',
     action: 'Apply pricing floors to low-yield categories and eliminate redundant duplicate sizes.',
     columns: [
       { name: 'net_sales', type: 'float [DIRECT]', desc: 'Total sales revenue per item.' },
@@ -866,10 +866,10 @@ export const AUDIT_DATA: Record<string, AuditContent> = {
     trendTitle: 'Gross Yield by Retail Channel',
     trendHeaders: ['Retail Channel', 'Average Gross Yield', 'YoY Growth', 'Performance'],
     trendRows: [
-      ['Supermarkets', '₹3.12 Cr', '+1.2%', 'On Target'],
-      ['Hypermarkets', '₹3.05 Cr', '-0.5%', 'Borderline'],
-      ['E-commerce', '₹2.98 Cr', '-2.4%', 'Underperforming'],
-      ['Convenience', '₹2.88 Cr', '-3.1%', 'Critical']
+      ['Supermarkets', '$3.12 M', '+1.2%', 'On Target'],
+      ['Hypermarkets', '$3.05 M', '-0.5%', 'Borderline'],
+      ['E-commerce', '$2.98 M', '-2.4%', 'Underperforming'],
+      ['Convenience', '$2.88 M', '-3.1%', 'Critical']
     ]
   },
   'Cannibalization Risk Index': {
@@ -912,10 +912,10 @@ export const AUDIT_DATA: Record<string, AuditContent> = {
     trendTitle: 'Lifecycle Stage Distribution',
     trendHeaders: ['Stage', 'SKU Count', 'Revenue Contribution', 'Health Status'],
     trendRows: [
-      ['Introduction', '12 SKUs', '₹12.5 Cr (9%)', 'Healthy / Launching'],
-      ['Growth', '28 SKUs', '₹45.2 Cr (34%)', 'Optimal / High Growth'],
-      ['Maturity', '45 SKUs', '₹62.1 Cr (47%)', 'Stable / Cash Cow'],
-      ['Decline', '23 SKUs', '₹13.2 Cr (10%)', 'Elevated Risk / Tail Drag']
+      ['Introduction', '12 SKUs', '$12.5 M (9%)', 'Healthy / Launching'],
+      ['Growth', '28 SKUs', '$45.2 M (34%)', 'Optimal / High Growth'],
+      ['Maturity', '45 SKUs', '$62.1 M (47%)', 'Stable / Cash Cow'],
+      ['Decline', '23 SKUs', '$13.2 M (10%)', 'Elevated Risk / Tail Drag']
     ]
   }
 };

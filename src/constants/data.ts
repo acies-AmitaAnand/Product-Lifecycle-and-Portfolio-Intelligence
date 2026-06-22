@@ -365,7 +365,7 @@ export const VP_ALERTS = [
 ];
 
 export const VP_APPROVALS = [
-  {id:'p1',title:'Mango Fizz 750ml — Launch budget ₹4.2 Cr',type:'Launch' as const,urgency:'high' as const,age:'2d',done:false},
+  {id:'p1',title:'Mango Fizz 750ml — Launch budget $4.2 M',type:'Launch' as const,urgency:'high' as const,age:'2d',done:false},
   {id:'p2',title:'Choco Wafers promo extension — Q4',type:'Promo' as const,urgency:'medium' as const,age:'4d',done:false},
   {id:'p3',title:'Foam Face Wash rationalization sign-off',type:'Rationalize' as const,urgency:'low' as const,age:'6d',done:false},
 ];
@@ -377,7 +377,7 @@ export const VP_FORECAST = [
 ];
 
 export const VP_KPI_BASE = [
-  {label:'Total Revenue',value:851,unit:'₹ Cr',trend:+8.4,spark:[720,748,771,790,810,822,838,851],color:'#534AB7',fmt:(v: number)=>v+' Cr'},
+  {label:'Total Revenue',value:851,unit:'$ M',trend:+8.4,spark:[720,748,771,790,810,822,838,851],color:'#534AB7',fmt:(v: number)=>v+' M'},
   {label:'Gross Margin',value:36.2,unit:'%',trend:+1.1,spark:[33.1,33.8,34.2,34.9,35.4,35.8,36.0,36.2],color:'#0F6E56',fmt:(v: number)=>v+'%'},
   {label:'Active SKUs',value:100,unit:'',trend:-3,spark:[134,133,131,130,129,128,128,100],color:'#185FA5',fmt:(v: number)=>String(v)},
   {label:'Critical Alerts',value:2,unit:'',trend:+2,spark:[0,0,1,0,1,2,2,2],color:'#A32D2D',fmt:(v: number)=>String(v)},

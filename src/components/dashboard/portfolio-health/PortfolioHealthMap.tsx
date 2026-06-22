@@ -326,7 +326,7 @@ const LifecycleHealthPanel: React.FC<LifecycleHealthPanelProps> = ({ skusList, i
 
                   {/* Absolute Revenue Value */}
                   <span className="text-[9px] font-extrabold text-zinc-700 dark:text-zinc-300 font-mono mt-0.5">
-                    ₹{Math.round(stage.revAmount).toLocaleString('en-IN')} Cr
+                    ${Math.round(stage.revAmount).toLocaleString('en-IN')} M
                   </span>
 
                   {/* Efficiency arrow */}
@@ -403,9 +403,9 @@ const LifecycleHealthPanel: React.FC<LifecycleHealthPanelProps> = ({ skusList, i
             </span>
             <div className="flex items-baseline gap-1 mt-0.5">
               <span className="text-sm font-display font-extrabold text-zinc-800 dark:text-white font-mono">
-                ₹{Math.round(totalRevVal).toLocaleString('en-IN')}
+                ${Math.round(totalRevVal).toLocaleString('en-IN')}
               </span>
-              <span className="text-[8px] text-zinc-500 uppercase font-bold">Cr</span>
+              <span className="text-[8px] text-zinc-500 uppercase font-bold">M</span>
             </div>
           </div>
 
@@ -506,34 +506,34 @@ const getInvestmentMarginData = (skusList: any[]): InvestmentMarginSku[] => {
 
     if (s.name === 'Herbal Shampoo') {
       investment = 14; returnMargin = 85;
-      rec = 'Booming demand requires low capital layout of ₹14 Cr; yields a high return margin of 85%. Primary focus for budget boost.';
+      rec = 'Booming demand requires low capital layout of $14 M; yields a high return margin of 85%. Primary focus for budget boost.';
     } else if (s.name === 'BrandD Toothpaste') {
       investment = 22; returnMargin = 72;
       rec = 'Stable personal care SKU. Low marketing investment needed; returns steady 72% margins. Increase store penetration.';
     } else if (s.name === 'Oat Cookies') {
       investment = 18; returnMargin = 78;
-      rec = 'Snack leader with low freight overhead. Low investment of ₹18 Cr yields 78% returns. Increase promotional layout.';
+      rec = 'Snack leader with low freight overhead. Low investment of $18 M yields 78% returns. Increase promotional layout.';
     } else if (s.name === 'BrandC Chips (Spicy)') {
       investment = 28; returnMargin = 68;
-      rec = 'High local demand pull; low capital required (₹28 Cr) to yield 68% returns. Optimize distributor placement.';
+      rec = 'High local demand pull; low capital required ($28 M) to yield 68% returns. Optimize distributor placement.';
     } else if (s.name === 'Coconut Water 330ml') {
       investment = 35; returnMargin = 81;
-      rec = 'Organic category with high profit return of 81% against moderate ₹35 Cr capital expansion. Secure convenience store placement.';
+      rec = 'Organic category with high profit return of 81% against moderate $35 M capital expansion. Secure convenience store placement.';
     } else if (s.name === 'Mango Fizz 500ml') {
       investment = 75; returnMargin = 70;
-      rec = 'Market leader requires substantial launch budget (₹75 Cr) for regional campaigns. Returns a strong 70% margin.';
+      rec = 'Market leader requires substantial launch budget ($75 M) for regional campaigns. Returns a strong 70% margin.';
     } else if (s.name === 'Laundry Pods Premium') {
       investment = 82; returnMargin = 74;
-      rec = 'Premium category needs automated line upgrades (₹82 Cr) but offers excellent 74% margins once scaled.';
+      rec = 'Premium category needs automated line upgrades ($82 M) but offers excellent 74% margins once scaled.';
     } else if (s.name === 'Dish Soap 1L') {
       investment = 60; returnMargin = 62;
-      rec = 'Steady household demand. Scaling production requires ₹60 Cr with solid 62% margins.';
+      rec = 'Steady household demand. Scaling production requires $60 M with solid 62% margins.';
     } else if (s.name === 'Choco Wafers') {
       investment = 70; returnMargin = 22;
       rec = 'High promotional dependency (72%) and heavy capital layout. Margin returns only 22%. Avoid additional investment.';
     } else if (s.name === 'Fabric Softener') {
       investment = 85; returnMargin = 15;
-      rec = 'Severe logistics bottleneck (35d lead time). Requires ₹85 Cr for warehouse overrides with poor 15% margin yields.';
+      rec = 'Severe logistics bottleneck (35d lead time). Requires $85 M for warehouse overrides with poor 15% margin yields.';
     } else if (s.name === 'BrandB Yogurt 1kg') {
       investment = 65; returnMargin = 24;
       rec = 'Saturated dairy item. Shift production focus to higher-margin fresh cheese.';
@@ -554,21 +554,21 @@ const getInvestmentMarginData = (skusList: any[]): InvestmentMarginSku[] => {
         if (s.rev >= 80) {
           investment = Math.round(55 + (s.rev % 35));
           returnMargin = Math.round(s.margin);
-          rec = `High-value product. Requires ₹${investment} Cr capital to yield ${returnMargin}% margins.`;
+          rec = `High-value product. Requires $${investment} M capital to yield ${returnMargin}% margins.`;
         } else {
           investment = Math.round(15 + (s.rev % 30));
           returnMargin = Math.round(s.margin);
-          rec = `Attractive margin profile. Low investment of ₹${investment} Cr delivers ${returnMargin}% returns.`;
+          rec = `Attractive margin profile. Low investment of $${investment} M delivers ${returnMargin}% returns.`;
         }
       } else {
         if (s.rev >= 80) {
           investment = Math.round(60 + (s.rev % 30));
           returnMargin = Math.round(s.margin);
-          rec = `Capital heavy and low yield. Investment of ₹${investment} Cr delivers only ${returnMargin}% margin.`;
+          rec = `Capital heavy and low yield. Investment of $${investment} M delivers only ${returnMargin}% margin.`;
         } else {
           investment = Math.round(10 + (s.rev % 35));
           returnMargin = Math.round(s.margin);
-          rec = `Minor tactical SKU. Low investment of ₹${investment} Cr yields minor ${returnMargin}% margins.`;
+          rec = `Minor tactical SKU. Low investment of $${investment} M yields minor ${returnMargin}% margins.`;
         }
       }
     }
@@ -652,7 +652,7 @@ const InvestmentMarginMap: React.FC<InvestmentMarginMapProps> = ({ skusList, isD
     if (addToast) {
       addToast(
         "Investment Approved",
-        `Mitigation plan & ₹${potential} Cr expansion budget successfully approved for ${skuName}.`,
+        `Mitigation plan & $${potential} M expansion budget successfully approved for ${skuName}.`,
         "#10b981"
       );
     }
@@ -678,7 +678,7 @@ const InvestmentMarginMap: React.FC<InvestmentMarginMapProps> = ({ skusList, isD
           <div className="border-t border-black/5 dark:border-white/5 pt-1 mt-1 space-y-0.5 font-medium">
             <div className="flex justify-between gap-4">
               <span className="text-zinc-400">Investment:</span>
-              <span className="font-bold text-zinc-800 dark:text-zinc-200">₹{data.investment} Cr</span>
+              <span className="font-bold text-zinc-800 dark:text-zinc-200">${data.investment} M</span>
             </div>
             <div className="flex justify-between gap-4">
               <span className="text-zinc-400">Return Margin:</span>
@@ -686,7 +686,7 @@ const InvestmentMarginMap: React.FC<InvestmentMarginMapProps> = ({ skusList, isD
             </div>
             <div className="flex justify-between gap-4">
               <span className="text-zinc-450">SKU Revenue:</span>
-              <span className="font-bold text-emerald-600 dark:text-emerald-450">₹{data.rev} Cr</span>
+              <span className="font-bold text-emerald-600 dark:text-emerald-450">${data.rev} M</span>
             </div>
           </div>
         </div>
@@ -767,7 +767,7 @@ const InvestmentMarginMap: React.FC<InvestmentMarginMapProps> = ({ skusList, isD
                   name="Investment" 
                   domain={[0, 100]} 
                   tick={{ fill: tickColor, fontSize: 9 }} 
-                  label={{ value: 'Required Investment (₹ Cr) →', position: 'bottom', fill: tickColor, fontSize: 10, offset: 10 }} 
+                  label={{ value: 'Required Investment ($ M) →', position: 'bottom', fill: tickColor, fontSize: 10, offset: 10 }} 
                 />
                 <YAxis 
                   type="number" 
@@ -889,12 +889,12 @@ const InvestmentMarginMap: React.FC<InvestmentMarginMapProps> = ({ skusList, isD
                       {item.name}
                     </h4>
                     <p className="text-[8.5px] text-zinc-400 dark:text-zinc-505 uppercase font-bold tracking-wider mt-0.5">
-                      {item.cat} • Rev: ₹{item.rev} Cr • Margin: {item.margin}%
+                      {item.cat} • Rev: ${item.rev} M • Margin: {item.margin}%
                     </p>
                   </div>
                   <div className="text-right">
                     <span className="text-[9.5px] font-extrabold font-mono text-emerald-600 dark:text-emerald-400">
-                      ₹{item.investment} Cr
+                      ${item.investment} M
                     </span>
                     <p className="text-[7.5px] text-zinc-400 dark:text-zinc-500 uppercase tracking-widest font-bold mt-0.5">
                       Investment
@@ -982,7 +982,7 @@ const getRevPerfData = (skusList: any[]): RevPerfSku[] => {
       rec = `Core driver of portfolio revenue. Protect shelf placement, maintain marketing support, and ensure stock availability.`;
     } else if (revenue >= 75 && performance < 50) {
       quadrant = 'underperformer';
-      rec = `Generates high revenue (₹${revenue} Cr) but has low performance score (${performance}%). Review pricing and optimize margin metrics.`;
+      rec = `Generates high revenue ($${revenue} M) but has low performance score (${performance}%). Review pricing and optimize margin metrics.`;
     } else if (revenue < 75 && performance >= 50) {
       quadrant = 'hidden_growth';
       rec = `High-margin and strong growth with low volume. Expand distribution channels, increase marketing, and scale production.`;
@@ -1102,7 +1102,7 @@ const RevenuePerformanceMatrix: React.FC<RevenuePerformanceMatrixProps> = ({ sku
           <div className="border-t border-black/5 dark:border-white/5 pt-1 mt-1 space-y-0.5 font-medium">
             <div className="flex justify-between gap-4">
               <span className="text-zinc-400">Revenue:</span>
-              <span className="font-bold text-zinc-800 dark:text-zinc-200">₹{data.rev} Cr</span>
+              <span className="font-bold text-zinc-800 dark:text-zinc-200">${data.rev} M</span>
             </div>
             <div className="flex justify-between gap-4">
               <span className="text-zinc-400">Performance:</span>
@@ -1191,7 +1191,7 @@ const RevenuePerformanceMatrix: React.FC<RevenuePerformanceMatrixProps> = ({ sku
                   name="Revenue" 
                   domain={[0, 160]} 
                   tick={{ fill: tickColor, fontSize: 9 }} 
-                  label={{ value: 'Revenue (₹ Cr) →', position: 'bottom', fill: tickColor, fontSize: 10, offset: 10 }} 
+                  label={{ value: 'Revenue ($ M) →', position: 'bottom', fill: tickColor, fontSize: 10, offset: 10 }} 
                 />
                 <YAxis 
                   type="number" 
@@ -1313,12 +1313,12 @@ const RevenuePerformanceMatrix: React.FC<RevenuePerformanceMatrixProps> = ({ sku
                       {item.name}
                     </h4>
                     <p className="text-[8.5px] text-zinc-400 dark:text-zinc-505 uppercase font-bold tracking-wider mt-0.5">
-                      {item.cat} • Rev: ₹{item.rev} Cr • Perf: {item.performance}%
+                      {item.cat} • Rev: ${item.rev} M • Perf: {item.performance}%
                     </p>
                   </div>
                   <div className="text-right">
                     <span className="text-[9.5px] font-extrabold font-mono text-purple-600 dark:text-purple-400">
-                      ₹{item.rev} Cr
+                      ${item.rev} M
                     </span>
                     <p className="text-[7.5px] text-zinc-400 dark:text-zinc-500 uppercase tracking-widest font-bold mt-0.5">
                       Revenue
@@ -1590,7 +1590,7 @@ const VPCommandCenter: React.FC<{
   const fcastHist = [96.1, 95.8, 95.4, 95.2, 95.0, 94.9, 94.7, 94.6].map(v => v * fcastScale);
 
   const kpis = {
-    rev: { val: revVal, hist: revHist, target: 900, label: 'Portfolio Revenue', suffix: ' Cr', prefix: '₹', color: '#3b82f6' },
+    rev: { val: revVal, hist: revHist, target: 900, label: 'Portfolio Revenue', suffix: ' M', prefix: '$', color: '#3b82f6' },
     skuCount: { val: skuCountVal, hist: skuCountHist, target: 100, label: 'Portfolio SKU Count', suffix: '', prefix: '', color: '#10b981' },
     growth: { val: growthVal, hist: growthHist, target: 10.0, label: 'Growth Rate', suffix: '%', prefix: '', color: '#ec4899' },
     orders: { val: ordersVal, hist: ordersHist, target: 5000, label: 'Orders — Today', suffix: '', prefix: '', color: '#8b5cf6' },
@@ -1612,8 +1612,8 @@ const VPCommandCenter: React.FC<{
   // Master datasets for the 3 roles/lenses
   const ALL_APPROVALS = [
     // VP Product Management (Portfolio Strategy & Performance Lens)
-    { id: 'p_vp1', role: 'VP Product Management', type: 'Launch', title: 'Portfolio Roadmap: Authorize BrandF Soda 250ml slim-can product extension GTM charter — ₹4.5 Cr', age: '2 days', urgency: 'high', done: false },
-    { id: 'p_vp2', role: 'VP Product Management', type: 'CAPEX', title: 'CAPEX Allocation: Approve Q3 product packaging automation capital budget — ₹12.5 Cr', age: '6 days', urgency: 'high', done: false },
+    { id: 'p_vp1', role: 'VP Product Management', type: 'Launch', title: 'Portfolio Roadmap: Authorize BrandF Soda 250ml slim-can product extension GTM charter — $4.5 M', age: '2 days', urgency: 'high', done: false },
+    { id: 'p_vp2', role: 'VP Product Management', type: 'CAPEX', title: 'CAPEX Allocation: Approve Q3 product packaging automation capital budget — $12.5 M', age: '6 days', urgency: 'high', done: false },
     { id: 'p_vp3', role: 'VP Product Management', type: 'Launch', title: 'M&A Integration: Sign off on BrandC Snacks portfolio consolidation & product alignment', age: '4 days', urgency: 'medium', done: false },
 
     // Product Manager (Operational & Execution Lens)
@@ -1974,7 +1974,7 @@ const VPCommandCenter: React.FC<{
   const ALL_DECISIONS = [
     // VP Product Management (Portfolio Strategy & Performance Lens)
     { id: 'd_vp1', role: 'VP Product Management', icon: '⚡', iconBg: 'rgba(239,68,68,0.1)', iconColor: '#ef4444', title: 'Portfolio Strategy: Consolidate BrandD Cheese product line (rationalize 4 tail variants)', sub: 'SKU Proliferation · Brand Dilution', stats: [['Tail SKUs', '12 variants'], ['Tail Sales', '<1.2% total'], ['Margin Drag', '-1.8%'], ['Action', 'Sunset 4 SKUs']], done: false },
-    { id: 'd_vp2', role: 'VP Product Management', icon: '📦', iconBg: 'rgba(59,130,246,0.1)', iconColor: '#3b82f6', title: 'Strategic Investment: Scale BrandF Water portfolio footprint to capture double-digit growth', sub: 'Category Leader · +12.4% YoY', stats: [['Net Sales', '₹17.03 Cr'], ['Margin', '40%'], ['Growth', '12.4% YoY'], ['Opportunity', 'Expand footprint']], done: false },
+    { id: 'd_vp2', role: 'VP Product Management', icon: '📦', iconBg: 'rgba(59,130,246,0.1)', iconColor: '#3b82f6', title: 'Strategic Investment: Scale BrandF Water portfolio footprint to capture double-digit growth', sub: 'Category Leader · +12.4% YoY', stats: [['Net Sales', '$17.03 M'], ['Margin', '40%'], ['Growth', '12.4% YoY'], ['Opportunity', 'Expand footprint']], done: false },
 
     // Product Manager (Operational & Execution Lens)
     { id: 'd_pm1', role: 'Product Manager', icon: '⚡', iconBg: 'rgba(239,68,68,0.1)', iconColor: '#ef4444', title: 'Product Redesign: Refurbish BrandA Softener foaming pump packaging design to resolve sentiment decline', sub: 'Sentiment Decline · Usability', stats: [['Tail SKUs', '2.1 / 5'], ['Sentiment', '-32%'], ['Refill conversion', '18%'], ['Action', 'Eco refill pouch']], done: false },
@@ -1982,7 +1982,7 @@ const VPCommandCenter: React.FC<{
 
     // Pricing and Margin Partner (Financial & Leakage Diagnostics Lens)
     { id: 'd_pr1', role: 'Pricing and Margin Partner', icon: '⚡', iconBg: 'rgba(239,68,68,0.1)', iconColor: '#ef4444', title: 'Promo Policy: Enforce BrandC Chips promotional discount cap to protect gross margins', sub: 'Promo Dependency · Margin Dilution', stats: [['Promo Share', '45%'], ['Category Margin', '32.1%'], ['Hurdle limit', '35%'], ['Cap proposed', '15% max']], done: false },
-    { id: 'd_pr2', role: 'Pricing and Margin Partner', icon: '📦', iconBg: 'rgba(59,130,246,0.1)', iconColor: '#3b82f6', title: 'Revenue Diagnostics: Audit BrandE Water price protection claims to prevent margin leakage', sub: 'Revenue Leakage · Distributor', stats: [['Claim volume', '₹2.8 Cr'], ['Leakage est', '14.2%'], ['Audit timeline', '14 days'], ['Action', 'Set matching limits']], done: false }
+    { id: 'd_pr2', role: 'Pricing and Margin Partner', icon: '📦', iconBg: 'rgba(59,130,246,0.1)', iconColor: '#3b82f6', title: 'Revenue Diagnostics: Audit BrandE Water price protection claims to prevent margin leakage', sub: 'Revenue Leakage · Distributor', stats: [['Claim volume', '$2.8 M'], ['Leakage est', '14.2%'], ['Audit timeline', '14 days'], ['Action', 'Set matching limits']], done: false }
   ];
 
   // Alerts
@@ -2040,9 +2040,9 @@ const VPCommandCenter: React.FC<{
 
   // Region and Bottleneck data
   const regions = [
-    { name: 'APAC', rev: '₹312 Cr', pct: 94, delta: '+7.6%', up: true },
-    { name: 'Americas', rev: '₹228 Cr', pct: 78, delta: '−5.0%', up: false },
-    { name: 'EMEA', rev: '₹311 Cr', pct: 88, delta: '+2.0%', up: true },
+    { name: 'APAC', rev: '$312 M', pct: 94, delta: '+7.6%', up: true },
+    { name: 'Americas', rev: '$228 M', pct: 78, delta: '−5.0%', up: false },
+    { name: 'EMEA', rev: '$311 M', pct: 88, delta: '+2.0%', up: true },
   ];
 
   const bottlenecks = ALL_BOTTLENECKS;
@@ -2832,7 +2832,7 @@ export const PortfolioHealthMapOld: React.FC<PortfolioHealthMapProps> = ({
   const pci = (avgCx * 0.8 + avgPromo * 0.5 + (avgLead / 35) * 0.4) / 1.7;
 
   const kpisData = [
-    { label: 'Total Revenue', value: `₹${Math.round(totalRev)}Cr`, delta: '+12%', dir: 'up', risk: false, info: 'Total portfolio net sales' },
+    { label: 'Total Revenue', value: `$${Math.round(totalRev)}M`, delta: '+12%', dir: 'up', risk: false, info: 'Total portfolio net sales' },
     { label: 'Avg Gross Margin', value: `${avgMargin.toFixed(1)}%`, delta: '+1.4pp', dir: 'up', risk: false, info: 'Unweighted gross margin average' },
     { label: 'Revenue Growth', value: `${(avgGrowth * 100).toFixed(1)}%`, delta: 'YoY', dir: avgGrowth > 0 ? 'up' : 'down', risk: false, info: 'Year-over-year revenue change' },
     { label: 'Portfolio Complexity', value: pci.toFixed(3), delta: '+0.04', dir: 'up', risk: true, info: 'Portfolio Complexity Index score' },
@@ -3041,7 +3041,7 @@ export const PortfolioHealthMapOld: React.FC<PortfolioHealthMapProps> = ({
           
           <div className="flex flex-wrap lg:flex-nowrap gap-px shrink-0 bg-white/5 p-1 rounded-sm">
             {[
-              { label: 'Safety Capital Released', value: '₹42.2 Cr', sub: 'Optimized tail reduction target' },
+              { label: 'Safety Capital Released', value: '$42.2 M', sub: 'Optimized tail reduction target' },
               { label: 'Tail Burden Ratio', value: '66.7%', sub: 'SKUs driving <1% sales aggregate' },
               { label: 'Max Revenue Risk', value: '27.08%', sub: 'EBITDA impact if all candidates rationalized' },
             ].map((stat, i) => (
@@ -3140,7 +3140,7 @@ export const PortfolioHealthMapOld: React.FC<PortfolioHealthMapProps> = ({
                 </select>
               </div>
               <div className="flex flex-col gap-1.5">
-                <label className="text-[9px] font-bold uppercase tracking-widest opacity-40">Min Revenue (₹ Cr)</label>
+                <label className="text-[9px] font-bold uppercase tracking-widest opacity-40">Min Revenue ($ M)</label>
                 <input 
                   type="number" 
                   value={filterMinRev}
@@ -3223,7 +3223,7 @@ export const PortfolioHealthMapOld: React.FC<PortfolioHealthMapProps> = ({
                     itemStyle={{ fontSize: 11 }}
                     labelStyle={{ fontSize: 11, fontWeight: 'bold' }}
                     formatter={(value: any, name: any, props: any) => {
-                      if (name === 'Revenue') return [`₹${value}Cr`, 'Revenue'];
+                      if (name === 'Revenue') return [`$${value}M`, 'Revenue'];
                       return [value, name];
                     }}
                   />
@@ -3311,7 +3311,7 @@ export const PortfolioHealthMapOld: React.FC<PortfolioHealthMapProps> = ({
                     </select>
                   </div>
                   <div className="flex flex-col gap-1">
-                    <label className="text-[8px] font-bold uppercase tracking-widest opacity-40">Projected Revenue (₹ Cr)</label>
+                    <label className="text-[8px] font-bold uppercase tracking-widest opacity-40">Projected Revenue ($ M)</label>
                     <input 
                       type="number" 
                       value={custRev}
@@ -3391,7 +3391,7 @@ export const PortfolioHealthMapOld: React.FC<PortfolioHealthMapProps> = ({
                       itemStyle={{ fontSize: 11 }}
                       labelStyle={{ fontSize: 11, fontWeight: 'bold' }}
                       formatter={(value: any, name: any) => {
-                        if (name === 'Revenue') return [`₹${value}Cr`, 'Revenue'];
+                        if (name === 'Revenue') return [`$${value}M`, 'Revenue'];
                         return [value, name];
                       }}
                     />
@@ -3464,7 +3464,7 @@ export const PortfolioHealthMapOld: React.FC<PortfolioHealthMapProps> = ({
                 <ComposedChart data={paretoData} margin={{ top: 20, right: -5, left: -20, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} />
                   <XAxis dataKey="name" tick={{ fill: tickColor, fontSize: 9 }} axisLine={false} tickLine={false} />
-                  <YAxis yAxisId="left" tick={{ fill: tickColor, fontSize: 9 }} label={{ value: 'Revenue (₹ Cr)', angle: -90, position: 'insideLeft', fill: tickColor, fontSize: 10 }} axisLine={false} tickLine={false} />
+                  <YAxis yAxisId="left" tick={{ fill: tickColor, fontSize: 9 }} label={{ value: 'Revenue ($ M)', angle: -90, position: 'insideLeft', fill: tickColor, fontSize: 10 }} axisLine={false} tickLine={false} />
                   <YAxis yAxisId="right" orientation="right" domain={[0, 100]} tick={{ fill: tickColor, fontSize: 9 }} label={{ value: 'Cumulative %', angle: 90, position: 'insideRight', fill: tickColor, fontSize: 10 }} axisLine={false} tickLine={false} />
                   <Tooltip 
                     contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, color: tooltipText }}
@@ -3563,14 +3563,14 @@ export const PortfolioHealthMapOld: React.FC<PortfolioHealthMapProps> = ({
                           <Cell key={`cell-${index}`} fill={pieColors[index % pieColors.length]} />
                         ))}
                       </Pie>
-                      <Tooltip formatter={(value) => `₹${value}Cr`} />
+                      <Tooltip formatter={(value) => `$${value}M`} />
                     </RePieChart>
                   </ResponsiveContainer>
                   
                   {/* Center revenue label */}
                   <div className="absolute text-center">
                     <p className="text-[8px] font-bold uppercase tracking-widest opacity-40 leading-none mb-1">Total</p>
-                    <p className="text-base font-display font-extrabold text-acies-gray dark:text-white leading-none">₹{totalChannelRev}Cr</p>
+                    <p className="text-base font-display font-extrabold text-acies-gray dark:text-white leading-none">${totalChannelRev}M</p>
                   </div>
                 </div>
 
@@ -3659,8 +3659,8 @@ export const PortfolioHealthMapOld: React.FC<PortfolioHealthMapProps> = ({
               {/* Slider 2: Revenue Floor */}
               <div className="space-y-2">
                 <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest">
-                  <span>Revenue Floor (₹ Cr)</span>
-                  <span className="text-acies-yellow font-extrabold">₹{revF}Cr</span>
+                  <span>Revenue Floor ($ M)</span>
+                  <span className="text-acies-yellow font-extrabold">${revF}M</span>
                 </div>
                 <input 
                   type="range" 
@@ -3749,7 +3749,7 @@ export const PortfolioHealthMapOld: React.FC<PortfolioHealthMapProps> = ({
                   <div className="p-4 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 rounded-sm relative">
                     <span className="absolute top-3 right-3 text-[9px] text-zinc-500 font-bold">Risk</span>
                     <p className="text-[8px] font-bold uppercase opacity-45 tracking-widest mb-1.5">Revenue at Risk</p>
-                    <h4 className="text-xl font-display font-bold text-amber-500">₹{simRevAtRisk}Cr</h4>
+                    <h4 className="text-xl font-display font-bold text-amber-500">${simRevAtRisk}M</h4>
                     <p className="text-[8px] text-zinc-500 dark:text-zinc-400 font-semibold uppercase mt-1">Unsalvaged net revenue after transfer</p>
                   </div>
 
@@ -3757,7 +3757,7 @@ export const PortfolioHealthMapOld: React.FC<PortfolioHealthMapProps> = ({
                   <div className="p-4 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 rounded-sm relative">
                     <span className="absolute top-3 right-3 text-[9px] text-zinc-500 font-bold">Savings</span>
                     <p className="text-[8px] font-bold uppercase opacity-45 tracking-widest mb-1.5">Ops Savings</p>
-                    <h4 className="text-xl font-display font-bold text-green-500">₹{simOpsSaving}Cr</h4>
+                    <h4 className="text-xl font-display font-bold text-green-500">${simOpsSaving}M</h4>
                     <p className="text-[8px] text-zinc-500 dark:text-zinc-400 font-semibold uppercase mt-1">Released supplier admin burden</p>
                   </div>
 
@@ -3795,12 +3795,12 @@ export const PortfolioHealthMapOld: React.FC<PortfolioHealthMapProps> = ({
                 <BarChart data={simWaterfallData} margin={{ top: 25, right: 10, left: -25, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridStroke} />
                   <XAxis dataKey="name" tick={{ fill: tickColor, fontSize: 9 }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fill: tickColor, fontSize: 9 }} label={{ value: '₹ Crore', angle: -90, position: 'insideLeft', fill: tickColor, fontSize: 10 }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fill: tickColor, fontSize: 9 }} label={{ value: '$ Million', angle: -90, position: 'insideLeft', fill: tickColor, fontSize: 10 }} axisLine={false} tickLine={false} />
                   <Tooltip 
                     contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, color: tooltipText }}
                     itemStyle={{ fontSize: 11 }}
                     formatter={(value: any, name: any, props: any) => {
-                      return [`₹${props.payload.displayVal}Cr`, 'Value'];
+                      return [`$${props.payload.displayVal}M`, 'Value'];
                     }}
                   />
                   <Bar dataKey="bottom" stackId="sim-wfall" fill="transparent" />
@@ -3835,7 +3835,7 @@ export const PortfolioHealthMapOld: React.FC<PortfolioHealthMapProps> = ({
                       <tr key={idx} className="h-10 hover:bg-black/[0.01] dark:hover:bg-white/[0.02]">
                         <td className="text-acies-gray dark:text-white font-bold">{s.name}</td>
                         <td>{s.cat}</td>
-                        <td className="text-right">₹{s.rev}Cr</td>
+                        <td className="text-right">${s.rev}M</td>
                         <td className="text-right text-red-500 font-extrabold">{s.cx.toFixed(2)}</td>
                         <td className="text-right">{s.stockouts}</td>
                         <td className="text-center">

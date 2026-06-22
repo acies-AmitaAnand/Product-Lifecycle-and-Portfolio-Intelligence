@@ -210,7 +210,7 @@ export const LaunchReadinessDashboard: React.FC<LaunchReadinessDashboardProps> =
             </select>
           </div>
           <div className="flex flex-col gap-1">
-            <label className="text-[8px] font-bold uppercase tracking-widest opacity-40">Projected Revenue Y1 (₹ Cr)</label>
+            <label className="text-[8px] font-bold uppercase tracking-widest opacity-40">Projected Revenue Y1 ($ M)</label>
             <input 
               type="number" 
               value={projectedRev}
@@ -278,7 +278,7 @@ export const LaunchReadinessDashboard: React.FC<LaunchReadinessDashboardProps> =
             </select>
           </div>
           <div className="flex flex-col gap-1">
-            <label className="text-[8px] font-bold uppercase tracking-widest opacity-40">Budget (₹ Cr)</label>
+            <label className="text-[8px] font-bold uppercase tracking-widest opacity-40">Budget ($ M)</label>
             <input 
               type="number" 
               step="0.1"
@@ -288,7 +288,7 @@ export const LaunchReadinessDashboard: React.FC<LaunchReadinessDashboardProps> =
             />
           </div>
           <div className="flex flex-col gap-1">
-            <label className="text-[8px] font-bold uppercase tracking-widest opacity-40">Spent (₹ Cr)</label>
+            <label className="text-[8px] font-bold uppercase tracking-widest opacity-40">Spent ($ M)</label>
             <input 
               type="number" 
               step="0.1"
@@ -374,13 +374,13 @@ export const LaunchReadinessDashboard: React.FC<LaunchReadinessDashboardProps> =
             const miniChartData = [
               {
                 name: 'Baseline',
-                'Spent Cost (₹ Cr)': spent,
-                'Risk Exposure (₹ Cr)': baseRiskExposure
+                'Spent Cost ($ M)': spent,
+                'Risk Exposure ($ M)': baseRiskExposure
               },
               {
                 name: 'Simulated',
-                'Spent Cost (₹ Cr)': simSpent,
-                'Risk Exposure (₹ Cr)': simRiskExposure
+                'Spent Cost ($ M)': simSpent,
+                'Risk Exposure ($ M)': simRiskExposure
               }
             ];
 
@@ -394,13 +394,13 @@ export const LaunchReadinessDashboard: React.FC<LaunchReadinessDashboardProps> =
                         <div className="p-3 bg-black/5 dark:bg-white/5 rounded-sm">
                           <span className="text-[8px] text-zinc-500 block uppercase">Project Budget</span>
                           <span className="text-sm font-display font-extrabold text-zinc-800 dark:text-white mt-1 block font-mono">
-                            ₹{budget.toFixed(2)} Cr
+                            ${budget.toFixed(2)} M
                           </span>
                         </div>
                         <div className="p-3 bg-black/5 dark:bg-white/5 rounded-sm">
                           <span className="text-[8px] text-zinc-500 block uppercase">Spent Cost</span>
                           <span className="text-sm font-display font-extrabold text-zinc-800 dark:text-white mt-1 block font-mono">
-                            ₹{spent.toFixed(2)} Cr
+                            ${spent.toFixed(2)} M
                           </span>
                         </div>
                       </div>
@@ -419,7 +419,7 @@ export const LaunchReadinessDashboard: React.FC<LaunchReadinessDashboardProps> =
                           />
                         </div>
                         {spent > budget && (
-                          <p className="text-[8px] text-red-500 font-bold mt-1">⚠️ Budget Overrun: Spent exceeds project budget by ₹{(spent - budget).toFixed(2)} Cr.</p>
+                          <p className="text-[8px] text-red-500 font-bold mt-1">⚠️ Budget Overrun: Spent exceeds project budget by ${(spent - budget).toFixed(2)} M.</p>
                         )}
                       </div>
                     </div>
@@ -431,7 +431,7 @@ export const LaunchReadinessDashboard: React.FC<LaunchReadinessDashboardProps> =
                       <div className="p-3 bg-black/5 dark:bg-white/5 rounded-sm">
                         <span className="text-[8px] text-zinc-500 block uppercase">Revenue at Risk Exposure</span>
                         <span className={`text-sm font-display font-extrabold ${baseRiskExposure > 0 ? 'text-red-500' : 'text-emerald-500'} mt-1 block font-mono`}>
-                          ₹{baseRiskExposure.toFixed(2)} Cr
+                          ${baseRiskExposure.toFixed(2)} M
                         </span>
                       </div>
                       
@@ -476,8 +476,8 @@ export const LaunchReadinessDashboard: React.FC<LaunchReadinessDashboardProps> =
                       <div className="p-3 bg-black/5 dark:bg-white/5 rounded-sm">
                         <span className="text-zinc-555 dark:text-zinc-400 block font-bold">Spent Cost Impact</span>
                         <span className="font-bold font-mono text-zinc-750 dark:text-zinc-200">
-                          ₹{spent.toFixed(2)} Cr 
-                          {isMitigated && <span className="text-amber-500 font-bold ml-1">→ ₹{simSpent.toFixed(2)} Cr (+15% premium)</span>}
+                          ${spent.toFixed(2)} M 
+                          {isMitigated && <span className="text-amber-500 font-bold ml-1">→ ${simSpent.toFixed(2)} M (+15% premium)</span>}
                         </span>
                       </div>
                       
@@ -510,8 +510,8 @@ export const LaunchReadinessDashboard: React.FC<LaunchReadinessDashboardProps> =
                               <YAxis tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
                               <Tooltip contentStyle={{ backgroundColor: isDarkMode ? '#1f1f1f' : '#fff', border: isDarkMode ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.1)', color: isDarkMode ? '#fff' : '#000', fontSize: 9 }} />
                               <Legend wrapperStyle={{ fontSize: 8, textTransform: 'uppercase' }} />
-                              <Bar dataKey="Spent Cost (₹ Cr)" fill="#a78bfa" radius={[1, 1, 0, 0]} barSize={24} />
-                              <Bar dataKey="Risk Exposure (₹ Cr)" fill="#ef4444" radius={[1, 1, 0, 0]} barSize={24} />
+                              <Bar dataKey="Spent Cost ($ M)" fill="#a78bfa" radius={[1, 1, 0, 0]} barSize={24} />
+                              <Bar dataKey="Risk Exposure ($ M)" fill="#ef4444" radius={[1, 1, 0, 0]} barSize={24} />
                             </BarChart>
                           </ResponsiveContainer>
                         </div>
@@ -522,14 +522,14 @@ export const LaunchReadinessDashboard: React.FC<LaunchReadinessDashboardProps> =
                           <p className="flex items-start gap-1">
                             <Check size={11} className="text-emerald-500 shrink-0 mt-0.5" />
                             <span>
-                              <strong>AI Recommendation:</strong> Mitigating risks incurs ₹{(simSpent - spent).toFixed(2)} Cr (+15%) overhead but successfully eliminates ₹{baseRiskExposure.toFixed(2)} Cr in revenue exposure, representing an efficient risk reduction strategy.
+                              <strong>AI Recommendation:</strong> Mitigating risks incurs ${(simSpent - spent).toFixed(2)} M (+15%) overhead but successfully eliminates ${baseRiskExposure.toFixed(2)} M in revenue exposure, representing an efficient risk reduction strategy.
                             </span>
                           </p>
                         ) : (
                           <p className="flex items-start gap-1">
                             <Info size={11} className="text-amber-500 shrink-0 mt-0.5" />
                             <span>
-                              <strong>AI Forecast:</strong> Sourcing and logistics flags present ₹{baseRiskExposure.toFixed(2)} Cr in revenue risk. Toggle "Mitigation Protocol" to unblock supplier and distribution dependencies.
+                              <strong>AI Forecast:</strong> Sourcing and logistics flags present ${baseRiskExposure.toFixed(2)} M in revenue risk. Toggle "Mitigation Protocol" to unblock supplier and distribution dependencies.
                             </span>
                           </p>
                         )}
