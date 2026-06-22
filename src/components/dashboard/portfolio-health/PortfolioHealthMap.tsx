@@ -1892,6 +1892,82 @@ const VPCommandCenter: React.FC<{
           draftBody: 'Hi Ananya,\n\nPlease kick off the formulation value-engineering review for the laundry detergent line to offset surfactant cost inflation.\n\nThanks,\nPricing Partner'
         }
       ]
+    },
+    {
+      role: 'VP Product Management',
+      label: 'BrandM Beverages',
+      val: 94,
+      color: '#ef4444',
+      status: 'critical',
+      location: 'Southern Region (Chennai)',
+      cause: 'Severe glass bottle supplier capacity shortfalls causing 20% order fulfillment backlog for premium carbonated mixers.',
+      suggestions: [
+        {
+          action: 'Transition 40% of production volume to premium aluminum sleek cans.',
+          impact: 'Resolves delivery backlog; reduces unit freight cost by 8%.',
+          contactName: 'Siddharth Roy',
+          contactTitle: 'Director of Sourcing',
+          email: 'siddharth.roy@aciesglobal.com',
+          draftBody: 'Hi Siddharth,\n\nRegarding the glass bottle shortage on BrandM, let\'s initiate a transition of 40% volume to aluminum sleek cans to resolve the Chennai logistics backlog.\n\nThanks,\nVP Product Management'
+        }
+      ]
+    },
+    {
+      role: 'VP Product Management',
+      label: 'BrandL Snacks',
+      val: 86,
+      color: '#f59e0b',
+      status: 'warning',
+      location: 'Western Region (Mumbai)',
+      cause: 'Modern Trade shelf-space contraction of 15% due to aggressive competitor category encroachment.',
+      suggestions: [
+        {
+          action: 'Negotiate exclusive high-visibility endcap slots with top 3 supermarket chains.',
+          impact: 'Reclaims category share and lifts impulse purchase conversion by 12%.',
+          contactName: 'Rajesh Verma',
+          contactTitle: 'Director of Commercial Portfolio',
+          email: 'rajesh.verma@aciesglobal.com',
+          draftBody: 'Hi Rajesh,\n\nPlease review shelf placements and slotting contracts for BrandL in Mumbai Modern Trade channels to counter competitor endcap encroachment.\n\nThanks,\nVP Product Management'
+        }
+      ]
+    },
+    {
+      role: 'Product Manager',
+      label: 'BrandP Dairy',
+      val: 89,
+      color: '#ef4444',
+      status: 'critical',
+      location: 'Western Region (Vapi)',
+      cause: 'Critical transit packaging leakage in eco-friendly milk carton caps leading to 4.2% product loss during shipping.',
+      suggestions: [
+        {
+          action: 'Upgrade carton cap design to dual-seal leakproof threading.',
+          impact: 'Reduces transit product loss below 0.1% and restores customer freshness ratings.',
+          contactName: 'K. Srinivasan',
+          contactTitle: 'Product Design Lead',
+          email: 'k.srinivasan@aciesglobal.com',
+          draftBody: 'Hi Srinivasan,\n\nPlease accelerate the dual-seal cap packaging design revision for BrandP Dairy to fix shipping leakages.\n\nThanks,\nProduct Manager'
+        }
+      ]
+    },
+    {
+      role: 'Pricing and Margin Partner',
+      label: 'BrandQ Personal Care',
+      val: 85,
+      color: '#f59e0b',
+      status: 'warning',
+      location: 'Southern Region (Bengaluru)',
+      cause: 'Margin compression due to 12% increase in imported paperboard raw material cost for premium gift sets.',
+      suggestions: [
+        {
+          action: 'Source certified local recycled paperboard for packaging gift sets.',
+          impact: 'Saves 15% in procurement costs and improves sustainability index score.',
+          contactName: 'Ananya Sen',
+          contactTitle: 'Director of Portfolio Finance',
+          email: 'ananya.sen@aciesglobal.com',
+          draftBody: 'Hi Ananya,\n\nPlease evaluate the financial viability of local recycled paperboard packaging for BrandQ gift sets to offset raw material cost hikes.\n\nThanks,\nPricing Partner'
+        }
+      ]
     }
   ];
 
@@ -1921,6 +1997,10 @@ const VPCommandCenter: React.FC<{
     { id: 'a8', sev: 'warning', sevC: '#f59e0b', title: 'Logistics Alert: BrandG Dairy cold-chain capacity bottlenecks', desc: 'Supply · Transit delay for lactose-free launches · Eastern Region (Kolkata) affected', dismissed: false },
     { id: 'a9', sev: 'critical', sevC: '#ef4444', title: 'Quality Alert: BrandH Personal Care bamboo toothbrush bristle defects', desc: 'Execution · Defect rate exceeds limits · Southern Region (Bengaluru) affected', dismissed: false },
     { id: 'a10', sev: 'critical', sevC: '#ef4444', title: 'Margin Alert: BrandK Household surfactant material cost variance', desc: 'Margin · Raw material price hikes erode category margins · Northern Region (Baddi) affected', dismissed: false },
+    { id: 'a11', sev: 'critical', sevC: '#ef4444', title: 'Packaging Supply Alert: BrandM Beverages glass bottle supplier shortage', desc: 'Supply · 20% order backlog · Southern Region (Chennai) affected', dismissed: false },
+    { id: 'a12', sev: 'warning', sevC: '#f59e0b', title: 'Shelf Contraction Alert: BrandL Snacks category space reduction', desc: 'Strategy · 15% shelf contraction · Western Region (Mumbai) affected', dismissed: false },
+    { id: 'a13', sev: 'critical', sevC: '#ef4444', title: 'Packaging Design Alert: BrandP Dairy carton cap transit leakages', desc: 'Execution · 4.2% product loss during shipping · Western Region (Vapi) affected', dismissed: false },
+    { id: 'a14', sev: 'warning', sevC: '#f59e0b', title: 'Material Cost Alert: BrandQ Personal Care paperboard cost escalation', desc: 'Margin · 12% increase in packaging gift box costs · Southern Region (Bengaluru) affected', dismissed: false },
   ]);
 
   const handleDismissAlert = (id: string, title: string) => {
