@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { 
-  Activity, Rocket, Layers, Scissors, AlertOctagon, Home, Cpu, Award, BarChart3, LayoutDashboard, Zap, BookOpen, Download
+  Activity, Rocket, Layers, Scissors, AlertOctagon, Home, Cpu, Award, BarChart3, LayoutDashboard, Zap, BookOpen, Download, Pin
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -105,6 +105,11 @@ export default function App() {
   });
 
   const [activeAuditMetric, setActiveAuditMetric] = useState<string | null>(null);
+  const [isNavPinned, setIsNavPinned] = useState<boolean>(() => {
+    const saved = safeGetItem('acies_nav_pinned');
+    return saved === 'true';
+  });
+  const [isNavHovered, setIsNavHovered] = useState<boolean>(false);
 
   const activeTabRef = useRef(activeTab);
   activeTabRef.current = activeTab;
@@ -232,6 +237,7 @@ export default function App() {
     safeSetItem('acies_role', role);
     safeSetItem('acies_timeline_range', timelineRange);
     safeSetItem('acies_dark_mode', isDarkMode.toString());
+    safeSetItem('acies_nav_pinned', isNavPinned.toString());
 
     if (isDarkMode) {
       document.documentElement.classList.add('dark');
@@ -276,6 +282,64 @@ export default function App() {
   });
 
   const [isExploreOpen, setIsExploreOpen] = useState<boolean>(false);
+
+  const renderSidebarContent = () => (
+    <>
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          setIsNavPinned(!isNavPinned);
+        }}
+        className="hidden lg:flex items-center justify-center w-12 h-12 rounded-xl border-none bg-transparent hover:bg-acies-yellow/10 dark:hover:bg-white/10 text-acies-gray/40 dark:text-white/40 hover:text-acies-yellow dark:hover:text-acies-yellow cursor-pointer transition-all duration-200 mb-2 relative group"
+        title={isNavPinned ? "Unpin Sidebar" : "Pin Sidebar"}
+      >
+        <Pin 
+          size={18} 
+          className={`transition-all duration-300 ${isNavPinned ? 'rotate-45 text-acies-yellow fill-acies-yellow scale-110' : 'rotate-0 opacity-60 hover:opacity-100'}`} 
+        />
+        <span className="absolute left-14 bg-acies-gray text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
+          {isNavPinned ? "Unpin Sidebar (Enable Auto-hide)" : "Pin Sidebar"}
+        </span>
+      </button>
+
+      <div className="hidden lg:block w-8 h-[1px] bg-acies-yellow/10 dark:bg-white/10 mb-3" />
+
+      {tabs.map((tab) => {
+        const isActive = activeTab === tab.id;
+        const displayName = getTabDisplayName(tab.id, tab.name);
+        return (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className="flex flex-col items-center group cursor-pointer border-none bg-transparent outline-none transition-all duration-200 shrink-0 w-20"
+          >
+            <div
+              className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 ${
+                isActive
+                  ? 'bg-acies-yellow text-white dark:text-acies-gray shadow-md shadow-acies-yellow/20'
+                  : 'bg-acies-yellow/5 dark:bg-white/5 text-acies-gray/60 dark:text-white/50 group-hover:bg-acies-yellow/10 group-hover:dark:bg-white/10 group-hover:text-acies-gray dark:group-hover:text-white'
+              }`}
+            >
+              <tab.icon
+                size={20}
+                strokeWidth={isActive ? 2 : 1.5}
+                className="transition-transform duration-200 group-hover:scale-105"
+              />
+            </div>
+            <span
+              className={`mt-1.5 text-[9px] font-semibold text-center leading-tight tracking-wide break-words w-full px-1 transition-colors duration-200 ${
+                isActive 
+                  ? 'text-acies-yellow font-bold' 
+                  : 'text-acies-gray/50 dark:text-white/40 group-hover:text-acies-gray/80 dark:group-hover:text-white/70'
+              }`}
+            >
+              {displayName}
+            </span>
+          </button>
+        );
+      })}
+    </>
+  );
 
   const handleSwitchPersona = () => {
     try {
@@ -346,44 +410,42 @@ export default function App() {
           
           {/* Left Sidebar Tabs Navigation */}
           {!showSkuPerformancePage && (
-            <aside className="w-full lg:w-28 shrink-0 lg:sticky lg:top-16 self-start">
-            <div className="flex flex-row lg:flex-col gap-3 lg:gap-3 p-3 lg:py-4 lg:px-1.5 bg-white dark:bg-white/5 border border-acies-yellow/15 dark:border-white/10 rounded-2xl items-center justify-start overflow-x-auto lg:overflow-y-auto lg:max-h-[calc(100vh-120px)] scroll-smooth no-scrollbar shadow-sm shadow-acies-yellow/5 transition-colors duration-200">
-              {tabs.map((tab) => {
-                const isActive = activeTab === tab.id;
-                const displayName = getTabDisplayName(tab.id, tab.name);
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className="flex flex-col items-center group cursor-pointer border-none bg-transparent outline-none transition-all duration-200 shrink-0 w-20"
-                  >
-                    <div
-                      className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 ${
-                        isActive
-                          ? 'bg-acies-yellow text-white dark:text-acies-gray shadow-md shadow-acies-yellow/20'
-                          : 'bg-acies-yellow/5 dark:bg-white/5 text-acies-gray/60 dark:text-white/50 group-hover:bg-acies-yellow/10 group-hover:dark:bg-white/10 group-hover:text-acies-gray dark:group-hover:text-white'
-                      }`}
-                    >
-                      <tab.icon
-                        size={20}
-                        strokeWidth={isActive ? 2 : 1.5}
-                        className="transition-transform duration-200 group-hover:scale-105"
-                      />
-                    </div>
-                    <span
-                      className={`mt-1.5 text-[9px] font-semibold text-center leading-tight tracking-wide break-words w-full px-1 transition-colors duration-200 ${
-                        isActive 
-                          ? 'text-acies-yellow font-bold' 
-                          : 'text-acies-gray/50 dark:text-white/40 group-hover:text-acies-gray/80 dark:group-hover:text-white/70'
-                      }`}
-                    >
-                      {displayName}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
+            <aside className={`w-full shrink-0 lg:sticky lg:top-16 self-start transition-all duration-300 ${isNavPinned ? 'lg:w-28' : 'lg:hidden'}`}>
+              <div className="flex flex-row lg:flex-col gap-3 lg:gap-3 p-3 lg:py-4 lg:px-1.5 bg-white dark:bg-white/5 border border-acies-yellow/15 dark:border-white/10 rounded-2xl items-center justify-start overflow-x-auto lg:overflow-y-auto lg:max-h-[calc(100vh-120px)] scroll-smooth no-scrollbar shadow-sm shadow-acies-yellow/5 transition-colors duration-200">
+                {renderSidebarContent()}
+              </div>
             </aside>
+          )}
+
+          {/* Floating Hover Navigation Sidebar (Desktop Only) */}
+          {!showSkuPerformancePage && !isNavPinned && (
+            <div 
+              className="hidden lg:flex fixed left-0 top-[15%] bottom-[15%] z-50 items-center justify-start transition-all duration-300"
+              style={{
+                width: isNavHovered ? '140px' : '24px',
+              }}
+              onMouseEnter={() => setIsNavHovered(true)}
+              onMouseLeave={() => setIsNavHovered(false)}
+            >
+              {/* Sidebar Content Panel */}
+              <div 
+                className={`h-full w-24 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md border border-acies-yellow/15 dark:border-white/10 rounded-2xl flex flex-col items-center py-4 justify-start overflow-y-auto no-scrollbar shadow-2xl transition-all duration-300 ${
+                  isNavHovered ? 'translate-x-4 opacity-100' : '-translate-x-[110%] opacity-0 pointer-events-none'
+                }`}
+              >
+                {renderSidebarContent()}
+              </div>
+
+              {/* Collapsed Trigger Handle */}
+              <div 
+                className={`absolute left-0 top-1/2 -translate-y-1/2 w-2 h-36 bg-gradient-to-b from-acies-yellow/20 via-acies-yellow/60 to-acies-yellow/20 hover:via-acies-yellow rounded-r-full shadow-lg transition-all duration-300 cursor-pointer flex items-center justify-center ${
+                  isNavHovered ? 'opacity-0 pointer-events-none' : 'opacity-100 animate-pulse'
+                }`}
+              >
+                {/* A tiny subtle arrow pointing right */}
+                <div className="w-[3px] h-[3px] border-t-2 border-r-2 border-white rotate-45" />
+              </div>
+            </div>
           )}
 
           {/* Main Content Area */}

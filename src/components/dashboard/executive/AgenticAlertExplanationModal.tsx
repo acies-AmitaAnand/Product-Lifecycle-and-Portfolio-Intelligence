@@ -206,7 +206,9 @@ export const getAlertProvenance = (alert: { id: string; title: string; sev: stri
   // Default fallback values
   let agent = 'Portfolio Agent';
   let sources = [{ name: 'FMCG Multi-Country Sales Dataset', type: 'Transactional Logs', format: 'Parquet / S3' }];
-  let signals = [{ name: 'System Flag', value: 'Triggered', threshold: 'Active', status: 'breached' as const }];
+  let signals: { name: string; value: string; threshold: string; status: 'breached' | 'normal' }[] = [
+    { name: 'System Flag', value: 'Triggered', threshold: 'Active', status: 'breached' }
+  ];
   let cogsFormula = undefined;
   let reasoningPath = [
     'Scanned corporate ledgers and transaction history.',
