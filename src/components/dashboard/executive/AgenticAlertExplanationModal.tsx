@@ -369,218 +369,206 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
               Under the <strong>Structured Problem Solving (SPS)</strong> workflow, each agent continuously automates the core operational stages: Ingesting decoupled data formats, executing calculations against control thresholds, and routing reasoning traces to formulate action plans.
             </p>
           </div>
+        </div>        {/* Swarm Roster Horizontal Selector */}
+        <div className="flex flex-wrap gap-2.5 items-center pb-2 border-b border-black/5 dark:border-white/5">
+          <span className={`text-[9px] font-extrabold uppercase tracking-widest flex items-center gap-1.5 mr-2 ${textMuted}`}>
+            <Settings size={11} className="text-zinc-500 animate-spin-slow" />
+            Agent Swarm Roster:
+          </span>
+          <div className="flex flex-wrap gap-1.5">
+            {AGENTS_WORKFLOWS.map((agent, idx) => {
+              const isSelected = activeAgentIndex === idx;
+              return (
+                <button
+                  key={agent.name}
+                  type="button"
+                  onClick={() => {
+                    setActiveAgentIndex(idx);
+                    setHoveredStepIndex(0);
+                  }}
+                  className={`px-3 py-1.5 rounded-sm border text-[9px] font-extrabold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2 ${
+                    isSelected 
+                      ? 'bg-[#6d28d9]/10 border-[#6d28d9] text-[#6d28d9] dark:text-[#a78bfa] dark:border-[#a78bfa]/50' 
+                      : 'bg-black/5 dark:bg-white/5 border-black/10 dark:border-white/10 text-zinc-500 hover:bg-black/10 dark:hover:bg-white/10'
+                  }`}
+                >
+                  {agent.icon}
+                  {agent.name}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
-        {/* Grid Area */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 min-h-[460px]">
+        {/* Content Area */}
+        <div className="space-y-4 flex flex-col justify-between min-h-[460px]">
           
-          {/* Left Column: Selector (4 cols) */}
-          <div className={`lg:col-span-4 border-r pr-4 space-y-3.5 ${borderCol}`}>
-            <h3 className={`font-extrabold text-[9.5px] uppercase tracking-widest flex items-center gap-1.5 ${textMuted}`}>
-              <Settings size={11} className="text-zinc-500 animate-spin-slow" />
-              Agent Swarm Roster
-            </h3>
-
-            <div className="space-y-2">
-              {AGENTS_WORKFLOWS.map((agent, idx) => {
-                const isSelected = activeAgentIndex === idx;
-                return (
-                  <div
-                    key={agent.name}
-                    onClick={() => {
-                      setActiveAgentIndex(idx);
-                      setHoveredStepIndex(0); // Reset hover step back to Ingestion when agent changes
-                    }}
-                    className={`p-2.5 rounded border transition-all duration-200 cursor-pointer flex items-center gap-3 select-none ${
-                      isSelected ? sidebarSelected : sidebarUnselected
-                    }`}
-                  >
-                    <div className={`p-1.5 rounded-full ${
-                      isSelected ? 'bg-purple-500/10 text-purple-500' : 'bg-zinc-500/5 text-zinc-500'
-                    }`}>
-                      {agent.icon}
-                    </div>
-                    <div className="min-w-0">
-                      <p className={`font-bold text-[10px] ${isSelected ? 'text-purple-650 dark:text-purple-300' : textTitle}`}>{agent.name}</p>
-                      <p className="text-[8px] font-mono text-zinc-500 truncate mt-0.5">{agent.role}</p>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Right Column: Flowchart & Hover Details (8 cols) */}
-          <div className="lg:col-span-8 pl-1 space-y-4 flex flex-col justify-between">
+          <div className="space-y-4.5">
             
-            <div className="space-y-4.5">
+            {/* Agent Role Info */}
+            <div className={`p-3 border rounded-lg ${isDarkMode ? 'bg-zinc-900/60 border-zinc-800' : 'bg-zinc-50 border-zinc-150'}`}>
+              <span className="text-[8px] font-mono font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400">
+                Selected Swarm Node • {currentAgent.role}
+              </span>
+              <h3 className={`text-[12px] font-extrabold mt-0.5 ${textTitle}`}>
+                {currentAgent.name} Operational Protocol
+              </h3>
+              <p className={`text-[9.5px] leading-relaxed mt-1.5 font-medium ${textMuted}`}>
+                {currentAgent.description}
+              </p>
+            </div>
+
+            {/* FLOWCHART SECTION */}
+            <div className="space-y-2">
+              <h4 className="text-[9.5px] uppercase tracking-wider text-zinc-500 font-extrabold">General Workflow Flowchart</h4>
               
-              {/* Agent Role Info */}
-              <div className={`p-3 border rounded-lg ${isDarkMode ? 'bg-zinc-900/60 border-zinc-800' : 'bg-zinc-50 border-zinc-150'}`}>
-                <span className="text-[8px] font-mono font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400">
-                  Selected Swarm Node • {currentAgent.role}
-                </span>
-                <h3 className={`text-[12px] font-extrabold mt-0.5 ${textTitle}`}>
-                  {currentAgent.name} Operational Protocol
-                </h3>
-                <p className={`text-[9.5px] leading-relaxed mt-1.5 font-medium ${textMuted}`}>
-                  {currentAgent.description}
-                </p>
-              </div>
+              <div className="grid grid-cols-1 md:grid-cols-5 items-center gap-1.5">
+                {currentAgent.steps.map((step, idx) => {
+                  const isHovered = hoveredStepIndex === idx;
+                  
+                  const stepBg = isHovered 
+                    ? 'border-purple-500 bg-purple-500/5 dark:bg-purple-950/20 shadow-md shadow-purple-500/10' 
+                    : isDarkMode ? 'border-zinc-900 bg-zinc-950 hover:border-zinc-850 hover:bg-zinc-900/10' : 'border-zinc-150 bg-white hover:border-zinc-200 hover:bg-zinc-50';
 
-              {/* FLOWCHART SECTION */}
-              <div className="space-y-2">
-                <h4 className="text-[9.5px] uppercase tracking-wider text-zinc-500 font-extrabold">General Workflow Flowchart</h4>
-                
-                <div className="grid grid-cols-1 md:grid-cols-5 items-center gap-1.5">
-                  {currentAgent.steps.map((step, idx) => {
-                    const isHovered = hoveredStepIndex === idx;
-                    
-                    const stepBg = isHovered 
-                      ? 'border-purple-500 bg-purple-500/5 dark:bg-purple-950/20 shadow-md shadow-purple-500/10' 
-                      : isDarkMode ? 'border-zinc-900 bg-zinc-950 hover:border-zinc-850 hover:bg-zinc-900/10' : 'border-zinc-150 bg-white hover:border-zinc-200 hover:bg-zinc-50';
+                  const dotBg = isHovered ? 'bg-purple-500 text-white' : 'bg-zinc-500/10 text-zinc-500';
 
-                    const dotBg = isHovered ? 'bg-purple-500 text-white' : 'bg-zinc-500/10 text-zinc-500';
-
-                    return (
-                      <React.Fragment key={idx}>
-                        {/* Step Card */}
-                        <div
-                          onMouseEnter={() => setHoveredStepIndex(idx)}
-                          className={`md:col-span-1 border rounded p-3 text-center transition-all duration-200 cursor-help flex flex-col items-center gap-1.5 ${stepBg}`}
-                        >
-                          <div className={`w-7 h-7 rounded-full flex items-center justify-center ${dotBg} transition-colors`}>
-                            {step.icon}
-                          </div>
-                          <div>
-                            <p className={`font-bold text-[9.5px] ${isHovered ? 'text-purple-650 dark:text-purple-300' : textTitle}`}>
-                              Step {idx + 1}
-                            </p>
-                            <p className="text-[8.5px] font-bold text-zinc-500 mt-0.5 uppercase tracking-wide">
-                              {step.title}
-                            </p>
-                          </div>
-                          <p className="text-[7.5px] text-zinc-450 leading-snug line-clamp-2 mt-0.5">
-                            {step.shortDesc}
+                  return (
+                    <React.Fragment key={idx}>
+                      {/* Step Card */}
+                      <div
+                        onMouseEnter={() => setHoveredStepIndex(idx)}
+                        className={`md:col-span-1 border rounded p-3 text-center transition-all duration-200 cursor-help flex flex-col items-center gap-1.5 ${stepBg}`}
+                      >
+                        <div className={`w-7 h-7 rounded-full flex items-center justify-center ${dotBg} transition-colors`}>
+                          {step.icon}
+                        </div>
+                        <div>
+                          <p className={`font-bold text-[9.5px] ${isHovered ? 'text-purple-650 dark:text-purple-300' : textTitle}`}>
+                            Step {idx + 1}
+                          </p>
+                          <p className="text-[8.5px] font-bold text-zinc-500 mt-0.5 uppercase tracking-wide">
+                            {step.title}
                           </p>
                         </div>
+                        <p className="text-[7.5px] text-zinc-450 leading-snug line-clamp-2 mt-0.5">
+                          {step.shortDesc}
+                        </p>
+                      </div>
 
-                        {/* Arrow connector between cards (only if not the last step) */}
-                        {idx < 2 && (
-                          <div className="md:col-span-1 flex items-center justify-center text-zinc-400 select-none py-1 md:py-0">
-                            <ArrowRight size={14} className="rotate-90 md:rotate-0" />
-                          </div>
-                        )}
-                      </React.Fragment>
-                    );
-                  })}
+                      {/* Arrow connector between cards (only if not the last step) */}
+                      {idx < 2 && (
+                        <div className="md:col-span-1 flex items-center justify-center text-zinc-400 select-none py-1 md:py-0">
+                          <ArrowRight size={14} className="rotate-90 md:rotate-0" />
+                        </div>
+                      )}
+                    </React.Fragment>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* DYNAMIC HOVER DETAILS CARD */}
+            <div className={`p-4 border rounded-lg space-y-3.5 transition-all ${
+              isDarkMode ? 'bg-zinc-900/20 border-zinc-850' : 'bg-zinc-50/20 border-zinc-200'
+            }`}>
+              
+              {/* Detail Section Header */}
+              <div className="flex justify-between items-center pb-2 border-b border-black/5 dark:border-white/5">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="text-yellow-500 animate-pulse" size={12} />
+                  <h4 className={`text-[10px] font-extrabold uppercase tracking-wider ${textTitle}`}>
+                    Deep Dive: Step {hoveredStepIndex + 1} ({activeStepData.title})
+                  </h4>
+                </div>
+                <span className="text-[7.5px] font-mono bg-purple-500/10 text-purple-650 dark:text-purple-400 border border-purple-500/25 px-1.5 py-0.2 rounded font-bold uppercase">
+                  Interactive Insight
+                </span>
+              </div>
+
+              {/* Solved Issue Tree Node Path */}
+              <div className="space-y-1">
+                <span className="text-[8px] font-mono uppercase text-zinc-500 font-extrabold block">Solved Issue Tree Nodes</span>
+                <div className="flex flex-wrap items-center gap-1 text-[8.5px] font-bold">
+                  <span className="text-zinc-500">Poor Portfolio Decision Making</span>
+                  <ArrowRight size={8} className="text-zinc-450 shrink-0" />
+                  {activeStepData.issuesPath.map((node, i) => (
+                    <React.Fragment key={i}>
+                      {i > 0 && <ArrowRight size={8} className="text-zinc-450 shrink-0" />}
+                      <span className={`px-1.5 py-0.2 rounded ${
+                        i === activeStepData.issuesPath.length - 1 
+                          ? 'bg-red-500/10 text-red-500 border border-red-500/15'
+                          : 'bg-zinc-500/10 text-zinc-500 border border-zinc-500/10'
+                      }`}>
+                        {node}
+                      </span>
+                    </React.Fragment>
+                  ))}
                 </div>
               </div>
 
-              {/* DYNAMIC HOVER DETAILS CARD */}
-              <div className={`p-4 border rounded-lg space-y-3.5 transition-all ${
-                isDarkMode ? 'bg-zinc-900/20 border-zinc-850' : 'bg-zinc-50/20 border-zinc-200'
-              }`}>
+              {/* Ingestion & Processing Details */}
+              <div className="space-y-2">
+                <span className="text-[8px] font-mono uppercase text-zinc-500 font-extrabold block">
+                  {activeStepData.techTitle}
+                </span>
                 
-                {/* Detail Section Header */}
-                <div className="flex justify-between items-center pb-2 border-b border-black/5 dark:border-white/5">
-                  <div className="flex items-center gap-2">
-                    <Sparkles className="text-yellow-500 animate-pulse" size={12} />
-                    <h4 className={`text-[10px] font-extrabold uppercase tracking-wider ${textTitle}`}>
-                      Deep Dive: Step {hoveredStepIndex + 1} ({activeStepData.title})
-                    </h4>
-                  </div>
-                  <span className="text-[7.5px] font-mono bg-purple-500/10 text-purple-650 dark:text-purple-400 border border-purple-500/25 px-1.5 py-0.2 rounded font-bold uppercase">
-                    Interactive Insight
-                  </span>
+                <div className={`p-2 border rounded divide-y divide-black/5 dark:divide-white/5 ${
+                  isDarkMode ? 'bg-zinc-950 border-zinc-900' : 'bg-white border-zinc-150'
+                }`}>
+                  {activeStepData.techContent.map((row, i) => (
+                    <div key={i} className="py-1.5 flex flex-col sm:flex-row sm:items-start gap-1 justify-between text-[9px]">
+                      <span className="font-bold text-zinc-500 sm:w-1/3 shrink-0">{row.label}</span>
+                      <span className={`sm:w-2/3 ${
+                        row.isCode ? 'font-mono text-purple-600 dark:text-purple-400 bg-purple-500/5 px-1 py-0.5 rounded border border-purple-500/10' : textTitle
+                      }`}>{row.value}</span>
+                    </div>
+                  ))}
                 </div>
+              </div>
 
-                {/* Solved Issue Tree Node Path */}
+              {/* Optional Formula representation */}
+              {activeStepData.formula && (
                 <div className="space-y-1">
-                  <span className="text-[8px] font-mono uppercase text-zinc-500 font-extrabold block">Solved Issue Tree Nodes</span>
-                  <div className="flex flex-wrap items-center gap-1 text-[8.5px] font-bold">
-                    <span className="text-zinc-500">Poor Portfolio Decision Making</span>
-                    <ArrowRight size={8} className="text-zinc-450 shrink-0" />
-                    {activeStepData.issuesPath.map((node, i) => (
-                      <React.Fragment key={i}>
-                        {i > 0 && <ArrowRight size={8} className="text-zinc-450 shrink-0" />}
-                        <span className={`px-1.5 py-0.2 rounded ${
-                          i === activeStepData.issuesPath.length - 1 
-                            ? 'bg-red-500/10 text-red-500 border border-red-500/15'
-                            : 'bg-zinc-500/10 text-zinc-500 border border-zinc-500/10'
-                        }`}>
-                          {node}
-                        </span>
-                      </React.Fragment>
-                    ))}
+                  <span className="text-[8px] font-mono uppercase text-zinc-500 font-extrabold block">Mathematical Equation Model</span>
+                  <div className={`p-2.5 border border-purple-500/15 rounded font-mono text-[9.5px] font-bold text-purple-650 dark:text-purple-300 ${
+                    isDarkMode ? 'bg-purple-950/10' : 'bg-purple-50/20'
+                  }`}>
+                    {activeStepData.formula}
                   </div>
                 </div>
+              )}
 
-                {/* Ingestion & Processing Details */}
-                <div className="space-y-2">
-                  <span className="text-[8px] font-mono uppercase text-zinc-500 font-extrabold block">
-                    {activeStepData.techTitle}
-                  </span>
-                  
-                  <div className={`p-2 border rounded divide-y divide-black/5 dark:divide-white/5 ${
+              {/* Optional AI Reasoning Trace path */}
+              {activeStepData.reasoningPath && (
+                <div className="space-y-1.5">
+                  <span className="text-[8px] font-mono uppercase text-zinc-500 font-extrabold block">Swarm Reasoning Trace (Gemini 2.5 Flash)</span>
+                  <div className={`p-3 border rounded-lg space-y-1 leading-relaxed text-[9px] ${
                     isDarkMode ? 'bg-zinc-950 border-zinc-900' : 'bg-white border-zinc-150'
                   }`}>
-                    {activeStepData.techContent.map((row, i) => (
-                      <div key={i} className="py-1.5 flex flex-col sm:flex-row sm:items-start gap-1 justify-between text-[9px]">
-                        <span className="font-bold text-zinc-500 sm:w-1/3 shrink-0">{row.label}</span>
-                        <span className={`sm:w-2/3 ${
-                          row.isCode ? 'font-mono text-purple-600 dark:text-purple-400 bg-purple-500/5 px-1 py-0.5 rounded border border-purple-500/10' : textTitle
-                        }`}>{row.value}</span>
-                      </div>
-                    ))}
+                    <ul className="space-y-1">
+                      {activeStepData.reasoningPath.map((path, i) => (
+                        <li key={i} className="flex gap-2 items-start text-zinc-500 dark:text-zinc-400 font-medium">
+                          <span className="text-yellow-500 select-none">→</span>
+                          <span>{path}</span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 </div>
-
-                {/* Optional Formula representation */}
-                {activeStepData.formula && (
-                  <div className="space-y-1">
-                    <span className="text-[8px] font-mono uppercase text-zinc-500 font-extrabold block">Mathematical Equation Model</span>
-                    <div className={`p-2.5 border border-purple-500/15 rounded font-mono text-[9.5px] font-bold text-purple-650 dark:text-purple-300 ${
-                      isDarkMode ? 'bg-purple-950/10' : 'bg-purple-50/20'
-                    }`}>
-                      {activeStepData.formula}
-                    </div>
-                  </div>
-                )}
-
-                {/* Optional AI Reasoning Trace path */}
-                {activeStepData.reasoningPath && (
-                  <div className="space-y-1.5">
-                    <span className="text-[8px] font-mono uppercase text-zinc-500 font-extrabold block">Swarm Reasoning Trace (Gemini 2.5 Flash)</span>
-                    <div className={`p-3 border rounded-lg space-y-1 leading-relaxed text-[9px] ${
-                      isDarkMode ? 'bg-zinc-950 border-zinc-900' : 'bg-white border-zinc-150'
-                    }`}>
-                      <ul className="space-y-1">
-                        {activeStepData.reasoningPath.map((path, i) => (
-                          <li key={i} className="flex gap-2 items-start text-zinc-500 dark:text-zinc-400 font-medium">
-                            <span className="text-yellow-500 select-none">→</span>
-                            <span>{path}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                )}
-
-              </div>
+              )}
 
             </div>
 
-            {/* Instruction Footer */}
-            <div className={`flex justify-between items-center border-t pt-3 mt-1.5 ${isDarkMode ? 'border-zinc-900' : 'border-zinc-200'}`}>
-              <span className="text-[8px] font-mono text-zinc-550 dark:text-zinc-500">
-                PROVENANCE PIPELINE DIAGNOSTIC VIEW
-              </span>
-              <span className="text-[9px] text-zinc-450 dark:text-zinc-500 italic">
-                Press 'X' at the top-right corner to exit this diagnostic swarm view.
-              </span>
-            </div>
+          </div>
 
+          {/* Instruction Footer */}
+          <div className={`flex justify-between items-center border-t pt-3 mt-1.5 ${isDarkMode ? 'border-zinc-900' : 'border-zinc-200'}`}>
+            <span className="text-[8px] font-mono text-zinc-550 dark:text-zinc-500">
+              PROVENANCE PIPELINE DIAGNOSTIC VIEW
+            </span>
+            <span className="text-[9px] text-zinc-450 dark:text-zinc-500 italic">
+              Press 'X' at the top-right corner to exit this diagnostic swarm view.
+            </span>
           </div>
 
         </div>
