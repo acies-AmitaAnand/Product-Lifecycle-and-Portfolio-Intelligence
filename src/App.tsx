@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { 
-  Activity, Rocket, Layers, Scissors, AlertOctagon, Home, Cpu, Award, BarChart3, LayoutDashboard, Zap, BookOpen, Download, Pin
+  Activity, Rocket, Layers, Scissors, AlertOctagon, Home, Cpu, Award, BarChart3, LayoutDashboard, Zap, BookOpen, Download, Pin, Menu, ChevronRight
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -422,7 +422,7 @@ export default function App() {
             <div 
               className="hidden lg:flex fixed left-0 top-[15%] bottom-[15%] z-50 items-center justify-start transition-all duration-300"
               style={{
-                width: isNavHovered ? '140px' : '24px',
+                width: isNavHovered ? '140px' : '36px',
               }}
               onMouseEnter={() => setIsNavHovered(true)}
               onMouseLeave={() => setIsNavHovered(false)}
@@ -438,12 +438,22 @@ export default function App() {
 
               {/* Collapsed Trigger Handle */}
               <div 
-                className={`absolute left-0 top-1/2 -translate-y-1/2 w-2 h-36 bg-gradient-to-b from-acies-yellow/20 via-acies-yellow/60 to-acies-yellow/20 hover:via-acies-yellow rounded-r-full shadow-lg transition-all duration-300 cursor-pointer flex items-center justify-center ${
-                  isNavHovered ? 'opacity-0 pointer-events-none' : 'opacity-100 animate-pulse'
+                className={`absolute left-0 top-1/2 -translate-y-1/2 w-8 h-28 bg-white dark:bg-zinc-950 border-y border-r border-acies-yellow/30 dark:border-white/10 rounded-r-2xl shadow-[0_0_15px_rgba(234,179,8,0.12)] dark:shadow-[0_0_15px_rgba(0,0,0,0.4)] transition-all duration-300 cursor-pointer flex flex-col items-center justify-center gap-1.5 hover:bg-acies-yellow/5 dark:hover:bg-white/5 hover:w-9 ${
+                  isNavHovered ? 'opacity-0 pointer-events-none' : 'opacity-100'
                 }`}
               >
-                {/* A tiny subtle arrow pointing right */}
-                <div className="w-[3px] h-[3px] border-t-2 border-r-2 border-white rotate-45" />
+                {/* A small Menu icon */}
+                <Menu size={16} className="text-acies-yellow animate-pulse" />
+                
+                {/* Vertical indicator dots */}
+                <div className="flex flex-col gap-0.5 my-0.5">
+                  <div className="w-1 h-1 rounded-full bg-acies-yellow/40 dark:bg-white/20" />
+                  <div className="w-1 h-1 rounded-full bg-acies-yellow/40 dark:bg-white/20" />
+                  <div className="w-1 h-1 rounded-full bg-acies-yellow/40 dark:bg-white/20" />
+                </div>
+
+                {/* A small arrow pointing right */}
+                <ChevronRight size={14} className="text-acies-yellow/60" />
               </div>
             </div>
           )}
