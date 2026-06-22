@@ -542,23 +542,7 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
     { name: 'Launch', count: pipelineCounts.Launch, fill: '#10b981' }
   ];
 
-  const baseRadarData = [
-    { subject: 'Marketing', Actual: 85, Target: 90 },
-    { subject: 'Supply Chain', Actual: 72, Target: 85 },
-    { subject: 'Manufacturing', Actual: 80, Target: 88 },
-    { subject: 'Finance', Actual: 92, Target: 90 },
-    { subject: 'Sales Enablement', Actual: 78, Target: 85 },
-    { subject: 'Regulatory', Actual: 68, Target: 85 },
-    { subject: 'Procurement', Actual: 75, Target: 80 },
-  ];
 
-  const radarData = baseRadarData.map(r => {
-    if (simulateDelay) {
-      if (r.subject === 'Supply Chain') return { ...r, Actual: Math.max(0, r.Actual - 12) };
-      if (r.subject === 'Manufacturing') return { ...r, Actual: Math.max(0, r.Actual - 8) };
-    }
-    return r;
-  });
 
   const regionsList = ['APAC', 'EMEA', 'Americas', 'India'];
   const categoriesList = ['Beverages', 'Snacks', 'Personal Care', 'Household'];
@@ -1994,11 +1978,11 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
         </div>
       </div>
 
-      {/* Row 3: AI Risk Predictions & Cross-Functional Readiness */}
+      {/* Row 3: AI Risk Predictions */}
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
         
         {/* AI Risk Predictions */}
-        <div className="xl:col-span-6 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm space-y-4">
+        <div className="xl:col-span-12 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm space-y-4">
           <div className="flex justify-between items-center pb-2 border-b border-black/5 dark:border-white/5">
             <div className="flex items-center gap-2">
               <Zap size={12} className="text-[#6d28d9] dark:text-[#a78bfa]" />
@@ -2059,7 +2043,7 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
                   <p className="text-[9px] text-zinc-550 dark:text-zinc-400 mt-1 line-clamp-2">BrandA Energy safety buffer below threshold for launch.</p>
                 </div>
                 <div className="flex items-center justify-between mt-2 pt-1 border-t border-black/5 dark:border-white/5">
-                  <span className="text-[8px] font-semibold text-red-600 dark:text-red-400 bg-red-500/10 px-1.5 py-0.5 rounded-sm">92% Risk</span>
+                  <span className="text-[8px] font-semibold text-red-600 dark:red-400 bg-red-500/10 px-1.5 py-0.5 rounded-sm">92% Risk</span>
                   <span className="text-[8px] font-bold text-zinc-700 dark:text-zinc-300">$1.5M Impact</span>
                 </div>
               </div>
@@ -2163,23 +2147,7 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
           )}
         </div>
 
-        {/* Cross-Functional Radar */}
-        <div className="xl:col-span-6 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm space-y-4">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Cross-Functional Readiness</p>
-          <div className="h-60 max-w-lg mx-auto">
-            <ResponsiveContainer width="100%" height="100%">
-              <RadarChart data={radarData}>
-                <PolarGrid stroke={isDarkMode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)"} />
-                <PolarAngleAxis dataKey="subject" tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)', fontSize: 9 }} />
-                <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} />
-                <Radar name="Actual" dataKey="Actual" stroke={isDarkMode ? "#a78bfa" : "#6d28d9"} fill={isDarkMode ? "#a78bfa" : "#6d28d9"} fillOpacity={0.2} />
-                <Radar name="Target" dataKey="Target" stroke={isDarkMode ? "rgba(255,255,255,0.3)" : "rgba(0,0,0,0.3)"} fill="transparent" strokeDasharray="3 3" />
-                <Tooltip contentStyle={{ backgroundColor: isDarkMode ? '#1f1f1f' : '#fff', border: isDarkMode ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.1)' }} />
-                <Legend wrapperStyle={{ fontSize: 9, textTransform: 'uppercase' }} />
-              </RadarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
+
       </div>
 
 
