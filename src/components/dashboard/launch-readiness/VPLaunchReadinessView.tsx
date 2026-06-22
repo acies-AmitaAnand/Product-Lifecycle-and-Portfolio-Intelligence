@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Filter, RefreshCw, Download, Zap, BarChart2, PieChart as PieIcon, Shield, ShieldAlert, DollarSign, Activity, Play, Check, AlertTriangle, Rocket, TrendingUp, Grid, Table, X, Layers,
-  Calendar, User, Plus, Search, ChevronRight, HelpCircle, CheckCircle2, XCircle, AlertCircle, Clock, FileText
+  Calendar, User, Plus, Search, ChevronRight, ChevronDown, MoreHorizontal, HelpCircle, CheckCircle2, XCircle, AlertCircle, Clock, FileText, Minus, MinusCircle
 } from 'lucide-react';
 import { 
   ResponsiveContainer, BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -34,6 +34,94 @@ export interface ProductStageGates {
   owner: string;
   gates: StageGateRecord[];
 }
+
+const GateStatusCircle: React.FC<{
+  status: 'Passed' | 'Failed' | 'Waived' | 'Pending';
+  isActivePending?: boolean;
+  onClick?: () => void;
+  title?: string;
+  className?: string;
+}> = ({ status, isActivePending, onClick, title, className = '' }) => {
+  let borderClass = '';
+  let content = null;
+
+  if (status === 'Passed') {
+    borderClass = 'border-emerald-600 dark:border-emerald-500/70 text-emerald-600 dark:text-emerald-500';
+    content = <Check size={11} strokeWidth={2.5} />;
+  } else if (status === 'Failed') {
+    borderClass = 'border-red-500/70 text-red-500';
+    content = <X size={11} strokeWidth={2.5} />;
+  } else if (status === 'Waived') {
+    borderClass = 'border-amber-500/70 text-amber-500';
+    content = <AlertTriangle size={11} strokeWidth={2.5} />;
+  } else if (status === 'Pending') {
+    if (isActivePending) {
+      borderClass = 'border-blue-500 text-blue-500';
+      content = <Clock size={11} strokeWidth={2.5} />;
+    } else {
+      borderClass = 'border-zinc-300 dark:border-zinc-700 text-zinc-400 dark:text-zinc-500';
+      content = <Minus size={11} strokeWidth={2.5} />;
+    }
+  }
+
+  const classes = `w-7 h-7 rounded-full border flex items-center justify-center transition-all bg-transparent ${borderClass} ${className}`;
+
+  if (onClick) {
+    return (
+      <button
+        onClick={onClick}
+        className={`${classes} hover:bg-black/5 dark:hover:bg-white/5 focus:outline-none cursor-pointer`}
+        title={title}
+      >
+        {content}
+      </button>
+    );
+  }
+
+  return (
+    <div className={classes} title={title}>
+      {content}
+    </div>
+  );
+};
+
+const ScrollDownButton: React.FC<{ onClick?: () => void }> = ({ onClick }) => {
+  return (
+    <div className="flex justify-center -mt-4 relative z-10">
+      <button 
+        onClick={onClick}
+        className="w-8 h-8 rounded-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-md flex items-center justify-center text-zinc-650 dark:text-zinc-350 hover:bg-zinc-50 dark:hover:bg-zinc-850 hover:scale-105 active:scale-95 transition-all cursor-pointer"
+      >
+        <ChevronDown size={14} strokeWidth={2.5} />
+      </button>
+    </div>
+  );
+};
+
+const getAlertButtons = (productId: string) => {
+  if (productId === 'LP25') {
+    return [
+      { text: 'Mitigation plan ↗', action: 'drawer' },
+      { text: 'Financial impact ↗', action: 'financial' }
+    ];
+  }
+  if (productId === 'LP24') {
+    return [
+      { text: 'Recovery plan ↗', action: 'drawer' },
+      { text: 'Replan timeline ↗', action: 'timeline' }
+    ];
+  }
+  if (productId === 'LP20') {
+    return [
+      { text: 'Formulation fix ↗', action: 'drawer' },
+      { text: 'Financial impact ↗', action: 'financial' }
+    ];
+  }
+  return [
+    { text: 'Mitigation plan ↗', action: 'drawer' },
+    { text: 'Financial impact ↗', action: 'financial' }
+  ];
+};
 
 const STAGE_NAMES: ('Concept' | 'Development' | 'Validation' | 'Launch Ready' | 'Live')[] = [
   'Concept', 'Development', 'Validation', 'Launch Ready', 'Live'
@@ -90,6 +178,7 @@ const generateInitialStageGates = (products: VPLaunchProduct[]): ProductStageGat
         riskRating = 'Medium/High Risk';
         approvalNotes = `WAIVED BY VP OVERRIDE: Logistics lead approved temporary waiver on local packaging standards to meet regional window. Review in Q3.`;
         reviewDate = '2026-06-14';
+        reviewer = 'Vikram Solanki (QC & Logistics)';
       } else if (p.id === 'LP25' && stageName === 'Validation') {
         status = 'Failed';
         riskRating = 'High Risk';
@@ -183,20 +272,20 @@ const VP_PRODUCTS: VPLaunchProduct[] = [
   { id: 'LP09', name: 'BrandE Face Scrub', category: 'Personal Care', brand: 'BrandE', region: 'EMEA', stage: 'Testing', quarter: 'Q3 2026', readiness: 85, risk: 'Low', revExposure: 0.7, budget: 0.4, spent: 0.32, owner: 'Anna L.' },
   { id: 'LP10', name: 'BrandG Floor Wipes', category: 'Household', brand: 'BrandG', region: 'EMEA', stage: 'Testing', quarter: 'Q2 2026', readiness: 95, risk: 'Low', revExposure: 0.6, budget: 0.4, spent: 0.38, owner: 'Tom H.' },
   { id: 'LP11', name: 'BrandH Laundry Pods', category: 'Household', brand: 'BrandH', region: 'India', stage: 'Testing', quarter: 'Q3 2026', readiness: 88, risk: 'Low', revExposure: 1.2, budget: 0.8, spent: 0.6, owner: 'Vicky S.' },
-  { id: 'LP12', name: 'BrandH Fabric Sheets', category: 'Household', brand: 'BrandH', region: 'Americas', stage: 'Pre-market', quarter: 'Q3 2026', readiness: 89, risk: 'Low', revExposure: 0.5, budget: 0.3, spent: 0.26, owner: 'Vicky S.' },
+  { id: 'LP12', name: 'BrandH Fabric Sheets', category: 'Household', brand: 'BrandH', region: 'Americas', stage: 'Pre-market', quarter: 'Q3 2026', readiness: 89, risk: 'Low', revExposure: 0.5, budget: 0.3, spent: 0.26, owner: 'Karan J.' },
   { id: 'LP13', name: 'BrandB Potato Crisps', category: 'Snacks', brand: 'BrandB', region: 'APAC', stage: 'Testing', quarter: 'Q2 2026', readiness: 90, risk: 'Low', revExposure: 1.1, budget: 0.7, spent: 0.62, owner: 'Mike T.' },
   { id: 'LP14', name: 'BrandE Hand Wash', category: 'Personal Care', brand: 'BrandE', region: 'APAC', stage: 'Pre-market', quarter: 'Q4 2026', readiness: 85, risk: 'Low', revExposure: 0.9, budget: 0.5, spent: 0.45, owner: 'Anna L.' },
   { id: 'LP15', name: 'BrandA Energy Gel', category: 'Beverages', brand: 'BrandA', region: 'EMEA', stage: 'Pre-market', quarter: 'Q4 2026', readiness: 86, risk: 'Low', revExposure: 0.8, budget: 0.5, spent: 0.44, owner: 'John D.' },
   { id: 'LP16', name: 'BrandE Hair Serum', category: 'Personal Care', brand: 'BrandE', region: 'India', stage: 'Pre-market', quarter: 'Q4 2026', readiness: 87, risk: 'Low', revExposure: 0.7, budget: 0.4, spent: 0.35, owner: 'Anna L.' },
   { id: 'LP17', name: 'BrandG Dish Spray', category: 'Household', brand: 'BrandG', region: 'APAC', stage: 'Development', quarter: 'Q4 2026', readiness: 85, risk: 'Low', revExposure: 0.9, budget: 0.6, spent: 0.4, owner: 'Tom H.' },
   { id: 'LP18', name: 'BrandH Iron Spray', category: 'Household', brand: 'BrandH', region: 'EMEA', stage: 'Ideation', quarter: 'Q4 2026', readiness: 82, risk: 'Low', revExposure: 0.4, budget: 0.3, spent: 0.1, owner: 'Vicky S.' },
-  { id: 'LP19', name: 'BrandD Organic Yogurt', category: 'Snacks', brand: 'BrandD', region: 'EMEA', stage: 'Pre-market', quarter: 'Q3 2026', readiness: 74, risk: 'Medium', revExposure: 0.8, budget: 0.5, spent: 0.4, owner: 'Sarah K.' },
-  { id: 'LP20', name: 'BrandA Fruit Punch', category: 'Beverages', brand: 'BrandA', region: 'India', stage: 'Pre-market', quarter: 'Q3 2026', readiness: 65, risk: 'Medium', revExposure: 0.7, budget: 0.4, spent: 0.3, owner: 'John D.' },
+  { id: 'LP19', name: 'BrandD Organic Yogurt', category: 'Snacks', brand: 'BrandD', region: 'EMEA', stage: 'Pre-market', quarter: 'Q3 2026', readiness: 74, risk: 'Medium', revExposure: 0.8, budget: 0.5, spent: 0.4, owner: 'Vikram S.' },
+  { id: 'LP20', name: 'BrandA Fruit Punch', category: 'Beverages', brand: 'BrandA', region: 'India', stage: 'Pre-market', quarter: 'Q3 2026', readiness: 65, risk: 'Medium', revExposure: 0.7, budget: 0.4, spent: 0.3, owner: 'Priya S.' },
   { id: 'LP21', name: 'BrandB Pretzel Sticks', category: 'Snacks', brand: 'BrandB', region: 'EMEA', stage: 'Development', quarter: 'Q4 2026', readiness: 71, risk: 'Medium', revExposure: 0.6, budget: 0.4, spent: 0.2, owner: 'Mike T.' },
   { id: 'LP22', name: 'BrandE Body Lotion', category: 'Personal Care', brand: 'BrandE', region: 'Americas', stage: 'Development', quarter: 'Q4 2026', readiness: 62, risk: 'Medium', revExposure: 1.0, budget: 0.6, spent: 0.3, owner: 'Anna L.' },
   { id: 'LP23', name: 'BrandG Glass Cleaner', category: 'Household', brand: 'BrandG', region: 'Americas', stage: 'Pre-market', quarter: 'Q3 2026', readiness: 60, risk: 'Medium', revExposure: 0.8, budget: 0.5, spent: 0.35, owner: 'Tom H.' },
-  { id: 'LP24', name: 'BrandC Biscuits Eco', category: 'Snacks', brand: 'BrandC', region: 'EMEA', stage: 'Development', quarter: 'Q4 2026', readiness: 42, risk: 'High', revExposure: 2.1, budget: 1.2, spent: 0.6, owner: 'Lisa R.' },
-  { id: 'LP25', name: 'BrandC Chocolate Oats', category: 'Snacks', brand: 'BrandC', region: 'Americas', stage: 'Pre-market', quarter: 'Q4 2026', readiness: 48, risk: 'High', revExposure: 2.1, budget: 1.5, spent: 0.8, owner: 'Lisa R.' }
+  { id: 'LP24', name: 'BrandC Biscuits Eco', category: 'Snacks', brand: 'BrandC', region: 'EMEA', stage: 'Development', quarter: 'Q4 2026', readiness: 42, risk: 'High', revExposure: 2.1, budget: 1.2, spent: 0.6, owner: 'Vikram S.' },
+  { id: 'LP25', name: 'BrandC Chocolate Oats', category: 'Snacks', brand: 'BrandC', region: 'Americas', stage: 'Pre-market', quarter: 'Q4 2026', readiness: 48, risk: 'High', revExposure: 2.1, budget: 1.5, spent: 0.8, owner: 'Priya S.' }
 ];
 
 interface VPLaunchReadinessViewProps {
@@ -229,13 +318,16 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
   const [selectedStageSKUs, setSelectedStageSKUs] = useState<{ title: string; meaning?: string; skus: VPLaunchProduct[] } | null>(null);
 
   const [stageGates, setStageGates] = useState<ProductStageGates[]>(() => generateInitialStageGates(VP_PRODUCTS));
-  const [selectedProductId, setSelectedProductId] = useState<string>('LP01');
+  const [selectedProductId, setSelectedProductId] = useState<string>('All');
   const [selectedStageName, setSelectedStageName] = useState<'Concept' | 'Development' | 'Validation' | 'Launch Ready' | 'Live'>('Concept');
   const [trackerSearch, setTrackerSearch] = useState('');
   const [trackerFilterStatus, setTrackerFilterStatus] = useState<string>('All');
   const [trackerFilterOwner, setTrackerFilterOwner] = useState<string>('All');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [vpCommentText, setVpCommentText] = useState('');
+  const [activeTrackerTab, setActiveTrackerTab] = useState<'pipeline' | 'alerts' | 'byGate'>('pipeline');
+  const [alertsFilter, setAlertsFilter] = useState<'All' | 'Failed' | 'Waived'>('All');
+  const [drawerProductId, setDrawerProductId] = useState<string>('LP12');
 
   const handleForcePass = (productId: string, stageName: string) => {
     setStageGates(prev => prev.map(pg => {
@@ -567,6 +659,8 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
 
   const selectedProductGates = stageGates.find(sg => sg.productId === selectedProductId) || stageGates[0];
   const selectedStage = selectedProductGates.gates.find(g => g.stageName === selectedStageName) || selectedProductGates.gates[0];
+  const drawerProductGates = stageGates.find(sg => sg.productId === drawerProductId) || stageGates[0];
+  const drawerStage = drawerProductGates.gates.find(g => g.stageName === selectedStageName) || drawerProductGates.gates[0];
 
   const totalGatesCount = selectedProductGates.gates.length;
   const passedGatesCount = selectedProductGates.gates.filter(g => g.status === 'Passed').length;
@@ -574,20 +668,159 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
   const waivedGatesCount = selectedProductGates.gates.filter(g => g.status === 'Waived').length;
   const completionPct = Math.round(((passedGatesCount + waivedGatesCount) / totalGatesCount) * 100);
 
-  const riskAlerts = stageGates.flatMap(pg => {
+  const ACTIVE_TRACKER_PRODUCT_IDS = ['LP12', 'LP25', 'LP24', 'LP20', 'LP19'];
+  const trackerProducts = ACTIVE_TRACKER_PRODUCT_IDS.map(id => stageGates.find(sg => sg.productId === id)).filter(Boolean) as ProductStageGates[];
+
+  const getActiveGate = (pg: ProductStageGates) => {
+    return pg.gates.find(g => g.status !== 'Passed') || pg.gates[pg.gates.length - 1];
+  };
+
+  const getProductStatusUI = (pg: ProductStageGates) => {
+    const failedGate = pg.gates.find(g => g.status === 'Failed');
+    const waivedGate = pg.gates.find(g => g.status === 'Waived');
+    
+    if (failedGate) {
+      let subtext = 'Blocked';
+      if (pg.productId === 'LP25') subtext = 'EU Market Hold';
+      if (pg.productId === 'LP24') subtext = '15d Delay';
+      if (pg.productId === 'LP20') subtext = 'Sugar Deviation';
+      return {
+        pillBg: 'bg-red-50 dark:bg-red-950/20 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-900/30',
+        pillText: '✕ Blocked',
+        subtext: subtext,
+        isBlocked: true
+      };
+    }
+    
+    if (waivedGate) {
+      return {
+        pillBg: 'bg-amber-50 dark:bg-amber-950/20 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-900/30',
+        pillText: '⚠ Waived',
+        subtext: 'Compliance Waiver',
+        isBlocked: false
+      };
+    }
+    
+    return {
+      pillBg: 'bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/30',
+      pillText: '✓ On track',
+      subtext: '',
+      isBlocked: false
+    };
+  };
+
+  const getNextActionUI = (pg: ProductStageGates) => {
+    const failedGate = pg.gates.find(g => g.status === 'Failed');
+    const waivedGate = pg.gates.find(g => g.status === 'Waived');
+    
+    if (pg.productId === 'LP12') {
+      return { text: 'Gate review Jul 5', isRed: false, gateName: 'Launch Ready' };
+    }
+    if (failedGate) {
+      let actionText = 'Resolve regulatory block'; // matching mockup: "Resolve regulatory block" in red
+      return { text: actionText, isRed: true, gateName: failedGate.stageName };
+    }
+    if (waivedGate) {
+      return { text: 'Waiver review Q3', isRed: false, gateName: waivedGate.stageName };
+    }
+    return { text: 'Next gate review', isRed: false, gateName: 'Concept' };
+  };
+
+  const getSwimlaneCardUI = (pg: ProductStageGates, stageName: string) => {
+    const gate = pg.gates.find(g => g.stageName === stageName);
+    if (!gate) return null;
+    
+    if (gate.status === 'Passed') {
+      return {
+        bg: 'bg-emerald-50 dark:bg-emerald-950/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 text-emerald-800 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/10',
+        text: pg.productId === 'LP12' && stageName === 'Validation' ? 'BrandH Fabric Sheets ✓' : `${pg.productName.replace('BrandD Organic Yogurt', 'BrandD Org. Yogurt').replace('BrandC Chocolate Oats', 'BrandC Choc Oats')} ✓`,
+        icon: null
+      };
+    }
+    
+    if (gate.status === 'Failed') {
+      let failLabel = '✕ Blocked';
+      if (pg.productId === 'LP25') failLabel = '✕ EU hold';
+      if (pg.productId === 'LP20') failLabel = '✕ Sugar dev.';
+      return {
+        bg: 'bg-red-50 dark:bg-red-950/20 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-800 dark:text-red-400 border border-red-100 dark:border-red-900/10',
+        text: `${pg.productName.replace('BrandC Chocolate Oats', 'BrandC Choc Oats').replace('BrandC Biscuits Eco', 'BrandC Biscuits Eco')} ${failLabel}`,
+        icon: null
+      };
+    }
+    
+    if (gate.status === 'Waived') {
+      return {
+        bg: 'bg-amber-50 dark:bg-amber-950/20 hover:bg-amber-100 dark:hover:bg-amber-900/30 text-amber-800 dark:text-amber-400 border border-amber-100 dark:border-amber-900/10',
+        text: `${pg.productName.replace('BrandD Organic Yogurt', 'BrandD Org. Yogurt')} ⚠ Waived`,
+        icon: null
+      };
+    }
+    
+    // Pending
+    if (gate.status === 'Pending') {
+      // If it is active (first non-passed gate)
+      const activeGate = getActiveGate(pg);
+      if (activeGate.stageName === stageName) {
+        if (pg.productId === 'LP12') {
+          return {
+            bg: 'bg-blue-50 dark:bg-blue-950/20 hover:bg-blue-100 dark:hover:bg-blue-900/30 text-blue-800 dark:text-blue-400 border border-blue-100 dark:border-blue-900/10',
+            text: `${pg.productName} ⏳ In review`,
+            icon: null
+          };
+        }
+      }
+      
+      // Future / Planned
+      if (pg.productId === 'LP12' && stageName === 'Live') {
+        return {
+          bg: 'bg-zinc-50 dark:bg-zinc-900/40 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-800',
+          text: `${pg.productName} — Sep 15`,
+          icon: null
+        };
+      }
+      
+      return {
+        bg: 'bg-zinc-50 dark:bg-zinc-900/40 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-400 dark:text-zinc-550 border border-zinc-200 dark:border-zinc-800',
+        text: `${pg.productName.replace('BrandC Chocolate Oats', 'BrandC Choc Oats').replace('BrandC Biscuits Eco', 'BrandC Biscuits Eco').replace('BrandD Organic Yogurt', 'BrandD Org. Yogurt').replace('BrandH Fabric Sheets', 'BrandH Fabric Sheets')} —`,
+        icon: null
+      };
+    }
+    
+    return null;
+  };
+
+  const formatShortDate = (dateStr: string) => {
+    if (!dateStr || dateStr === '--') return 'Planned';
+    const parts = dateStr.split('-');
+    if (parts.length === 3) {
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const monthIdx = parseInt(parts[1], 10) - 1;
+      const day = parseInt(parts[2], 10);
+      return `${months[monthIdx]} ${day}`;
+    }
+    return dateStr;
+  };
+
+  const displayedTrackerProducts = trackerProducts.filter(pg => {
+    const matchRegion = filterRegion === 'All' || pg.region === filterRegion;
+    const matchCategory = filterCategory === 'All' || pg.category === filterCategory;
+    const matchSearch = pg.productName.toLowerCase().includes(trackerSearch.toLowerCase());
+    const matchSelect = selectedProductId === 'All' || pg.productId === selectedProductId;
+    return matchRegion && matchCategory && matchSearch && matchSelect;
+  });
+
+  const riskAlerts = trackerProducts.flatMap(pg => {
     const matchRegion = filterRegion === 'All' || pg.region === filterRegion;
     const matchCategory = filterCategory === 'All' || pg.category === filterCategory;
     if (!matchRegion || !matchCategory) return [];
 
     return pg.gates.filter(g => g.status === 'Failed' || g.status === 'Waived').map(g => {
       let impact = 'Attention Required';
-      if (pg.productId === 'LP24') impact = '15d Launch Delay / Critical Path';
-      else if (pg.productId === 'LP19') impact = 'Q3 Compliance Review Pending';
-      else if (pg.productId === 'LP25') impact = 'EU Market Hold / Regulatory Block';
-      else if (pg.productId === 'LP20') impact = 'Formulation Sugar Standard Deviation';
-      else {
-        impact = g.status === 'Failed' ? 'High Risk - Launch Blocked' : 'Medium Risk - Timeline Waiver';
-      }
+      if (pg.productId === 'LP24') impact = '15d Launch Delay / Critical Path Risk';
+      if (pg.productId === 'LP25') impact = 'EU Market Hold / Regulatory Block';
+      if (pg.productId === 'LP20') impact = 'Formulation Sugar Standard Deviation out of spec';
+      if (pg.productId === 'LP19') impact = 'Waiver Active: temporary waiver on local packaging standards';
 
       return {
         productId: pg.productId,
@@ -748,384 +981,441 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
           </div>
         </div>
 
-        {/* Middle: KPI Cards Grid (arranged in 2 lines of 3 blocks each) */}
-        <div className="xl:col-span-4 lg:col-span-8 grid grid-cols-3 gap-3 max-w-[480px] mx-auto">
-          <div 
-            onClick={() => setSelectedStageSKUs({
-              title: 'On Track Launches',
-              meaning: 'SKUs with a Launch Readiness Score of 75% or higher, indicating that all major activities (regulatory compliance, marketing plans, inventory routing) are progressing optimally with low risk of launch delay.',
-              skus: filteredProducts.filter(p => p.readiness >= 75)
-            })}
-            className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm flex flex-col justify-between aspect-square hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] text-center"
-          >
-            <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">On Track</p>
-            <div className="flex-1 flex items-center justify-center">
-              <h4 className="text-4xl font-display font-extrabold text-emerald-500 leading-none">{onTrackCount}</h4>
-            </div>
-            <p className="text-[9px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">Status: Optimal</p>
-          </div>
-
-          <div 
-            onClick={() => setSelectedStageSKUs({
-              title: 'Delayed Launches',
-              meaning: 'SKUs with a Launch Readiness Score below 50%. These have encountered critical bottlenecks (such as severe supply chain delays or lack of regulatory approvals) and require immediate executive attention and mitigation.',
-              skus: filteredProducts.filter(p => p.readiness < 50)
-            })}
-            className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm flex flex-col justify-between aspect-square hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] text-center"
-          >
-            <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Delayed</p>
-            <div className="flex-1 flex items-center justify-center">
-              <h4 className="text-4xl font-display font-extrabold text-red-500 leading-none">{delayedCount}</h4>
-            </div>
-            <p className="text-[9px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">Needs Focus</p>
-          </div>
-
-          <div 
-            onClick={() => setSelectedStageSKUs({
-              title: 'At Risk Launches',
-              meaning: 'SKUs with a Launch Readiness Score between 50% and 74%. These are demonstrating early warning signs or minor deviations from target timelines, requiring active supervision and preventative measures.',
-              skus: filteredProducts.filter(p => p.readiness >= 50 && p.readiness < 75)
-            })}
-            className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm flex flex-col justify-between aspect-square hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] text-center"
-          >
-            <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">At Risk</p>
-            <div className="flex-1 flex items-center justify-center">
-              <h4 className="text-4xl font-display font-extrabold text-amber-500 leading-none">{atRiskCount}</h4>
-            </div>
-            <p className="text-[9px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">Watching</p>
-          </div>
-
-          <div 
-            onClick={() => setSelectedStageSKUs({
-              title: 'Next 60 Days Pipeline',
-              meaning: 'SKUs currently in the active pipeline (Development, Testing, or Pre-market phases) scheduled to transition to market launch within the upcoming 60-day window.',
-              skus: filteredProducts.filter(p => p.stage !== 'Launch' && p.stage !== 'Ideation')
-            })}
-            className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm flex flex-col justify-between aspect-square hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] text-center"
-          >
-            <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Next 60 Days</p>
-            <div className="flex-1 flex items-center justify-center">
-              <h4 className="text-4xl font-display font-extrabold text-blue-500 leading-none">
-                {filteredProducts.filter(p => p.stage !== 'Launch' && p.stage !== 'Ideation').length}
-              </h4>
-            </div>
-            <p className="text-[9px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">Readying</p>
-          </div>
-
-          <div 
-            onClick={() => setSelectedStageSKUs({
-              title: 'Revenue Exposure',
-              meaning: 'The total potential revenue at stake from launches that are currently Delayed or At Risk (Launch Readiness Score below 75%). This helps prioritize resource allocation based on financial impact.',
-              skus: filteredProducts.filter(p => p.readiness < 75)
-            })}
-            className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm flex flex-col justify-between aspect-square hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] text-center"
-          >
-            <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Rev Exposure</p>
-            <div className="flex-1 flex items-center justify-center">
-              <h4 className="text-4xl font-display font-extrabold text-orange-500 leading-none">
-                ${revenueExposure.toFixed(1)}M
-              </h4>
-            </div>
-            <p className="text-[9px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">At-Risk/Delayed</p>
-          </div>
-
-          <div 
-            onClick={() => setSelectedStageSKUs({
-              title: 'Market Coverage Scope',
-              meaning: 'Geographic deployment and readiness metric representing the percentage of target regions or distribution nodes that have successfully completed all pre-market requirements.',
-              skus: filteredProducts
-            })}
-            className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm flex flex-col justify-between aspect-square hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] text-center"
-          >
-            <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Market Coverage</p>
-            <div className="flex-1 flex items-center justify-center">
-              <h4 className="text-4xl font-display font-extrabold text-[#6d28d9] dark:text-[#a78bfa] leading-none">
-                {marketCoverage}%
-              </h4>
-            </div>
-            <p className="text-[9px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">Geo Readiness</p>
-          </div>
-        </div>
-
-        {/* Right: Risk & Escalation Center */}
-        <div className="xl:col-span-5 lg:col-span-12 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm flex flex-col justify-between">
-          <div className="space-y-4">
-            <div className="flex justify-between items-center pb-2 border-b border-black/5 dark:border-white/5">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Risk & Escalation Center</span>
-              <span className="text-[8px] font-bold uppercase tracking-wider text-red-500 bg-red-500/10 px-2 py-0.5 rounded-full">
-                {escalations.length} unresolved delays
-              </span>
-            </div>
-
-            <div className="space-y-2 max-h-[220px] overflow-y-auto pr-1">
-              {escalations.length > 0 ? (
-                escalations.map(esc => (
-                  <div key={esc.id} className="p-2 px-2.5 border border-black/5 dark:border-white/10 rounded-sm bg-zinc-50/50 dark:bg-white/5 flex items-start gap-2.5 justify-between">
-                    <div className="flex items-start gap-2 min-w-0">
-                      <span className="w-2 h-2 rounded-full shrink-0 mt-1" style={{ backgroundColor: esc.color }} />
-                      <div className="min-w-0">
-                        <h4 className="text-[10px] font-bold text-zinc-800 dark:text-zinc-200 truncate" title={esc.title}>{esc.title}</h4>
-                        <p className="text-[8.5px] text-zinc-500 mt-0.5 truncate">{esc.sub} · <span className="font-semibold text-red-500">{esc.impact}</span></p>
-                      </div>
+        {/* Stage Gate Tracker */}
+        <div className="lg:col-span-9 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm flex flex-col justify-between space-y-4 text-left">
+          {(() => {
+            const headerFailedCount = displayedTrackerProducts.filter(p => p.gates.some(g => g.status === 'Failed')).length;
+            const headerWaivedCount = displayedTrackerProducts.filter(p => p.gates.some(g => g.status === 'Waived')).length;
+            const headerPassedCount = selectedProductId === 'All' && trackerSearch === ''
+              ? 3 
+              : (displayedTrackerProducts.length === 1 
+                  ? displayedTrackerProducts[0].gates.filter(g => g.status === 'Passed').length
+                  : displayedTrackerProducts.reduce((sum, p) => sum + (p.gates.some(g => g.status === 'Passed') ? 1 : 0), 0));
+            const headerPendingCount = selectedProductId === 'All' && trackerSearch === ''
+              ? 5
+              : (displayedTrackerProducts.length === 1
+                  ? displayedTrackerProducts[0].gates.filter(g => g.status === 'Pending').length
+                  : displayedTrackerProducts.length);
+                  
+            return (
+              <div className="space-y-4 flex flex-col h-full justify-between">
+                {/* Header Row */}
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-2 border-b border-black/5 dark:border-white/5 gap-3">
+                  <div className="flex flex-wrap items-center gap-3">
+                    <span className="text-sm font-extrabold uppercase tracking-wider text-zinc-800 dark:text-zinc-100">
+                      Stage gate tracker
+                    </span>
+                    {/* Badge counts */}
+                    <div className="flex flex-wrap items-center gap-1.5 text-[9px] font-bold">
+                      <span className="bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-900/30 text-[#137333] dark:text-emerald-400 px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                        ✓ {headerPassedCount} passed
+                      </span>
+                      <span className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/30 text-[#c5221f] dark:text-red-400 px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                        ✕ {headerFailedCount} failed
+                      </span>
+                      <span className="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/30 text-[#b06000] dark:text-amber-400 px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                        ⚠ {headerWaivedCount} waived
+                      </span>
+                      <span className="bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-650 dark:text-zinc-400 px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                        {headerPendingCount} pending
+                      </span>
                     </div>
-                    <button 
-                      onClick={() => setActiveResolveEscalation(esc.id)}
-                      className="px-1.5 py-0.5 shrink-0 border border-[#6d28d9]/35 text-[#6d28d9] dark:text-[#a78bfa] bg-[#6d28d9]/5 hover:bg-[#6d28d9] hover:text-white rounded-sm text-[8px] font-bold uppercase tracking-wider transition-all cursor-pointer font-sans"
-                    >
-                      Resolve
-                    </button>
                   </div>
-                ))
-              ) : (
-                <p className="text-center text-[10px] text-zinc-500 py-12">✓ All escalations cleared</p>
-              )}
-            </div>
-          </div>
-        </div>
 
-      </div>
+                  <button className="text-zinc-400 hover:text-zinc-650 dark:hover:text-zinc-200 p-1 rounded-full hover:bg-black/5 dark:hover:bg-white/5 border-none bg-transparent cursor-pointer">
+                    <MoreHorizontal size={16} />
+                  </button>
+                </div>
 
-      {/* Row 1.5: Stage Gate Status Tracker */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        
-        {/* Full-width Panel: Stage Gate Status Tracker */}
-        <div className="lg:col-span-12 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm flex flex-col justify-between space-y-4 text-left">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-1 border-b border-black/5 dark:border-white/5 gap-2">
-            <span className="text-[9px] font-extrabold uppercase tracking-widest text-[#6d28d9] dark:text-[#a78bfa] border-l-2 border-[#6d28d9] dark:border-[#a78bfa] pl-2 block">
-              Stage Gate Status Tracker
-            </span>
-            
-            <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-              <div className="relative flex-1 sm:flex-initial">
-                <Search size={11} className="absolute left-2.5 top-2.5 text-zinc-400" />
-                <input
-                  type="text"
-                  placeholder="Search products..."
-                  value={trackerSearch}
-                  onChange={(e) => setTrackerSearch(e.target.value)}
-                  className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-sm pl-8 pr-2.5 py-1.5 text-[9px] font-bold text-zinc-650 dark:text-zinc-350 outline-none w-full sm:w-36 focus:border-blue-500/50"
-                />
-              </div>
+                {/* Filters Row */}
+                <div className="flex flex-wrap items-center gap-2">
+                  <div className="relative">
+                    <Search size={12} className="absolute left-3 top-2 text-zinc-400" />
+                    <input
+                      type="text"
+                      placeholder="Search products..."
+                      value={trackerSearch}
+                      onChange={(e) => setTrackerSearch(e.target.value)}
+                      className="bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-md pl-8 pr-3 py-1 text-[10px] text-zinc-800 dark:text-zinc-200 outline-none w-full sm:w-44 focus:border-zinc-450"
+                    />
+                  </div>
 
-              <select
-                value={selectedProductId}
-                onChange={(e) => {
-                  setSelectedProductId(e.target.value);
-                  setSelectedStageName('Concept');
-                }}
-                className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-sm p-1.5 text-[9px] font-bold text-zinc-650 dark:text-zinc-350 outline-none cursor-pointer"
-              >
-                {stageGates
-                  .filter(sg => sg.productName.toLowerCase().includes(trackerSearch.toLowerCase()))
-                  .map(sg => (
-                    <option key={sg.productId} value={sg.productId}>
-                      {sg.productId} - {sg.productName}
-                    </option>
-                  ))}
-              </select>
-            </div>
-          </div>
-
-          {/* Timeline Milestones Graphic */}
-          <div className="relative w-full py-4 mb-4 select-none">
-            {/* Connector Line */}
-            <div className="absolute top-[48px] left-[10%] right-[10%] h-[2px] bg-zinc-200 dark:bg-zinc-750 z-0" />
-            
-            {/* Timeline nodes */}
-            <div className="relative z-10 flex justify-between items-start w-full">
-              {selectedProductGates.gates.map((gate, idx) => {
-                let borderCol = 'border-zinc-200 dark:border-zinc-800';
-                let textCol = 'text-zinc-400 dark:text-zinc-600';
-                let Icon = HelpCircle;
-                
-                if (gate.status === 'Passed') {
-                  borderCol = 'border-emerald-500';
-                  textCol = 'text-emerald-500';
-                  Icon = CheckCircle2;
-                } else if (gate.status === 'Failed') {
-                  borderCol = 'border-red-500';
-                  textCol = 'text-red-500 animate-pulse';
-                  Icon = XCircle;
-                } else if (gate.status === 'Waived') {
-                  borderCol = 'border-amber-500';
-                  textCol = 'text-amber-500';
-                  Icon = AlertCircle;
-                } else if (gate.status === 'Pending') {
-                  const currentStageName = selectedProductGates.gates.find(g => g.status === 'Pending')?.stageName;
-                  if (gate.stageName === currentStageName) {
-                    borderCol = 'border-blue-500';
-                    textCol = 'text-blue-500';
-                    Icon = Clock;
-                  } else {
-                    borderCol = 'border-zinc-200 dark:border-zinc-800';
-                    textCol = 'text-zinc-400 dark:text-zinc-650';
-                    Icon = HelpCircle;
-                  }
-                }
-
-                const isCurrent = gate.stageName === selectedStageName;
-
-                return (
-                  <button
-                    key={gate.stageName}
-                    onClick={() => {
-                      setSelectedStageName(gate.stageName);
-                      setIsDrawerOpen(true);
+                  <select
+                    value={selectedProductId}
+                    onChange={(e) => {
+                      setSelectedProductId(e.target.value);
+                      setSelectedStageName('Concept');
                     }}
-                    className="flex flex-col items-center group relative z-10 focus:outline-none transition-transform hover:scale-105 active:scale-95 bg-transparent border-none p-0 cursor-pointer w-1/5"
+                    className="bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 rounded-md px-3 py-1 text-[10px] text-zinc-800 dark:text-zinc-200 outline-none cursor-pointer focus:border-zinc-450"
                   >
-                    <div className={`w-16 h-16 rounded-full flex items-center justify-center border-[5px] bg-white dark:bg-zinc-900 shadow-md transition-all duration-300 group-hover:scale-110 ${
-                      isCurrent 
-                        ? 'ring-2 ring-offset-2 ring-blue-500 dark:ring-offset-zinc-900' 
-                        : ''
-                    } ${borderCol} ${textCol}`}>
-                      <Icon size={24} />
-                    </div>
-                    
-                    <span className={`text-[10px] font-extrabold tracking-wide mt-2 text-zinc-800 dark:text-zinc-200 group-hover:${textCol} transition-colors`}>
-                      {gate.stageName}
-                    </span>
-                    <span className="text-[9px] font-bold text-zinc-400 dark:text-zinc-555 mt-0.5">
-                      {gate.reviewDate !== '--' ? gate.reviewDate : 'Planned'}
-                    </span>
-                    <span className="text-[9px] font-extrabold text-zinc-750 dark:text-zinc-300 font-mono mt-0.5 truncate max-w-[80px]" title={gate.reviewer}>
-                      {gate.reviewer.split(' ')[0]} {gate.reviewer.split(' ')[1] || ''}
-                    </span>
-                    <span className={`text-[8px] font-bold mt-0.5 ${textCol}`}>
-                      {gate.status}
+                    <option value="All">All products</option>
+                    {trackerProducts
+                      .filter(sg => sg.productName.toLowerCase().includes(trackerSearch.toLowerCase()))
+                      .map(sg => (
+                        <option key={sg.productId} value={sg.productId}>
+                          {sg.productName}
+                        </option>
+                      ))}
+                  </select>
+                </div>
+
+                {/* Tabs Selection Row */}
+                <div className="flex border-b border-zinc-200 dark:border-zinc-800 -mt-2">
+                  <button
+                    onClick={() => setActiveTrackerTab('pipeline')}
+                    className={`px-4 py-2 text-[10px] font-bold uppercase tracking-wider relative -mb-[1px] border-b-2 bg-transparent cursor-pointer transition-colors ${
+                      activeTrackerTab === 'pipeline'
+                        ? 'border-zinc-950 dark:border-white text-zinc-950 dark:text-white'
+                        : 'border-transparent text-zinc-400 hover:text-zinc-650 dark:hover:text-zinc-300'
+                    }`}
+                  >
+                    Pipeline view
+                  </button>
+                  <button
+                    onClick={() => setActiveTrackerTab('alerts')}
+                    className={`px-4 py-2 text-[10px] font-bold uppercase tracking-wider relative -mb-[1px] border-b-2 bg-transparent cursor-pointer transition-colors flex items-center gap-1.5 ${
+                      activeTrackerTab === 'alerts'
+                        ? 'border-zinc-950 dark:border-white text-zinc-950 dark:text-white'
+                        : 'border-transparent text-zinc-400 hover:text-zinc-650 dark:hover:text-zinc-300'
+                    }`}
+                  >
+                    <span>VP alerts</span>
+                    <span className="bg-red-500 text-white text-[8px] font-black rounded-full px-1.5 py-0.5 leading-none">
+                      {riskAlerts.length}
                     </span>
                   </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* VP Risk Alerts Center */}
-          <div className="bg-red-500/5 dark:bg-red-500/5 border border-red-500/10 rounded-sm p-3 space-y-2">
-            <div className="flex items-center gap-1.5 pb-1.5 border-b border-red-500/10 justify-between">
-              <div className="flex items-center gap-1.5">
-                <ShieldAlert size={12} className="text-red-500 shrink-0" />
-                <span className="text-[9px] font-bold uppercase tracking-wider text-red-500">VP Risk Alerts & Blockers</span>
-              </div>
-              <span className="text-[8px] font-bold text-red-400 uppercase bg-red-500/10 px-1.5 py-0.5 rounded-sm">
-                {riskAlerts.length} Attention Required
-              </span>
-            </div>
-            
-            <div className="max-h-48 overflow-y-auto space-y-1.5 pr-1">
-              {riskAlerts.length > 0 ? (
-                riskAlerts.map((alert, idx) => (
-                  <div
-                    key={idx}
-                    onClick={() => {
-                      setSelectedProductId(alert.productId);
-                      setSelectedStageName(alert.stageName);
-                      setIsDrawerOpen(true);
-                    }}
-                    className="flex items-center justify-between p-1.5 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 rounded-sm cursor-pointer transition-all border-l-3 border-l-red-500 text-left"
+                  <button
+                    onClick={() => setActiveTrackerTab('byGate')}
+                    className={`px-4 py-2 text-[10px] font-bold uppercase tracking-wider relative -mb-[1px] border-b-2 bg-transparent cursor-pointer transition-colors ${
+                      activeTrackerTab === 'byGate'
+                        ? 'border-zinc-950 dark:border-white text-zinc-950 dark:text-white'
+                        : 'border-transparent text-zinc-400 hover:text-zinc-650 dark:hover:text-zinc-300'
+                    }`}
                   >
-                    <div className="space-y-0.5">
+                    By gate
+                  </button>
+                </div>
+
+                {/* Tab Content 1: Pipeline view */}
+                {activeTrackerTab === 'pipeline' && (
+                  <div className="space-y-4">
+                    {/* Legend row */}
+                    <div className="flex flex-wrap items-center gap-4 text-[9px] font-semibold text-zinc-550 dark:text-zinc-400 pt-1">
                       <div className="flex items-center gap-1.5">
-                        <span className="text-[9px] font-extrabold text-zinc-800 dark:text-zinc-200">
-                          {alert.productName}
+                        <GateStatusCircle status="Passed" />
+                        <span>Passed</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <GateStatusCircle status="Failed" />
+                        <span>Failed</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <GateStatusCircle status="Waived" />
+                        <span>Waived</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <GateStatusCircle status="Pending" isActivePending={true} />
+                        <span>In review</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <GateStatusCircle status="Pending" isActivePending={false} />
+                        <span>Planned</span>
+                      </div>
+                    </div>
+
+                    {/* Table wrapper */}
+                    <div className="overflow-x-auto w-full border border-zinc-150 dark:border-zinc-800 rounded-lg shadow-sm">
+                      <table className="w-full text-left border-collapse text-[10px]">
+                        <thead>
+                          <tr className="border-b border-zinc-250 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 text-[9px] uppercase tracking-wider text-zinc-400 font-extrabold">
+                            <th className="p-3 pl-4">Product</th>
+                            <th className="p-3">Owner</th>
+                            <th className="p-3 text-center">Concept</th>
+                            <th className="p-3 text-center">Development</th>
+                            <th className="p-3 text-center">Validation</th>
+                            <th className="p-3 text-center">Launch ready</th>
+                            <th className="p-3 text-center">Live</th>
+                            <th className="p-3">Status</th>
+                            <th className="p-3 pr-4">Next action</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
+                          {displayedTrackerProducts.map(pg => {
+                            const activeGate = getActiveGate(pg);
+                            const statusUI = getProductStatusUI(pg);
+                            const actionUI = getNextActionUI(pg);
+                            
+                            return (
+                              <tr 
+                                key={pg.productId}
+                                className="hover:bg-zinc-50/50 dark:hover:bg-zinc-900/30 transition-colors bg-[#fafaf7] dark:bg-zinc-950/10"
+                              >
+                                <td className="p-3 pl-4 font-bold text-zinc-850 dark:text-zinc-200">
+                                  <div className="text-zinc-900 dark:text-zinc-100">{pg.productName}</div>
+                                  <div className="text-[8px] font-bold text-zinc-400 mt-0.5 uppercase">
+                                    {pg.productId} · {pg.productId === 'LP12' ? 'Home care' : pg.productId === 'LP25' ? 'Food' : pg.category}
+                                  </div>
+                                </td>
+                                
+                                <td className="p-3 text-zinc-650 dark:text-zinc-400">
+                                  <div className="font-bold text-zinc-900 dark:text-zinc-200">{activeGate.reviewer.split(' ')[0]} {activeGate.reviewer.split(' ')[1]?.[0] || ''}.</div>
+                                  <div className="text-[8px] text-zinc-400 font-medium mt-0.5">{formatShortDate(activeGate.reviewDate)}</div>
+                                </td>
+
+                                {STAGE_NAMES.map(stageName => {
+                                  const gate = pg.gates.find(g => g.stageName === stageName);
+                                  if (!gate) return <td key={stageName} className="p-3 text-center text-zinc-355">—</td>;
+                                  
+                                  const isActivePending = getActiveGate(pg).stageName === stageName;
+                                  
+                                  return (
+                                    <td key={stageName} className="p-3 text-center">
+                                      <div className="flex justify-center">
+                                        <GateStatusCircle
+                                          status={gate.status}
+                                          isActivePending={isActivePending}
+                                          onClick={() => {
+                                            setDrawerProductId(pg.productId);
+                                            setSelectedStageName(stageName as any);
+                                            setIsDrawerOpen(true);
+                                          }}
+                                          title={`Review ${gate.gateName}`}
+                                        />
+                                      </div>
+                                    </td>
+                                  );
+                                })}
+
+                                <td className="p-3">
+                                  <div className="flex flex-col items-start gap-1">
+                                    <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase inline-flex items-center gap-1.5 ${statusUI.pillBg}`}>
+                                      {statusUI.pillText.startsWith('✓') ? <Check size={10} strokeWidth={2.5} /> : 
+                                       statusUI.pillText.startsWith('✕') ? <X size={10} strokeWidth={2.5} /> :
+                                       statusUI.pillText.startsWith('⚠') ? <AlertTriangle size={10} strokeWidth={2.5} /> : null}
+                                      {statusUI.pillText.replace(/^[✓✕⚠]\s*/, '')}
+                                    </span>
+                                    {statusUI.subtext && (
+                                      <span className="text-[9px] font-semibold text-red-650 dark:text-red-400 pl-1">
+                                        {statusUI.subtext}
+                                      </span>
+                                    )}
+                                  </div>
+                                </td>
+
+                                <td className="p-3 pr-4">
+                                  <button
+                                    onClick={() => {
+                                      setDrawerProductId(pg.productId);
+                                      setSelectedStageName(actionUI.gateName as any);
+                                      setIsDrawerOpen(true);
+                                    }}
+                                    className={`text-[9px] font-black text-left bg-transparent border-none cursor-pointer hover:underline transition-all ${
+                                      actionUI.isRed ? 'text-red-600 dark:text-red-450 font-bold' : 'text-zinc-600 dark:text-zinc-400'
+                                    }`}
+                                  >
+                                    {actionUI.text}
+                                  </button>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                    {/* Scroll down button at the bottom of the table */}
+                    <ScrollDownButton />
+                  </div>
+                )}
+
+                {/* Tab Content 2: VP alerts */}
+                {activeTrackerTab === 'alerts' && (
+                  <div className="space-y-4">
+                    {/* Section header & filters */}
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 pt-1">
+                      <div className="flex items-center gap-1.5">
+                        <ShieldAlert size={14} className="text-red-500 shrink-0" />
+                        <span className="text-[10px] font-extrabold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">
+                          VP risk alerts & blockers
                         </span>
-                        <span className={`text-[7px] font-bold uppercase px-1 rounded-sm ${
-                          alert.status === 'Failed' 
-                            ? 'bg-red-500/10 text-red-500' 
-                            : 'bg-amber-500/10 text-amber-500'
-                        }`}>
-                          {alert.status}
+                        <span className="bg-[#fdf2f2] dark:bg-red-955/20 text-[#ec5252] dark:text-red-400 text-[8px] font-black uppercase px-2.5 py-0.5 rounded-full border border-red-200 dark:border-red-900/30">
+                          {riskAlerts.length} attention required
                         </span>
                       </div>
-                      <p className="text-[8px] text-zinc-450 dark:text-zinc-555 font-medium">
-                        <strong className="text-zinc-555">Impact:</strong> {alert.impact}
-                      </p>
+                      
+                      <div className="flex items-center border border-zinc-200 dark:border-zinc-800 rounded-md overflow-hidden bg-black/5 dark:bg-white/5 p-0.5 shrink-0">
+                        {['All', 'Failed', 'Waived'].map(filterOption => (
+                          <button
+                            key={filterOption}
+                            onClick={() => setAlertsFilter(filterOption as any)}
+                            className={`px-3 py-1 text-[9px] font-extrabold uppercase tracking-wider rounded-sm transition-all border-none cursor-pointer ${
+                              alertsFilter === filterOption
+                                ? 'bg-white dark:bg-zinc-800 text-zinc-850 dark:text-zinc-100 shadow-xs border border-zinc-255 dark:border-zinc-700'
+                                : 'text-zinc-550 dark:text-zinc-455 bg-transparent hover:text-zinc-800 dark:hover:text-zinc-200'
+                            }`}
+                          >
+                            {filterOption}
+                          </button>
+                        ))}
+                      </div>
                     </div>
-                    <div className="text-right">
-                      <span className="text-[8px] font-bold text-zinc-500 block">
-                        Gate: {alert.stageName}
-                      </span>
-                      <span className="text-[7px] text-zinc-450 block">
-                        {alert.owner.split(' ')[0]} • {alert.date}
-                      </span>
+
+                    {/* Cards list */}
+                    <div className="space-y-3 max-h-[320px] overflow-y-auto pr-1 pb-1">
+                      {riskAlerts
+                        .filter(alert => alertsFilter === 'All' || alert.status === alertsFilter)
+                        .filter(alert => alert.productName.toLowerCase().includes(trackerSearch.toLowerCase()))
+                        .length > 0 ? (
+                        riskAlerts
+                          .filter(alert => alertsFilter === 'All' || alert.status === alertsFilter)
+                          .filter(alert => alert.productName.toLowerCase().includes(trackerSearch.toLowerCase()))
+                          .map((alert, idx) => {
+                            const isFailed = alert.status === 'Failed';
+                            const buttons = getAlertButtons(alert.productId);
+                            
+                            return (
+                              <div
+                                key={idx}
+                                onClick={() => {
+                                  setDrawerProductId(alert.productId);
+                                  setSelectedStageName(alert.stageName as any);
+                                  setIsDrawerOpen(true);
+                                }}
+                                className="flex border border-zinc-200 dark:border-zinc-800 rounded-lg overflow-hidden bg-[#fafaf7] dark:bg-zinc-900/20 hover:border-zinc-355 dark:hover:border-zinc-700 transition-all cursor-pointer shadow-xs group"
+                              >
+                                <div className={`w-1.5 shrink-0 ${isFailed ? 'bg-red-500' : 'bg-amber-500'}`} />
+                                
+                                <div className="flex-1 p-3.5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                                  <div className="space-y-1.5 flex-1 min-w-0">
+                                    <div className="flex items-center gap-2">
+                                      <span className="font-extrabold text-xs text-zinc-900 dark:text-zinc-150 group-hover:underline">
+                                        {alert.productName}
+                                      </span>
+                                      <span className={`px-2 py-0.5 text-[8px] font-black uppercase rounded-full ${
+                                        isFailed 
+                                          ? 'bg-red-50 dark:bg-red-950/20 text-[#c5221f] dark:text-red-400 border border-red-100 dark:border-red-900/10' 
+                                          : 'bg-amber-50 dark:bg-amber-950/20 text-[#b06000] dark:text-amber-400 border border-amber-100 dark:border-amber-900/10'
+                                      }`}>
+                                        {alert.status}
+                                      </span>
+                                    </div>
+                                    
+                                    <p className="text-[10px] font-extrabold text-[#c5221f] dark:text-red-400 leading-tight">
+                                      {alert.impact}
+                                    </p>
+                                    
+                                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[9px] text-zinc-450 dark:text-zinc-500 font-semibold animate-pulse">
+                                      <span className="flex items-center gap-1">
+                                        <Calendar size={11} />
+                                        {formatShortDate(alert.date)}
+                                      </span>
+                                      <span className="flex items-center gap-1">
+                                        <User size={11} />
+                                        {alert.owner} — {alert.stageName === 'Launch Ready' ? 'Launch ready' : alert.stageName} gate owner
+                                      </span>
+                                    </div>
+                                  </div>
+                                  
+                                  <div className="flex sm:flex-col gap-2 shrink-0 w-full sm:w-auto">
+                                    {buttons.map((btn, bIdx) => (
+                                      <button
+                                        key={bIdx}
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          if (btn.action === 'drawer') {
+                                            setDrawerProductId(alert.productId);
+                                            setSelectedStageName(alert.stageName as any);
+                                            setIsDrawerOpen(true);
+                                          } else if (btn.action === 'financial') {
+                                            setPredictionModalType('margin');
+                                            setIsPredictionModalOpen(true);
+                                          } else if (btn.action === 'timeline') {
+                                            setPredictionModalType('delay');
+                                            setIsPredictionModalOpen(true);
+                                          }
+                                        }}
+                                        className="flex-1 sm:flex-initial px-3 py-1.5 text-[9px] font-black uppercase tracking-wider text-zinc-700 dark:text-zinc-350 bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-md hover:bg-zinc-50 dark:hover:bg-zinc-755 transition-colors flex items-center justify-center gap-1 cursor-pointer"
+                                      >
+                                        {btn.text}
+                                      </button>
+                                    ))}
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })
+                      ) : (
+                        <div className="text-center py-8 bg-zinc-50/50 dark:bg-white/5 border border-dashed border-zinc-200 dark:border-zinc-800 rounded-lg">
+                          <p className="text-[10px] text-zinc-400 italic">No risk alerts match the filters.</p>
+                        </div>
+                      )}
                     </div>
+                    {/* Scroll down button at the bottom of the alerts list */}
+                    <ScrollDownButton />
                   </div>
-                ))
-              ) : (
-                <div className="text-center py-4">
-                  <p className="text-[9px] text-zinc-400 italic">No stage gate exceptions. All reviews completed or pending on schedule.</p>
-                </div>
-              )}
-            </div>
-          </div>
+                )}
 
-          {/* Summary Metric Cards */}
-          <div className="grid grid-cols-5 gap-3 pt-3 border-t border-black/5 dark:border-white/5">
-            {/* Total Gates */}
-            <div className="bg-black/5 dark:bg-white/5 rounded-sm p-2.5 border border-black/5 dark:border-white/5 flex flex-col justify-between">
-              <span className="text-[7.5px] text-zinc-400 dark:text-zinc-500 font-bold uppercase tracking-wider block">
-                Total Gates
-              </span>
-              <div className="flex items-baseline gap-1 mt-0.5">
-                <span className="text-sm font-display font-extrabold text-zinc-800 dark:text-white">
-                  {totalGatesCount}
-                </span>
-                <span className="text-[8px] text-zinc-500 uppercase font-bold">Gates</span>
-              </div>
-            </div>
+                {/* Tab Content 3: By gate */}
+                {activeTrackerTab === 'byGate' && (
+                  <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5 gap-4 pt-1">
+                    {STAGE_NAMES.map(stageName => {
+                      return (
+                        <div 
+                          key={stageName} 
+                          className="bg-zinc-50/30 dark:bg-white/5 border border-zinc-200 dark:border-zinc-800 rounded-lg p-3 space-y-3 flex flex-col"
+                        >
+                          {/* Stage Header */}
+                          <div className="flex items-center gap-1.5 pb-2 border-b border-zinc-250 dark:border-zinc-800 justify-center">
+                            <GateStatusCircle
+                              status={
+                                stageName === 'Concept' || stageName === 'Development' ? 'Passed' :
+                                stageName === 'Validation' ? 'Failed' :
+                                stageName === 'Launch Ready' ? 'Pending' : 'Pending'
+                              }
+                              isActivePending={stageName === 'Launch Ready'}
+                              className="w-5 h-5 border-[1.5px]"
+                            />
+                            <span className="text-[10px] font-extrabold uppercase tracking-wider text-zinc-700 dark:text-zinc-350">
+                              {stageName === 'Launch Ready' ? 'Launch ready' : stageName}
+                            </span>
+                          </div>
 
-            {/* Passed */}
-            <div className="bg-black/5 dark:bg-white/5 rounded-sm p-2.5 border border-black/5 dark:border-white/5 flex flex-col justify-between">
-              <span className="text-[7.5px] text-zinc-400 dark:text-zinc-500 font-bold uppercase tracking-wider block">
-                Passed
-              </span>
-              <div className="flex items-baseline gap-1 mt-0.5">
-                <span className="text-sm font-display font-extrabold text-emerald-500">
-                  {passedGatesCount}
-                </span>
-                <span className="text-[8px] text-emerald-500 uppercase font-bold">Passed</span>
-              </div>
-            </div>
+                          {/* Swimlane Cards */}
+                          <div className="flex-1 space-y-2">
+                            {displayedTrackerProducts.map(pg => {
+                              const cardUI = getSwimlaneCardUI(pg, stageName);
+                              if (!cardUI) return null;
+                              
+                              return (
+                                <div
+                                  key={pg.productId}
+                                  onClick={() => {
+                                    setDrawerProductId(pg.productId);
+                                    setSelectedStageName(stageName as any);
+                                    setIsDrawerOpen(true);
+                                  }}
+                                  className={`p-2.5 rounded-md text-[10px] font-extrabold transition-all cursor-pointer flex items-center justify-between shadow-xs ${cardUI.bg}`}
+                                >
+                                  <span className="truncate">{cardUI.text}</span>
+                                  {cardUI.icon}
+                                </div>
+                              );
+                            })}
 
-            {/* Failed */}
-            <div className="bg-black/5 dark:bg-white/5 rounded-sm p-2.5 border border-black/5 dark:border-white/5 flex flex-col justify-between">
-              <span className="text-[7.5px] text-zinc-400 dark:text-zinc-500 font-bold uppercase tracking-wider block">
-                Failed
-              </span>
-              <div className="flex items-baseline gap-1 mt-0.5">
-                <span className="text-sm font-display font-extrabold text-red-500">
-                  {failedGatesCount}
-                </span>
-                <span className="text-[8px] text-red-500 uppercase font-bold">Failed</span>
+                            {/* Static "All others" card for Live column */}
+                            {stageName === 'Live' && displayedTrackerProducts.length > 1 && (
+                              <div className="p-2.5 bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800 text-zinc-400 dark:text-zinc-550 rounded-md text-[10px] font-semibold text-center italic mt-1">
+                                All others — blocked or TBD
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
-            </div>
-
-            {/* Waived */}
-            <div className="bg-black/5 dark:bg-white/5 rounded-sm p-2.5 border border-black/5 dark:border-white/5 flex flex-col justify-between">
-              <span className="text-[7.5px] text-zinc-400 dark:text-zinc-500 font-bold uppercase tracking-wider block">
-                Waived
-              </span>
-              <div className="flex items-baseline gap-1 mt-0.5">
-                <span className="text-sm font-display font-extrabold text-amber-500">
-                  {waivedGatesCount}
-                </span>
-                <span className="text-[8px] text-amber-500 uppercase font-bold">Waived</span>
-              </div>
-            </div>
-
-            {/* Completion Rate */}
-            <div className="bg-black/5 dark:bg-white/5 rounded-sm p-2.5 border border-black/5 dark:border-white/5 flex flex-col justify-between">
-              <span className="text-[7.5px] text-zinc-400 dark:text-zinc-555 font-bold uppercase tracking-wider block">
-                Completion Rate
-              </span>
-              <div className="flex items-baseline gap-1 mt-0.5">
-                <span className="text-sm font-display font-extrabold text-[#6d28d9] dark:text-[#a78bfa]">
-                  {completionPct}%
-                </span>
-                <span className="text-[8px] text-zinc-555 uppercase font-bold">Rate</span>
-              </div>
-            </div>
-          </div>
+            );
+          })()}
         </div>
       </div>
 
@@ -2047,7 +2337,6 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
               )}
             </div>
 
-            {/* Footer */}
             <div className="p-4 border-t border-black/5 dark:border-white/5 flex justify-end">
               <button 
                 onClick={() => setSelectedStageSKUs(null)}
@@ -2075,15 +2364,15 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
             <div className="p-4 border-b border-black/5 dark:border-white/5 flex items-center justify-between bg-black/[0.02] dark:bg-white/[0.02]">
               <div>
                 <span className="text-[8px] font-bold uppercase tracking-widest text-blue-500">
-                  {selectedProductGates.productId} • {selectedProductGates.productName}
+                  {drawerProductGates.productId} • {drawerProductGates.productName}
                 </span>
                 <h3 className="text-xs font-display font-black text-zinc-850 dark:text-zinc-100">
-                  {selectedStage.gateName}
+                  {drawerStage.gateName}
                 </h3>
               </div>
               <button
                 onClick={() => setIsDrawerOpen(false)}
-                className="p-1 hover:bg-black/5 dark:hover:bg-white/5 rounded-full text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-205 cursor-pointer transition-colors border-none bg-transparent"
+                className="p-1 hover:bg-black/5 dark:hover:bg-white/5 rounded-full text-zinc-400 hover:text-zinc-650 dark:hover:text-zinc-200 cursor-pointer transition-colors border-none bg-transparent"
               >
                 <X size={16} />
               </button>
@@ -2096,9 +2385,9 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
                 <div className="bg-black/5 dark:bg-white/5 p-2.5 rounded-sm">
                   <span className="text-[7px] font-bold uppercase text-zinc-450 block mb-1">Gate Owner</span>
                   <div className="flex items-center gap-1.5">
-                    <User size={11} className="text-zinc-550 dark:text-zinc-450" />
+                    <User size={11} className="text-zinc-550 dark:text-zinc-455" />
                     <span className="text-[9px] font-extrabold text-zinc-700 dark:text-zinc-300">
-                      {selectedStage.reviewer}
+                      {drawerStage.reviewer}
                     </span>
                   </div>
                 </div>
@@ -2108,7 +2397,7 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
                   <div className="flex items-center gap-1.5">
                     <Calendar size={11} className="text-zinc-550 dark:text-zinc-455" />
                     <span className="text-[9px] font-extrabold text-zinc-700 dark:text-zinc-300">
-                      {selectedStage.reviewDate}
+                      {drawerStage.reviewDate}
                     </span>
                   </div>
                 </div>
@@ -2119,28 +2408,28 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
                 <div className="bg-black/5 dark:bg-white/5 p-2.5 rounded-sm">
                   <span className="text-[7px] font-bold uppercase text-zinc-450 block mb-1">Gate Status</span>
                   <span className={`inline-flex items-center gap-1 text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full ${
-                    selectedStage.status === 'Passed' ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' :
-                    selectedStage.status === 'Failed' ? 'bg-red-500/10 text-red-500 border border-red-500/20' :
-                    selectedStage.status === 'Waived' ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20' :
+                    drawerStage.status === 'Passed' ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' :
+                    drawerStage.status === 'Failed' ? 'bg-red-500/10 text-red-500 border border-red-500/20' :
+                    drawerStage.status === 'Waived' ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20' :
                     'bg-blue-500/10 text-blue-500 border border-blue-500/20'
                   }`}>
-                    {selectedStage.status === 'Passed' && <CheckCircle2 size={9} />}
-                    {selectedStage.status === 'Failed' && <XCircle size={9} />}
-                    {selectedStage.status === 'Waived' && <AlertCircle size={9} />}
-                    {selectedStage.status === 'Pending' && <Clock size={9} />}
-                    {selectedStage.status}
+                    {drawerStage.status === 'Passed' && <CheckCircle2 size={9} />}
+                    {drawerStage.status === 'Failed' && <XCircle size={9} />}
+                    {drawerStage.status === 'Waived' && <AlertCircle size={9} />}
+                    {drawerStage.status === 'Pending' && <Clock size={9} />}
+                    {drawerStage.status}
                   </span>
                 </div>
 
                 <div className="bg-black/5 dark:bg-white/5 p-2.5 rounded-sm">
                   <span className="text-[7px] font-bold uppercase text-zinc-450 block mb-1">Risk Assessment</span>
                   <span className={`inline-flex items-center gap-1 text-[9px] font-extrabold px-2 py-0.5 rounded-full ${
-                    selectedStage.riskRating === 'No Risk' ? 'bg-emerald-500/10 text-emerald-500' :
-                    selectedStage.riskRating === 'High Risk' ? 'bg-red-500/10 text-red-500' :
-                    selectedStage.riskRating === 'Medium/High Risk' ? 'bg-amber-500/10 text-amber-500' :
+                    drawerStage.riskRating === 'No Risk' ? 'bg-emerald-500/10 text-emerald-500' :
+                    drawerStage.riskRating === 'High Risk' ? 'bg-red-500/10 text-red-500' :
+                    drawerStage.riskRating === 'Medium/High Risk' ? 'bg-amber-500/10 text-amber-500' :
                     'bg-blue-500/10 text-blue-500'
                   }`}>
-                    {selectedStage.riskRating}
+                    {drawerStage.riskRating}
                   </span>
                 </div>
               </div>
@@ -2149,7 +2438,7 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
               <div className="space-y-1">
                 <span className="text-[8px] font-bold uppercase text-zinc-450">Approval / Review Notes</span>
                 <div className="p-3 bg-black/5 dark:bg-white/5 rounded-sm border border-black/5 dark:border-white/5 text-[9px] text-zinc-700 dark:text-zinc-350 leading-relaxed">
-                  {selectedStage.approvalNotes}
+                  {drawerStage.approvalNotes}
                 </div>
               </div>
 
@@ -2157,13 +2446,13 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
               <div className="space-y-1.5">
                 <span className="text-[8px] font-bold uppercase text-zinc-450">Supporting Documents</span>
                 <div className="space-y-1">
-                  {selectedStage.supportingDocs.map((doc, idx) => (
+                  {drawerStage.supportingDocs.map((doc, idx) => (
                     <div 
                       key={idx}
                       className="flex items-center justify-between p-2 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 rounded-sm text-[8px] text-zinc-650 dark:text-zinc-350 font-bold transition-all cursor-pointer"
                     >
                       <div className="flex items-center gap-1.5">
-                        <FileText size={11} className="text-zinc-450 dark:text-zinc-550" />
+                        <FileText size={11} className="text-zinc-450 dark:text-zinc-555" />
                         <span>{doc}</span>
                       </div>
                       <span className="text-blue-500 hover:underline">Download</span>
@@ -2182,7 +2471,7 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
                     <div>User</div>
                   </div>
                   <div className="divide-y divide-black/5 dark:divide-white/5 max-h-24 overflow-y-auto">
-                    {selectedStage.auditTrail.map((log, idx) => (
+                    {drawerStage.auditTrail.map((log, idx) => (
                       <div key={idx} className="p-2 text-[8px] grid grid-cols-3 text-zinc-600 dark:text-zinc-400 font-medium">
                         <div className="font-mono">{log.timestamp}</div>
                         <div className="font-bold text-zinc-700 dark:text-zinc-300">{log.action}</div>
@@ -2202,8 +2491,8 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
                 
                 <div className="flex gap-2">
                   <button
-                    disabled={selectedStage.status === 'Passed'}
-                    onClick={() => handleForcePass(selectedProductGates.productId, selectedStage.stageName)}
+                    disabled={drawerStage.status === 'Passed'}
+                    onClick={() => handleForcePass(drawerProductGates.productId, drawerStage.stageName)}
                     className="flex-1 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 disabled:hover:bg-emerald-600 text-white font-bold text-[9px] uppercase tracking-wider rounded-sm cursor-pointer border-none transition-all flex items-center justify-center gap-1"
                   >
                     <CheckCircle2 size={11} />
@@ -2211,8 +2500,8 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
                   </button>
 
                   <button
-                    disabled={selectedStage.status === 'Waived'}
-                    onClick={() => handleWaiveGate(selectedProductGates.productId, selectedStage.stageName)}
+                    disabled={drawerStage.status === 'Waived'}
+                    onClick={() => handleWaiveGate(drawerProductGates.productId, drawerStage.stageName)}
                     className="flex-1 py-2 bg-amber-600 hover:bg-amber-700 disabled:opacity-40 disabled:hover:bg-amber-600 text-white font-bold text-[9px] uppercase tracking-wider rounded-sm cursor-pointer border-none transition-all flex items-center justify-center gap-1"
                   >
                     <AlertTriangle size={11} />
@@ -2229,7 +2518,7 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
                     className="w-full h-12 p-2 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-sm text-[9px] text-zinc-750 dark:text-zinc-200 outline-none focus:border-blue-500/50 resize-none font-sans"
                   />
                   <button
-                    onClick={() => handleAddComment(selectedProductGates.productId, selectedStage.stageName, vpCommentText)}
+                    onClick={() => handleAddComment(drawerProductGates.productId, drawerStage.stageName, vpCommentText)}
                     className="w-full py-1.5 bg-blue-600 hover:bg-blue-750 text-white font-bold text-[9px] uppercase tracking-wider rounded-sm cursor-pointer border-none transition-all flex items-center justify-center gap-1"
                   >
                     <Plus size={11} />
