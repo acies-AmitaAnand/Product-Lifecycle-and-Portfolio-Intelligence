@@ -3,9 +3,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { 
-  X, AlertTriangle, Info, ShieldAlert, TrendingDown, DollarSign, Activity, FileText, Calendar 
+  X, AlertTriangle, Info, ShieldAlert, TrendingDown, DollarSign, Activity, 
+  FileText, Calendar, Cpu, Database, ChevronDown, ChevronUp 
 } from 'lucide-react';
 
 export interface AlertData {
@@ -22,6 +23,12 @@ interface AlertDetailContext {
   financial: string;
   recommendations: string[];
   directive: string;
+  agenticTrace: {
+    agent: string;
+    dataset: string;
+    signals: string[];
+    logic: string;
+  };
 }
 
 const ALERT_DETAILS_CONTEXT: Record<string, AlertDetailContext> = {
@@ -39,7 +46,16 @@ const ALERT_DETAILS_CONTEXT: Record<string, AlertDetailContext> = {
       'Pre-allocate initial production run to highest-margin regional distributors.',
       'Adjust Q3 promotional marketing calendar to align with new launch window.'
     ],
-    directive: 'Approve secondary packaging supplier onboarding and launch date revision.'
+    directive: 'Approve secondary packaging supplier onboarding and launch date revision.',
+    agenticTrace: {
+      agent: 'Launch Agent',
+      dataset: 'SharePoint PM Logs (LP001) & ERP Supplier Inventory Ledger',
+      signals: [
+        'APAC Supplier Lead Time: 45 days (Threshold: < 14 days)',
+        'Bottle Inventory level: 1,200 units (Threshold: > 40,000 units)'
+      ],
+      logic: 'The Launch Agent scanned SharePoint project logs and flagged "APAC logistics bottleneck." It cross-referenced the ERP supplier inventory database to confirm current bottle stocks are insufficient for the initial manufacturing batch, projecting a 21-day timeline slip.'
+    }
   },
   a2: {
     impact: 'Margin Erosion',
@@ -55,7 +71,16 @@ const ALERT_DETAILS_CONTEXT: Record<string, AlertDetailContext> = {
       'Transition key account promotions from single-unit price reductions to multi-pack bundle pricing.',
       'Re-invest saved trade spend into digital brand-equity marketing to restore organic appeal.'
     ],
-    directive: 'Sign off on promotional discount phase-down program for Q4.'
+    directive: 'Sign off on promotional discount phase-down program for Q4.',
+    agenticTrace: {
+      agent: 'Profitability Agent',
+      dataset: 'FMCG Multi-Country Sales Dataset & Promo Calendar Database',
+      signals: [
+        'Promo Volume Dependency: 72% (Threshold: < 30%)',
+        'Gross Margin: 12.0% (Target: 35.0%)'
+      ],
+      logic: 'The Profitability Agent executed a daily aggregation query across regional transaction archives. It detected that volume lift during active promo schedules was insufficient to cover the double-discounting margin drop, flagging structural pricing dilution.'
+    }
   },
   a3: {
     impact: 'Margin Contraction',
@@ -71,7 +96,16 @@ const ALERT_DETAILS_CONTEXT: Record<string, AlertDetailContext> = {
       'Implement a selective price adjustment (cost pass-through) on premium SKUs.',
       'Optimize the formulation mix to reduce reliance on high-cost raw materials.'
     ],
-    directive: 'Authorize SKU-level price adjustment and formulation optimization review.'
+    directive: 'Authorize SKU-level price adjustment and formulation optimization review.',
+    agenticTrace: {
+      agent: 'Profitability Agent',
+      dataset: 'ERP Cost Ledger (Household Care) & COGS Composition Database',
+      signals: [
+        'Active Chemical Cost Variance: +15.2% (Threshold: < +3.0%)',
+        'Simulated gross margin drop: -15% drag'
+      ],
+      logic: 'The Profitability Agent audited raw material invoices inside the ERP ledger. It detected a price surge in surfactants and mapped the cost change across product formulations, identifying Laundry Pods Premium as having critical exposure.'
+    }
   },
   a4: {
     impact: 'Product Cannibalization',
@@ -87,7 +121,16 @@ const ALERT_DETAILS_CONTEXT: Record<string, AlertDetailContext> = {
       'Re-segment supermarket shelf layouts to place Mango Fizz variants separate from core product bays.',
       'Introduce joint cross-purchase bundles to encourage cart expansion rather than substitution.'
     ],
-    directive: 'Approve shelf re-layout and packaging segmentation directive.'
+    directive: 'Approve shelf re-layout and packaging segmentation directive.',
+    agenticTrace: {
+      agent: 'Sunset Agent',
+      dataset: 'FMCG Multi-Country Sales Dataset',
+      signals: [
+        'Pearson volume correlation coefficient: -0.62 (Threshold: > -0.20)',
+        'Net volume variance: -3% net decline'
+      ],
+      logic: 'The Sunset Agent ran a Pearson correlation matrix over transaction volumes. It identified a strong negative correlation (r = -0.62) between the new variants and the core lines, indicating that variants are cannibalizing core SKU volume.'
+    }
   },
   a5: {
     impact: 'Launch Readiness Check',
@@ -103,7 +146,16 @@ const ALERT_DETAILS_CONTEXT: Record<string, AlertDetailContext> = {
       'Finalize supermarket shelf space allocations with key retail partners.',
       'Authorize pre-launch inventory build of 5,000 cases.'
     ],
-    directive: 'Approve Pre-Launch Gate 3 sign-off and inventory release.'
+    directive: 'Approve Pre-Launch Gate 3 sign-off and inventory release.',
+    agenticTrace: {
+      agent: 'Launch Agent',
+      dataset: 'SharePoint PM Logs (LP002) - Launch Gate Checklist',
+      signals: [
+        'Overall Readiness Score: 88% (Threshold: >= 95% for Gate 3)',
+        'Labeling Compliance: Pending'
+      ],
+      logic: 'The Launch Agent scanned PM launch readiness metrics. While sourcing and marketing gates are complete, labeling compliance approval and supermarket shelf-space allocation remain unconfirmed, keeping the score below gate authorization thresholds.'
+    }
   },
   a6: {
     impact: 'Margin Erosion',
@@ -119,8 +171,227 @@ const ALERT_DETAILS_CONTEXT: Record<string, AlertDetailContext> = {
       'Transition trade promotions to volume-based rebates instead of front-end discounts.',
       'Enforce minimum advertised price (MAP) guidelines across retail channels.'
     ],
-    directive: 'Authorize temporary promotion suspension and trade term renegotiation.'
+    directive: 'Authorize temporary promotion suspension and trade term renegotiation.',
+    agenticTrace: {
+      agent: 'Profitability Agent',
+      dataset: 'Promo Calendar Database & FMCG Multi-Country Sales Dataset',
+      signals: [
+        'Active Overlapping Campaigns: 2 (Threshold: <= 1)',
+        'Effective Promo Discount Rate: 42.0% (Threshold: < 25.0%)'
+      ],
+      logic: 'The Profitability Agent cross-referenced the promotional calendars and detected calendar clashes on the 30ct SKU. The combined double-discounting resulted in a 42.0% price cut, producing a mere 8% volume lift, leading to margin erosion.'
+    }
   }
+};
+
+export const getDynamicAlertContext = (alert: AlertData): AlertDetailContext => {
+  if (ALERT_DETAILS_CONTEXT[alert.id]) {
+    return ALERT_DETAILS_CONTEXT[alert.id];
+  }
+
+  const title = alert.title || '';
+  
+  // Default values
+  let impact = 'System Alert';
+  let problem = 'The agentic system auto-detected an operational variance requiring review.';
+  let metrics = [{ label: 'Status', value: 'Active' }];
+  let financial = 'Undetermined margin exposure.';
+  let recommendations = ['Inspect relevant department ledgers.', 'Acknowledge alert and notify category operations.'];
+  let directive = 'Investigate system anomaly.';
+  let agenticAgent = 'Portfolio Agent';
+  let agenticDataset = 'FMCG Multi-Country Sales Dataset';
+  let agenticSignals = ['System Flag: Active'];
+  let agenticLogic = 'Automated trace logic executed.';
+
+  if (title.includes('Fabric Softener')) {
+    impact = 'Inventory Outage';
+    problem = 'Fabric Softener stock level falls below safety threshold of 1,500 units at regional warehouses due to delayed inbound transit.';
+    metrics = [
+      { label: 'Current Stock', value: '140 units' },
+      { label: 'Safety Threshold', value: '1,500 units' },
+      { label: 'Days of Cover', value: '0.8 days' }
+    ];
+    financial = '₹0.12 Cr in potential lost sales if stockout occurs.';
+    recommendations = [
+      'Initiate emergency stock transfer from secondary logistics hub.',
+      'Expedite supplier shipping logs validation.',
+      'Alert national account sales team of temporary order constraints.'
+    ];
+    directive = 'Authorize emergency replenishment route.';
+    agenticAgent = 'Portfolio Agent';
+    agenticDataset = 'ERP Inventory Ledger';
+    agenticSignals = [
+      'Fabric Softener Stock: 140 units (Threshold: > 1,500)',
+      'Days of Cover: 0.8 days (Threshold: > 7 days)'
+    ];
+    agenticLogic = 'Inventory sensors flagged low stock on Household SKU. Cross-referenced inbound shipping calendars to verify delayed logistics schedules.';
+  } else if (title.includes('Lead time breach')) {
+    impact = 'Supplier SLA Breach';
+    problem = 'SLA lead times breached for core packaging supplier, delaying shipping timelines by 21 days due to port congestion.';
+    metrics = [
+      { label: 'Observed Lead Time', value: '35 days' },
+      { label: 'Contractual SLA', value: '14 days' },
+      { label: 'Schedule Variance', value: '+21 days' }
+    ];
+    financial = '₹0.45 Cr in delayed order fulfillment and penalty risks.';
+    recommendations = [
+      'Route upcoming orders to qualified backup local suppliers.',
+      'Issue formal SLA breach warning to supplier account manager.',
+      'Prioritize available inventory to strategic priority channels.'
+    ];
+    directive = 'Sign off on logistics routing redirection plan.';
+    agenticAgent = 'Launch Agent';
+    agenticDataset = 'SharePoint PM Logs & Supplier Shipping Database';
+    agenticSignals = [
+      'Lead Time: 35 days (Threshold: < 14)',
+      'Logistics Status: Port Congestion'
+    ];
+    agenticLogic = 'Launch Agent scanned carrier customs logs. Identified that raw materials are container-locked, calculating downstream production bottlenecks.';
+  } else if (title.includes('Cold chain')) {
+    impact = 'Logistics Cold Chain Failure';
+    problem = 'IoT temperature sensors reported room temperature spike above threshold limits in Mumbai DC, putting perishables at risk.';
+    metrics = [
+      { label: 'Chamber Temperature', value: '8.2°C' },
+      { label: 'Target Threshold', value: '4.0°C' },
+      { label: 'Duration of Spike', value: '4 hours' }
+    ];
+    financial = '₹0.30 Cr in perishable inventory write-off risks if unresolved.';
+    recommendations = [
+      'Dispatch technical facility maintenance team to inspect seal leaks.',
+      'Temporarily reroute inbound cold products to adjacent cold chambers.',
+      'Flag affected batch identifiers for compliance review.'
+    ];
+    directive = 'Approve chamber maintenance order and inventory check.';
+    agenticAgent = 'Market Signal Agent';
+    agenticDataset = 'IoT Telemetry Feed & Facilities Logs';
+    agenticSignals = [
+      'DC Temp: 8.2°C (Threshold: < 4.0)',
+      'Spike Duration: 4 hours (Threshold: < 30 mins)'
+    ];
+    agenticLogic = 'IoT sensor reported telemetry spike. Swarm agent coordinated with local facility managers, resolving seal leak.';
+  } else if (title.includes('Freight cost')) {
+    impact = 'Logistics Margin Leak';
+    problem = 'Freight lane rates increased unexpectedly by 4.2% on Mumbai to Bangalore routes, increasing cost-to-serve metrics.';
+    metrics = [
+      { label: 'Lane Cost Delta', value: '+4.2%' },
+      { label: 'Target Inflation Cap', value: '+2.0%' },
+      { label: 'Affected SKUs count', value: '14 SKUs' }
+    ];
+    financial = '₹0.20 Cr margin dilution across Household Care segments in Bangalore.';
+    recommendations = [
+      'Renegotiate contracts with primary regional logistics partners.',
+      'Audit spot-rate freight pricing for comparison options.',
+      'Consider consolidated shipping schedules to optimize load capacity.'
+    ];
+    directive = 'Authorize freight rate audit and carrier negotiation mandate.';
+    agenticAgent = 'Profitability Agent';
+    agenticDataset = 'Logistics Expense Database & Contracts Ledger';
+    agenticSignals = [
+      'Freight Lane Delta: +4.2% (Threshold: < +2.0%)'
+    ];
+    agenticLogic = 'Analyzed freight bills and identified fuel surcharge increases. Traversed distribution paths to calculate product margins.';
+  } else if (title.includes('Green Tea')) {
+    impact = 'Margin Erosion';
+    problem = 'Double-discounting detected on Green Tea RTD due to overlapping regional banner flyers and national digital promotions.';
+    metrics = [
+      { label: 'Effective Discount', value: '38.0%' },
+      { label: 'Promo Overlap Period', value: '10 days' },
+      { label: 'Observed Margin', value: '22.5%' }
+    ];
+    financial = '₹0.40 Cr in category profit leakage from unauthorized promotion combinations.';
+    recommendations = [
+      'Suspend overlapping regional flyer pricing immediately.',
+      'Review promo calendar rules to enforce combination exclusions.',
+      'Transition next cycle trade promos to volume-based rebates.'
+    ];
+    directive = 'Authorize temporary campaign suspension and trade term audit.';
+    agenticAgent = 'Profitability Agent';
+    agenticDataset = 'Promo Calendar Ledger & FMCG Sales Dataset';
+    agenticSignals = [
+      'Overlapping Campaigns: 2 (Threshold: <= 1)',
+      'Combined Discount: 42.0% (Threshold: < 25.0%)'
+    ];
+    agenticLogic = 'Scanned promotional calendar files and POS discount indicators. Flagged double-discounting anomalies on Green Tea RTD SKU.';
+  } else if (title.includes('Price floor')) {
+    impact = 'Pricing Compliance Breach';
+    problem = 'POS records indicate unit sales of Choco Wafers priced at ₹45.00, breaching the mandatory pricing floor guidelines.';
+    metrics = [
+      { label: 'Observed Retail Price', value: '₹45.00' },
+      { label: 'Mandated Price Floor', value: '₹50.00' },
+      { label: 'Compliance Deviation', value: '-10.0%' }
+    ];
+    financial = '₹0.25 Cr in brand price erosion and retail partner margin dilution.';
+    recommendations = [
+      'Enforce pricing compliance rules through retail POS channels.',
+      'Request explanation from APAC store operations group.',
+      'Verify if breach was triggered defensively against competitor pricing.'
+    ];
+    directive = 'Approve price compliance warning and operational audit.';
+    agenticAgent = 'Portfolio Agent';
+    agenticDataset = 'ERP Pricing Ledger & Sales Dataset';
+    agenticSignals = [
+      'Unit Retail Price: ₹45.00 (Threshold: > ₹50.00)',
+      'Applied Discount: 25% (Threshold: < 15%)'
+    ];
+    agenticLogic = 'Monitored daily POS transactions and flagged price floor breaches. Traced to store manager manual override codes.';
+  } else if (title.includes('Promotional budget')) {
+    impact = 'Trade Spend Overrun';
+    problem = 'Q3 promotional trade spend budget has reached 83% utilization ahead of schedule, with 14 campaign days remaining.';
+    metrics = [
+      { label: 'Budget Utilization', value: '83%' },
+      { label: 'Milestone Target', value: '65%' },
+      { label: 'Days Remaining', value: '14 days' }
+    ];
+    financial = '₹0.50 Cr potential overrun liability if redemptions continue at pace.';
+    recommendations = [
+      'Implement digital coupon cap limits to slow budget consumption.',
+      'De-prioritize low-margin advertising spots for the remaining cycle.',
+      'Request contingency budget reallocation from Q4 marketing pool.'
+    ];
+    directive = 'Authorize coupon cap activation and budget reallocation review.';
+    agenticAgent = 'Profitability Agent';
+    agenticDataset = 'Trade Spend Ledger & Campaign Database';
+    agenticSignals = [
+      'Budget Consumed: 83% (Threshold: < 70% at milestone)'
+    ];
+    agenticLogic = 'Audited promotional expenditures and calculated accelerated budget burn rates due to elevated coupon redemptions.';
+  } else if (title.includes('Cost variance')) {
+    impact = 'Margin Contraction';
+    problem = 'Cost-of-goods-sold (COGS) variance spike detected due to a 7.4% raw cost increase in plastic film packaging.';
+    metrics = [
+      { label: 'Packaging Cost Delta', value: '+7.4%' },
+      { label: 'Gross Margin Drag', value: '-1.4%' },
+      { label: 'Monthly Cost Impact', value: '₹0.15 Cr' }
+    ];
+    financial = '₹0.15 Cr margin dilution per month across household care category.';
+    recommendations = [
+      'Renegotiate contract rates with packaging material suppliers.',
+      'Evaluate alternative packaging specifications or gauges.',
+      'Model SKU cost pass-through price adjustments.'
+    ];
+    directive = 'Approve cost pass-through modeling and supplier review.';
+    agenticAgent = 'Profitability Agent';
+    agenticDataset = 'COGS Composition Database & ERP Cost Ledger';
+    agenticSignals = [
+      'Packaging Cost Spike: +7.4% (Threshold: < +2.0%)'
+    ];
+    agenticLogic = 'Scanned procurement invoices and identified plastic film price spikes. Traced recipe COGS across affected household care SKUs.';
+  }
+
+  return {
+    impact,
+    problem,
+    metrics,
+    financial,
+    recommendations,
+    directive,
+    agenticTrace: {
+      agent: agenticAgent,
+      dataset: agenticDataset,
+      signals: agenticSignals,
+      logic: agenticLogic
+    }
+  };
 };
 
 interface SmartAlertDetailsModalProps {
@@ -136,9 +407,11 @@ export const SmartAlertDetailsModal: React.FC<SmartAlertDetailsModalProps> = ({
   onClose,
   onScheduleMeeting
 }) => {
+  const [isTraceExpanded, setIsTraceExpanded] = useState(true);
+
   if (!isOpen || !alert) return null;
 
-  const data = ALERT_DETAILS_CONTEXT[alert.id];
+  const data = getDynamicAlertContext(alert);
   if (!data) return null;
 
   const sevColors = {
@@ -243,6 +516,68 @@ export const SmartAlertDetailsModal: React.FC<SmartAlertDetailsModalProps> = ({
           </ul>
         </div>
 
+        {/* Agentic Trace Accordion */}
+        {data.agenticTrace && (
+          <div className="border border-purple-500/15 bg-purple-500/[0.01] dark:bg-purple-500/[0.005] rounded-lg overflow-hidden mt-1">
+            <button
+              type="button"
+              onClick={() => setIsTraceExpanded(!isTraceExpanded)}
+              className="w-full flex justify-between items-center p-3 bg-purple-500/5 hover:bg-purple-500/10 transition-colors border-none text-left cursor-pointer outline-none"
+            >
+              <div className="flex items-center gap-2 text-purple-600 dark:text-purple-400 font-extrabold text-[9.5px] uppercase tracking-wider">
+                <Cpu size={14} className="animate-pulse" />
+                <span>Agentic Decision Trace & Data Provenance</span>
+              </div>
+              {isTraceExpanded ? (
+                <ChevronUp size={14} className="text-purple-500" />
+              ) : (
+                <ChevronDown size={14} className="text-purple-500" />
+              )}
+            </button>
+
+            {isTraceExpanded && (
+              <div className="p-4 border-t border-purple-500/10 space-y-3 leading-relaxed text-zinc-650 dark:text-zinc-350">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <span className="text-[8px] font-mono uppercase text-zinc-400 font-bold flex items-center gap-1">
+                      <Cpu size={10} className="text-purple-400" /> Triggering Swarm Agent
+                    </span>
+                    <p className="font-bold text-zinc-800 dark:text-zinc-200">
+                      {data.agenticTrace.agent}
+                    </p>
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-[8px] font-mono uppercase text-zinc-400 font-bold flex items-center gap-1">
+                      <Database size={10} className="text-blue-400" /> Source Systems & Files
+                    </span>
+                    <p className="font-bold text-zinc-800 dark:text-zinc-200 truncate" title={data.agenticTrace.dataset}>
+                      {data.agenticTrace.dataset}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="space-y-1.5 border-t border-black/5 dark:border-white/5 pt-2.5">
+                  <span className="text-[8px] font-mono uppercase text-zinc-400 font-bold">Referenced Signals Checked</span>
+                  <div className="flex flex-wrap gap-2 mt-1">
+                    {data.agenticTrace.signals.map((sig, idx) => (
+                      <span key={idx} className="bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 px-2.5 py-1 rounded text-[8.5px] font-semibold text-zinc-700 dark:text-zinc-300">
+                        {sig}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-1 border-t border-black/5 dark:border-white/5 pt-2.5">
+                  <span className="text-[8px] font-mono uppercase text-zinc-400 font-bold">Trace Reasoning & Math Verification</span>
+                  <p className="text-[10px] leading-relaxed text-zinc-600 dark:text-zinc-400 font-medium">
+                    {data.agenticTrace.logic}
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Footer Actions */}
         <div className="flex justify-between items-center border-t border-black/10 dark:border-white/10 pt-3 mt-1">
           <button 
@@ -250,7 +585,7 @@ export const SmartAlertDetailsModal: React.FC<SmartAlertDetailsModalProps> = ({
             onClick={() => {
               onScheduleMeeting(alert);
             }}
-            className="flex items-center gap-1.5 px-3.5 py-2 border rounded-lg text-[10.5px] font-bold tracking-wide transition-all duration-150 cursor-pointer border-blue-200 text-blue-600 bg-blue-50/50 hover:bg-blue-600 hover:text-white dark:border-blue-500/35 dark:text-blue-400 dark:bg-blue-500/5 dark:hover:bg-blue-500 dark:hover:text-white"
+            className="flex items-center gap-1.5 px-3.5 py-2 border rounded-lg text-[10.5px] font-bold tracking-wide transition-all duration-150 cursor-pointer border-blue-200 text-blue-600 bg-blue-50/50 hover:bg-blue-600 hover:text-white dark:border-blue-500/35 dark:text-blue-400 dark:bg-blue-50/5 dark:hover:bg-blue-500 dark:hover:text-white"
           >
             <Calendar size={13} />
             Schedule a Meeting

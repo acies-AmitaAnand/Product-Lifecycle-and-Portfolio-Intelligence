@@ -274,7 +274,13 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
   const [toasts, setToasts] = useState<{ id: string; title: string; body: string; color: string }[]>([]);
   const [isPredictionModalOpen, setIsPredictionModalOpen] = useState(false);
   const [predictionModalType, setPredictionModalType] = useState<'stockout' | 'elasticity' | 'margin' | 'demand' | 'delay' | null>(null);
-  const [selectedStageSKUs, setSelectedStageSKUs] = useState<{ title: string; meaning?: string; skus: VPLaunchProduct[] } | null>(null);
+  const [selectedStageSKUs, setSelectedStageSKUs] = useState<{ 
+    title: string; 
+    meaning?: string; 
+    skus: VPLaunchProduct[];
+    formula?: string;
+    lineage?: string;
+  } | null>(null);
 
   const [stageGates, setStageGates] = useState<ProductStageGates[]>(() => generateInitialStageGates(VP_PRODUCTS));
   const [selectedProductId, setSelectedProductId] = useState<string>('LP01');
@@ -415,8 +421,6 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
     addToast('Escalation Resolved', `${title}: ${actionMsg}`, '#10b981');
   };
 
-  const [mitigatedStages, setMitigatedStages] = useState<string[]>([]);
-
   const processedProducts = VP_PRODUCTS.map(p => {
     let readiness = p.readiness;
     let risk = p.risk;
@@ -425,16 +429,6 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
     if (simulateDelay && p.region === 'APAC') {
       readiness = Math.max(0, p.readiness - 15);
       risk = readiness < 50 ? 'High' : readiness < 75 ? 'Medium' : p.risk;
-    }
-
-    if (mitigatedStages.includes(p.stage)) {
-      readiness = Math.min(100, readiness + 15);
-      if (risk === 'High') {
-        risk = 'Medium';
-      } else if (risk === 'Medium') {
-        risk = 'Low';
-      }
-      spent = parseFloat((spent * 1.15).toFixed(2));
     }
 
     return {
@@ -568,57 +562,7 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (overallReadiness / 100) * circumference;
 
-  const stagesList: ('Ideation' | 'Development' | 'Testing' | 'Pre-market' | 'Launch')[] = 
-    ['Ideation', 'Development', 'Testing', 'Pre-market', 'Launch'];
 
-  const simulatorChartData = stagesList.map(st => {
-    const baseProds = VP_PRODUCTS.map(p => {
-      let readiness = p.readiness;
-      let risk = p.risk;
-      let spent = p.spent;
-      if (simulateDelay && p.region === 'APAC') {
-        readiness = Math.max(0, p.readiness - 15);
-        risk = readiness < 50 ? 'High' : readiness < 75 ? 'Medium' : p.risk;
-      }
-      return { ...p, readiness, risk, spent };
-    }).filter(p => p.stage === st);
-
-    const simProds = processedProducts.filter(p => p.stage === st);
-
-    const baseCost = baseProds.reduce((sum, p) => sum + p.spent, 0);
-    const simCost = simProds.reduce((sum, p) => sum + p.spent, 0);
-
-    const baseRiskRev = baseProds.reduce((sum, p) => p.readiness < 75 ? sum + p.revExposure : sum, 0);
-    const simRiskRev = simProds.reduce((sum, p) => p.readiness < 75 ? sum + p.revExposure : sum, 0);
-
-    return {
-      stage: st,
-      'Base Cost (₹ Cr)': parseFloat(baseCost.toFixed(2)),
-      'Sim Cost (₹ Cr)': parseFloat(simCost.toFixed(2)),
-      'Base Risk Rev (₹ Cr)': parseFloat(baseRiskRev.toFixed(2)),
-      'Sim Risk Rev (₹ Cr)': parseFloat(simRiskRev.toFixed(2)),
-    };
-  });
-
-  const totalBaseSpent = VP_PRODUCTS.map(p => {
-    let spent = p.spent;
-    return spent;
-  }).reduce((sum, s) => sum + s, 0);
-
-  const totalSimSpent = processedProducts.reduce((sum, p) => sum + p.spent, 0);
-  const spentVariance = parseFloat((totalSimSpent - totalBaseSpent).toFixed(2));
-
-  const totalBaseExposure = VP_PRODUCTS.map(p => {
-    let readiness = p.readiness;
-    if (simulateDelay && p.region === 'APAC') {
-      readiness = Math.max(0, p.readiness - 15);
-    }
-    return { ...p, readiness };
-  }).reduce((sum, p) => p.readiness < 75 ? sum + p.revExposure : sum, 0);
-
-  const totalSimExposure = processedProducts.reduce((sum, p) => p.readiness < 75 ? sum + p.revExposure : sum, 0);
-  const exposureReduced = parseFloat((totalBaseExposure - totalSimExposure).toFixed(2));
-  const roiMitigation = spentVariance > 0 ? parseFloat((exposureReduced / spentVariance).toFixed(1)) : 0;
 
   const selectedProductGates = stageGates.find(sg => sg.productId === selectedProductId) || stageGates[0];
   const selectedStage = selectedProductGates.gates.find(g => g.stageName === selectedStageName) || selectedProductGates.gates[0];
@@ -804,104 +748,114 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
               {insightText}
             </p>
           </div>
-        </div>
-
-        {/* Middle: KPI Cards Grid (arranged in 2 lines of 3 blocks each) */}
+        </div>        {/* Middle: KPI Cards Grid (arranged in 2 lines of 3 blocks each) */}
         <div className="xl:col-span-4 lg:col-span-8 grid grid-cols-3 gap-3 max-w-[480px] mx-auto">
           <div 
             onClick={() => setSelectedStageSKUs({
               title: 'On Track Launches',
               meaning: 'SKUs with a Launch Readiness Score of 75% or higher, indicating that all major activities (regulatory compliance, marketing plans, inventory routing) are progressing optimally with low risk of launch delay.',
-              skus: filteredProducts.filter(p => p.readiness >= 75)
+              skus: filteredProducts.filter(p => p.readiness >= 75),
+              formula: 'Count(SKUs where readiness >= 75%)',
+              lineage: 'Product Launch Master DB -> LaunchReadinessEngine -> FilteredProducts'
             })}
-            className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm flex flex-col justify-between aspect-square hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] text-center"
+            className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-3 rounded-sm shadow-sm flex flex-col justify-between aspect-square hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] text-center"
           >
-            <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">On Track</p>
+            <p className="text-[9px] font-bold uppercase tracking-wider text-zinc-400">On Track</p>
             <div className="flex-1 flex items-center justify-center">
-              <h4 className="text-4xl font-display font-extrabold text-emerald-500 leading-none">{onTrackCount}</h4>
+              <h4 className="text-3xl font-display font-extrabold text-emerald-500 leading-none">{onTrackCount}</h4>
             </div>
-            <p className="text-[9px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">Status: Optimal</p>
+            <p className="text-[8.5px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">Status: Optimal</p>
           </div>
 
           <div 
             onClick={() => setSelectedStageSKUs({
               title: 'Delayed Launches',
               meaning: 'SKUs with a Launch Readiness Score below 50%. These have encountered critical bottlenecks (such as severe supply chain delays or lack of regulatory approvals) and require immediate executive attention and mitigation.',
-              skus: filteredProducts.filter(p => p.readiness < 50)
+              skus: filteredProducts.filter(p => p.readiness < 50),
+              formula: 'Count(SKUs where readiness < 50%)',
+              lineage: 'Product Launch Master DB -> Delayed Escalations DB -> FilteredProducts'
             })}
-            className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm flex flex-col justify-between aspect-square hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] text-center"
+            className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-3 rounded-sm shadow-sm flex flex-col justify-between aspect-square hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] text-center"
           >
-            <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Delayed</p>
+            <p className="text-[9px] font-bold uppercase tracking-wider text-zinc-400">Delayed</p>
             <div className="flex-1 flex items-center justify-center">
-              <h4 className="text-4xl font-display font-extrabold text-red-500 leading-none">{delayedCount}</h4>
+              <h4 className="text-3xl font-display font-extrabold text-red-500 leading-none">{delayedCount}</h4>
             </div>
-            <p className="text-[9px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">Needs Focus</p>
+            <p className="text-[8.5px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">Needs Focus</p>
           </div>
 
           <div 
             onClick={() => setSelectedStageSKUs({
               title: 'At Risk Launches',
               meaning: 'SKUs with a Launch Readiness Score between 50% and 74%. These are demonstrating early warning signs or minor deviations from target timelines, requiring active supervision and preventative measures.',
-              skus: filteredProducts.filter(p => p.readiness >= 50 && p.readiness < 75)
+              skus: filteredProducts.filter(p => p.readiness >= 50 && p.readiness < 75),
+              formula: 'Count(SKUs where 50% <= readiness < 75%)',
+              lineage: 'Product Launch Master DB -> Risk & Issue Monitoring DB -> FilteredProducts'
             })}
-            className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm flex flex-col justify-between aspect-square hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] text-center"
+            className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-3 rounded-sm shadow-sm flex flex-col justify-between aspect-square hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] text-center"
           >
-            <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">At Risk</p>
+            <p className="text-[9px] font-bold uppercase tracking-wider text-zinc-400">At Risk</p>
             <div className="flex-1 flex items-center justify-center">
-              <h4 className="text-4xl font-display font-extrabold text-amber-500 leading-none">{atRiskCount}</h4>
+              <h4 className="text-3xl font-display font-extrabold text-amber-500 leading-none">{atRiskCount}</h4>
             </div>
-            <p className="text-[9px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">Watching</p>
+            <p className="text-[8.5px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">Watching</p>
           </div>
 
           <div 
             onClick={() => setSelectedStageSKUs({
               title: 'Next 60 Days Pipeline',
               meaning: 'SKUs currently in the active pipeline (Development, Testing, or Pre-market phases) scheduled to transition to market launch within the upcoming 60-day window.',
-              skus: filteredProducts.filter(p => p.stage !== 'Launch' && p.stage !== 'Ideation')
+              skus: filteredProducts.filter(p => p.stage !== 'Launch' && p.stage !== 'Ideation'),
+              formula: "Count(SKUs where stage ∈ {'Development', 'Testing', 'Pre-market'})",
+              lineage: 'Phase Gate Tracker DB -> Pipeline Scheduling System -> FilteredProducts'
             })}
-            className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm flex flex-col justify-between aspect-square hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] text-center"
+            className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-3 rounded-sm shadow-sm flex flex-col justify-between aspect-square hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] text-center"
           >
-            <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Next 60 Days</p>
+            <p className="text-[9px] font-bold uppercase tracking-wider text-zinc-400">Next 60 Days</p>
             <div className="flex-1 flex items-center justify-center">
-              <h4 className="text-4xl font-display font-extrabold text-blue-500 leading-none">
+              <h4 className="text-3xl font-display font-extrabold text-blue-500 leading-none">
                 {filteredProducts.filter(p => p.stage !== 'Launch' && p.stage !== 'Ideation').length}
               </h4>
             </div>
-            <p className="text-[9px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">Readying</p>
+            <p className="text-[8.5px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">Readying</p>
           </div>
 
           <div 
             onClick={() => setSelectedStageSKUs({
               title: 'Revenue Exposure',
               meaning: 'The total potential revenue at stake from launches that are currently Delayed or At Risk (Launch Readiness Score below 75%). This helps prioritize resource allocation based on financial impact.',
-              skus: filteredProducts.filter(p => p.readiness < 75)
+              skus: filteredProducts.filter(p => p.readiness < 75),
+              formula: 'Sum(revExposure where readiness < 75%)',
+              lineage: 'Financial Forecasts DB -> Mapped via SKU IDs to Readiness logs -> FilteredProducts'
             })}
-            className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm flex flex-col justify-between aspect-square hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] text-center"
+            className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-3 rounded-sm shadow-sm flex flex-col justify-between aspect-square hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] text-center"
           >
-            <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Rev Exposure</p>
+            <p className="text-[9px] font-bold uppercase tracking-wider text-zinc-400">Rev Exposure</p>
             <div className="flex-1 flex items-center justify-center">
-              <h4 className="text-4xl font-display font-extrabold text-orange-500 leading-none">
+              <h4 className="text-3xl font-display font-extrabold text-orange-500 leading-none">
                 ${revenueExposure.toFixed(1)}M
               </h4>
             </div>
-            <p className="text-[9px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">At-Risk/Delayed</p>
+            <p className="text-[8.5px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">At-Risk/Delayed</p>
           </div>
 
           <div 
             onClick={() => setSelectedStageSKUs({
               title: 'Market Coverage Scope',
               meaning: 'Geographic deployment and readiness metric representing the percentage of target regions or distribution nodes that have successfully completed all pre-market requirements.',
-              skus: filteredProducts
+              skus: filteredProducts,
+              formula: 'Min(100, Round((Count(readiness >= 75%) / TotalCount) * 94 + 6))',
+              lineage: 'Geographic Rollout Registry -> Dynamic region filter mappings -> FilteredProducts'
             })}
-            className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm flex flex-col justify-between aspect-square hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] text-center"
+            className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-3 rounded-sm shadow-sm flex flex-col justify-between aspect-square hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] text-center"
           >
-            <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Market Coverage</p>
+            <p className="text-[9px] font-bold uppercase tracking-wider text-zinc-400">Market Coverage</p>
             <div className="flex-1 flex items-center justify-center">
-              <h4 className="text-4xl font-display font-extrabold text-[#6d28d9] dark:text-[#a78bfa] leading-none">
+              <h4 className="text-3xl font-display font-extrabold text-[#6d28d9] dark:text-[#a78bfa] leading-none">
                 {marketCoverage}%
               </h4>
             </div>
-            <p className="text-[9px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">Geo Readiness</p>
+            <p className="text-[8.5px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">Geo Readiness</p>
           </div>
         </div>
 
@@ -920,7 +874,7 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
                 escalations.map(esc => (
                   <div key={esc.id} className="p-2 px-2.5 border border-black/5 dark:border-white/10 rounded-sm bg-zinc-50/50 dark:bg-white/5 flex items-start gap-2.5 justify-between">
                     <div className="flex items-start gap-2 min-w-0">
-                      <span className="w-2 h-2 rounded-full shrink-0 mt-1" style={{ backgroundColor: esc.color }} />
+                      <span className="w-2.5 h-2.5 rounded-full shrink-0 mt-1" style={{ backgroundColor: esc.color }} />
                       <div className="min-w-0">
                         <h4 className="text-[10px] font-bold text-zinc-800 dark:text-zinc-200 truncate" title={esc.title}>{esc.title}</h4>
                         <p className="text-[8.5px] text-zinc-500 mt-0.5 truncate">{esc.sub} · <span className="font-semibold text-red-500">{esc.impact}</span></p>
@@ -940,8 +894,9 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
             </div>
           </div>
         </div>
+        </div>
 
-      </div>
+
 
       {/* Row 1.5: Stage Gate Status Tracker */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -1261,7 +1216,10 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
             <div 
               onClick={() => setSelectedStageSKUs({
                 title: 'Active pipeline SKUs',
-                skus: filteredProducts
+                meaning: 'Total count of SKUs currently tracked in the pipeline across all rollout phases.',
+                skus: filteredProducts,
+                formula: 'Count(All active pipeline SKUs)',
+                lineage: 'Product Master Registry -> Active Rollouts -> FilteredProducts'
               })}
               className="bg-zinc-100/80 dark:bg-zinc-900/60 border border-black/5 dark:border-white/5 p-2.5 px-3 rounded-sm hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98]"
             >
@@ -1272,7 +1230,10 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
             <div 
               onClick={() => setSelectedStageSKUs({
                 title: 'In development+ SKUs',
-                skus: filteredProducts.filter(p => p.stage === 'Ideation' || p.stage === 'Development' || p.stage === 'Testing')
+                meaning: 'SKUs currently in the early to middle stages of launch preparation (Ideation, Development, or Testing).',
+                skus: filteredProducts.filter(p => p.stage === 'Ideation' || p.stage === 'Development' || p.stage === 'Testing'),
+                formula: "Count(SKUs where stage ∈ {'Ideation', 'Development', 'Testing'})",
+                lineage: 'R&D Phase Gate Tracker -> FilteredProducts'
               })}
               className="bg-zinc-100/80 dark:bg-zinc-900/60 border border-black/5 dark:border-white/5 p-2.5 px-3 rounded-sm hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98]"
             >
@@ -1283,7 +1244,10 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
             <div 
               onClick={() => setSelectedStageSKUs({
                 title: 'Near launch SKUs',
-                skus: filteredProducts.filter(p => p.stage === 'Pre-market')
+                meaning: 'SKUs in the final pre-market stage preparing for imminent commercial rollout.',
+                skus: filteredProducts.filter(p => p.stage === 'Pre-market'),
+                formula: "Count(SKUs where stage = 'Pre-market')",
+                lineage: 'Commercial Launch Registry -> FilteredProducts'
               })}
               className="bg-zinc-100/80 dark:bg-zinc-900/60 border border-black/5 dark:border-white/5 p-2.5 px-3 rounded-sm hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98]"
             >
@@ -1294,7 +1258,10 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
             <div 
               onClick={() => setSelectedStageSKUs({
                 title: 'Launched SKUs',
-                skus: filteredProducts.filter(p => p.stage === 'Launch')
+                meaning: 'SKUs that have successfully completed all rollout gates and are active in the commercial market.',
+                skus: filteredProducts.filter(p => p.stage === 'Launch'),
+                formula: "Count(SKUs where stage = 'Launch')",
+                lineage: 'Commercial Sales Ledger -> Active SKUs -> FilteredProducts'
               })}
               className="bg-zinc-100/80 dark:bg-zinc-900/60 border border-black/5 dark:border-white/5 p-2.5 px-3 rounded-sm hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98]"
             >
@@ -1761,183 +1728,7 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
         </div>
       </div>
 
-      {/* Risk & Cost Simulator Panel */}
-      <div className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-6 rounded-sm shadow-sm space-y-6">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-3 border-b border-black/5 dark:border-white/5">
-          <div>
-            <h3 className="text-xs font-bold uppercase tracking-widest text-zinc-400">Launch Pipeline Stage Risk & Cost Simulator</h3>
-            <p className="text-[10px] text-zinc-550 uppercase mt-1">Simulate activating risk mitigation protocols across launch stages to observe cost vs risk reduction trade-offs.</p>
-          </div>
-          <button
-            onClick={() => setMitigatedStages([])}
-            className="text-[9px] font-bold text-[#6d28d9] dark:text-[#a78bfa] uppercase border border-[#6d28d9]/35 dark:border-[#a78bfa]/35 bg-purple-500/5 hover:bg-[#6d28d9] hover:text-white px-2.5 py-1 rounded-sm cursor-pointer transition-all"
-          >
-            Reset Simulator
-          </button>
-        </div>
 
-        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
-          {/* Toggles Column */}
-          <div className="xl:col-span-5 space-y-3">
-            <span className="text-[9px] font-bold uppercase tracking-wider text-zinc-400 block mb-2">Mitigation Controls by Stage</span>
-            {stagesList.map(st => {
-              const isActive = mitigatedStages.includes(st);
-              const stageProds = processedProducts.filter(p => p.stage === st);
-              const totalProds = stageProds.length;
-              const highRiskProds = stageProds.filter(p => p.risk === 'High').length;
-              const medRiskProds = stageProds.filter(p => p.risk === 'Medium').length;
-              const lowRiskProds = stageProds.filter(p => p.risk === 'Low').length;
-
-              const baselineProds = VP_PRODUCTS.map(p => {
-                let readiness = p.readiness;
-                let risk = p.risk;
-                if (simulateDelay && p.region === 'APAC') {
-                  readiness = Math.max(0, p.readiness - 15);
-                  risk = readiness < 50 ? 'High' : readiness < 75 ? 'Medium' : p.risk;
-                }
-                return { ...p, readiness, risk };
-              }).filter(p => p.stage === st);
-
-              const baseRiskExposure = baselineProds.reduce((sum, p) => p.readiness < 75 ? sum + p.revExposure : sum, 0);
-              const simRiskExposure = stageProds.reduce((sum, p) => p.readiness < 75 ? sum + p.revExposure : sum, 0);
-
-              const baseSpent = baselineProds.reduce((sum, p) => sum + p.spent, 0);
-              const simSpent = stageProds.reduce((sum, p) => sum + p.spent, 0);
-
-              return (
-                <div 
-                  key={st} 
-                  className={`p-3.5 border rounded-sm transition-all ${
-                    isActive 
-                      ? 'border-[#6d28d9]/30 bg-[#6d28d9]/5' 
-                      : 'border-black/5 dark:border-white/5 bg-zinc-50/50 dark:bg-white/5'
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="text-[11px] font-bold text-zinc-800 dark:text-zinc-200">{st}</h4>
-                      <p className="text-[9px] text-zinc-500 mt-0.5">{totalProds} SKUs · Risk: {highRiskProds}H, {medRiskProds}M, {lowRiskProds}L</p>
-                    </div>
-                    <button
-                      onClick={() => {
-                        if (isActive) {
-                          setMitigatedStages(prev => prev.filter(x => x !== st));
-                          addToast('Mitigation Deactivated', `${st} stage mitigation protocols disabled.`, '#3b82f6');
-                        } else {
-                          setMitigatedStages(prev => [...prev, st]);
-                          addToast('Mitigation Activated', `${st} stage mitigation protocols deployed.`, '#10b981');
-                        }
-                      }}
-                      className={`relative inline-flex h-5 w-10 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out outline-none ${
-                        isActive ? 'bg-emerald-500' : 'bg-zinc-350 dark:bg-zinc-700'
-                      }`}
-                      style={{ border: 'none' }}
-                    >
-                      <span
-                        className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${
-                          isActive ? 'translate-x-5' : 'translate-x-0'
-                        }`}
-                      />
-                    </button>
-                  </div>
-
-                  {/* Dynamic cost/risk display */}
-                  <div className="grid grid-cols-2 gap-4 mt-2.5 pt-2.5 border-t border-dashed border-black/5 dark:border-white/5 text-[9px]">
-                    <div>
-                      <span className="text-zinc-550 dark:text-zinc-400 block">Spent Cost Impact</span>
-                      <span className="font-bold font-mono text-zinc-750 dark:text-zinc-200">
-                        ₹{baseSpent.toFixed(2)} Cr 
-                        {isActive && <span className="text-amber-500 font-bold ml-1">→ ₹{simSpent.toFixed(2)} Cr (+15%)</span>}
-                      </span>
-                    </div>
-                    <div>
-                      <span className="text-zinc-550 dark:text-zinc-400 block">Revenue Risk Exposure</span>
-                      <span className="font-bold font-mono text-zinc-750 dark:text-zinc-200">
-                        ₹{baseRiskExposure.toFixed(2)} Cr
-                        {isActive && (
-                          <span className={`${simRiskExposure < baseRiskExposure ? 'text-emerald-500' : 'text-zinc-500'} font-bold ml-1`}>
-                            → ₹{simRiskExposure.toFixed(2)} Cr
-                          </span>
-                        )}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Chart & Summary Column */}
-          <div className="xl:col-span-7 flex flex-col justify-between space-y-4">
-            {/* Chart Area */}
-            <div className="bg-zinc-50/50 dark:bg-white/5 border border-black/5 dark:border-white/5 p-4 rounded-sm">
-              <span className="text-[9px] font-bold uppercase tracking-wider text-zinc-400 block mb-3">Cost vs. Revenue Exposure (Baseline vs. Simulated)</span>
-              <div className="h-60">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={simulatorChartData} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke={isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'} vertical={false} />
-                    <XAxis dataKey="stage" tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
-                    <Tooltip contentStyle={{ backgroundColor: isDarkMode ? '#1f1f1f' : '#fff', border: isDarkMode ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.1)', color: isDarkMode ? '#fff' : '#000', fontSize: 9 }} />
-                    <Legend wrapperStyle={{ fontSize: 8, textTransform: 'uppercase', letterSpacing: '0.05em' }} />
-                    <Bar dataKey="Base Cost (₹ Cr)" fill="#a78bfa" radius={[1, 1, 0, 0]} barSize={10} />
-                    <Bar dataKey="Sim Cost (₹ Cr)" fill="#6d28d9" radius={[1, 1, 0, 0]} barSize={10} />
-                    <Bar dataKey="Base Risk Rev (₹ Cr)" fill="#fca5a5" radius={[1, 1, 0, 0]} barSize={10} />
-                    <Bar dataKey="Sim Risk Rev (₹ Cr)" fill="#ef4444" radius={[1, 1, 0, 0]} barSize={10} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
-
-            {/* Summary Statistics Card */}
-            <div className="p-4 bg-zinc-150/70 dark:bg-zinc-900/60 border border-black/5 dark:border-white/5 rounded-xl space-y-4">
-              <span className="text-[9px] font-bold uppercase tracking-wider text-zinc-400 block">Simulation Summary & Impact ROI</span>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                <div>
-                  <span className="text-[8px] text-zinc-500 block uppercase">Total Cost Slippage</span>
-                  <span className="text-sm font-display font-extrabold text-zinc-800 dark:text-white mt-1 block font-mono">
-                    +₹{spentVariance.toFixed(2)} Cr
-                  </span>
-                </div>
-                <div>
-                  <span className="text-[8px] text-zinc-500 block uppercase">Risk Exposure Mitigated</span>
-                  <span className="text-sm font-display font-extrabold text-emerald-500 mt-1 block font-mono">
-                    ₹{exposureReduced.toFixed(2)} Cr
-                  </span>
-                </div>
-                <div>
-                  <span className="text-[8px] text-zinc-500 block uppercase">Mitigation ROI</span>
-                  <span className="text-sm font-display font-extrabold text-purple-500 mt-1 block font-mono">
-                    {roiMitigation.toFixed(1)}x
-                  </span>
-                </div>
-                <div>
-                  <span className="text-[8px] text-zinc-500 block uppercase">Overall Readiness</span>
-                  <span className="text-sm font-display font-extrabold text-blue-500 mt-1 block font-mono">
-                    {overallReadiness}%
-                  </span>
-                </div>
-              </div>
-
-              <div className="pt-2 border-t border-black/5 dark:border-white/5 text-[9px] text-zinc-500 leading-relaxed font-sans">
-                {mitigatedStages.length > 0 ? (
-                  <p className="flex items-start gap-1">
-                    <Check size={11} className="text-emerald-500 shrink-0 mt-0.5" />
-                    <span>
-                      Active protocols in <strong>{mitigatedStages.join(', ')}</strong> reduce revenue at risk by <strong>₹{exposureReduced.toFixed(2)} Cr</strong> at a spent cost slip of <strong>₹{spentVariance.toFixed(2)} Cr</strong>. This represents a net risk mitigation efficiency of <strong>{roiMitigation.toFixed(1)}x</strong>.
-                    </span>
-                  </p>
-                ) : (
-                  <p className="flex items-start gap-1">
-                    <Activity size={11} className="text-amber-500 shrink-0 mt-0.5" />
-                    <span>No mitigation protocols active. Toggle stage mitigation controls to simulate risk reduction policies.</span>
-                  </p>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
 
 
 
@@ -2053,14 +1844,45 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
             </div>
 
             {/* Content List */}
-            <div className="p-4 overflow-y-auto flex-1 space-y-3 max-h-[60vh] no-scrollbar">
-              {selectedStageSKUs.meaning && (
-                <div className="p-3 bg-blue-500/5 dark:bg-blue-500/10 border border-blue-500/10 dark:border-blue-500/20 rounded-md text-[10px] text-zinc-650 dark:text-zinc-350 leading-relaxed font-sans flex items-start gap-2 mb-3">
-                  <span className="text-[#3b82f6] text-xs font-bold mt-0.5">ℹ️</span>
-                  <div>
-                    <span className="font-extrabold text-zinc-700 dark:text-zinc-200 uppercase tracking-wider text-[9px] block mb-1">KPI Definition</span>
-                    {selectedStageSKUs.meaning}
-                  </div>
+            <div className="p-4 overflow-y-auto flex-1 space-y-4 max-h-[60vh] no-scrollbar">
+              {/* Metadata Panel (Definition, Formula, Lineage) */}
+              {(selectedStageSKUs.meaning || selectedStageSKUs.formula || selectedStageSKUs.lineage) && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 p-3.5 bg-zinc-50 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-lg text-left">
+                  {selectedStageSKUs.meaning && (
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-1.5 text-[9px] font-bold text-blue-500 uppercase tracking-wider">
+                        <span>ℹ️</span>
+                        <span>KPI Definition</span>
+                      </div>
+                      <p className="text-[10px] text-zinc-650 dark:text-zinc-350 leading-relaxed font-sans">
+                        {selectedStageSKUs.meaning}
+                      </p>
+                    </div>
+                  )}
+
+                  {selectedStageSKUs.formula && (
+                    <div className="space-y-1 border-t md:border-t-0 md:border-l border-black/5 dark:border-white/5 pt-3 md:pt-0 md:pl-3.5">
+                      <div className="flex items-center gap-1.5 text-[9px] font-bold text-amber-500 uppercase tracking-wider">
+                        <span>🧮</span>
+                        <span>Formula / Calculation</span>
+                      </div>
+                      <p className="text-[10px] text-zinc-650 dark:text-zinc-350 leading-relaxed font-mono bg-black/5 dark:bg-white/5 p-1.5 rounded-sm overflow-x-auto">
+                        {selectedStageSKUs.formula}
+                      </p>
+                    </div>
+                  )}
+
+                  {selectedStageSKUs.lineage && (
+                    <div className="space-y-1 border-t md:border-t-0 md:border-l border-black/5 dark:border-white/5 pt-3 md:pt-0 md:pl-3.5">
+                      <div className="flex items-center gap-1.5 text-[9px] font-bold text-purple-500 uppercase tracking-wider">
+                        <span>🔗</span>
+                        <span>Data Lineage</span>
+                      </div>
+                      <p className="text-[10px] text-zinc-650 dark:text-zinc-350 leading-relaxed font-sans">
+                        {selectedStageSKUs.lineage}
+                      </p>
+                    </div>
+                  )}
                 </div>
               )}
               {selectedStageSKUs.skus.length > 0 ? (
