@@ -292,14 +292,39 @@ interface AgenticAlertExplanationModalProps {
 export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModalProps> = ({
   isOpen,
   onClose,
-  isDarkMode
+  alerts,
+  isDarkMode,
+  onInvestigateAlert
 }) => {
   const [activeAgentIndex, setActiveAgentIndex] = useState<number>(0);
   const [hoveredStepIndex, setHoveredStepIndex] = useState<number>(0);
 
   if (!isOpen) return null;
 
-  const currentAgent = AGENTS_WORKFLOWS[activeAgentIndex];
+  const filteredAgents = AGENTS_WORKFLOWS.filter(agent => {
+    return alerts.some(alert => {
+      const text = `${alert.title} ${alert.detail}`.toLowerCase();
+      if (agent.name === 'Market Signal Agent') {
+        return text.includes('competitor') || text.includes('sentiment') || text.includes('scraper');
+      }
+      if (agent.name === 'Portfolio Agent') {
+        return text.includes('volume') || text.includes('coverage') || text.includes('portfolio');
+      }
+      if (agent.name === 'Profitability Agent') {
+        return text.includes('margin') || text.includes('promo') || text.includes('cost');
+      }
+      if (agent.name === 'Sunset Agent') {
+        return text.includes('cannibalization') || text.includes('sunset');
+      }
+      if (agent.name === 'Launch Agent') {
+        return text.includes('launch') || text.includes('readiness') || text.includes('delay');
+      }
+      return false;
+    });
+  });
+
+  const displayAgents = filteredAgents.length > 0 ? filteredAgents : AGENTS_WORKFLOWS;
+  const currentAgent = displayAgents[activeAgentIndex] || displayAgents[0] || AGENTS_WORKFLOWS[0];
   const activeStepData = currentAgent.steps[hoveredStepIndex];
 
   // Theme styling helpers
@@ -382,7 +407,7 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
             </h3>
 
             <div className="space-y-2">
-              {AGENTS_WORKFLOWS.map((agent, idx) => {
+              {displayAgents.map((agent, idx) => {
                 const isSelected = activeAgentIndex === idx;
                 return (
                   <div
