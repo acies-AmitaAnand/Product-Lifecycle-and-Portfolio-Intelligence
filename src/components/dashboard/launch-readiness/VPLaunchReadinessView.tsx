@@ -1087,67 +1087,8 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
             </div>
           </div>
 
-          {/* VP Risk Alerts Center */}
-          <div className="bg-red-500/5 dark:bg-red-500/5 border border-red-500/10 rounded-sm p-3 space-y-2">
-            <div className="flex items-center gap-1.5 pb-1.5 border-b border-red-500/10 justify-between">
-              <div className="flex items-center gap-1.5">
-                <ShieldAlert size={12} className="text-red-500 shrink-0" />
-                <span className="text-[9px] font-bold uppercase tracking-wider text-red-500">VP Risk Alerts & Blockers</span>
-              </div>
-              <span className="text-[8px] font-bold text-red-400 uppercase bg-red-500/10 px-1.5 py-0.5 rounded-sm">
-                {riskAlerts.length} Attention Required
-              </span>
-            </div>
-            
-            <div className="max-h-48 overflow-y-auto space-y-1.5 pr-1">
-              {riskAlerts.length > 0 ? (
-                riskAlerts.map((alert, idx) => (
-                  <div
-                    key={idx}
-                    onClick={() => {
-                      setSelectedProductId(alert.productId);
-                      setSelectedStageName(alert.stageName);
-                      setIsDrawerOpen(true);
-                    }}
-                    className="flex items-center justify-between p-1.5 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 rounded-sm cursor-pointer transition-all border-l-3 border-l-red-500 text-left"
-                  >
-                    <div className="space-y-0.5">
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-[9px] font-extrabold text-zinc-800 dark:text-zinc-200">
-                          {alert.productName}
-                        </span>
-                        <span className={`text-[7px] font-bold uppercase px-1 rounded-sm ${
-                          alert.status === 'Failed' 
-                            ? 'bg-red-500/10 text-red-500' 
-                            : 'bg-amber-500/10 text-amber-500'
-                        }`}>
-                          {alert.status}
-                        </span>
-                      </div>
-                      <p className="text-[8px] text-zinc-450 dark:text-zinc-555 font-medium">
-                        <strong className="text-zinc-555">Impact:</strong> {alert.impact}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <span className="text-[8px] font-bold text-zinc-500 block">
-                        Gate: {alert.stageName}
-                      </span>
-                      <span className="text-[7px] text-zinc-450 block">
-                        {alert.owner.split(' ')[0]} • {alert.date}
-                      </span>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="text-center py-4">
-                  <p className="text-[9px] text-zinc-400 italic">No stage gate exceptions. All reviews completed or pending on schedule.</p>
-                </div>
-              )}
-            </div>
-          </div>
-
           {/* Summary Metric Cards */}
-          <div className="grid grid-cols-5 gap-3 pt-3 border-t border-black/5 dark:border-white/5">
+          <div className="grid grid-cols-5 gap-3">
             {/* Total Gates */}
             <div className="bg-black/5 dark:bg-white/5 rounded-sm p-2.5 border border-black/5 dark:border-white/5 flex flex-col justify-between">
               <span className="text-[7.5px] text-zinc-400 dark:text-zinc-500 font-bold uppercase tracking-wider block">
@@ -1211,6 +1152,65 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
                 </span>
                 <span className="text-[8px] text-zinc-555 uppercase font-bold">Rate</span>
               </div>
+            </div>
+          </div>
+
+          {/* VP Risk Alerts Center */}
+          <div className="bg-red-500/5 dark:bg-red-500/5 border border-red-500/10 rounded-sm p-3 space-y-2 mt-4">
+            <div className="flex items-center gap-1.5 pb-1.5 border-b border-red-500/10 justify-between">
+              <div className="flex items-center gap-1.5">
+                <ShieldAlert size={12} className="text-red-500 shrink-0" />
+                <span className="text-[9px] font-bold uppercase tracking-wider text-red-500">VP Risk Alerts & Blockers</span>
+              </div>
+              <span className="text-[8px] font-bold text-red-400 uppercase bg-red-500/10 px-1.5 py-0.5 rounded-sm">
+                {riskAlerts.length} Attention Required
+              </span>
+            </div>
+            
+            <div className="max-h-48 overflow-y-auto space-y-1.5 pr-1">
+              {riskAlerts.length > 0 ? (
+                riskAlerts.map((alert, idx) => (
+                  <div
+                    key={idx}
+                    onClick={() => {
+                      setSelectedProductId(alert.productId);
+                      setSelectedStageName(alert.stageName);
+                      setIsDrawerOpen(true);
+                    }}
+                    className="flex items-center justify-between p-1.5 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 rounded-sm cursor-pointer transition-all border-l-3 border-l-red-500 text-left"
+                  >
+                    <div className="space-y-0.5">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[9px] font-extrabold text-zinc-800 dark:text-zinc-200">
+                          {alert.productName}
+                        </span>
+                        <span className={`text-[7px] font-bold uppercase px-1 rounded-sm ${
+                          alert.status === 'Failed' 
+                            ? 'bg-red-500/10 text-red-500' 
+                            : 'bg-amber-500/10 text-amber-500'
+                        }`}>
+                          {alert.status}
+                        </span>
+                      </div>
+                      <p className="text-[8px] text-zinc-450 dark:text-zinc-555 font-medium">
+                        <strong className="text-zinc-555">Impact:</strong> {alert.impact}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-[8px] font-bold text-zinc-500 block">
+                        Gate: {alert.stageName}
+                      </span>
+                      <span className="text-[7px] text-zinc-450 block">
+                        {alert.owner.split(' ')[0]} • {alert.date}
+                      </span>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-4">
+                  <p className="text-[9px] text-zinc-400 italic">No stage gate exceptions. All reviews completed or pending on schedule.</p>
+                </div>
+              )}
             </div>
           </div>
         </div>
