@@ -452,8 +452,6 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
     addToast('Escalation Resolved', `${title}: ${actionMsg}`, '#10b981');
   };
 
-  const [mitigatedStages, setMitigatedStages] = useState<string[]>([]);
-
   const processedProducts = VP_PRODUCTS.map(p => {
     let readiness = p.readiness;
     let risk = p.risk;
@@ -462,16 +460,6 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
     if (simulateDelay && p.region === 'APAC') {
       readiness = Math.max(0, p.readiness - 15);
       risk = readiness < 50 ? 'High' : readiness < 75 ? 'Medium' : p.risk;
-    }
-
-    if (mitigatedStages.includes(p.stage)) {
-      readiness = Math.min(100, readiness + 15);
-      if (risk === 'High') {
-        risk = 'Medium';
-      } else if (risk === 'Medium') {
-        risk = 'Low';
-      }
-      spent = parseFloat((spent * 1.15).toFixed(2));
     }
 
     return {
@@ -605,57 +593,7 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (overallReadiness / 100) * circumference;
 
-  const stagesList: ('Ideation' | 'Development' | 'Testing' | 'Pre-market' | 'Launch')[] = 
-    ['Ideation', 'Development', 'Testing', 'Pre-market', 'Launch'];
 
-  const simulatorChartData = stagesList.map(st => {
-    const baseProds = VP_PRODUCTS.map(p => {
-      let readiness = p.readiness;
-      let risk = p.risk;
-      let spent = p.spent;
-      if (simulateDelay && p.region === 'APAC') {
-        readiness = Math.max(0, p.readiness - 15);
-        risk = readiness < 50 ? 'High' : readiness < 75 ? 'Medium' : p.risk;
-      }
-      return { ...p, readiness, risk, spent };
-    }).filter(p => p.stage === st);
-
-    const simProds = processedProducts.filter(p => p.stage === st);
-
-    const baseCost = baseProds.reduce((sum, p) => sum + p.spent, 0);
-    const simCost = simProds.reduce((sum, p) => sum + p.spent, 0);
-
-    const baseRiskRev = baseProds.reduce((sum, p) => p.readiness < 75 ? sum + p.revExposure : sum, 0);
-    const simRiskRev = simProds.reduce((sum, p) => p.readiness < 75 ? sum + p.revExposure : sum, 0);
-
-    return {
-      stage: st,
-      'Base Cost (₹ Cr)': parseFloat(baseCost.toFixed(2)),
-      'Sim Cost (₹ Cr)': parseFloat(simCost.toFixed(2)),
-      'Base Risk Rev (₹ Cr)': parseFloat(baseRiskRev.toFixed(2)),
-      'Sim Risk Rev (₹ Cr)': parseFloat(simRiskRev.toFixed(2)),
-    };
-  });
-
-  const totalBaseSpent = VP_PRODUCTS.map(p => {
-    let spent = p.spent;
-    return spent;
-  }).reduce((sum, s) => sum + s, 0);
-
-  const totalSimSpent = processedProducts.reduce((sum, p) => sum + p.spent, 0);
-  const spentVariance = parseFloat((totalSimSpent - totalBaseSpent).toFixed(2));
-
-  const totalBaseExposure = VP_PRODUCTS.map(p => {
-    let readiness = p.readiness;
-    if (simulateDelay && p.region === 'APAC') {
-      readiness = Math.max(0, p.readiness - 15);
-    }
-    return { ...p, readiness };
-  }).reduce((sum, p) => p.readiness < 75 ? sum + p.revExposure : sum, 0);
-
-  const totalSimExposure = processedProducts.reduce((sum, p) => p.readiness < 75 ? sum + p.revExposure : sum, 0);
-  const exposureReduced = parseFloat((totalBaseExposure - totalSimExposure).toFixed(2));
-  const roiMitigation = spentVariance > 0 ? parseFloat((exposureReduced / spentVariance).toFixed(1)) : 0;
 
   const selectedProductGates = stageGates.find(sg => sg.productId === selectedProductId) || stageGates[0];
   const selectedStage = selectedProductGates.gates.find(g => g.stageName === selectedStageName) || selectedProductGates.gates[0];
@@ -2082,183 +2020,7 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
         </div>
       </div>
 
-      {/* Risk & Cost Simulator Panel */}
-      <div className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-6 rounded-sm shadow-sm space-y-6">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-3 border-b border-black/5 dark:border-white/5">
-          <div>
-            <h3 className="text-xs font-bold uppercase tracking-widest text-zinc-400">Launch Pipeline Stage Risk & Cost Simulator</h3>
-            <p className="text-[10px] text-zinc-550 uppercase mt-1">Simulate activating risk mitigation protocols across launch stages to observe cost vs risk reduction trade-offs.</p>
-          </div>
-          <button
-            onClick={() => setMitigatedStages([])}
-            className="text-[9px] font-bold text-[#6d28d9] dark:text-[#a78bfa] uppercase border border-[#6d28d9]/35 dark:border-[#a78bfa]/35 bg-purple-500/5 hover:bg-[#6d28d9] hover:text-white px-2.5 py-1 rounded-sm cursor-pointer transition-all"
-          >
-            Reset Simulator
-          </button>
-        </div>
 
-        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
-          {/* Toggles Column */}
-          <div className="xl:col-span-5 space-y-3">
-            <span className="text-[9px] font-bold uppercase tracking-wider text-zinc-400 block mb-2">Mitigation Controls by Stage</span>
-            {stagesList.map(st => {
-              const isActive = mitigatedStages.includes(st);
-              const stageProds = processedProducts.filter(p => p.stage === st);
-              const totalProds = stageProds.length;
-              const highRiskProds = stageProds.filter(p => p.risk === 'High').length;
-              const medRiskProds = stageProds.filter(p => p.risk === 'Medium').length;
-              const lowRiskProds = stageProds.filter(p => p.risk === 'Low').length;
-
-              const baselineProds = VP_PRODUCTS.map(p => {
-                let readiness = p.readiness;
-                let risk = p.risk;
-                if (simulateDelay && p.region === 'APAC') {
-                  readiness = Math.max(0, p.readiness - 15);
-                  risk = readiness < 50 ? 'High' : readiness < 75 ? 'Medium' : p.risk;
-                }
-                return { ...p, readiness, risk };
-              }).filter(p => p.stage === st);
-
-              const baseRiskExposure = baselineProds.reduce((sum, p) => p.readiness < 75 ? sum + p.revExposure : sum, 0);
-              const simRiskExposure = stageProds.reduce((sum, p) => p.readiness < 75 ? sum + p.revExposure : sum, 0);
-
-              const baseSpent = baselineProds.reduce((sum, p) => sum + p.spent, 0);
-              const simSpent = stageProds.reduce((sum, p) => sum + p.spent, 0);
-
-              return (
-                <div 
-                  key={st} 
-                  className={`p-3.5 border rounded-sm transition-all ${
-                    isActive 
-                      ? 'border-[#6d28d9]/30 bg-[#6d28d9]/5' 
-                      : 'border-black/5 dark:border-white/5 bg-zinc-50/50 dark:bg-white/5'
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="text-[11px] font-bold text-zinc-800 dark:text-zinc-200">{st}</h4>
-                      <p className="text-[9px] text-zinc-500 mt-0.5">{totalProds} SKUs · Risk: {highRiskProds}H, {medRiskProds}M, {lowRiskProds}L</p>
-                    </div>
-                    <button
-                      onClick={() => {
-                        if (isActive) {
-                          setMitigatedStages(prev => prev.filter(x => x !== st));
-                          addToast('Mitigation Deactivated', `${st} stage mitigation protocols disabled.`, '#3b82f6');
-                        } else {
-                          setMitigatedStages(prev => [...prev, st]);
-                          addToast('Mitigation Activated', `${st} stage mitigation protocols deployed.`, '#10b981');
-                        }
-                      }}
-                      className={`relative inline-flex h-5 w-10 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out outline-none ${
-                        isActive ? 'bg-emerald-500' : 'bg-zinc-350 dark:bg-zinc-700'
-                      }`}
-                      style={{ border: 'none' }}
-                    >
-                      <span
-                        className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${
-                          isActive ? 'translate-x-5' : 'translate-x-0'
-                        }`}
-                      />
-                    </button>
-                  </div>
-
-                  {/* Dynamic cost/risk display */}
-                  <div className="grid grid-cols-2 gap-4 mt-2.5 pt-2.5 border-t border-dashed border-black/5 dark:border-white/5 text-[9px]">
-                    <div>
-                      <span className="text-zinc-550 dark:text-zinc-400 block">Spent Cost Impact</span>
-                      <span className="font-bold font-mono text-zinc-750 dark:text-zinc-200">
-                        ₹{baseSpent.toFixed(2)} Cr 
-                        {isActive && <span className="text-amber-500 font-bold ml-1">→ ₹{simSpent.toFixed(2)} Cr (+15%)</span>}
-                      </span>
-                    </div>
-                    <div>
-                      <span className="text-zinc-550 dark:text-zinc-400 block">Revenue Risk Exposure</span>
-                      <span className="font-bold font-mono text-zinc-750 dark:text-zinc-200">
-                        ₹{baseRiskExposure.toFixed(2)} Cr
-                        {isActive && (
-                          <span className={`${simRiskExposure < baseRiskExposure ? 'text-emerald-500' : 'text-zinc-500'} font-bold ml-1`}>
-                            → ₹{simRiskExposure.toFixed(2)} Cr
-                          </span>
-                        )}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Chart & Summary Column */}
-          <div className="xl:col-span-7 flex flex-col justify-between space-y-4">
-            {/* Chart Area */}
-            <div className="bg-zinc-50/50 dark:bg-white/5 border border-black/5 dark:border-white/5 p-4 rounded-sm">
-              <span className="text-[9px] font-bold uppercase tracking-wider text-zinc-400 block mb-3">Cost vs. Revenue Exposure (Baseline vs. Simulated)</span>
-              <div className="h-60">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={simulatorChartData} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke={isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'} vertical={false} />
-                    <XAxis dataKey="stage" tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
-                    <Tooltip contentStyle={{ backgroundColor: isDarkMode ? '#1f1f1f' : '#fff', border: isDarkMode ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.1)', color: isDarkMode ? '#fff' : '#000', fontSize: 9 }} />
-                    <Legend wrapperStyle={{ fontSize: 8, textTransform: 'uppercase', letterSpacing: '0.05em' }} />
-                    <Bar dataKey="Base Cost (₹ Cr)" fill="#a78bfa" radius={[1, 1, 0, 0]} barSize={10} />
-                    <Bar dataKey="Sim Cost (₹ Cr)" fill="#6d28d9" radius={[1, 1, 0, 0]} barSize={10} />
-                    <Bar dataKey="Base Risk Rev (₹ Cr)" fill="#fca5a5" radius={[1, 1, 0, 0]} barSize={10} />
-                    <Bar dataKey="Sim Risk Rev (₹ Cr)" fill="#ef4444" radius={[1, 1, 0, 0]} barSize={10} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
-
-            {/* Summary Statistics Card */}
-            <div className="p-4 bg-zinc-150/70 dark:bg-zinc-900/60 border border-black/5 dark:border-white/5 rounded-xl space-y-4">
-              <span className="text-[9px] font-bold uppercase tracking-wider text-zinc-400 block">Simulation Summary & Impact ROI</span>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                <div>
-                  <span className="text-[8px] text-zinc-500 block uppercase">Total Cost Slippage</span>
-                  <span className="text-sm font-display font-extrabold text-zinc-800 dark:text-white mt-1 block font-mono">
-                    +₹{spentVariance.toFixed(2)} Cr
-                  </span>
-                </div>
-                <div>
-                  <span className="text-[8px] text-zinc-500 block uppercase">Risk Exposure Mitigated</span>
-                  <span className="text-sm font-display font-extrabold text-emerald-500 mt-1 block font-mono">
-                    ₹{exposureReduced.toFixed(2)} Cr
-                  </span>
-                </div>
-                <div>
-                  <span className="text-[8px] text-zinc-500 block uppercase">Mitigation ROI</span>
-                  <span className="text-sm font-display font-extrabold text-purple-500 mt-1 block font-mono">
-                    {roiMitigation.toFixed(1)}x
-                  </span>
-                </div>
-                <div>
-                  <span className="text-[8px] text-zinc-500 block uppercase">Overall Readiness</span>
-                  <span className="text-sm font-display font-extrabold text-blue-500 mt-1 block font-mono">
-                    {overallReadiness}%
-                  </span>
-                </div>
-              </div>
-
-              <div className="pt-2 border-t border-black/5 dark:border-white/5 text-[9px] text-zinc-500 leading-relaxed font-sans">
-                {mitigatedStages.length > 0 ? (
-                  <p className="flex items-start gap-1">
-                    <Check size={11} className="text-emerald-500 shrink-0 mt-0.5" />
-                    <span>
-                      Active protocols in <strong>{mitigatedStages.join(', ')}</strong> reduce revenue at risk by <strong>₹{exposureReduced.toFixed(2)} Cr</strong> at a spent cost slip of <strong>₹{spentVariance.toFixed(2)} Cr</strong>. This represents a net risk mitigation efficiency of <strong>{roiMitigation.toFixed(1)}x</strong>.
-                    </span>
-                  </p>
-                ) : (
-                  <p className="flex items-start gap-1">
-                    <Activity size={11} className="text-amber-500 shrink-0 mt-0.5" />
-                    <span>No mitigation protocols active. Toggle stage mitigation controls to simulate risk reduction policies.</span>
-                  </p>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
 
       {/* Cross-Functional Radar */}
       <div className="bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm space-y-4">
