@@ -315,7 +315,13 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
   const [toasts, setToasts] = useState<{ id: string; title: string; body: string; color: string }[]>([]);
   const [isPredictionModalOpen, setIsPredictionModalOpen] = useState(false);
   const [predictionModalType, setPredictionModalType] = useState<'stockout' | 'elasticity' | 'margin' | 'demand' | 'delay' | null>(null);
-  const [selectedStageSKUs, setSelectedStageSKUs] = useState<{ title: string; meaning?: string; skus: VPLaunchProduct[] } | null>(null);
+  const [selectedStageSKUs, setSelectedStageSKUs] = useState<{ 
+    title: string; 
+    meaning?: string; 
+    skus: VPLaunchProduct[];
+    formula?: string;
+    lineage?: string;
+  } | null>(null);
 
   const [stageGates, setStageGates] = useState<ProductStageGates[]>(() => generateInitialStageGates(VP_PRODUCTS));
   const [selectedProductId, setSelectedProductId] = useState<string>('All');
@@ -925,7 +931,9 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
             onClick={() => setSelectedStageSKUs({
               title: 'On Track Launches',
               meaning: 'SKUs with a Launch Readiness Score of 75% or higher, indicating that all major activities (regulatory compliance, marketing plans, inventory routing) are progressing optimally with low risk of launch delay.',
-              skus: filteredProducts.filter(p => p.readiness >= 75)
+              skus: filteredProducts.filter(p => p.readiness >= 75),
+              formula: 'Count(SKUs where readiness >= 75%)',
+              lineage: 'Product Launch Master DB -> LaunchReadinessEngine -> FilteredProducts'
             })}
             className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-3 rounded-sm shadow-sm flex flex-col justify-between aspect-square hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] text-center"
           >
@@ -940,7 +948,9 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
             onClick={() => setSelectedStageSKUs({
               title: 'Delayed Launches',
               meaning: 'SKUs with a Launch Readiness Score below 50%. These have encountered critical bottlenecks (such as severe supply chain delays or lack of regulatory approvals) and require immediate executive attention and mitigation.',
-              skus: filteredProducts.filter(p => p.readiness < 50)
+              skus: filteredProducts.filter(p => p.readiness < 50),
+              formula: 'Count(SKUs where readiness < 50%)',
+              lineage: 'Product Launch Master DB -> Delayed Escalations DB -> FilteredProducts'
             })}
             className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-3 rounded-sm shadow-sm flex flex-col justify-between aspect-square hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] text-center"
           >
@@ -955,7 +965,9 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
             onClick={() => setSelectedStageSKUs({
               title: 'At Risk Launches',
               meaning: 'SKUs with a Launch Readiness Score between 50% and 74%. These are demonstrating early warning signs or minor deviations from target timelines, requiring active supervision and preventative measures.',
-              skus: filteredProducts.filter(p => p.readiness >= 50 && p.readiness < 75)
+              skus: filteredProducts.filter(p => p.readiness >= 50 && p.readiness < 75),
+              formula: 'Count(SKUs where 50% <= readiness < 75%)',
+              lineage: 'Product Launch Master DB -> Risk & Issue Monitoring DB -> FilteredProducts'
             })}
             className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-3 rounded-sm shadow-sm flex flex-col justify-between aspect-square hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] text-center"
           >
@@ -970,7 +982,9 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
             onClick={() => setSelectedStageSKUs({
               title: 'Next 60 Days Pipeline',
               meaning: 'SKUs currently in the active pipeline (Development, Testing, or Pre-market phases) scheduled to transition to market launch within the upcoming 60-day window.',
-              skus: filteredProducts.filter(p => p.stage !== 'Launch' && p.stage !== 'Ideation')
+              skus: filteredProducts.filter(p => p.stage !== 'Launch' && p.stage !== 'Ideation'),
+              formula: "Count(SKUs where stage ∈ {'Development', 'Testing', 'Pre-market'})",
+              lineage: 'Phase Gate Tracker DB -> Pipeline Scheduling System -> FilteredProducts'
             })}
             className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-3 rounded-sm shadow-sm flex flex-col justify-between aspect-square hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] text-center"
           >
@@ -987,7 +1001,9 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
             onClick={() => setSelectedStageSKUs({
               title: 'Revenue Exposure',
               meaning: 'The total potential revenue at stake from launches that are currently Delayed or At Risk (Launch Readiness Score below 75%). This helps prioritize resource allocation based on financial impact.',
-              skus: filteredProducts.filter(p => p.readiness < 75)
+              skus: filteredProducts.filter(p => p.readiness < 75),
+              formula: 'Sum(revExposure where readiness < 75%)',
+              lineage: 'Financial Forecasts DB -> Mapped via SKU IDs to Readiness logs -> FilteredProducts'
             })}
             className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-3 rounded-sm shadow-sm flex flex-col justify-between aspect-square hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] text-center"
           >
@@ -1004,7 +1020,9 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
             onClick={() => setSelectedStageSKUs({
               title: 'Market Coverage Scope',
               meaning: 'Geographic deployment and readiness metric representing the percentage of target regions or distribution nodes that have successfully completed all pre-market requirements.',
-              skus: filteredProducts
+              skus: filteredProducts,
+              formula: 'Min(100, Round((Count(readiness >= 75%) / TotalCount) * 94 + 6))',
+              lineage: 'Geographic Rollout Registry -> Dynamic region filter mappings -> FilteredProducts'
             })}
             className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-3 rounded-sm shadow-sm flex flex-col justify-between aspect-square hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] text-center"
           >
@@ -1541,7 +1559,10 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
             <div 
               onClick={() => setSelectedStageSKUs({
                 title: 'Active pipeline SKUs',
-                skus: filteredProducts
+                meaning: 'Total count of SKUs currently tracked in the pipeline across all rollout phases.',
+                skus: filteredProducts,
+                formula: 'Count(All active pipeline SKUs)',
+                lineage: 'Product Master Registry -> Active Rollouts -> FilteredProducts'
               })}
               className="bg-zinc-100/80 dark:bg-zinc-900/60 border border-black/5 dark:border-white/5 p-2.5 px-3 rounded-sm hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98]"
             >
@@ -1552,7 +1573,10 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
             <div 
               onClick={() => setSelectedStageSKUs({
                 title: 'In development+ SKUs',
-                skus: filteredProducts.filter(p => p.stage === 'Ideation' || p.stage === 'Development' || p.stage === 'Testing')
+                meaning: 'SKUs currently in the early to middle stages of launch preparation (Ideation, Development, or Testing).',
+                skus: filteredProducts.filter(p => p.stage === 'Ideation' || p.stage === 'Development' || p.stage === 'Testing'),
+                formula: "Count(SKUs where stage ∈ {'Ideation', 'Development', 'Testing'})",
+                lineage: 'R&D Phase Gate Tracker -> FilteredProducts'
               })}
               className="bg-zinc-100/80 dark:bg-zinc-900/60 border border-black/5 dark:border-white/5 p-2.5 px-3 rounded-sm hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98]"
             >
@@ -1563,7 +1587,10 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
             <div 
               onClick={() => setSelectedStageSKUs({
                 title: 'Near launch SKUs',
-                skus: filteredProducts.filter(p => p.stage === 'Pre-market')
+                meaning: 'SKUs in the final pre-market stage preparing for imminent commercial rollout.',
+                skus: filteredProducts.filter(p => p.stage === 'Pre-market'),
+                formula: "Count(SKUs where stage = 'Pre-market')",
+                lineage: 'Commercial Launch Registry -> FilteredProducts'
               })}
               className="bg-zinc-100/80 dark:bg-zinc-900/60 border border-black/5 dark:border-white/5 p-2.5 px-3 rounded-sm hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98]"
             >
@@ -1574,7 +1601,10 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
             <div 
               onClick={() => setSelectedStageSKUs({
                 title: 'Launched SKUs',
-                skus: filteredProducts.filter(p => p.stage === 'Launch')
+                meaning: 'SKUs that have successfully completed all rollout gates and are active in the commercial market.',
+                skus: filteredProducts.filter(p => p.stage === 'Launch'),
+                formula: "Count(SKUs where stage = 'Launch')",
+                lineage: 'Commercial Sales Ledger -> Active SKUs -> FilteredProducts'
               })}
               className="bg-zinc-100/80 dark:bg-zinc-900/60 border border-black/5 dark:border-white/5 p-2.5 px-3 rounded-sm hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98]"
             >
@@ -2152,14 +2182,45 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
             </div>
 
             {/* Content List */}
-            <div className="p-4 overflow-y-auto flex-1 space-y-3 max-h-[60vh] no-scrollbar">
-              {selectedStageSKUs.meaning && (
-                <div className="p-3 bg-blue-500/5 dark:bg-blue-500/10 border border-blue-500/10 dark:border-blue-500/20 rounded-md text-[10px] text-zinc-650 dark:text-zinc-350 leading-relaxed font-sans flex items-start gap-2 mb-3">
-                  <span className="text-[#3b82f6] text-xs font-bold mt-0.5">ℹ️</span>
-                  <div>
-                    <span className="font-extrabold text-zinc-700 dark:text-zinc-200 uppercase tracking-wider text-[9px] block mb-1">KPI Definition</span>
-                    {selectedStageSKUs.meaning}
-                  </div>
+            <div className="p-4 overflow-y-auto flex-1 space-y-4 max-h-[60vh] no-scrollbar">
+              {/* Metadata Panel (Definition, Formula, Lineage) */}
+              {(selectedStageSKUs.meaning || selectedStageSKUs.formula || selectedStageSKUs.lineage) && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 p-3.5 bg-zinc-50 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded-lg text-left">
+                  {selectedStageSKUs.meaning && (
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-1.5 text-[9px] font-bold text-blue-500 uppercase tracking-wider">
+                        <span>ℹ️</span>
+                        <span>KPI Definition</span>
+                      </div>
+                      <p className="text-[10px] text-zinc-650 dark:text-zinc-350 leading-relaxed font-sans">
+                        {selectedStageSKUs.meaning}
+                      </p>
+                    </div>
+                  )}
+
+                  {selectedStageSKUs.formula && (
+                    <div className="space-y-1 border-t md:border-t-0 md:border-l border-black/5 dark:border-white/5 pt-3 md:pt-0 md:pl-3.5">
+                      <div className="flex items-center gap-1.5 text-[9px] font-bold text-amber-500 uppercase tracking-wider">
+                        <span>🧮</span>
+                        <span>Formula / Calculation</span>
+                      </div>
+                      <p className="text-[10px] text-zinc-650 dark:text-zinc-350 leading-relaxed font-mono bg-black/5 dark:bg-white/5 p-1.5 rounded-sm overflow-x-auto">
+                        {selectedStageSKUs.formula}
+                      </p>
+                    </div>
+                  )}
+
+                  {selectedStageSKUs.lineage && (
+                    <div className="space-y-1 border-t md:border-t-0 md:border-l border-black/5 dark:border-white/5 pt-3 md:pt-0 md:pl-3.5">
+                      <div className="flex items-center gap-1.5 text-[9px] font-bold text-purple-500 uppercase tracking-wider">
+                        <span>🔗</span>
+                        <span>Data Lineage</span>
+                      </div>
+                      <p className="text-[10px] text-zinc-650 dark:text-zinc-350 leading-relaxed font-sans">
+                        {selectedStageSKUs.lineage}
+                      </p>
+                    </div>
+                  )}
                 </div>
               )}
               {selectedStageSKUs.skus.length > 0 ? (
