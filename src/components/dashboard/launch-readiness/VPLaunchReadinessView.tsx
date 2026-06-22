@@ -421,7 +421,52 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
     addToast('Escalation Resolved', `${title}: ${actionMsg}`, '#10b981');
   };
 
-  const [mitigatedStages, setMitigatedStages] = useState<string[]>([]);
+  const [selectedSimProductId, setSelectedSimProductId] = useState<string>('LP01');
+  const [activeRecommendations, setActiveRecommendations] = useState<string[]>([]);
+  const [simValues, setSimValues] = useState<Record<string, number>>({});
+
+  // Helper to compute stable baseline scores for the 8 dimensions of any product based on its ID, base readiness, and risk rating.
+  const getProductDimensions = (p: VPLaunchProduct) => {
+    const seed = p.id.charCodeAt(2) + p.id.charCodeAt(3);
+    const base = p.readiness;
+    
+    // Distribute variations around base
+    const variations = [
+      (seed % 7) - 3,
+      ((seed >> 1) % 9) - 4,
+      ((seed >> 2) % 5) - 2,
+      ((seed >> 3) % 11) - 5,
+      ((seed >> 4) % 7) - 3,
+      ((seed >> 5) % 9) - 4,
+      ((seed >> 6) % 5) - 2,
+      0
+    ];
+    
+    const rawScores = variations.map(v => Math.max(10, Math.min(100, base + v * 3)));
+    const sumRaw = rawScores.slice(0, 7).reduce((a, b) => a + b, 0);
+    const targetSum = base * 8;
+    const lastScore = Math.max(10, Math.min(100, targetSum - sumRaw));
+    rawScores[7] = lastScore;
+    
+    return {
+      'Product Readiness': rawScores[0],
+      'Market Readiness': rawScores[1],
+      'Sales Readiness': rawScores[2],
+      'Marketing Readiness': rawScores[3],
+      'Operations Readiness': rawScores[4],
+      'Customer Support Readiness': rawScores[5],
+      'Compliance Readiness': rawScores[6],
+      'Financial Readiness': rawScores[7]
+    };
+  };
+
+  const selectedSimProduct = VP_PRODUCTS.find(p => p.id === selectedSimProductId) || VP_PRODUCTS[0];
+
+  useEffect(() => {
+    const base = getProductDimensions(selectedSimProduct);
+    setSimValues(base);
+    setActiveRecommendations([]);
+  }, [selectedSimProductId]);
 
   const processedProducts = VP_PRODUCTS.map(p => {
     let readiness = p.readiness;
@@ -431,16 +476,6 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
     if (simulateDelay && p.region === 'APAC') {
       readiness = Math.max(0, p.readiness - 15);
       risk = readiness < 50 ? 'High' : readiness < 75 ? 'Medium' : p.risk;
-    }
-
-    if (mitigatedStages.includes(p.stage)) {
-      readiness = Math.min(100, readiness + 15);
-      if (risk === 'High') {
-        risk = 'Medium';
-      } else if (risk === 'Medium') {
-        risk = 'Low';
-      }
-      spent = parseFloat((spent * 1.15).toFixed(2));
     }
 
     return {
@@ -644,57 +679,141 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
   const dropdownFilteredGates = stageGates;
   const dropdownCategories = Array.from(new Set(dropdownFilteredGates.map(sg => sg.category)));
 
-  const stagesList: ('Ideation' | 'Development' | 'Testing' | 'Pre-market' | 'Launch')[] = 
-    ['Ideation', 'Development', 'Testing', 'Pre-market', 'Launch'];
-
-  const simulatorChartData = stagesList.map(st => {
-    const baseProds = VP_PRODUCTS.map(p => {
-      let readiness = p.readiness;
-      let risk = p.risk;
-      let spent = p.spent;
-      if (simulateDelay && p.region === 'APAC') {
-        readiness = Math.max(0, p.readiness - 15);
-        risk = readiness < 50 ? 'High' : readiness < 75 ? 'Medium' : p.risk;
+  const RECOMMENDATIONS = [
+    {
+      id: 'qa',
+      title: 'QA & Beta Testing Acceleration',
+      description: 'Deploy extra QA engineers to finish beta sign-offs.',
+      cost: 0.015,
+      impactText: '+15% Product Readiness',
+      apply: (current: Record<string, number>, active: boolean) => {
+        const copy = { ...current };
+        const diff = active ? 15 : -15;
+        copy['Product Readiness'] = Math.max(10, Math.min(100, (copy['Product Readiness'] || 0) + diff));
+        return copy;
       }
-      return { ...p, readiness, risk, spent };
-    }).filter(p => p.stage === st);
+    },
+    {
+      id: 'compliance',
+      title: 'Fast-Track Compliance Audit',
+      description: 'Retain external compliance agency for labels audit.',
+      cost: 0.020,
+      impactText: '+25% Compliance Readiness',
+      apply: (current: Record<string, number>, active: boolean) => {
+        const copy = { ...current };
+        const diff = active ? 25 : -25;
+        copy['Compliance Readiness'] = Math.max(10, Math.min(100, (copy['Compliance Readiness'] || 0) + diff));
+        return copy;
+      }
+    },
+    {
+      id: 'campaign',
+      title: 'Boost Target Campaign Spend',
+      description: 'Increase localized digital marketing budget.',
+      cost: 0.035,
+      impactText: '+20% Marketing, +15% Market Readiness',
+      apply: (current: Record<string, number>, active: boolean) => {
+        const copy = { ...current };
+        const diff = active ? 20 : -20;
+        const diff2 = active ? 15 : -15;
+        copy['Marketing Readiness'] = Math.max(10, Math.min(100, (copy['Marketing Readiness'] || 0) + diff));
+        copy['Market Readiness'] = Math.max(10, Math.min(100, (copy['Market Readiness'] || 0) + diff2));
+        return copy;
+      }
+    },
+    {
+      id: 'sales',
+      title: 'Field Sales Enablement Plan',
+      description: 'Distribute updated collateral and interactive training.',
+      cost: 0.010,
+      impactText: '+20% Sales Readiness',
+      apply: (current: Record<string, number>, active: boolean) => {
+        const copy = { ...current };
+        const diff = active ? 20 : -20;
+        copy['Sales Readiness'] = Math.max(10, Math.min(100, (copy['Sales Readiness'] || 0) + diff));
+        return copy;
+      }
+    },
+    {
+      id: 'logistics',
+      title: 'Activate Backup Logistics Hub',
+      description: 'Secure secondary co-packer and distribution partner.',
+      cost: 0.040,
+      impactText: '+25% Operations Readiness',
+      apply: (current: Record<string, number>, active: boolean) => {
+        const copy = { ...current };
+        const diff = active ? 25 : -25;
+        copy['Operations Readiness'] = Math.max(10, Math.min(100, (copy['Operations Readiness'] || 0) + diff));
+        return copy;
+      }
+    },
+    {
+      id: 'support',
+      title: 'Scale Support Team Training',
+      description: 'Onboard temporary customer support agents.',
+      cost: 0.012,
+      impactText: '+15% Customer Support Readiness',
+      apply: (current: Record<string, number>, active: boolean) => {
+        const copy = { ...current };
+        const diff = active ? 15 : -15;
+        copy['Customer Support Readiness'] = Math.max(10, Math.min(100, (copy['Customer Support Readiness'] || 0) + diff));
+        return copy;
+      }
+    }
+  ];
 
-    const simProds = processedProducts.filter(p => p.stage === st);
+  const handleToggleRecommendation = (recId: string) => {
+    const rec = RECOMMENDATIONS.find(r => r.id === recId);
+    if (!rec) return;
+    
+    const isCurrentlyActive = activeRecommendations.includes(recId);
+    if (isCurrentlyActive) {
+      setActiveRecommendations(prev => prev.filter(id => id !== recId));
+      setSimValues(prev => rec.apply(prev, false));
+      addToast('Recommendation Deactivated', `${rec.title} protocols disabled.`, '#3b82f6');
+    } else {
+      setActiveRecommendations(prev => [...prev, recId]);
+      setSimValues(prev => rec.apply(prev, true));
+      addToast('Recommendation Activated', `${rec.title} protocols deployed.`, '#10b981');
+    }
+  };
 
-    const baseCost = baseProds.reduce((sum, p) => sum + p.spent, 0);
-    const simCost = simProds.reduce((sum, p) => sum + p.spent, 0);
+  const dimensionsList = [
+    'Product Readiness',
+    'Market Readiness',
+    'Sales Readiness',
+    'Marketing Readiness',
+    'Operations Readiness',
+    'Customer Support Readiness',
+    'Compliance Readiness',
+    'Financial Readiness'
+  ];
 
-    const baseRiskRev = baseProds.reduce((sum, p) => p.readiness < 75 ? sum + p.revExposure : sum, 0);
-    const simRiskRev = simProds.reduce((sum, p) => p.readiness < 75 ? sum + p.revExposure : sum, 0);
+  const baseValues = getProductDimensions(selectedSimProduct);
 
+  const radarChartData = dimensionsList.map(dim => {
     return {
-      stage: st,
-      'Base Cost ($M)': parseFloat(baseCost.toFixed(2)),
-      'Sim Cost ($M)': parseFloat(simCost.toFixed(2)),
-      'Base Risk Rev ($M)': parseFloat(baseRiskRev.toFixed(2)),
-      'Sim Risk Rev ($M)': parseFloat(simRiskRev.toFixed(2)),
+      subject: dim.replace(' Readiness', ''),
+      'Baseline': baseValues[dim] || 0,
+      'Simulated': simValues[dim] || 0,
     };
   });
 
-  const totalBaseSpent = VP_PRODUCTS.map(p => {
-    let spent = p.spent;
-    return spent;
-  }).reduce((sum, s) => sum + s, 0);
+  const simulatedLri = Math.round(
+    dimensionsList.reduce((sum, dim) => sum + (simValues[dim] || 0), 0) / dimensionsList.length
+  );
+  
+  const baselineLri = Math.round(
+    dimensionsList.reduce((sum, dim) => sum + (baseValues[dim] || 0), 0) / dimensionsList.length
+  );
 
-  const totalSimSpent = processedProducts.reduce((sum, p) => sum + p.spent, 0);
-  const spentVariance = parseFloat((totalSimSpent - totalBaseSpent).toFixed(2));
-
-  const totalBaseExposure = VP_PRODUCTS.map(p => {
-    let readiness = p.readiness;
-    if (simulateDelay && p.region === 'APAC') {
-      readiness = Math.max(0, p.readiness - 15);
-    }
-    return { ...p, readiness };
-  }).reduce((sum, p) => p.readiness < 75 ? sum + p.revExposure : sum, 0);
-
-  const totalSimExposure = processedProducts.reduce((sum, p) => p.readiness < 75 ? sum + p.revExposure : sum, 0);
-  const exposureReduced = parseFloat((totalBaseExposure - totalSimExposure).toFixed(2));
-  const roiMitigation = spentVariance > 0 ? parseFloat((exposureReduced / spentVariance).toFixed(1)) : 0;
+  const simulatedSpent = parseFloat(
+    (
+      selectedSimProduct.spent +
+      activeRecommendations.reduce((sum, recId) => sum + (RECOMMENDATIONS.find(r => r.id === recId)?.cost || 0), 0)
+    ).toFixed(3)
+  );
+  const costSlippage = parseFloat((simulatedSpent - selectedSimProduct.spent).toFixed(3));
 
   return (
     <div className="space-y-6">
@@ -1604,180 +1723,273 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
         </div>
       </div>
 
-      {/* Risk & Cost Simulator Panel */}
+      {/* AI-Powered Launch Readiness Simulator Panel */}
       <div className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-6 rounded-sm shadow-sm space-y-6">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-3 border-b border-black/5 dark:border-white/5">
           <div>
-            <h3 className="text-xs font-bold uppercase tracking-widest text-zinc-400">Launch Pipeline Stage Risk & Cost Simulator</h3>
-            <p className="text-[10px] text-zinc-550 uppercase mt-1">Simulate activating risk mitigation protocols across launch stages to observe cost vs risk reduction trade-offs.</p>
+            <h3 className="text-xs font-bold uppercase tracking-widest text-zinc-400">AI-Powered Launch Readiness Simulator</h3>
+            <p className="text-[10px] text-zinc-550 uppercase mt-1">
+              Select a product and simulate readiness improvements across 8 key dimensions to achieve optimal market entry validation.
+            </p>
           </div>
-          <button
-            onClick={() => setMitigatedStages([])}
-            className="text-[9px] font-bold text-[#6d28d9] dark:text-[#a78bfa] uppercase border border-[#6d28d9]/35 dark:border-[#a78bfa]/35 bg-purple-500/5 hover:bg-[#6d28d9] hover:text-white px-2.5 py-1 rounded-sm cursor-pointer transition-all"
-          >
-            Reset Simulator
-          </button>
+          <div className="flex items-center gap-3">
+            <span className="text-[10px] font-bold text-zinc-400 uppercase">Selected Product:</span>
+            <select
+              value={selectedSimProductId}
+              onChange={(e) => setSelectedSimProductId(e.target.value)}
+              className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-xs text-zinc-700 dark:text-zinc-300 rounded px-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-[#6d28d9]"
+            >
+              {VP_PRODUCTS.map(p => (
+                <option key={p.id} value={p.id} className="dark:bg-zinc-900">
+                  {p.name} ({p.id})
+                </option>
+              ))}
+            </select>
+            <button
+              onClick={() => {
+                const base = getProductDimensions(selectedSimProduct);
+                setSimValues(base);
+                setActiveRecommendations([]);
+                addToast('Simulation Reset', 'All simulation values restored to product baseline.', '#3b82f6');
+              }}
+              className="text-[9px] font-bold text-[#6d28d9] dark:text-[#a78bfa] uppercase border border-[#6d28d9]/35 dark:border-[#a78bfa]/35 bg-purple-500/5 hover:bg-[#6d28d9] hover:text-white px-2.5 py-1.5 rounded-sm cursor-pointer transition-all"
+            >
+              Reset
+            </button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
-          {/* Toggles Column */}
-          <div className="xl:col-span-5 space-y-3">
-            <span className="text-[9px] font-bold uppercase tracking-wider text-zinc-400 block mb-2">Mitigation Controls by Stage</span>
-            {stagesList.map(st => {
-              const isActive = mitigatedStages.includes(st);
-              const stageProds = processedProducts.filter(p => p.stage === st);
-              const totalProds = stageProds.length;
-              const highRiskProds = stageProds.filter(p => p.risk === 'High').length;
-              const medRiskProds = stageProds.filter(p => p.risk === 'Medium').length;
-              const lowRiskProds = stageProds.filter(p => p.risk === 'Low').length;
-
-              const baselineProds = VP_PRODUCTS.map(p => {
-                let readiness = p.readiness;
-                let risk = p.risk;
-                if (simulateDelay && p.region === 'APAC') {
-                  readiness = Math.max(0, p.readiness - 15);
-                  risk = readiness < 50 ? 'High' : readiness < 75 ? 'Medium' : p.risk;
-                }
-                return { ...p, readiness, risk };
-              }).filter(p => p.stage === st);
-
-              const baseRiskExposure = baselineProds.reduce((sum, p) => p.readiness < 75 ? sum + p.revExposure : sum, 0);
-              const simRiskExposure = stageProds.reduce((sum, p) => p.readiness < 75 ? sum + p.revExposure : sum, 0);
-
-              const baseSpent = baselineProds.reduce((sum, p) => sum + p.spent, 0);
-              const simSpent = stageProds.reduce((sum, p) => sum + p.spent, 0);
-
-              return (
-                <div 
-                  key={st} 
-                  className={`p-3.5 border rounded-sm transition-all ${
-                    isActive 
-                      ? 'border-[#6d28d9]/30 bg-[#6d28d9]/5' 
-                      : 'border-black/5 dark:border-white/5 bg-zinc-50/50 dark:bg-white/5'
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="text-[11px] font-bold text-zinc-800 dark:text-zinc-200">{st}</h4>
-                      <p className="text-[9px] text-zinc-500 mt-0.5">{totalProds} SKUs · Risk: {highRiskProds}H, {medRiskProds}M, {lowRiskProds}L</p>
-                    </div>
-                    <button
-                      onClick={() => {
-                        if (isActive) {
-                          setMitigatedStages(prev => prev.filter(x => x !== st));
-                          addToast('Mitigation Deactivated', `${st} stage mitigation protocols disabled.`, '#3b82f6');
-                        } else {
-                          setMitigatedStages(prev => [...prev, st]);
-                          addToast('Mitigation Activated', `${st} stage mitigation protocols deployed.`, '#10b981');
-                        }
-                      }}
-                      className={`relative inline-flex h-5 w-10 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out outline-none ${
-                        isActive ? 'bg-emerald-500' : 'bg-zinc-350 dark:bg-zinc-700'
-                      }`}
-                      style={{ border: 'none' }}
-                    >
-                      <span
-                        className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${
-                          isActive ? 'translate-x-5' : 'translate-x-0'
-                        }`}
-                      />
-                    </button>
-                  </div>
-
-                  {/* Dynamic cost/risk display */}
-                  <div className="grid grid-cols-2 gap-4 mt-2.5 pt-2.5 border-t border-dashed border-black/5 dark:border-white/5 text-[9px]">
-                    <div>
-                      <span className="text-zinc-550 dark:text-zinc-400 block">Spent Cost Impact</span>
-                      <span className="font-bold font-mono text-zinc-750 dark:text-zinc-200">
-                        ${baseSpent.toFixed(2)}M 
-                        {isActive && <span className="text-amber-500 font-bold ml-1">→ ${simSpent.toFixed(2)}M (+15%)</span>}
-                      </span>
-                    </div>
-                    <div>
-                      <span className="text-zinc-550 dark:text-zinc-400 block">Revenue Risk Exposure</span>
-                      <span className="font-bold font-mono text-zinc-750 dark:text-zinc-200">
-                        ${baseRiskExposure.toFixed(2)}M
-                        {isActive && (
-                          <span className={`${simRiskExposure < baseRiskExposure ? 'text-emerald-500' : 'text-zinc-500'} font-bold ml-1`}>
-                            → ${simRiskExposure.toFixed(2)}M
+          {/* Interactive Controls Column */}
+          <div className="xl:col-span-5 space-y-4">
+            <span className="text-[9px] font-bold uppercase tracking-wider text-zinc-400 block mb-1">
+              Simulate Dimension Readiness
+            </span>
+            
+            <div className="space-y-3.5 bg-zinc-50/50 dark:bg-white/2 p-4 rounded-sm border border-black/5 dark:border-white/5">
+              {dimensionsList.map(dim => {
+                const isCustomized = (simValues[dim] !== baseValues[dim]);
+                return (
+                  <div key={dim} className="space-y-1.5">
+                    <div className="flex justify-between items-center text-[10px]">
+                      <span className="font-medium text-zinc-700 dark:text-zinc-300">{dim}</span>
+                      <span className="font-mono font-bold text-zinc-800 dark:text-zinc-200">
+                        {simValues[dim] || 0}% 
+                        {isCustomized && (
+                          <span className="text-[9px] text-[#6d28d9] dark:text-[#a78bfa] font-normal ml-1.5">
+                            (Base: {baseValues[dim]}%)
                           </span>
                         )}
                       </span>
                     </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-[8px] text-zinc-400 font-mono">10%</span>
+                      <input
+                        type="range"
+                        min="10"
+                        max="100"
+                        value={simValues[dim] || 0}
+                        onChange={(e) => {
+                          const val = parseInt(e.target.value);
+                          setSimValues(prev => ({
+                            ...prev,
+                            [dim]: val
+                          }));
+                        }}
+                        className="w-full h-1 bg-zinc-200 dark:bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-[#6d28d9] dark:accent-[#a78bfa]"
+                      />
+                      <span className="text-[8px] text-zinc-400 font-mono">100%</span>
+                    </div>
                   </div>
+                );
+              })}
+            </div>
+
+            {/* Financial Impact of Simulation */}
+            <div className="space-y-2">
+              <span className="text-[9px] font-bold uppercase tracking-wider text-zinc-400 block">
+                Simulated Launch Financials
+              </span>
+              <div className="grid grid-cols-3 gap-2 bg-zinc-150/70 dark:bg-zinc-900/60 p-3.5 border border-black/5 dark:border-white/5 rounded-xl">
+                <div>
+                  <span className="text-[8px] text-zinc-500 uppercase block">Base Spent</span>
+                  <span className="text-xs font-mono font-extrabold text-zinc-800 dark:text-white mt-1 block">
+                    ${selectedSimProduct.spent.toFixed(2)}M
+                  </span>
                 </div>
-              );
-            })}
+                <div>
+                  <span className="text-[8px] text-zinc-500 uppercase block">Simulated Spent</span>
+                  <span className="text-xs font-mono font-extrabold text-zinc-850 dark:text-zinc-100 mt-1 block">
+                    ${simulatedSpent.toFixed(2)}M
+                  </span>
+                </div>
+                <div>
+                  <span className="text-[8px] text-zinc-500 block uppercase">Sim Cost Delta</span>
+                  <span className={`text-xs font-mono font-extrabold mt-1 block ${costSlippage > 0 ? 'text-amber-500' : 'text-zinc-500'}`}>
+                    +${costSlippage.toFixed(3)}M
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* Chart & Summary Column */}
+          {/* Visualization & Insights Column */}
           <div className="xl:col-span-7 flex flex-col justify-between space-y-4">
-            {/* Chart Area */}
-            <div className="bg-zinc-50/50 dark:bg-white/5 border border-black/5 dark:border-white/5 p-4 rounded-sm">
-              <span className="text-[9px] font-bold uppercase tracking-wider text-zinc-400 block mb-3">Cost vs. Revenue Exposure (Baseline vs. Simulated)</span>
-              <div className="h-60">
+            {/* Gauge & Radar Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-4 bg-zinc-50/50 dark:bg-white/5 border border-black/5 dark:border-white/5 p-4 rounded-sm">
+              
+              {/* LRI Display */}
+              <div className="md:col-span-4 flex flex-col justify-center items-center text-center p-3 border-b md:border-b-0 md:border-r border-black/5 dark:border-white/5">
+                <span className="text-[9px] font-bold uppercase tracking-wider text-zinc-400 block mb-1">Launch Readiness Index</span>
+                <div className="relative flex items-center justify-center h-24 w-24">
+                  <svg className="w-20 h-20 transform -rotate-90">
+                    <circle
+                      cx="40"
+                      cy="40"
+                      r="32"
+                      stroke={isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'}
+                      strokeWidth="6"
+                      fill="transparent"
+                    />
+                    <circle
+                      cx="40"
+                      cy="40"
+                      r="32"
+                      stroke={simulatedLri >= 85 ? '#10b981' : simulatedLri >= 70 ? '#f59e0b' : '#ef4444'}
+                      strokeWidth="6"
+                      fill="transparent"
+                      strokeDasharray={2 * Math.PI * 32}
+                      strokeDashoffset={2 * Math.PI * 32 * (1 - simulatedLri / 100)}
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                  <span className="absolute text-xl font-display font-extrabold font-mono text-zinc-800 dark:text-white">
+                    {simulatedLri}%
+                  </span>
+                </div>
+                <div className="mt-2.5">
+                  <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${
+                    simulatedLri >= 85 
+                      ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' 
+                      : simulatedLri >= 70 
+                        ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20' 
+                        : 'bg-red-500/10 text-red-500 border border-red-500/20'
+                  }`}>
+                    {simulatedLri >= 85 ? 'READY FOR LAUNCH' : simulatedLri >= 70 ? 'CONDITIONAL APPROVAL' : 'LAUNCH BLOCKED'}
+                  </span>
+                  <span className="text-[8px] text-zinc-400 block mt-1 uppercase">
+                    Base LRI: {baselineLri}% ({simulatedLri >= baselineLri ? `+${simulatedLri - baselineLri}%` : `${simulatedLri - baselineLri}%`})
+                  </span>
+                </div>
+              </div>
+
+              {/* Radar Chart */}
+              <div className="md:col-span-8 h-56 flex items-center justify-center">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={simulatorChartData} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke={isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'} vertical={false} />
-                    <XAxis dataKey="stage" tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} axisLine={false} tickLine={false} />
-                    <Tooltip contentStyle={{ backgroundColor: isDarkMode ? '#1f1f1f' : '#fff', border: isDarkMode ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.1)', color: isDarkMode ? '#fff' : '#000', fontSize: 9 }} />
+                  <RadarChart data={radarChartData} cx="50%" cy="50%" outerRadius="75%">
+                    <PolarGrid stroke={isDarkMode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)"} />
+                    <PolarAngleAxis 
+                      dataKey="subject" 
+                      tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)', fontSize: 7, fontWeight: 'bold' }} 
+                    />
+                    <PolarRadiusAxis 
+                      angle={30} 
+                      domain={[0, 100]} 
+                      tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)', fontSize: 8 }} 
+                    />
+                    <Radar 
+                      name="Baseline" 
+                      dataKey="Baseline" 
+                      stroke="#a78bfa" 
+                      fill="#a78bfa" 
+                      fillOpacity={0.1} 
+                      dot={{ r: 2 }}
+                    />
+                    <Radar 
+                      name="Simulated" 
+                      dataKey="Simulated" 
+                      stroke="#10b981" 
+                      fill="#10b981" 
+                      fillOpacity={0.25} 
+                      dot={{ r: 3 }}
+                    />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: isDarkMode ? '#1f1f1f' : '#fff', 
+                        border: isDarkMode ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.1)',
+                        fontSize: 9
+                      }} 
+                    />
                     <Legend wrapperStyle={{ fontSize: 8, textTransform: 'uppercase', letterSpacing: '0.05em' }} />
-                    <Bar dataKey="Base Cost ($M)" fill="#a78bfa" radius={[1, 1, 0, 0]} barSize={10} />
-                    <Bar dataKey="Sim Cost ($M)" fill="#6d28d9" radius={[1, 1, 0, 0]} barSize={10} />
-                    <Bar dataKey="Base Risk Rev ($M)" fill="#fca5a5" radius={[1, 1, 0, 0]} barSize={10} />
-                    <Bar dataKey="Sim Risk Rev ($M)" fill="#ef4444" radius={[1, 1, 0, 0]} barSize={10} />
-                  </BarChart>
+                  </RadarChart>
                 </ResponsiveContainer>
               </div>
+
             </div>
 
-            {/* Summary Statistics Card */}
-            <div className="p-4 bg-zinc-150/70 dark:bg-zinc-900/60 border border-black/5 dark:border-white/5 rounded-xl space-y-4">
-              <span className="text-[9px] font-bold uppercase tracking-wider text-zinc-400 block">Simulation Summary & Impact ROI</span>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                <div>
-                  <span className="text-[8px] text-zinc-500 block uppercase">Total Cost Slippage</span>
-                  <span className="text-sm font-display font-extrabold text-zinc-800 dark:text-white mt-1 block font-mono">
-                    +${spentVariance.toFixed(2)}M
-                  </span>
-                </div>
-                <div>
-                  <span className="text-[8px] text-zinc-500 block uppercase">Risk Exposure Mitigated</span>
-                  <span className="text-sm font-display font-extrabold text-emerald-500 mt-1 block font-mono">
-                    ${exposureReduced.toFixed(2)}M
-                  </span>
-                </div>
-                <div>
-                  <span className="text-[8px] text-zinc-500 block uppercase">Mitigation ROI</span>
-                  <span className="text-sm font-display font-extrabold text-purple-500 mt-1 block font-mono">
-                    {roiMitigation.toFixed(1)}x
-                  </span>
-                </div>
-                <div>
-                  <span className="text-[8px] text-zinc-500 block uppercase">Overall Readiness</span>
-                  <span className="text-sm font-display font-extrabold text-blue-500 mt-1 block font-mono">
-                    {overallReadiness}%
-                  </span>
-                </div>
-              </div>
+            {/* AI Optimization Recommendations Grid */}
+            <div className="bg-zinc-150/70 dark:bg-zinc-900/60 border border-black/5 dark:border-white/5 p-4 rounded-xl space-y-3">
+              <span className="text-[9px] font-bold uppercase tracking-wider text-zinc-400 block">
+                AI Optimization Recommendations
+              </span>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+                {RECOMMENDATIONS.map(rec => {
+                  const isActive = activeRecommendations.includes(rec.id);
+                  
+                  // Highlight recommendation if targeted dimension has a baseline score < 75
+                  let targetLow = false;
+                  if (rec.id === 'qa' && (baseValues['Product Readiness'] < 75)) targetLow = true;
+                  if (rec.id === 'compliance' && (baseValues['Compliance Readiness'] < 75)) targetLow = true;
+                  if (rec.id === 'campaign' && (baseValues['Marketing Readiness'] < 75 || baseValues['Market Readiness'] < 75)) targetLow = true;
+                  if (rec.id === 'sales' && (baseValues['Sales Readiness'] < 75)) targetLow = true;
+                  if (rec.id === 'logistics' && (baseValues['Operations Readiness'] < 75)) targetLow = true;
+                  if (rec.id === 'support' && (baseValues['Customer Support Readiness'] < 75)) targetLow = true;
 
-              <div className="pt-2 border-t border-black/5 dark:border-white/5 text-[9px] text-zinc-500 leading-relaxed font-sans">
-                {mitigatedStages.length > 0 ? (
-                  <p className="flex items-start gap-1">
-                    <Check size={11} className="text-emerald-500 shrink-0 mt-0.5" />
-                    <span>
-                      Active protocols in <strong>{mitigatedStages.join(', ')}</strong> reduce revenue at risk by <strong>${exposureReduced.toFixed(2)}M</strong> at a spent cost slip of <strong>${spentVariance.toFixed(2)}M</strong>. This represents a net risk mitigation efficiency of <strong>{roiMitigation.toFixed(1)}x</strong>.
-                    </span>
-                  </p>
-                ) : (
-                  <p className="flex items-start gap-1">
-                    <Activity size={11} className="text-amber-500 shrink-0 mt-0.5" />
-                    <span>No mitigation protocols active. Toggle stage mitigation controls to simulate risk reduction policies.</span>
-                  </p>
-                )}
+                  return (
+                    <div 
+                      key={rec.id} 
+                      className={`p-3 border rounded-sm flex flex-col justify-between transition-all ${
+                        isActive 
+                          ? 'border-emerald-500/30 bg-emerald-500/5' 
+                          : targetLow 
+                            ? 'border-rose-500/20 bg-rose-500/5 dark:bg-rose-500/2'
+                            : 'border-black/5 dark:border-white/5 bg-zinc-50/50 dark:bg-white/5'
+                      }`}
+                    >
+                      <div>
+                        <div className="flex justify-between items-start gap-1">
+                          <h5 className="text-[10px] font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-1.5">
+                            {rec.title}
+                            {targetLow && !isActive && (
+                              <span className="inline-flex items-center px-1 py-0.2 text-[7px] font-bold bg-rose-500/10 text-rose-500 border border-rose-500/20 rounded">
+                                HIGH RISK
+                              </span>
+                            )}
+                          </h5>
+                          <button
+                            onClick={() => handleToggleRecommendation(rec.id)}
+                            className={`text-[8px] font-bold uppercase px-2 py-0.5 rounded transition-all cursor-pointer border-none outline-none ${
+                              isActive 
+                                ? 'bg-emerald-500 text-white hover:bg-emerald-600'
+                                : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-300 dark:hover:bg-zinc-700'
+                            }`}
+                          >
+                            {isActive ? 'Deployed' : 'Deploy'}
+                          </button>
+                        </div>
+                        <p className="text-[9px] text-zinc-500 mt-1">{rec.description}</p>
+                      </div>
+                      
+                      <div className="flex justify-between items-center text-[8px] mt-2 pt-2 border-t border-dashed border-black/5 dark:border-white/5">
+                        <span className="text-[#6d28d9] dark:text-[#a78bfa] font-mono">{rec.impactText}</span>
+                        <span className="text-zinc-550 dark:text-zinc-400 font-mono">Cost: ${(rec.cost * 1000).toFixed(0)}K</span>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
+
           </div>
         </div>
       </div>
