@@ -341,7 +341,7 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
             <div className="flex items-center gap-2">
               <Cpu className="text-purple-500 dark:text-purple-400 shrink-0" size={16} />
               <h2 className={`text-sm font-display font-extrabold leading-snug tracking-wide uppercase ${textTitle}`}>
-                Acies AgenticBus • Swarm Diagnostic Flowchart
+                Product Lifecycle & Portfolio Intelligence • Swarm Diagnostic Flowchart
               </h2>
               <span className="text-[8px] font-mono font-bold bg-purple-500/10 text-purple-650 dark:text-purple-300 px-2 py-0.5 rounded border border-purple-500/20 uppercase">
                 Workflow View

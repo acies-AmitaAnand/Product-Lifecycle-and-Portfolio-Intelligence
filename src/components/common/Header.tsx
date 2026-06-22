@@ -42,8 +42,9 @@ export const Header: React.FC<HeaderProps> = ({
           <Activity size={16} className="text-acies-gray" />
         </div>
         <div>
-          <h1 className="text-lg font-display leading-none text-acies-gray dark:text-white">Acies AgenticBus</h1>
-          <p className="text-[8px] uppercase tracking-widest opacity-50 font-medium text-acies-gray dark:text-white">Product Lifecycle and Portfolio Intelligence</p>
+          <h1 className="text-xs font-display font-extrabold uppercase tracking-widest leading-none text-acies-gray dark:text-white">
+            Product Lifecycle and Portfolio Intelligence
+          </h1>
         </div>
       </div>
 
