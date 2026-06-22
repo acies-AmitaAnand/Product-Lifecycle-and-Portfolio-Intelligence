@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { 
   Search, ArrowUpRight, ArrowDownRight, RefreshCw, Download, 
   ChevronRight, TrendingUp, AlertTriangle, Layers, Info, Filter, ArrowLeft
@@ -77,8 +77,24 @@ export const SKUPerformanceTab: React.FC<SKUPerformanceTabProps> = ({
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('ALL');
+  const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
+  const [isLocationDropdownOpen, setIsLocationDropdownOpen] = useState(false);
   const [sortField, setSortField] = useState<'name' | 'rev' | 'margin' | 'growth' | 'cx' | 'stockouts'>('rev');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+
+  const locationsList = ['Italy', 'Spain', 'Germany', 'France', 'Austria', 'Poland', 'Netherlands'];
+
+  useEffect(() => {
+    if (!isLocationDropdownOpen) return;
+    const handleOutsideClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest('#location-filter-dropdown-container')) {
+        setIsLocationDropdownOpen(false);
+      }
+    };
+    document.addEventListener('click', handleOutsideClick);
+    return () => document.removeEventListener('click', handleOutsideClick);
+  }, [isLocationDropdownOpen]);
 
   // Compute sparkline points deterministically
   const getSparklineData = (skuName: string, baseRev: number) => {
@@ -118,9 +134,11 @@ export const SKUPerformanceTab: React.FC<SKUPerformanceTabProps> = ({
       const normalizedCat = s.cat === 'Home Care' ? 'Household' : s.cat;
       const matchCat = categoryFilter === 'ALL' || normalizedCat === categoryFilter;
       
-      return matchSearch && matchCat;
+      const matchLocation = selectedLocations.length === 0 || selectedLocations.includes(s.location);
+      
+      return matchSearch && matchCat && matchLocation;
     });
-  }, [processedSkus, searchQuery, categoryFilter]);
+  }, [processedSkus, searchQuery, categoryFilter, selectedLocations]);
 
   const sortedSKUs = useMemo(() => {
     const sorted = [...filteredSKUs];
@@ -295,8 +313,68 @@ export const SKUPerformanceTab: React.FC<SKUPerformanceTabProps> = ({
             ))}
           </div>
 
+          {/* Location Dropdown */}
+          <div id="location-filter-dropdown-container" className="relative shrink-0 ml-auto sm:ml-2">
+            <button
+              type="button"
+              onClick={() => setIsLocationDropdownOpen(prev => !prev)}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 hover:bg-black/10 dark:hover:bg-white/10 text-[9px] font-bold uppercase tracking-wider rounded-sm text-zinc-700 dark:text-zinc-300 cursor-pointer"
+            >
+              <span>
+                {selectedLocations.length === 0
+                  ? 'All Locations'
+                  : selectedLocations.length === 1
+                    ? selectedLocations[0]
+                    : `${selectedLocations.length} Locations`}
+              </span>
+              <span className="text-[7px]">▼</span>
+            </button>
+
+            {isLocationDropdownOpen && (
+              <div className="absolute right-0 mt-1 w-48 bg-white dark:bg-zinc-900 border border-black/10 dark:border-white/10 shadow-lg rounded-sm py-2 z-50 text-[9px] text-zinc-700 dark:text-zinc-300">
+                <div className="px-3 py-1 border-b border-black/5 dark:border-white/5 flex justify-between items-center mb-1.5 font-bold uppercase text-[8px] text-zinc-400">
+                  <span>Select Locations</span>
+                  {selectedLocations.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => setSelectedLocations([])}
+                      className="text-[#6d28d9] dark:text-[#a78bfa] hover:underline bg-transparent border-none p-0 cursor-pointer font-bold uppercase text-[7px]"
+                    >
+                      Clear All
+                    </button>
+                  )}
+                </div>
+                <div className="max-h-48 overflow-y-auto px-1">
+                  {locationsList.map(loc => {
+                    const isChecked = selectedLocations.includes(loc);
+                    return (
+                      <label
+                        key={loc}
+                        className="flex items-center gap-2 px-2.5 py-1.5 hover:bg-black/5 dark:hover:bg-white/5 rounded cursor-pointer select-none"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={() => {
+                            if (isChecked) {
+                              setSelectedLocations(prev => prev.filter(x => x !== loc));
+                            } else {
+                              setSelectedLocations(prev => [...prev, loc]);
+                            }
+                          }}
+                          className="rounded text-[#6d28d9] focus:ring-[#6d28d9] h-3 w-3 accent-[#6d28d9]"
+                        />
+                        <span className="font-semibold">{loc}</span>
+                      </label>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+
           {/* Search box */}
-          <div className="relative w-full max-w-[240px] ml-auto sm:ml-2">
+          <div className="relative w-full max-w-[240px] sm:ml-2">
             <input 
               type="text" 
               placeholder="Search SKUs..." 
