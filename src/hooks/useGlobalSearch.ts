@@ -100,7 +100,7 @@ export const useGlobalSearch = (
 
     // Add all unique KPI metrics across the application
     const uniqueMetrics = [
-      { label: 'Total Revenue', value: '₹851.2 Cr' },
+      { label: 'Total Revenue', value: '$851.2M' },
       { label: 'Gross Margin', value: '36.2%' },
       { label: 'Active SKUs', value: '100' },
       { label: 'Critical Alerts', value: '2' },
@@ -113,16 +113,16 @@ export const useGlobalSearch = (
       { label: 'Peak Stockout Freq.', value: '440 events' },
       { label: 'Revenue Tail Risk', value: '27.08%' },
       { label: 'Overall Readiness %', value: '82%' },
-      { label: 'Net Profit', value: '₹95.2 Cr' },
-      { label: 'Gross Profit', value: '₹308.1 Cr' },
+      { label: 'Net Profit', value: '$95.2M' },
+      { label: 'Gross Profit', value: '$308.1M' },
       { label: 'Sunset Candidates', value: '6' },
-      { label: 'Revenue at Risk', value: '₹148 Cr' },
+      { label: 'Revenue at Risk', value: '$148M' },
       { label: 'Avg Complexity', value: '0.48' },
       { label: 'Total Active Signals', value: '6' },
       { label: 'Competitor Alerts', value: '2' },
       { label: 'Market Demand Change', value: '+18.4%' },
       { label: 'Customer Sentiment Score', value: '72' },
-      { label: 'Portfolio Revenue', value: '₹851.4 Cr' },
+      { label: 'Portfolio Revenue', value: '$851.4M' },
       { label: 'Portfolio SKU Count', value: '100' },
       { label: 'Growth Rate', value: '8.4%' },
       { label: 'Orders — Today', value: '4232' },
@@ -151,7 +151,7 @@ export const useGlobalSearch = (
         categoryName: 'SKU Products',
         type: 'sku',
         subtitle: `Category: ${s.cat}${segmentStr}${stageStr} • Margin: ${s.margin}%`,
-        valueText: `₹${s.rev}Cr`,
+        valueText: `$${s.rev}M`,
         skuData: s
       });
     });

@@ -83,7 +83,7 @@ export const SkuDetailsModal: React.FC<SkuDetailsModalProps> = ({
       const revLoss = (item.rev * 0.015 * item.stockouts).toFixed(2);
       list.push({
         action: `Qualify secondary logistics routes and local buffer partners at ${plantName} to mitigate the ${item.lead}-day lead time.`,
-        impact: `Recover an estimated ₹${revLoss} Cr in stockout-related sales dilution and reduce supply volatility.`,
+        impact: `Recover an estimated $${revLoss} M in stockout-related sales dilution and reduce supply volatility.`,
         owner: 'Vijay Kumar',
         title: 'APAC Logistics Head',
         email: 'vijay.kumar@aciesglobal.com',
@@ -91,7 +91,7 @@ export const SkuDetailsModal: React.FC<SkuDetailsModalProps> = ({
 
 I am writing to address the critical logistics constraints facing "${item.name}" in the ${item.cat} segment. 
 
-Currently, our supplier lead time stands at ${item.lead} days, which led to ${item.stockouts} stockout events this quarter at the ${plantName}. Based on our calculations, this supply friction has diluted sales by an estimated ₹${revLoss} Cr.
+Currently, our supplier lead time stands at ${item.lead} days, which led to ${item.stockouts} stockout events this quarter at the ${plantName}. Based on our calculations, this supply friction has diluted sales by an estimated $${revLoss} M.
 
 We need to qualify secondary logistics routes and establish safety stock buffers to protect this item. Can we review options for regional carriers and supply buffers by Friday?
 
@@ -102,7 +102,7 @@ Executive Director`
       const inventorySavings = (item.rev * 0.035).toFixed(2);
       list.push({
         action: `Tune safety stock coefficients and transition to automated replenishment triggers for ${item.name} at ${plantName}.`,
-        impact: `Reduces inventory holding costs by approximately ₹${inventorySavings} Cr while maintaining 99.8% OTIF service levels.`,
+        impact: `Reduces inventory holding costs by approximately $${inventorySavings} M while maintaining 99.8% OTIF service levels.`,
         owner: 'Nisha Patel',
         title: 'Demand Planning Lead',
         email: 'nisha.patel@aciesglobal.com',
@@ -110,7 +110,7 @@ Executive Director`
 
 Our high-velocity SKU "${item.name}" has demonstrated stable supply performance (lead time: ${item.lead} days, only ${item.stockouts} stockout). 
 
-To optimize working capital, I propose tuning safety stock coefficients at the ${plantName}. Our calculations show this can release ₹${inventorySavings} Cr in locked capital with zero supply-line risk. Let's schedule a simulation run.
+To optimize working capital, I propose tuning safety stock coefficients at the ${plantName}. Our calculations show this can release $${inventorySavings} M in locked capital with zero supply-line risk. Let's schedule a simulation run.
 
 Best regards,
 Executive Director`
@@ -123,13 +123,13 @@ Executive Director`
       const targetMarginLift = (item.margin + 3.0).toFixed(1);
       list.push({
         action: `Establish a promo cap and shift trade spend from heavy discounting to brand loyalty campaigns.`,
-        impact: `Recovers margin to ${targetMarginLift}% (currently ${item.margin}%) and optimizes ₹${promoSpend} Cr in promotion dilution.`,
+        impact: `Recovers margin to ${targetMarginLift}% (currently ${item.margin}%) and optimizes $${promoSpend} M in promotion dilution.`,
         owner: 'Rajesh Verma',
         title: 'VP Sales',
         email: 'rajesh.verma@aciesglobal.com',
         body: `Hi Rajesh,
 
-I am looking at the promo dependency for "${item.name}" (${item.cat}). At ${Math.round(item.promo * 100)}% discount dependency, we are spending roughly ₹${promoSpend} Cr on trade promotions, compressing our margins down to ${item.margin}%.
+I am looking at the promo dependency for "${item.name}" (${item.cat}). At ${Math.round(item.promo * 100)}% discount dependency, we are spending roughly $${promoSpend} M on trade promotions, compressing our margins down to ${item.margin}%.
 
 We need to protect our brand premium and category margins. Let's design a phased rollback of the discount caps to lift margins to ${targetMarginLift}%. Let me know when you can present a proposed outline.
 
@@ -140,7 +140,7 @@ Executive Director`
       const pricingLift = (item.rev * 0.015).toFixed(2);
       list.push({
         action: `Implement a selective list-price hike (+1.5% to +2.0%) targeting high-volume channels.`,
-        impact: `Captures an estimated ₹${pricingLift} Cr in pure gross margin with minimal price-elasticity churn.`,
+        impact: `Captures an estimated $${pricingLift} M in pure gross margin with minimal price-elasticity churn.`,
         owner: 'Sarah Jenkins',
         title: 'Product Formulation Scientist',
         email: 'sarah.jenkins@aciesglobal.com',
@@ -148,7 +148,7 @@ Executive Director`
 
 Given the low promotional dependency of "${item.name}" (${Math.round(item.promo * 100)}%) and stable demand, we have a pricing premium window. 
 
-I propose a +1.5% adjustment to the list price. With quarterly sales at ₹${item.rev} Cr, this is projected to return ₹${pricingLift} Cr in gross margin. Let's review the price-sensitivity analysis for this brand category.
+I propose a +1.5% adjustment to the list price. With quarterly sales at $${item.rev} M, this is projected to return $${pricingLift} M in gross margin. Let's review the price-sensitivity analysis for this brand category.
 
 Best regards,
 Executive Director`
@@ -160,7 +160,7 @@ Executive Director`
       const safetyStockFreed = (item.rev * item.cx * 0.3).toFixed(2);
       list.push({
         action: `Initiate a SKU rationalization audit or consolidate low-margin package variants.`,
-        impact: `Reduces operational complexity score from ${(item.cx).toFixed(2)} and frees ₹${safetyStockFreed} Cr in warehouse safety stock.`,
+        impact: `Reduces operational complexity score from ${(item.cx).toFixed(2)} and frees $${safetyStockFreed} M in warehouse safety stock.`,
         owner: brandLeadName,
         title: brandLeadTitle,
         email: brandLeadEmail,
@@ -168,7 +168,7 @@ Executive Director`
 
 Our SKU "${item.name}" represents an operational complexity risk. It has a high complexity score of ${(item.cx).toFixed(2)} and a compressed margin of ${item.margin}%, placing it in our 'Rationalize' segment.
 
-I suggest we initiate a variant rationalization study to consolidate this product line at the ${plantName}. Let's evaluate options to prune this SKU and unlock ₹${safetyStockFreed} Cr in working capital.
+I suggest we initiate a variant rationalization study to consolidate this product line at the ${plantName}. Let's evaluate options to prune this SKU and unlock $${safetyStockFreed} M in working capital.
 
 Regards,
 Executive Director`
@@ -177,13 +177,13 @@ Executive Director`
       const salesLift = (item.rev * item.growth * 1.2).toFixed(1);
       list.push({
         action: `Accelerate channel distribution and expand shelf-space allocation with key retailers.`,
-        impact: `Capture up to ₹${salesLift} Cr in incremental net sales over the next fiscal year.`,
+        impact: `Capture up to $${salesLift} M in incremental net sales over the next fiscal year.`,
         owner: brandLeadName,
         title: brandLeadTitle,
         email: brandLeadEmail,
         body: `Hi ${brandLeadName.split(' ')[0]},
 
-Excellent performance on "${item.name}" with a YoY growth rate of ${Math.round(item.growth * 100)}% and ₹${item.rev} Cr in sales. 
+Excellent performance on "${item.name}" with a YoY growth rate of ${Math.round(item.growth * 100)}% and $${item.rev} M in sales. 
 
 Given this momentum, I want to accelerate channel distribution expansion, specifically targeting e-commerce and premium retail channels. Please draft a shelf-space expansion plan for our next quarterly review.
 
@@ -266,7 +266,7 @@ Executive Director`;
         <div className="grid grid-cols-3 gap-3">
           <div className="p-3 bg-zinc-50 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded">
             <p className="font-bold text-[8.5px] uppercase tracking-widest text-zinc-400 mb-1">QTD Revenue</p>
-            <p className="text-lg font-display font-bold text-acies-yellow">₹{sku.rev} Cr</p>
+            <p className="text-lg font-display font-bold text-acies-yellow">${sku.rev} M</p>
           </div>
           <div className="p-3 bg-zinc-50 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded">
             <p className="font-bold text-[8.5px] uppercase tracking-widest text-zinc-400 mb-1">Gross Margin</p>

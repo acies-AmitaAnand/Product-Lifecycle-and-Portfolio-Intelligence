@@ -46,7 +46,7 @@ export const RegionalChannelPerformance: React.FC<RegionalChannelPerformanceProp
     });
     return {
       country,
-      'Sales (₹ Cr)': parseFloat(sales.toFixed(1)),
+      'Sales ($ M)': parseFloat(sales.toFixed(1)),
       'SKU Count': selectedSkuName === 'All' ? filteredSkus.length : 1
     };
   });
@@ -79,7 +79,7 @@ export const RegionalChannelPerformance: React.FC<RegionalChannelPerformanceProp
 
     return {
       channel,
-      'Sales (₹ Cr)': parseFloat(sales.toFixed(1)),
+      'Sales ($ M)': parseFloat(sales.toFixed(1)),
       'Avg Margin (%)': parseFloat(avgMargin.toFixed(1))
     };
   });
@@ -87,15 +87,15 @@ export const RegionalChannelPerformance: React.FC<RegionalChannelPerformanceProp
   // Dynamic Insight generation
   const getPerformanceInsights = () => {
     const totalFilteredSales = filteredSkus.reduce((sum, s) => sum + s.rev, 0);
-    const topRegion = [...regionalSalesData].sort((a, b) => b['Sales (₹ Cr)'] - a['Sales (₹ Cr)'])[0];
-    const topChannel = [...channelSalesData].sort((a, b) => b['Sales (₹ Cr)'] - a['Sales (₹ Cr)'])[0];
+    const topRegion = [...regionalSalesData].sort((a, b) => b['Sales ($ M)'] - a['Sales ($ M)'])[0];
+    const topChannel = [...channelSalesData].sort((a, b) => b['Sales ($ M)'] - a['Sales ($ M)'])[0];
     
     return {
       totalSales: totalFilteredSales,
       topRegionName: topRegion?.country || 'N/A',
-      topRegionSales: topRegion?.['Sales (₹ Cr)'] || 0,
+      topRegionSales: topRegion?.['Sales ($ M)'] || 0,
       topChannelName: topChannel?.channel || 'N/A',
-      topChannelSales: topChannel?.['Sales (₹ Cr)'] || 0
+      topChannelSales: topChannel?.['Sales ($ M)'] || 0
     };
   };
 
@@ -171,7 +171,7 @@ export const RegionalChannelPerformance: React.FC<RegionalChannelPerformanceProp
                 <Globe size={13} className="text-[#6d28d9] dark:text-[#a78bfa]" />
                 <h4 className="text-xs uppercase font-extrabold tracking-wider text-zinc-750 dark:text-zinc-200">Region-wise SKU Performance</h4>
               </div>
-              <span className="text-[8px] uppercase font-bold text-zinc-400">Revenue (₹ Cr)</span>
+              <span className="text-[8px] uppercase font-bold text-zinc-400">Revenue ($ M)</span>
             </div>
             
             <div className="h-72">
@@ -188,7 +188,7 @@ export const RegionalChannelPerformance: React.FC<RegionalChannelPerformanceProp
                       fontSize: 10
                     }} 
                   />
-                  <Bar dataKey="Sales (₹ Cr)" fill={chartColors.sales} radius={[2, 2, 0, 0]} barSize={26}>
+                  <Bar dataKey="Sales ($ M)" fill={chartColors.sales} radius={[2, 2, 0, 0]} barSize={26}>
                     {regionalSalesData.map((entry, index) => {
                       // Color Netherlands differently if it's the focus of optimization
                       const color = entry.country === 'Netherlands' 
@@ -233,7 +233,7 @@ export const RegionalChannelPerformance: React.FC<RegionalChannelPerformanceProp
                     }} 
                   />
                   <Legend wrapperStyle={{ fontSize: 9, textTransform: 'uppercase', letterSpacing: '0.05em' }} />
-                  <Bar yAxisId="left" dataKey="Sales (₹ Cr)" fill={isDarkMode ? '#3b82f6' : '#2563eb'} radius={[2, 2, 0, 0]} barSize={20} />
+                  <Bar yAxisId="left" dataKey="Sales ($ M)" fill={isDarkMode ? '#3b82f6' : '#2563eb'} radius={[2, 2, 0, 0]} barSize={20} />
                   <Bar yAxisId="right" dataKey="Avg Margin (%)" fill={chartColors.margin} radius={[2, 2, 0, 0]} barSize={20} />
                 </BarChart>
               </ResponsiveContainer>
@@ -256,7 +256,7 @@ export const RegionalChannelPerformance: React.FC<RegionalChannelPerformanceProp
           <div className="p-3 bg-black/5 dark:bg-white/5 rounded-sm space-y-1">
             <span className="text-zinc-550 block uppercase font-bold text-[8px]">Sales Volume</span>
             <span className="text-sm font-extrabold text-zinc-800 dark:text-white block font-mono">
-              ₹{insights.totalSales.toFixed(1)} Cr
+              ${insights.totalSales.toFixed(1)} M
             </span>
             <p className="text-zinc-450 mt-1 font-medium">Blended sales footprint across all listed channels in Q1.</p>
           </div>
@@ -264,7 +264,7 @@ export const RegionalChannelPerformance: React.FC<RegionalChannelPerformanceProp
           <div className="p-3 bg-black/5 dark:bg-white/5 rounded-sm space-y-1">
             <span className="text-zinc-550 block uppercase font-bold text-[8px]">Dominant Geography</span>
             <span className="text-sm font-extrabold text-zinc-800 dark:text-white block">
-              {insights.topRegionName} <span className="text-xs font-mono font-medium text-purple-500">(₹{insights.topRegionSales.toFixed(1)} Cr)</span>
+              {insights.topRegionName} <span className="text-xs font-mono font-medium text-purple-500">(${insights.topRegionSales.toFixed(1)} M)</span>
             </span>
             <p className="text-zinc-450 mt-1 font-medium">Represents the highest regional cluster, driving the major mix volume.</p>
           </div>
@@ -272,7 +272,7 @@ export const RegionalChannelPerformance: React.FC<RegionalChannelPerformanceProp
           <div className="p-3 bg-black/5 dark:bg-white/5 rounded-sm space-y-1">
             <span className="text-zinc-550 block uppercase font-bold text-[8px]">Primary Channel</span>
             <span className="text-sm font-extrabold text-zinc-800 dark:text-white block">
-              {insights.topChannelName} <span className="text-xs font-mono font-medium text-emerald-500">(₹{insights.topChannelSales.toFixed(1)} Cr)</span>
+              {insights.topChannelName} <span className="text-xs font-mono font-medium text-emerald-500">(${insights.topChannelSales.toFixed(1)} M)</span>
             </span>
             <p className="text-zinc-450 mt-1 font-medium">Hypermarket channel continues to act as the primary margin driver.</p>
           </div>

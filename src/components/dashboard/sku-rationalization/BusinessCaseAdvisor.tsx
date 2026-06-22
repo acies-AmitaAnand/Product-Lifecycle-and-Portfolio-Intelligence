@@ -9,7 +9,7 @@ import { Globe } from 'lucide-react';
 interface BusinessCaseAdvisorProps {
   paybackMonths: number;
   totalExitCost: number;
-  annualSavingsLakhs: number;
+  annualSavingsK: number;
   exitDateDays: number;
   skuB: string;
   transferenceRate: number;
@@ -29,7 +29,7 @@ interface BusinessCaseAdvisorProps {
 export const BusinessCaseAdvisor: React.FC<BusinessCaseAdvisorProps> = ({
   paybackMonths,
   totalExitCost,
-  annualSavingsLakhs,
+  annualSavingsK,
   exitDateDays,
   skuB,
   transferenceRate,
@@ -77,7 +77,7 @@ export const BusinessCaseAdvisor: React.FC<BusinessCaseAdvisorProps> = ({
           <div className="space-y-1">
             <span className="text-[8px] font-bold text-zinc-400 uppercase tracking-widest block">Exit Cost Burden</span>
             <span className="text-base font-black text-zinc-800 dark:text-zinc-100 block">
-              ₹{totalExitCost.toFixed(0)}L
+              ${totalExitCost.toFixed(0)}L
             </span>
             <span className="text-[7.5px] text-zinc-450 dark:text-zinc-500 block font-bold uppercase">
               Write-offs + markdowns
@@ -86,7 +86,7 @@ export const BusinessCaseAdvisor: React.FC<BusinessCaseAdvisorProps> = ({
           <div className="space-y-1">
             <span className="text-[8px] font-bold text-zinc-400 uppercase tracking-widest block">Annual Savings</span>
             <span className="text-base font-black text-emerald-500 block">
-              ₹{annualSavingsLakhs.toFixed(0)}L
+              ${annualSavingsK.toFixed(0)}L
             </span>
             <span className="text-[7.5px] text-zinc-450 dark:text-zinc-500 block font-bold uppercase">
               Margin uplift + SC savings
@@ -129,8 +129,8 @@ export const BusinessCaseAdvisor: React.FC<BusinessCaseAdvisorProps> = ({
               <div className="bg-red-500/20 h-full" style={{ width: `${100 - transferenceRate}%` }} />
             </div>
             <div className="flex justify-between text-[7.5px] font-bold text-zinc-450">
-              <span>₹{transferenceVolume} Cr preserved</span>
-              <span>₹{leakageVolume} Cr category leak ({100 - transferenceRate}%)</span>
+              <span>${transferenceVolume} M preserved</span>
+              <span>${leakageVolume} M category leak ({100 - transferenceRate}%)</span>
             </div>
           </div>
         </div>

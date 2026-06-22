@@ -30,11 +30,11 @@ interface CategoryDetails {
 const CATEGORY_DETAILS_DATA: Record<string, CategoryDetails> = {
   Beverages: {
     name: 'Beverages',
-    totalRev: '₹316.0 Cr',
+    totalRev: '$316.0M',
     marketShare: '33.6%',
     topPerformer: {
       name: 'Mango Fizz 500ml',
-      rev: '₹48.2 Cr',
+      rev: '$48.2M',
       growth: '+14.2% YoY',
       metricLabel: 'Gross Margin',
       metricValue: '54.5%',
@@ -42,15 +42,15 @@ const CATEGORY_DETAILS_DATA: Record<string, CategoryDetails> = {
     },
     underperformer: {
       name: 'BrandA Premium Energy 250ml',
-      rev: '₹4.1 Cr',
+      rev: '$4.1M',
       growth: '-8.3% YoY',
       metricLabel: 'Discount Reliance',
       metricValue: '48.0%',
       rationale: 'Poor shelf rotation and low consumer repeat rates. High cost of sales due to heavy local promotions.'
     },
     boomingSku: {
-      name: 'Coconut Water Eco-Pack 1L',
-      rev: '₹18.5 Cr',
+      name: 'Coconut Water Eco-Pack 1K',
+      rev: '$18.5M',
       growth: '+32.4% MoM',
       metricLabel: 'Sourcing Index',
       metricValue: 'Optimal',
@@ -60,11 +60,11 @@ const CATEGORY_DETAILS_DATA: Record<string, CategoryDetails> = {
   },
   Snacks: {
     name: 'Snacks',
-    totalRev: '₹253.0 Cr',
+    totalRev: '$253.0M',
     marketShare: '26.9%',
     topPerformer: {
       name: 'BrandB Chips Family Pack',
-      rev: '₹38.5 Cr',
+      rev: '$38.5M',
       growth: '+9.1% YoY',
       metricLabel: 'Gross Margin',
       metricValue: '42.0%',
@@ -72,7 +72,7 @@ const CATEGORY_DETAILS_DATA: Record<string, CategoryDetails> = {
     },
     underperformer: {
       name: 'Choco Wafers Multi-Pack',
-      rev: '₹8.4 Cr',
+      rev: '$8.4M',
       growth: '-12.0% YoY',
       metricLabel: 'Discount Reliance',
       metricValue: '72.0%',
@@ -80,7 +80,7 @@ const CATEGORY_DETAILS_DATA: Record<string, CategoryDetails> = {
     },
     boomingSku: {
       name: 'Oat Cookies Healthy Baked',
-      rev: '₹14.2 Cr',
+      rev: '$14.2M',
       growth: '+24.5% MoM',
       metricLabel: 'Sourcing Index',
       metricValue: '96% on-time',
@@ -90,11 +90,11 @@ const CATEGORY_DETAILS_DATA: Record<string, CategoryDetails> = {
   },
   'Personal Care': {
     name: 'Personal Care',
-    totalRev: '₹225.0 Cr',
+    totalRev: '$225.0M',
     marketShare: '24.0%',
     topPerformer: {
       name: 'Herbal Shampoo Anti-Dandruff',
-      rev: '₹29.1 Cr',
+      rev: '$29.1M',
       growth: '+18.0% YoY',
       metricLabel: 'Gross Margin',
       metricValue: '58.2%',
@@ -102,7 +102,7 @@ const CATEGORY_DETAILS_DATA: Record<string, CategoryDetails> = {
     },
     underperformer: {
       name: 'Foam Face Wash Sensitive 150ml',
-      rev: '₹6.8 Cr',
+      rev: '$6.8M',
       growth: '-2.1% YoY',
       metricLabel: 'Discount Reliance',
       metricValue: '35.0%',
@@ -110,7 +110,7 @@ const CATEGORY_DETAILS_DATA: Record<string, CategoryDetails> = {
     },
     boomingSku: {
       name: 'Hand Cream SPF Active',
-      rev: '₹11.2 Cr',
+      rev: '$11.2M',
       growth: '+45.1% MoM',
       metricLabel: 'Sourcing Index',
       metricValue: 'Active',
@@ -120,11 +120,11 @@ const CATEGORY_DETAILS_DATA: Record<string, CategoryDetails> = {
   },
   Household: {
     name: 'Household',
-    totalRev: '₹145.0 Cr',
+    totalRev: '$145.0M',
     marketShare: '15.5%',
     topPerformer: {
-      name: 'Dish Soap Lemon 1L',
-      rev: '₹22.4 Cr',
+      name: 'Dish Soap Lemon 1K',
+      rev: '$22.4M',
       growth: '+6.2% YoY',
       metricLabel: 'Gross Margin',
       metricValue: '36.8%',
@@ -132,7 +132,7 @@ const CATEGORY_DETAILS_DATA: Record<string, CategoryDetails> = {
     },
     underperformer: {
       name: 'Fabric Softener Premium',
-      rev: '₹4.8 Cr',
+      rev: '$4.8M',
       growth: '-14.3% YoY',
       metricLabel: 'Discount Reliance',
       metricValue: '55.0%',
@@ -140,7 +140,7 @@ const CATEGORY_DETAILS_DATA: Record<string, CategoryDetails> = {
     },
     boomingSku: {
       name: 'Laundry Pods Concentrated',
-      rev: '₹18.2 Cr',
+      rev: '$18.2M',
       growth: '+38.0% MoM',
       metricLabel: 'Sourcing Index',
       metricValue: 'Optimal',

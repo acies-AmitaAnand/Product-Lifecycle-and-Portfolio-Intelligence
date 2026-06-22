@@ -32,7 +32,7 @@ export const AssortmentOverview: React.FC<AssortmentOverviewProps> = ({ role, is
   }>({
     density: '100 SKUs',
     burden: '68.0%',
-    yieldVal: '₹3.02 Cr',
+    yieldVal: '$3.02M',
     cannibalization: '0.62'
   });
 
@@ -40,38 +40,38 @@ export const AssortmentOverview: React.FC<AssortmentOverviewProps> = ({ role, is
   React.useEffect(() => {
     let densityVal = '100 SKUs';
     let burdenVal = '68.0%';
-    let yieldValueStr = '₹3.02 Cr';
+    let yieldValueStr = '$3.02M';
     let cannibalizationVal = '0.62';
 
     switch (timelineRange) {
       case '1m':
         burdenVal = '68.2%';
-        yieldValueStr = '₹0.25 Cr';
+        yieldValueStr = '$0.25M';
         cannibalizationVal = '0.64';
         break;
       case '3m':
         burdenVal = '67.5%';
-        yieldValueStr = '₹0.76 Cr';
+        yieldValueStr = '$0.76M';
         cannibalizationVal = '0.63';
         break;
       case '6m':
         burdenVal = '67.0%';
-        yieldValueStr = '₹1.51 Cr';
+        yieldValueStr = '$1.51M';
         cannibalizationVal = '0.62';
         break;
       case '12m':
         burdenVal = '66.7%';
-        yieldValueStr = '₹3.02 Cr';
+        yieldValueStr = '$3.02M';
         cannibalizationVal = '0.62';
         break;
       case '24m':
         burdenVal = '65.5%';
-        yieldValueStr = '₹6.04 Cr';
+        yieldValueStr = '$6.04M';
         cannibalizationVal = '0.61';
         break;
       case '36m':
         burdenVal = '64.2%';
-        yieldValueStr = '₹9.06 Cr';
+        yieldValueStr = '$9.06M';
         cannibalizationVal = '0.60';
         break;
     }
@@ -389,10 +389,10 @@ export const AssortmentOverview: React.FC<AssortmentOverviewProps> = ({ role, is
                           {/* Item metrics */}
                           <div className="flex gap-3 text-[8px] font-bold text-zinc-450 pt-1 font-mono">
                             <span className={action.revenueImpact >= 0 ? 'text-emerald-500' : 'text-rose-500'}>
-                              Rev: {action.revenueImpact >= 0 ? '+' : ''}₹{action.revenueImpact.toFixed(2)}Cr
+                              Rev: {action.revenueImpact >= 0 ? '+' : ''}${action.revenueImpact.toFixed(2)}M
                             </span>
                             <span className="text-emerald-500">
-                              Profit: +₹{action.marginImpact.toFixed(2)}Cr
+                              Profit: +${action.marginImpact.toFixed(2)}M
                             </span>
                             {action.complexityImpact > 0 && (
                               <span className="text-blue-500">
@@ -424,14 +424,14 @@ export const AssortmentOverview: React.FC<AssortmentOverviewProps> = ({ role, is
                       <div className="p-3 border border-black/5 dark:border-white/5 rounded bg-white dark:bg-zinc-850 flex flex-col justify-between">
                         <span className="text-zinc-550 text-[8px] uppercase tracking-wider block mb-1">Net Sales Impact</span>
                         <span className={totalRevenue >= 0 ? 'text-emerald-500 text-xs' : 'text-rose-500 text-xs'}>
-                          {totalRevenue >= 0 ? '+' : ''}₹{totalRevenue.toFixed(2)} Cr
+                          {totalRevenue >= 0 ? '+' : ''}${totalRevenue.toFixed(2)} M
                         </span>
                       </div>
                       
                       <div className="p-3 border border-black/5 dark:border-white/5 rounded bg-white dark:bg-zinc-850 flex flex-col justify-between">
                         <span className="text-zinc-555 text-[8px] uppercase tracking-wider block mb-1">Net Profit Lift</span>
                         <span className={totalMargin >= 0 ? 'text-emerald-500 text-xs font-extrabold' : 'text-rose-500 text-xs'}>
-                          {totalMargin >= 0 ? '+' : ''}₹{totalMargin.toFixed(2)} Cr
+                          {totalMargin >= 0 ? '+' : ''}${totalMargin.toFixed(2)} M
                         </span>
                       </div>
 

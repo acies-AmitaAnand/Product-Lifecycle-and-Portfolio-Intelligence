@@ -197,7 +197,7 @@ export const SKUHoldingsMatrix: React.FC<SKUHoldingsMatrixProps> = () => {
                     <span className="block truncate">{sku.name}</span>
                     <span className="text-[7px] text-zinc-450 uppercase tracking-widest">{sku.cat}</span>
                   </td>
-                  <td className="py-2 px-2 font-mono font-bold text-zinc-500">₹{sku.rev}Cr</td>
+                  <td className="py-2 px-2 font-mono font-bold text-zinc-500">${sku.rev}M</td>
                   <td className="py-2 px-2 font-mono font-bold text-emerald-500">{sku.margin}%</td>
                   
                   {COUNTRIES.map(c => {
@@ -295,7 +295,7 @@ export const SKUHoldingsMatrix: React.FC<SKUHoldingsMatrixProps> = () => {
                     <div className="pt-3 border-t border-black/5 dark:border-white/5 space-y-1.5 font-mono">
                       <div className="flex justify-between">
                         <span className="font-sans text-zinc-450 font-bold">Local Sales:</span>
-                        <span className="font-bold text-zinc-700 dark:text-zinc-200">₹{details.localSalesVal} Cr</span>
+                        <span className="font-bold text-zinc-700 dark:text-zinc-200">${details.localSalesVal} M</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="font-sans text-zinc-450 font-bold">Local Margin:</span>

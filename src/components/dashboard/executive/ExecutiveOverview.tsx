@@ -37,16 +37,16 @@ const CUSTOMER_INSIGHTS: Record<string, CustomerInsight[]> = {
     {
       name: 'Apex Hypermarkets',
       segment: 'Enterprise Chain • 98% Retention',
-      revContribution: '₹24.8 Cr',
+      revContribution: '$24.8M',
       interestTrend: 'Rising demand for eco-friendly packaging and natural mineral mixers.',
-      buyingFocus: ['BrandF Water Eco-Pack', 'Coconut Water 1L'],
+      buyingFocus: ['BrandF Water Eco-Pack', 'Coconut Water 1K'],
       growthTrend: '+12.4% YoY',
       growthDirection: 'up'
     },
     {
       name: 'QuickCart Convenience',
       segment: 'Regional Chain • 94% Retention',
-      revContribution: '₹14.2 Cr',
+      revContribution: '$14.2M',
       interestTrend: 'Shifting shelf preference toward high-energy single-serve options.',
       buyingFocus: ['BrandC Energy Drink', 'Mango Fizz 250ml'],
       growthTrend: '+8.7% YoY',
@@ -55,7 +55,7 @@ const CUSTOMER_INSIGHTS: Record<string, CustomerInsight[]> = {
     {
       name: 'Zenith Distributors',
       segment: 'Wholesale Partner • 91% Retention',
-      revContribution: '₹18.5 Cr',
+      revContribution: '$18.5M',
       interestTrend: 'Bulk purchasing of premium fruit-based beverage offerings.',
       buyingFocus: ['Mango Fizz 500ml', 'Aloe Vera Drink'],
       growthTrend: '+4.2% YoY',
@@ -66,7 +66,7 @@ const CUSTOMER_INSIGHTS: Record<string, CustomerInsight[]> = {
     {
       name: 'MetroFoods Group',
       segment: 'Key Account • 97% Retention',
-      revContribution: '₹19.6 Cr',
+      revContribution: '$19.6M',
       interestTrend: 'Spike in premium healthy baked items and baked grain products.',
       buyingFocus: ['Oat Cookies', 'Masala Puffs'],
       growthTrend: '+15.3% YoY',
@@ -75,7 +75,7 @@ const CUSTOMER_INSIGHTS: Record<string, CustomerInsight[]> = {
     {
       name: 'Apex Hypermarkets',
       segment: 'Enterprise Chain • 98% Retention',
-      revContribution: '₹16.8 Cr',
+      revContribution: '$16.8M',
       interestTrend: 'High volume restocking of classic snack portfolios.',
       buyingFocus: ['BrandB Chips', 'BrandD Chocolate 100g'],
       growthTrend: '+3.4% YoY',
@@ -84,7 +84,7 @@ const CUSTOMER_INSIGHTS: Record<string, CustomerInsight[]> = {
     {
       name: 'Star Retailers',
       segment: 'Mid-Market Chain • 89% Retention',
-      revContribution: '₹8.4 Cr',
+      revContribution: '$8.4M',
       interestTrend: 'Margin compression on chocolate products due to promotional shifts.',
       buyingFocus: ['Choco Wafers', 'BrandD Chocolate 250g'],
       growthTrend: '-2.1% YoY',
@@ -95,7 +95,7 @@ const CUSTOMER_INSIGHTS: Record<string, CustomerInsight[]> = {
     {
       name: 'Luminate Boutique',
       segment: 'Specialty Retailer • 95% Retention',
-      revContribution: '₹11.2 Cr',
+      revContribution: '$11.2M',
       interestTrend: 'Surging demand for organic ingredients and active-SPF hand care.',
       buyingFocus: ['Hand Cream SPF', 'Herbal Shampoo'],
       growthTrend: '+22.4% YoY',
@@ -104,7 +104,7 @@ const CUSTOMER_INSIGHTS: Record<string, CustomerInsight[]> = {
     {
       name: 'GlobalMart Inc',
       segment: 'Enterprise Chain • 96% Retention',
-      revContribution: '₹14.5 Cr',
+      revContribution: '$14.5M',
       interestTrend: 'Steady interest in family-pack cleansing and hygiene products.',
       buyingFocus: ['BrandB Soap', 'BrandD Toothpaste'],
       growthTrend: '+6.1% YoY',
@@ -113,7 +113,7 @@ const CUSTOMER_INSIGHTS: Record<string, CustomerInsight[]> = {
     {
       name: 'EcoBeauty Distribs',
       segment: 'Niche Wholesaler • 92% Retention',
-      revContribution: '₹6.8 Cr',
+      revContribution: '$6.8M',
       interestTrend: 'Stocking up on foaming cleansers; sensitive skin variants preferred.',
       buyingFocus: ['Foam Face Wash', 'Aloe Face Wash'],
       growthTrend: '+8.2% YoY',
@@ -124,7 +124,7 @@ const CUSTOMER_INSIGHTS: Record<string, CustomerInsight[]> = {
     {
       name: 'MetroFoods Group',
       segment: 'Key Account • 97% Retention',
-      revContribution: '₹12.4 Cr',
+      revContribution: '$12.4M',
       interestTrend: 'Expanding premium European cheese inventory across key metro centers.',
       buyingFocus: ['BrandD Cheese Blocks', 'BrandB Yogurt 500g'],
       growthTrend: '+11.2% YoY',
@@ -133,7 +133,7 @@ const CUSTOMER_INSIGHTS: Record<string, CustomerInsight[]> = {
     {
       name: 'Apex Hypermarkets',
       segment: 'Enterprise Chain • 98% Retention',
-      revContribution: '₹10.5 Cr',
+      revContribution: '$10.5M',
       interestTrend: 'Steady volume orders for organic and gut-health probiotic brands.',
       buyingFocus: ['BrandB Yogurt 1kg', 'BrandE Yogurt (Straw)'],
       growthTrend: '+4.5% YoY',
@@ -144,25 +144,25 @@ const CUSTOMER_INSIGHTS: Record<string, CustomerInsight[]> = {
     {
       name: 'GlobalMart Inc',
       segment: 'Enterprise Chain • 96% Retention',
-      revContribution: '₹18.2 Cr',
+      revContribution: '$18.2M',
       interestTrend: 'Substantial transition to premium concentrated cleaning capsules.',
-      buyingFocus: ['Laundry Pods Premium', 'Dish Soap 1L'],
+      buyingFocus: ['Laundry Pods Premium', 'Dish Soap 1K'],
       growthTrend: '+14.6% YoY',
       growthDirection: 'up'
     },
     {
       name: 'Apex Hypermarkets',
       segment: 'Enterprise Chain • 98% Retention',
-      revContribution: '₹12.6 Cr',
+      revContribution: '$12.6M',
       interestTrend: 'Volume restocking of general dish soaps and standard detergents.',
-      buyingFocus: ['BrandF Detergent', 'Dish Soap 1L'],
+      buyingFocus: ['BrandF Detergent', 'Dish Soap 1K'],
       growthTrend: '+5.3% YoY',
       growthDirection: 'up'
     },
     {
       name: 'QuickCart Convenience',
       segment: 'Regional Chain • 94% Retention',
-      revContribution: '₹4.8 Cr',
+      revContribution: '$4.8M',
       interestTrend: 'Decline in fabric softeners due to localized chemical regulatory flags.',
       buyingFocus: ['Fabric Softener', 'Floor Cleaner'],
       growthTrend: '-8.4% YoY',
@@ -194,16 +194,16 @@ const CUSTOMER_INSIGHTS_DATA: Record<string, Array<{
     {
       name: "Apex Hypermarkets",
       segment: "Enterprise Chain • 98% Retention",
-      revContribution: "₹24.8 Cr",
+      revContribution: "$24.8M",
       interestTrend: "Rising demand for eco-friendly packaging and natural mineral mixers.",
-      buyingFocus: ["BrandF Water Eco-Pack", "Coconut Water 1L"],
+      buyingFocus: ["BrandF Water Eco-Pack", "Coconut Water 1K"],
       growthTrend: "+12.4% YoY",
       growthDirection: "up"
     },
     {
       name: "QuickCart Convenience",
       segment: "Regional Chain • 94% Retention",
-      revContribution: "₹14.2 Cr",
+      revContribution: "$14.2M",
       interestTrend: "Shifting shelf preference toward high-energy single-serve options.",
       buyingFocus: ["BrandC Energy Drink", "Mango Fizz 250ml"],
       growthTrend: "+8.7% YoY",
@@ -212,7 +212,7 @@ const CUSTOMER_INSIGHTS_DATA: Record<string, Array<{
     {
       name: "Zenith Distributors",
       segment: "Wholesale Partner • 91% Retention",
-      revContribution: "₹18.5 Cr",
+      revContribution: "$18.5M",
       interestTrend: "Bulk purchasing of premium fruit-based beverage offerings.",
       buyingFocus: ["Mango Fizz 500ml", "Aloe Vera Drink"],
       growthTrend: "+4.2% YoY",
@@ -223,7 +223,7 @@ const CUSTOMER_INSIGHTS_DATA: Record<string, Array<{
     {
       name: "MetroFoods Group",
       segment: "Key Account • 97% Retention",
-      revContribution: "₹19.6 Cr",
+      revContribution: "$19.6M",
       interestTrend: "Spike in premium healthy baked items and baked grain products.",
       buyingFocus: ["Oat Cookies", "Masala Puffs"],
       growthTrend: "+15.3% YoY",
@@ -232,7 +232,7 @@ const CUSTOMER_INSIGHTS_DATA: Record<string, Array<{
     {
       name: "Apex Hypermarkets",
       segment: "Enterprise Chain • 98% Retention",
-      revContribution: "₹16.8 Cr",
+      revContribution: "$16.8M",
       interestTrend: "High volume restocking of classic snack portfolios.",
       buyingFocus: ["BrandB Chips", "BrandD Chocolate 100g"],
       growthTrend: "+3.4% YoY",
@@ -241,7 +241,7 @@ const CUSTOMER_INSIGHTS_DATA: Record<string, Array<{
     {
       name: "Star Retailers",
       segment: "Mid-Market Chain • 89% Retention",
-      revContribution: "₹8.4 Cr",
+      revContribution: "$8.4M",
       interestTrend: "Margin compression on chocolate products due to promotional shifts.",
       buyingFocus: ["Choco Wafers", "BrandD Chocolate 250g"],
       growthTrend: "-2.1% YoY",
@@ -252,7 +252,7 @@ const CUSTOMER_INSIGHTS_DATA: Record<string, Array<{
     {
       name: "Luminate Boutique",
       segment: "Specialty Retailer • 95% Retention",
-      revContribution: "₹11.2 Cr",
+      revContribution: "$11.2M",
       interestTrend: "Surging demand for organic ingredients and active-SPF hand care.",
       buyingFocus: ["Hand Cream SPF", "Herbal Shampoo"],
       growthTrend: "+22.4% YoY",
@@ -261,7 +261,7 @@ const CUSTOMER_INSIGHTS_DATA: Record<string, Array<{
     {
       name: "GlobalMart Inc",
       segment: "Enterprise Chain • 96% Retention",
-      revContribution: "₹14.5 Cr",
+      revContribution: "$14.5M",
       interestTrend: "Steady interest in family-pack cleansing and hygiene products.",
       buyingFocus: ["BrandB Soap", "BrandD Toothpaste"],
       growthTrend: "+6.1% YoY",
@@ -270,7 +270,7 @@ const CUSTOMER_INSIGHTS_DATA: Record<string, Array<{
     {
       name: "EcoBeauty Distribs",
       segment: "Niche Wholesaler • 92% Retention",
-      revContribution: "₹6.8 Cr",
+      revContribution: "$6.8M",
       interestTrend: "Stocking up on foaming cleansers; sensitive skin variants preferred.",
       buyingFocus: ["Foam Face Wash", "Aloe Face Wash"],
       growthTrend: "+8.2% YoY",
@@ -281,7 +281,7 @@ const CUSTOMER_INSIGHTS_DATA: Record<string, Array<{
     {
       name: "MetroFoods Group",
       segment: "Key Account • 97% Retention",
-      revContribution: "₹12.4 Cr",
+      revContribution: "$12.4M",
       interestTrend: "Expanding premium European cheese inventory across key metro centers.",
       buyingFocus: ["BrandD Cheese Blocks", "BrandB Yogurt 500g"],
       growthTrend: "+11.2% YoY",
@@ -290,7 +290,7 @@ const CUSTOMER_INSIGHTS_DATA: Record<string, Array<{
     {
       name: "Apex Hypermarkets",
       segment: "Enterprise Chain • 98% Retention",
-      revContribution: "₹10.5 Cr",
+      revContribution: "$10.5M",
       interestTrend: "Steady volume orders for organic and gut-health probiotic brands.",
       buyingFocus: ["BrandB Yogurt 1kg", "BrandE Yogurt (Straw)"],
       growthTrend: "+4.5% YoY",
@@ -301,25 +301,25 @@ const CUSTOMER_INSIGHTS_DATA: Record<string, Array<{
     {
       name: "GlobalMart Inc",
       segment: "Enterprise Chain • 96% Retention",
-      revContribution: "₹18.2 Cr",
+      revContribution: "$18.2M",
       interestTrend: "Substantial transition to premium concentrated cleaning capsules.",
-      buyingFocus: ["Laundry Pods Premium", "Dish Soap 1L"],
+      buyingFocus: ["Laundry Pods Premium", "Dish Soap 1K"],
       growthTrend: "+14.6% YoY",
       growthDirection: "up"
     },
     {
       name: "Apex Hypermarkets",
       segment: "Enterprise Chain • 98% Retention",
-      revContribution: "₹12.6 Cr",
+      revContribution: "$12.6M",
       interestTrend: "Volume restocking of general dish soaps and standard detergents.",
-      buyingFocus: ["BrandF Detergent", "Dish Soap 1L"],
+      buyingFocus: ["BrandF Detergent", "Dish Soap 1K"],
       growthTrend: "+5.3% YoY",
       growthDirection: "up"
     },
     {
       name: "QuickCart Convenience",
       segment: "Regional Chain • 94% Retention",
-      revContribution: "₹4.8 Cr",
+      revContribution: "$4.8M",
       interestTrend: "Decline in fabric softeners due to localized chemical regulatory flags.",
       buyingFocus: ["Fabric Softener", "Floor Cleaner"],
       growthTrend: "-8.4% YoY",
@@ -344,12 +344,12 @@ const MONTH_FORECAST_DETAILS: Record<string, {
   Jan: {
     month: "Jan",
     fullName: "January",
-    thisYearActual: "₹58.0 Cr",
-    thisYearTarget: "₹60.0 Cr",
-    lastYearActual: "₹51.8 Cr",
-    nextYearForecast: "₹65.0 Cr",
-    lastYearPriceIndex: "₹142 / unit",
-    thisYearPriceIndex: "₹148 / unit",
+    thisYearActual: "$58.0M",
+    thisYearTarget: "$60.0M",
+    lastYearActual: "$51.8M",
+    nextYearForecast: "$65.0M",
+    lastYearPriceIndex: "$142 / unit",
+    thisYearPriceIndex: "$148 / unit",
     growthRate: "+12.4% projected",
     aiRecommendations: [
       "Raw material prices are projected to ease in Q1. Pre-negotiate wholesale sugar and packaging contracts to lock in a 4% cost reduction.",
@@ -360,12 +360,12 @@ const MONTH_FORECAST_DETAILS: Record<string, {
   Feb: {
     month: "Feb",
     fullName: "February",
-    thisYearActual: "₹61.0 Cr",
-    thisYearTarget: "₹63.0 Cr",
-    lastYearActual: "₹54.5 Cr",
-    nextYearForecast: "₹68.3 Cr",
-    lastYearPriceIndex: "₹143 / unit",
-    thisYearPriceIndex: "₹149 / unit",
+    thisYearActual: "$61.0M",
+    thisYearTarget: "$63.0M",
+    lastYearActual: "$54.5M",
+    nextYearForecast: "$68.3M",
+    lastYearPriceIndex: "$143 / unit",
+    thisYearPriceIndex: "$149 / unit",
     growthRate: "+12.0% projected",
     aiRecommendations: [
       "Run cross-promotional campaigns linking Beverages and Snacks to capture post-holiday retail velocity.",
@@ -376,12 +376,12 @@ const MONTH_FORECAST_DETAILS: Record<string, {
   Mar: {
     month: "Mar",
     fullName: "March",
-    thisYearActual: "₹65.0 Cr",
-    thisYearTarget: "₹66.0 Cr",
-    lastYearActual: "₹58.1 Cr",
-    nextYearForecast: "₹72.8 Cr",
-    lastYearPriceIndex: "₹144 / unit",
-    thisYearPriceIndex: "₹151 / unit",
+    thisYearActual: "$65.0M",
+    thisYearTarget: "$66.0M",
+    lastYearActual: "$58.1M",
+    nextYearForecast: "$72.8M",
+    lastYearPriceIndex: "$144 / unit",
+    thisYearPriceIndex: "$151 / unit",
     growthRate: "+12.0% projected",
     aiRecommendations: [
       "Lock in procurement logistics for Q2 peak shipping lanes to hedge against freight rates volatility.",
@@ -392,12 +392,12 @@ const MONTH_FORECAST_DETAILS: Record<string, {
   Apr: {
     month: "Apr",
     fullName: "April",
-    thisYearActual: "₹70.0 Cr",
-    thisYearTarget: "₹70.0 Cr",
-    lastYearActual: "₹62.5 Cr",
-    nextYearForecast: "₹78.4 Cr",
-    lastYearPriceIndex: "₹144 / unit",
-    thisYearPriceIndex: "₹152 / unit",
+    thisYearActual: "$70.0M",
+    thisYearTarget: "$70.0M",
+    lastYearActual: "$62.5M",
+    nextYearForecast: "$78.4M",
+    lastYearPriceIndex: "$144 / unit",
+    thisYearPriceIndex: "$152 / unit",
     growthRate: "+12.0% projected",
     aiRecommendations: [
       "Monitor raw milk supplier capacity; pre-arrange backup supply agreements to secure gross margin parameters.",
@@ -408,12 +408,12 @@ const MONTH_FORECAST_DETAILS: Record<string, {
   May: {
     month: "May",
     fullName: "May",
-    thisYearActual: "₹74.0 Cr",
-    thisYearTarget: "₹74.0 Cr",
-    lastYearActual: "₹66.1 Cr",
-    nextYearForecast: "₹82.9 Cr",
-    lastYearPriceIndex: "₹145 / unit",
-    thisYearPriceIndex: "₹153 / unit",
+    thisYearActual: "$74.0M",
+    thisYearTarget: "$74.0M",
+    lastYearActual: "$66.1M",
+    nextYearForecast: "$82.9M",
+    lastYearPriceIndex: "$145 / unit",
+    thisYearPriceIndex: "$153 / unit",
     growthRate: "+12.0% projected",
     aiRecommendations: [
       "Run optimization algorithms on regional inventories to balance stock levels across North and West DCs.",
@@ -424,12 +424,12 @@ const MONTH_FORECAST_DETAILS: Record<string, {
   Jun: {
     month: "Jun",
     fullName: "June",
-    thisYearActual: "₹77.0 Cr",
-    thisYearTarget: "₹76.0 Cr",
-    lastYearActual: "₹68.8 Cr",
-    nextYearForecast: "₹86.2 Cr",
-    lastYearPriceIndex: "₹146 / unit",
-    thisYearPriceIndex: "₹154 / unit",
+    thisYearActual: "$77.0M",
+    thisYearTarget: "$76.0M",
+    lastYearActual: "$68.8M",
+    nextYearForecast: "$86.2M",
+    lastYearPriceIndex: "$146 / unit",
+    thisYearPriceIndex: "$154 / unit",
     growthRate: "+11.9% projected",
     aiRecommendations: [
       "Implement direct-to-retailer distribution routes in high-density metro corridors to bypass regional depot margins.",
@@ -440,12 +440,12 @@ const MONTH_FORECAST_DETAILS: Record<string, {
   Jul: {
     month: "Jul",
     fullName: "July",
-    thisYearActual: "₹80.0 Cr",
-    thisYearTarget: "₹80.0 Cr",
-    lastYearActual: "₹71.4 Cr",
-    nextYearForecast: "₹89.6 Cr",
-    lastYearPriceIndex: "₹146 / unit",
-    thisYearPriceIndex: "₹154 / unit",
+    thisYearActual: "$80.0M",
+    thisYearTarget: "$80.0M",
+    lastYearActual: "$71.4M",
+    nextYearForecast: "$89.6M",
+    lastYearPriceIndex: "$146 / unit",
+    thisYearPriceIndex: "$154 / unit",
     growthRate: "+12.0% projected",
     aiRecommendations: [
       "Conduct midpoint operational reviews of supply sourcing lead times; update DC replenishment schedules.",
@@ -456,12 +456,12 @@ const MONTH_FORECAST_DETAILS: Record<string, {
   Aug: {
     month: "Aug",
     fullName: "August",
-    thisYearActual: "₹84.0 Cr",
-    thisYearTarget: "₹83.0 Cr",
-    lastYearActual: "₹75.0 Cr",
-    nextYearForecast: "₹94.1 Cr",
-    lastYearPriceIndex: "₹147 / unit",
-    thisYearPriceIndex: "₹155 / unit",
+    thisYearActual: "$84.0M",
+    thisYearTarget: "$83.0M",
+    lastYearActual: "$75.0M",
+    nextYearForecast: "$94.1M",
+    lastYearPriceIndex: "$147 / unit",
+    thisYearPriceIndex: "$155 / unit",
     growthRate: "+12.0% projected",
     aiRecommendations: [
       "Initiate discussions with primary supermarkets for holiday shelf placement commitments.",
@@ -472,12 +472,12 @@ const MONTH_FORECAST_DETAILS: Record<string, {
   Sep: {
     month: "Sep",
     fullName: "September",
-    thisYearActual: "₹88.0 Cr",
-    thisYearTarget: "₹86.0 Cr",
-    lastYearActual: "₹78.6 Cr",
-    nextYearForecast: "₹98.6 Cr",
-    lastYearPriceIndex: "₹148 / unit",
-    thisYearPriceIndex: "₹156 / unit",
+    thisYearActual: "$88.0M",
+    thisYearTarget: "$86.0M",
+    lastYearActual: "$78.6M",
+    nextYearForecast: "$98.6M",
+    lastYearPriceIndex: "$148 / unit",
+    thisYearPriceIndex: "$156 / unit",
     growthRate: "+12.1% projected",
     aiRecommendations: [
       "Negotiate bulk warehouse space leases for Q4 inventory build-ups before spot rental rates spike.",
@@ -488,12 +488,12 @@ const MONTH_FORECAST_DETAILS: Record<string, {
   Oct: {
     month: "Oct",
     fullName: "October",
-    thisYearActual: "₹91.0 Cr",
-    thisYearTarget: "₹90.0 Cr",
-    lastYearActual: "₹81.3 Cr",
-    nextYearForecast: "₹101.9 Cr",
-    lastYearPriceIndex: "₹148 / unit",
-    thisYearPriceIndex: "₹157 / unit",
+    thisYearActual: "$91.0M",
+    thisYearTarget: "$90.0M",
+    lastYearActual: "$81.3M",
+    nextYearForecast: "$101.9M",
+    lastYearPriceIndex: "$148 / unit",
+    thisYearPriceIndex: "$157 / unit",
     growthRate: "+12.0% projected",
     aiRecommendations: [
       "Execute phased rollouts for regional pricing adjustments on personal care portfolios.",
@@ -504,12 +504,12 @@ const MONTH_FORECAST_DETAILS: Record<string, {
   Nov: {
     month: "Nov",
     fullName: "November",
-    thisYearActual: "₹92.4 Cr",
-    thisYearTarget: "₹93.0 Cr",
-    lastYearActual: "₹83.0 Cr",
-    nextYearForecast: "₹104.2 Cr",
-    lastYearPriceIndex: "₹149 / unit",
-    thisYearPriceIndex: "₹157 / unit",
+    thisYearActual: "$92.4M",
+    thisYearTarget: "$93.0M",
+    lastYearActual: "$83.0M",
+    nextYearForecast: "$104.2M",
+    lastYearPriceIndex: "$149 / unit",
+    thisYearPriceIndex: "$157 / unit",
     growthRate: "+12.0% projected",
     aiRecommendations: [
       "Run final tests on the upcoming Q1 new product launches; check milestone pipeline readiness.",
@@ -520,12 +520,12 @@ const MONTH_FORECAST_DETAILS: Record<string, {
   Dec: {
     month: "Dec",
     fullName: "December",
-    thisYearActual: "₹95.1 Cr",
-    thisYearTarget: "₹96.0 Cr",
-    lastYearActual: "₹85.7 Cr",
-    nextYearForecast: "₹107.5 Cr",
-    lastYearPriceIndex: "₹150 / unit",
-    thisYearPriceIndex: "₹158 / unit",
+    thisYearActual: "$95.1M",
+    thisYearTarget: "$96.0M",
+    lastYearActual: "$85.7M",
+    nextYearForecast: "$107.5M",
+    lastYearPriceIndex: "$150 / unit",
+    thisYearPriceIndex: "$158 / unit",
     growthRate: "+12.0% projected",
     aiRecommendations: [
       "Review full-year margin and revenue targets; formulate Q1 operational goals and benchmarks.",
@@ -568,7 +568,7 @@ const MonthForecastModal: React.FC<{ isOpen: boolean; month: string | null; onCl
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div className="space-y-2">
-            <p className="font-bold text-[9.5px] uppercase tracking-widest text-zinc-400">Revenue Analysis (₹ Cr)</p>
+            <p className="font-bold text-[9.5px] uppercase tracking-widest text-zinc-400">Revenue Analysis ($ M)</p>
             <div className="bg-zinc-50 dark:bg-white/5 p-3.5 rounded border border-black/5 dark:border-white/10 space-y-2.5">
               <div className="flex justify-between items-center">
                 <span className="text-zinc-500 font-medium">Prior Year (Last Year) Sales:</span>
@@ -629,7 +629,7 @@ const EVENT_TEMPLATES = [
   { sev: 'info', sevC: '#3b82f6', type: 'Demand', msgs: ['Mango Fizz 500ml — reorder triggered: 12,000 units', 'E-Commerce channel orders up 18% in last 2hrs', 'Oat Cookies demand spike detected — APAC region', 'Customer return rate dropped to 1.2% — all categories'] },
   { sev: 'warning', sevC: '#f59e0b', type: 'Supply', msgs: ['Fabric Softener stock level below safety threshold', 'Lead time breach — supplier notification sent', 'Cold chain temperature alert — Mumbai DC resolved', 'Freight cost increase 4% — Mumbai to Bangalore lane'] },
   { sev: 'critical', sevC: '#ef4444', type: 'Margin', msgs: ['Margin erosion detected: Green Tea RTD promo overlap', 'Price floor breach on Choco Wafers — auto-flagged', 'Promotional budget 83% consumed — 14 days remaining', 'Cost variance alert: packaging +7% vs budget'] },
-  { sev: 'info', sevC: '#10b981', type: 'Finance', msgs: ['Invoice cleared: Supplier ID #4821 — ₹2.3 Cr', 'Revenue milestone: ₹850 Cr MTD achieved', 'GST reconciliation complete — no discrepancies', 'Quarterly audit trail generated and archived'] },
+  { sev: 'info', sevC: '#10b981', type: 'Finance', msgs: ['Invoice cleared: Supplier ID #4821 — $2.3M', 'Revenue milestone: $850M MTD achieved', 'GST reconciliation complete — no discrepancies', 'Quarterly audit trail generated and archived'] },
   { sev: 'info', sevC: '#8b5cf6', type: 'Launch', msgs: ['Mango Fizz 750ml — shelf placement confirmed: 240 stores', 'Launch readiness score updated: 82/100', 'Market test: Herbal Shampoo new variant — positive signal', 'NPD gate review scheduled: Thursday 10:00 AM'] },
 ];
 
@@ -1023,7 +1023,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
               <div className="flex items-center justify-between mt-0.5">
                 <span className={`text-[8px] font-extrabold uppercase tracking-widest px-1.5 py-0.5 rounded-sm flex items-center gap-1 ${trendColor}`}>
                   {trendIcon}
-                  {Math.abs(k.trend)}{k.label === 'Total Revenue' ? ' Cr' : k.label === 'Gross Margin' ? 'pp' : ''} MoM
+                  {Math.abs(k.trend)}{k.label === 'Total Revenue' ? ' M' : k.label === 'Gross Margin' ? 'pp' : ''} MoM
                 </span>
                 
                 {/* Micro Sparkline Chart */}
@@ -1064,7 +1064,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
             <div>
               <h3 className="text-[11px] font-bold uppercase tracking-widest">Revenue Trend</h3>
               <p className="text-[8.5px] text-zinc-500 uppercase tracking-widest mt-0.5 leading-normal">
-                Monthly Actual vs Target (₹ Cr) — This Year
+                Monthly Actual vs Target ($ M) — This Year
                 <br />
                 <span className="text-purple-650 dark:text-purple-400 font-extrabold normal-case">
                   Click any month to forecast next year & review price indexes
@@ -1180,7 +1180,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
             <div>
               <h3 className="text-[11px] font-bold uppercase tracking-widest">Category Performance</h3>
               <p className="text-[8.5px] text-zinc-550 dark:text-zinc-450 uppercase tracking-widest mt-0.5 leading-normal">
-                Revenue ₹ Cr by Category — Current Month
+                Revenue $ M by Category — Current Month
                 <br />
                 <span className="text-blue-500 font-extrabold normal-case">
                   Click any category to view SKU performer, underperformer & booming trends
@@ -1236,7 +1236,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
                   <Tooltip 
                     contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, color: tooltipText }}
                     itemStyle={{ fontSize: 10 }}
-                    formatter={(value: any) => [`₹${value}Cr`]}
+                    formatter={(value: any) => [`$${value}M`]}
                   />
                   <Pie
                     data={categoryPerfData}
@@ -1276,7 +1276,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
                   <Tooltip 
                     contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, color: tooltipText }}
                     itemStyle={{ fontSize: 10 }}
-                    formatter={(value: any) => [`₹${value}Cr`]}
+                    formatter={(value: any) => [`$${value}M`]}
                   />
                   <Bar dataKey="value" barSize={18} radius={[3, 3, 0, 0]}>
                     {categoryPerfData.map((entry, index) => (
@@ -1300,7 +1300,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
                   <Tooltip 
                     contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, color: tooltipText }}
                     itemStyle={{ fontSize: 10 }}
-                    formatter={(value: any) => [`₹${value}Cr`]}
+                    formatter={(value: any) => [`$${value}M`]}
                   />
                 </RadarChart>
               )}
@@ -1380,7 +1380,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
                         <span className="font-bold text-zinc-700 dark:text-zinc-350 group-hover:text-acies-yellow dark:group-hover:text-acies-yellow truncate max-w-[220px] transition-colors">
                           {s.name}
                         </span>
-                        <span className="font-extrabold text-acies-yellow group-hover:underline">₹{s.rev}Cr</span>
+                        <span className="font-extrabold text-acies-yellow group-hover:underline">${s.rev}M</span>
                       </div>
                       <div className="w-full h-1.5 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden">
                         <div className="h-full bg-acies-yellow transition-all group-hover:bg-yellow-400" style={{ width: `${widthPct}%` }} />
@@ -1397,7 +1397,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
                   <Tooltip 
                     contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, color: tooltipText }}
                     itemStyle={{ fontSize: 10 }}
-                    formatter={(value: any, name: any) => [`₹${value}Cr`, name]}
+                    formatter={(value: any, name: any) => [`$${value}M`, name]}
                   />
                   <Pie
                     data={topSkus}
@@ -1432,7 +1432,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
               <div className="absolute bottom-1 w-full text-center pointer-events-none px-4">
                 {hoveredSku ? (
                   <span className="text-[9.5px] font-bold text-zinc-700 dark:text-zinc-350 bg-black/5 dark:bg-white/5 py-0.5 px-2 rounded-sm border border-black/5 dark:border-white/5 inline-block">
-                    Hovered: <span className="font-extrabold text-[#6d28d9] dark:text-[#a78bfa]">{hoveredSku.name}</span> (₹{hoveredSku.rev}Cr)
+                    Hovered: <span className="font-extrabold text-[#6d28d9] dark:text-[#a78bfa]">{hoveredSku.name}</span> (${hoveredSku.rev}M)
                   </span>
                 ) : (
                   <span className="text-[8.5px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
@@ -1586,8 +1586,8 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
                       <div className="h-full bg-acies-yellow transition-all group-hover:bg-yellow-400" style={{ width: `${widthPct}%` }} />
                     </div>
                     <div className="flex justify-between text-[9px] text-zinc-550 dark:text-zinc-450 font-semibold uppercase tracking-wider">
-                      <span>Actual: ₹{f.actual}Cr</span>
-                      <span>Target: ₹{f.target}Cr</span>
+                      <span>Actual: ${f.actual}M</span>
+                      <span>Target: ${f.target}M</span>
                     </div>
                   </button>
                 );
@@ -1608,7 +1608,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
                     <YAxis 
                       domain={[0, 350]}
                       ticks={[0, 50, 100, 150, 200, 250, 300, 350]}
-                      tickFormatter={(val) => `₹${val}`}
+                      tickFormatter={(val) => `$${val}`}
                       tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)', fontSize: 8, fontWeight: 'bold' }} 
                       axisLine={false} 
                       tickLine={false}
@@ -1617,7 +1617,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
                     <Tooltip 
                       contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, color: tooltipText }}
                       itemStyle={{ fontSize: 10 }}
-                      formatter={(value: any) => [`₹${value}Cr`]}
+                      formatter={(value: any) => [`$${value}M`]}
                     />
                     <Legend 
                       verticalAlign="top" 

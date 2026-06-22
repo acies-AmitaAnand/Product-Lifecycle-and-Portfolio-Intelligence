@@ -60,11 +60,11 @@ export const AssortmentKPICards: React.FC<AssortmentKPICardsProps> = ({ role, on
     },
     {
       label: 'Assortment Gross Yield',
-      value: customValues?.yieldVal || '₹3.02 Cr',
+      value: customValues?.yieldVal || '$3.02M',
       trend: 'down',
       trendValue: '-1.1% vs target',
       info: 'Average gross profit contribution generated per active listing.',
-      target: '₹3.50 Cr',
+      target: '$3.50M',
       color: '#3b82f6', // blue
       hist: [3.20, 3.15, 3.12, 3.08, 3.05, 3.03, 3.02, 3.02],
       soWhat: 'Average SKU yield is dragged down by 12 margin-dilutive high-volume lines.',

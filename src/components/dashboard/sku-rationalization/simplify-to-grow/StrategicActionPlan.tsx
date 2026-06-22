@@ -453,10 +453,10 @@ export const StrategicActionPlan: React.FC<Props> = ({ skus, isDarkMode, onNavig
         impactFn: (skus) => {
           const top = [...skus].sort((a, b) => b.totalHiddenCost - a.totalHiddenCost).slice(0, 10);
           const total = top.reduce((a, s) => a + s.totalHiddenCost, 0);
-          return `₹${total.toFixed(1)}L recoverable from top 10 cost SKUs`;
+          return `$${total.toFixed(1)}L recoverable from top 10 cost SKUs`;
         },
         affectedFn: (skus) => [...skus].sort((a, b) => b.totalHiddenCost - a.totalHiddenCost).slice(0, 8),
-        miniChartKey: 'totalHiddenCost', miniChartLabel: 'Hidden Cost (₹L)',
+        miniChartKey: 'totalHiddenCost', miniChartLabel: 'Hidden Cost ($L)',
         checks: [
           { id: 'v1', label: 'De-average shared supply chain cost allocation per SKU' },
           { id: 'v2', label: 'Map production downtime, transport & waste per SKU' },
@@ -474,7 +474,7 @@ export const StrategicActionPlan: React.FC<Props> = ({ skus, isDarkMode, onNavig
         impactFn: (skus) => {
           const neg = skus.filter(s => s.growth < 0);
           const revAtRisk = neg.reduce((a, s) => a + s.rev, 0);
-          return `${neg.length} SKUs · ₹${revAtRisk.toFixed(1)}Cr revenue needs managed exit`;
+          return `${neg.length} SKUs · $${revAtRisk.toFixed(1)}M revenue needs managed exit`;
         },
         affectedFn: (skus) => [...skus].filter(s => s.growth < 0).sort((a, b) => a.growth - b.growth),
         miniChartKey: 'growth', miniChartLabel: 'Growth Rate',
@@ -515,7 +515,7 @@ export const StrategicActionPlan: React.FC<Props> = ({ skus, isDarkMode, onNavig
         impactFn: (skus) => {
           const good = skus.filter(s => s.complexityType === 'Good Variety');
           const totalRev = good.reduce((a, s) => a + s.rev, 0);
-          return `${good.length} SKUs · ₹${totalRev.toFixed(1)}Cr revenue to protect`;
+          return `${good.length} SKUs · $${totalRev.toFixed(1)}M revenue to protect`;
         },
         affectedFn: (skus) => [...skus].filter(s => s.complexityType === 'Good Variety').sort((a, b) => b.ippv - a.ippv),
         miniChartKey: 'ippv', miniChartLabel: 'IPPV Score',

@@ -40,7 +40,7 @@ const ALERT_DETAILS_CONTEXT: Record<string, AlertDetailContext> = {
       { label: 'Readiness Score', value: '78%' },
       { label: 'Schedule Variance', value: '-21 Days' }
     ],
-    financial: '₹2.5 Cr in projected first-quarter revenue deferred due to launch delay.',
+    financial: '$2.5M in projected first-quarter revenue deferred due to launch delay.',
     recommendations: [
       'Initiate emergency qualification of backup bottle packaging supplier.',
       'Pre-allocate initial production run to highest-margin regional distributors.',
@@ -65,7 +65,7 @@ const ALERT_DETAILS_CONTEXT: Record<string, AlertDetailContext> = {
       { label: 'Actual Margin', value: '12.0% (Target: 35.0%)' },
       { label: 'Organic Purchase Rate', value: '28% (Declining)' }
     ],
-    financial: '₹0.8 Cr in category profit leakage due to deep discounting reliance.',
+    financial: '$0.8M in category profit leakage due to deep discounting reliance.',
     recommendations: [
       'Implement a two-quarter promotional phase-down schedule to stabilize pricing baselines.',
       'Transition key account promotions from single-unit price reductions to multi-pack bundle pricing.',
@@ -88,9 +88,9 @@ const ALERT_DETAILS_CONTEXT: Record<string, AlertDetailContext> = {
     metrics: [
       { label: 'Gross Margin', value: '31.0% (Target: 46.0%)' },
       { label: 'Cost Variance', value: '+15.2% on Surfactants' },
-      { label: 'Revenue Impact', value: '₹0.65 Cr' }
+      { label: 'Revenue Impact', value: '$0.65M' }
     ],
-    financial: '₹0.65 Cr gross profit leakage if pricing strategy is not optimized.',
+    financial: '$0.65M gross profit leakage if pricing strategy is not optimized.',
     recommendations: [
       'Renegotiate contract prices with primary surfactant supplier.',
       'Implement a selective price adjustment (cost pass-through) on premium SKUs.',
@@ -137,10 +137,10 @@ const ALERT_DETAILS_CONTEXT: Record<string, AlertDetailContext> = {
     problem: 'BrandA Premium Energy is approaching its final launch gate with 88% readiness. However, channel placement and labeling compliance verification are pending final approval.',
     metrics: [
       { label: 'Overall Readiness', value: '88% (Target: 95%)' },
-      { label: 'Estimated 1st Year Rev', value: '₹24.5 Cr' },
+      { label: 'Estimated 1st Year Rev', value: '$24.5M' },
       { label: 'Gate Status', value: 'Pre-Launch (Gate 3)' }
     ],
-    financial: '₹24.5 Cr in estimated first-year revenue dependent on timely gate sign-off.',
+    financial: '$24.5M in estimated first-year revenue dependent on timely gate sign-off.',
     recommendations: [
       'Accelerate final label compliance review with regulatory team.',
       'Finalize supermarket shelf space allocations with key retail partners.',
@@ -165,7 +165,7 @@ const ALERT_DETAILS_CONTEXT: Record<string, AlertDetailContext> = {
       { label: 'Promo Discount Rate', value: '42.0%' },
       { label: 'Volume Lift Delta', value: '+8.0% (Insufficient)' }
     ],
-    financial: '₹0.75 Cr in promotion-related margin dilution during the current cycle.',
+    financial: '$0.75M in promotion-related margin dilution during the current cycle.',
     recommendations: [
       'Suspend overlapping Q3 promotional campaigns for the 30ct format.',
       'Transition trade promotions to volume-based rebates instead of front-end discounts.',
@@ -211,7 +211,7 @@ export const getDynamicAlertContext = (alert: AlertData): AlertDetailContext => 
       { label: 'Safety Threshold', value: '1,500 units' },
       { label: 'Days of Cover', value: '0.8 days' }
     ];
-    financial = '₹0.12 Cr in potential lost sales if stockout occurs.';
+    financial = '$0.12M in potential lost sales if stockout occurs.';
     recommendations = [
       'Initiate emergency stock transfer from secondary logistics hub.',
       'Expedite supplier shipping logs validation.',
@@ -233,7 +233,7 @@ export const getDynamicAlertContext = (alert: AlertData): AlertDetailContext => 
       { label: 'Contractual SLA', value: '14 days' },
       { label: 'Schedule Variance', value: '+21 days' }
     ];
-    financial = '₹0.45 Cr in delayed order fulfillment and penalty risks.';
+    financial = '$0.45M in delayed order fulfillment and penalty risks.';
     recommendations = [
       'Route upcoming orders to qualified backup local suppliers.',
       'Issue formal SLA breach warning to supplier account manager.',
@@ -255,7 +255,7 @@ export const getDynamicAlertContext = (alert: AlertData): AlertDetailContext => 
       { label: 'Target Threshold', value: '4.0°C' },
       { label: 'Duration of Spike', value: '4 hours' }
     ];
-    financial = '₹0.30 Cr in perishable inventory write-off risks if unresolved.';
+    financial = '$0.30M in perishable inventory write-off risks if unresolved.';
     recommendations = [
       'Dispatch technical facility maintenance team to inspect seal leaks.',
       'Temporarily reroute inbound cold products to adjacent cold chambers.',
@@ -277,7 +277,7 @@ export const getDynamicAlertContext = (alert: AlertData): AlertDetailContext => 
       { label: 'Target Inflation Cap', value: '+2.0%' },
       { label: 'Affected SKUs count', value: '14 SKUs' }
     ];
-    financial = '₹0.20 Cr margin dilution across Household Care segments in Bangalore.';
+    financial = '$0.20M margin dilution across Household Care segments in Bangalore.';
     recommendations = [
       'Renegotiate contracts with primary regional logistics partners.',
       'Audit spot-rate freight pricing for comparison options.',
@@ -298,7 +298,7 @@ export const getDynamicAlertContext = (alert: AlertData): AlertDetailContext => 
       { label: 'Promo Overlap Period', value: '10 days' },
       { label: 'Observed Margin', value: '22.5%' }
     ];
-    financial = '₹0.40 Cr in category profit leakage from unauthorized promotion combinations.';
+    financial = '$0.40M in category profit leakage from unauthorized promotion combinations.';
     recommendations = [
       'Suspend overlapping regional flyer pricing immediately.',
       'Review promo calendar rules to enforce combination exclusions.',
@@ -314,13 +314,13 @@ export const getDynamicAlertContext = (alert: AlertData): AlertDetailContext => 
     agenticLogic = 'Scanned promotional calendar files and POS discount indicators. Flagged double-discounting anomalies on Green Tea RTD SKU.';
   } else if (title.includes('Price floor')) {
     impact = 'Pricing Compliance Breach';
-    problem = 'POS records indicate unit sales of Choco Wafers priced at ₹45.00, breaching the mandatory pricing floor guidelines.';
+    problem = 'POS records indicate unit sales of Choco Wafers priced at $45.00, breaching the mandatory pricing floor guidelines.';
     metrics = [
-      { label: 'Observed Retail Price', value: '₹45.00' },
-      { label: 'Mandated Price Floor', value: '₹50.00' },
+      { label: 'Observed Retail Price', value: '$45.00' },
+      { label: 'Mandated Price Floor', value: '$50.00' },
       { label: 'Compliance Deviation', value: '-10.0%' }
     ];
-    financial = '₹0.25 Cr in brand price erosion and retail partner margin dilution.';
+    financial = '$0.25M in brand price erosion and retail partner margin dilution.';
     recommendations = [
       'Enforce pricing compliance rules through retail POS channels.',
       'Request explanation from APAC store operations group.',
@@ -330,7 +330,7 @@ export const getDynamicAlertContext = (alert: AlertData): AlertDetailContext => 
     agenticAgent = 'Portfolio Agent';
     agenticDataset = 'ERP Pricing Ledger & Sales Dataset';
     agenticSignals = [
-      'Unit Retail Price: ₹45.00 (Threshold: > ₹50.00)',
+      'Unit Retail Price: $45.00 (Threshold: > $50.00)',
       'Applied Discount: 25% (Threshold: < 15%)'
     ];
     agenticLogic = 'Monitored daily POS transactions and flagged price floor breaches. Traced to store manager manual override codes.';
@@ -342,7 +342,7 @@ export const getDynamicAlertContext = (alert: AlertData): AlertDetailContext => 
       { label: 'Milestone Target', value: '65%' },
       { label: 'Days Remaining', value: '14 days' }
     ];
-    financial = '₹0.50 Cr potential overrun liability if redemptions continue at pace.';
+    financial = '$0.50M potential overrun liability if redemptions continue at pace.';
     recommendations = [
       'Implement digital coupon cap limits to slow budget consumption.',
       'De-prioritize low-margin advertising spots for the remaining cycle.',
@@ -361,9 +361,9 @@ export const getDynamicAlertContext = (alert: AlertData): AlertDetailContext => 
     metrics = [
       { label: 'Packaging Cost Delta', value: '+7.4%' },
       { label: 'Gross Margin Drag', value: '-1.4%' },
-      { label: 'Monthly Cost Impact', value: '₹0.15 Cr' }
+      { label: 'Monthly Cost Impact', value: '$0.15M' }
     ];
-    financial = '₹0.15 Cr margin dilution per month across household care category.';
+    financial = '$0.15M margin dilution per month across household care category.';
     recommendations = [
       'Renegotiate contract rates with packaging material suppliers.',
       'Evaluate alternative packaging specifications or gauges.',

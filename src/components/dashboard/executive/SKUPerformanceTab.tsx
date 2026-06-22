@@ -153,7 +153,7 @@ export const SKUPerformanceTab: React.FC<SKUPerformanceTabProps> = ({
   const stats = useMemo(() => {
     // We scale to match the 109 active SKUs narrative
     const totalCount = 109; 
-    const totalSales = 851.2; // ₹ Cr
+    const totalSales = 851.2; // $ M
     const avgMargin = 38.53; // %
     const rationalizeCount = 35;
     
@@ -166,7 +166,7 @@ export const SKUPerformanceTab: React.FC<SKUPerformanceTabProps> = ({
   }, []);
 
   const exportCSV = () => {
-    const headers = ['SKU Name', 'Category', 'Location', 'Revenue (₹ Cr)', 'Gross Margin %', 'YoY Growth %', 'Complexity', 'Stockouts'];
+    const headers = ['SKU Name', 'Category', 'Location', 'Revenue ($ M)', 'Gross Margin %', 'YoY Growth %', 'Complexity', 'Stockouts'];
     const rows = sortedSKUs.map(s => [
       s.name,
       s.cat,
@@ -250,7 +250,7 @@ export const SKUPerformanceTab: React.FC<SKUPerformanceTabProps> = ({
           </span>
           <div className="flex items-baseline gap-1 mt-1">
             <span className="text-2xl font-display font-extrabold text-blue-500">
-              ₹{stats.totalSales}Cr
+              ${stats.totalSales}M
             </span>
             <span className="text-[8px] text-blue-500 uppercase font-bold">Annualized</span>
           </div>
@@ -334,7 +334,7 @@ export const SKUPerformanceTab: React.FC<SKUPerformanceTabProps> = ({
                 <th className="p-3">Category</th>
                 <th className="p-3">Location</th>
                 <th className="p-3 cursor-pointer hover:bg-black/5 dark:hover:bg-white/5" onClick={() => handleSort('rev')}>
-                  Revenue (₹ Cr) {sortField === 'rev' ? (sortOrder === 'asc' ? '▲' : '▼') : ''}
+                  Revenue ($ M) {sortField === 'rev' ? (sortOrder === 'asc' ? '▲' : '▼') : ''}
                 </th>
                 <th className="p-3 cursor-pointer hover:bg-black/5 dark:hover:bg-white/5" onClick={() => handleSort('margin')}>
                   Gross Margin % {sortField === 'margin' ? (sortOrder === 'asc' ? '▲' : '▼') : ''}
@@ -379,7 +379,7 @@ export const SKUPerformanceTab: React.FC<SKUPerformanceTabProps> = ({
                     {/* Revenue */}
                     <td className="p-3 font-mono font-bold text-zinc-750 dark:text-zinc-350">
                       <div className="flex items-center gap-2">
-                        <span className="w-10">₹{sku.rev}Cr</span>
+                        <span className="w-10">${sku.rev}M</span>
                         <div className="w-12 bg-black/5 dark:bg-white/10 h-1.5 rounded-full overflow-hidden hidden sm:block">
                           <div 
                             className="bg-blue-500 h-full rounded-full"

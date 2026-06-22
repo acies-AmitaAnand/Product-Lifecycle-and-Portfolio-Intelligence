@@ -14,7 +14,7 @@ export interface DocumentParams {
   transferenceVolume: number;
   marginDiffUplift: number;
   complexitySavings: number;
-  annualSavingsLakhs: number;
+  annualSavingsK: number;
   exitDateDays: number;
   pricingPriceShift: number;
   supplySafetyStockShift: number;
@@ -29,7 +29,7 @@ export const getDocumentTemplates = ({
   transferenceVolume,
   marginDiffUplift,
   complexitySavings,
-  annualSavingsLakhs,
+  annualSavingsK,
   exitDateDays,
   pricingPriceShift,
   supplySafetyStockShift,
@@ -52,11 +52,11 @@ export const getDocumentTemplates = ({
           </div>
           <div className="grid grid-cols-3 gap-2 text-[9px] font-semibold text-center divide-y divide-black/[0.02] dark:divide-white/[0.02] text-zinc-550 dark:text-zinc-400">
             <div className="text-left font-bold text-[8px] uppercase">Base Retail Price</div>
-            <div>₹90</div>
-            <div>₹80</div>
+            <div>$90</div>
+            <div>$80</div>
             <div className="text-left font-bold text-[8px] uppercase pt-1.5">Distributor Price</div>
-            <div className="pt-1.5">₹65</div>
-            <div className="pt-1.5">₹55</div>
+            <div className="pt-1.5">$65</div>
+            <div className="pt-1.5">$55</div>
             <div className="text-left font-bold text-[8px] uppercase pt-1.5">Gross Margin</div>
             <div className="pt-1.5 text-red-500 font-extrabold font-bold">41.0%</div>
             <div className="pt-1.5 text-emerald-500 font-extrabold font-bold">34.0%</div>
@@ -64,7 +64,7 @@ export const getDocumentTemplates = ({
           <hr className="border-dashed border-zinc-200 dark:border-zinc-800" />
           <div className="space-y-1">
             <span className="text-zinc-400 block uppercase tracking-wider text-[8px] font-bold font-sans">Price Positioning Audit</span>
-            <p>· Sibling {skuB ? skuB.split(' ')[0] : ''} sits ₹10 lower in the retail value tier.</p>
+            <p>· Sibling {skuB ? skuB.split(' ')[0] : ''} sits $10 lower in the retail value tier.</p>
             <p>· Net margins are aligned; margin shift will be mitigated by volume transference gains.</p>
           </div>
           <hr className="border-dashed border-zinc-200 dark:border-zinc-800" />
@@ -137,14 +137,14 @@ export const getDocumentTemplates = ({
             <p>Sunset Candidate SKU: <strong>{skuA}</strong></p>
             <p>Target Category: {category}</p>
             <p>Risk Score: {(pairRisk * 100).toFixed(0)}% Substitution Risk</p>
-            <p>Estimated Revenue Exposure: ₹{Math.round(pairRisk * 42)} Cr</p>
+            <p>Estimated Revenue Exposure: ${Math.round(pairRisk * 42)} M</p>
           </div>
           <hr className="border-dashed border-zinc-200 dark:border-zinc-800" />
           <div className="space-y-1">
             <span className="text-zinc-400 block uppercase tracking-wider text-[8px] font-bold font-sans">Escalation Justification</span>
             <p>· Sibling variant {skuB} has capacity margins and supply network ready to absorb sunset demand.</p>
             <p>· Eliminating SKU A will simplify manufacturing lines, reducing logistics and changeover overhead.</p>
-            <p>· Net annual Category saving is estimated to reach ₹{annualSavingsLakhs}L.</p>
+            <p>· Net annual Category saving is estimated to reach ${annualSavingsK}L.</p>
           </div>
           <hr className="border-dashed border-zinc-200 dark:border-zinc-800" />
           <div className="flex justify-between items-end pt-4">
@@ -393,17 +393,17 @@ export const getDocumentTemplates = ({
           <hr className="border-dashed border-zinc-200 dark:border-zinc-800" />
           <div className="space-y-1">
             <span className="text-zinc-400 block uppercase tracking-wider text-[8px] font-bold font-sans">Quantitative Elasticity Parameters</span>
-            <p>Sunset SKU Base Price: ₹90</p>
-            <p>Sibling SKU Base Price: ₹80</p>
+            <p>Sunset SKU Base Price: $90</p>
+            <p>Sibling SKU Base Price: $80</p>
             <p>Estimated Sibling Volume Shift: +{(15 + pricingPriceShift * 0.8).toFixed(1)}%</p>
             <p>Uncompensated Category Leakage: {(100 - transferenceRate).toFixed(1)}%</p>
           </div>
           <hr className="border-dashed border-zinc-200 dark:border-zinc-800" />
           <div className="space-y-1">
             <span className="text-zinc-400 block uppercase tracking-wider text-[8px] font-bold font-sans">Financial Net Benefit</span>
-            <p>Net Annual Margin Uplift: ₹{marginDiffUplift.toFixed(2)} Cr</p>
-            <p>Complexity Savings (Logistics release): ₹{complexitySavings.toFixed(2)} Cr</p>
-            <p>Total Estimated Annual Category Gain: ₹{(marginDiffUplift + complexitySavings).toFixed(2)} Cr</p>
+            <p>Net Annual Margin Uplift: ${marginDiffUplift.toFixed(2)} M</p>
+            <p>Complexity Savings (Logistics release): ${complexitySavings.toFixed(2)} M</p>
+            <p>Total Estimated Annual Category Gain: ${(marginDiffUplift + complexitySavings).toFixed(2)} M</p>
           </div>
           <hr className="border-dashed border-zinc-200 dark:border-zinc-800" />
           <div className="flex justify-between items-end pt-4">
@@ -434,7 +434,7 @@ export const getDocumentTemplates = ({
             <p>Target DC: Pune Regional Distribution Center</p>
             <p>Released Pallet Locations: 120 locations (Bays DC-2 & DC-4)</p>
             <p>Inventory Level: 0 cases (Run-down completed)</p>
-            <p>Recovered Storage Capital: ₹{(pairRisk * 40).toFixed(1)} Lakhs / year</p>
+            <p>Recovered Storage Capital: ${(pairRisk * 40).toFixed(1)} K / year</p>
           </div>
           <hr className="border-dashed border-zinc-200 dark:border-zinc-800" />
           <div className="space-y-1">

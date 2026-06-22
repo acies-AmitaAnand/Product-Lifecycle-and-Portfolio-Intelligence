@@ -58,7 +58,7 @@ export const PillarDetail: React.FC<PillarDetailProps> = ({ pillar, skus, onNavi
                 <span className="text-[8px] font-black text-emerald-500">
                   {pillar.id === 'consumer' ? `IPPV ${s.ippv.toFixed(0)}` :
                    pillar.id === 'retailer' ? `Shelf ${s.shelfProductivity.toFixed(0)}` :
-                   pillar.id === 'valuechain' ? `₹${s.totalHiddenCost}L` :
+                   pillar.id === 'valuechain' ? `$${s.totalHiddenCost}L` :
                    pillar.id === 'e2e' ? `+${(s.growth * 100).toFixed(1)}%` :
                    s.complexityType === 'Good Variety' ? '✓ Good' : `CX ${s.cx.toFixed(2)}`}
                 </span>
@@ -82,7 +82,7 @@ export const PillarDetail: React.FC<PillarDetailProps> = ({ pillar, skus, onNavi
                 <span className="text-[8px] font-black text-red-500">
                   {pillar.id === 'consumer' ? `IPPV ${s.ippv.toFixed(0)}` :
                    pillar.id === 'retailer' ? `Shelf ${s.shelfProductivity.toFixed(0)}` :
-                   pillar.id === 'valuechain' ? `₹${s.totalHiddenCost}L` :
+                   pillar.id === 'valuechain' ? `$${s.totalHiddenCost}L` :
                    pillar.id === 'e2e' ? `${(s.growth * 100).toFixed(1)}%` :
                    `CX ${s.cx.toFixed(2)}`}
                 </span>

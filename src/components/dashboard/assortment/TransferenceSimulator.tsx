@@ -4,7 +4,7 @@ import { StagedAction } from './types';
 
 interface CategoryVariant {
   name: string;
-  revenue: number; // Cr
+  revenue: number; // M
   margin: number; // %
   growth: number; // %
   lead: number; // days
@@ -16,7 +16,7 @@ interface CategoryVariant {
 
 const CATEGORY_ITEMS: Record<string, CategoryVariant[]> = {
   Beverages: [
-    { name: 'BrandF Water', revenue: 17.03, margin: 40, growth: 12.4, lead: 5, reason: 'Hero SKU, core category profit driver.', segment: 'Keep', gradient: 'from-sky-400 via-blue-500 to-blue-700', unitText: 'Premium 1L' },
+    { name: 'BrandF Water', revenue: 17.03, margin: 40, growth: 12.4, lead: 5, reason: 'Hero SKU, core category profit driver.', segment: 'Keep', gradient: 'from-sky-400 via-blue-500 to-blue-700', unitText: 'Premium 1K' },
     { name: 'Green Tea RTD', revenue: 7.6, margin: 29, growth: -4, lead: 22, reason: 'Declining growth, high promo dependency (62%)', segment: 'Rationalize', gradient: 'from-emerald-400 via-green-500 to-green-700', unitText: 'RTD 330ml' },
     { name: 'Aloe Vera Drink', revenue: 9.8, margin: 34, growth: 9, lead: 18, reason: 'Moderate margin, variable demand stability.', segment: 'Grow', gradient: 'from-teal-300 via-teal-500 to-emerald-600', unitText: 'Organic 500ml' },
     { name: 'Mango Fizz 250ml', revenue: 8.4, margin: 38, growth: 12, lead: 14, reason: 'High cannibalization with 500ml variant.', segment: 'Consolidate', gradient: 'from-amber-400 via-orange-500 to-red-500', unitText: 'Can 250ml' }
@@ -194,7 +194,7 @@ export const TransferenceSimulator: React.FC<TransferenceSimulatorProps> = ({ on
                       {/* Price/Sales indicator */}
                       <div className="text-right leading-none">
                         <span className="text-[8px] font-extrabold text-white/90 font-mono">
-                          ₹{item.revenue}Cr
+                          ${item.revenue}M
                         </span>
                       </div>
                     </div>
@@ -235,7 +235,7 @@ export const TransferenceSimulator: React.FC<TransferenceSimulatorProps> = ({ on
               <div className="absolute top-2 left-6 right-6 flex justify-center items-center bg-emerald-500/10 border border-emerald-500/20 py-1 px-3 rounded-full text-[8.5px] font-bold text-emerald-500 animate-fadeIn select-none z-30">
                 <Check size={10} className="mr-1 shrink-0" />
                 <span>
-                  Delisted ₹{totalRevenueDelisted.toFixed(1)} Cr: **{transferencePct}%** (₹{revenueTransferred.toFixed(1)} Cr) transferred to **{heroSubstitute.name}**
+                  Delisted ${totalRevenueDelisted.toFixed(1)} M: **{transferencePct}%** (${revenueTransferred.toFixed(1)} M) transferred to **{heroSubstitute.name}**
                 </span>
               </div>
             )}
@@ -283,7 +283,7 @@ export const TransferenceSimulator: React.FC<TransferenceSimulatorProps> = ({ on
                 Gross Revenue Pruned
               </span>
               <span className="font-bold font-mono text-zinc-800 dark:text-zinc-200">
-                ₹{totalRevenueDelisted.toFixed(1)} Cr
+                ${totalRevenueDelisted.toFixed(1)} M
               </span>
             </div>
 
@@ -294,7 +294,7 @@ export const TransferenceSimulator: React.FC<TransferenceSimulatorProps> = ({ on
                 Permanent Revenue Loss
               </span>
               <span className="font-bold font-mono text-rose-500">
-                -₹{revenueLostToCompetitors.toFixed(1)} Cr (-{(100 - transferencePct)}%)
+                -${revenueLostToCompetitors.toFixed(1)} M (-{(100 - transferencePct)}%)
               </span>
             </div>
 
@@ -305,7 +305,7 @@ export const TransferenceSimulator: React.FC<TransferenceSimulatorProps> = ({ on
                 Recaptured Substitution Margin
               </span>
               <span className={`font-bold font-mono ${netMarginDeltaLift > 0 ? 'text-emerald-500' : 'text-zinc-500'}`}>
-                {netMarginDeltaLift > 0 ? `+₹${netMarginDeltaLift.toFixed(2)} Cr` : '₹0.00 Cr'}
+                {netMarginDeltaLift > 0 ? `+$${netMarginDeltaLift.toFixed(2)} M` : '$0.00M'}
               </span>
             </div>
 
@@ -325,7 +325,7 @@ export const TransferenceSimulator: React.FC<TransferenceSimulatorProps> = ({ on
               {activePrunedItems.length > 0 ? (
                 <div>
                   <span className="font-bold uppercase text-zinc-400 block mb-1">Delist Scenario Summary:</span>
-                  Delisting **{activePrunedItems.length}** item(s) from the **{selectedCategory}** shelf risks **₹{revenueLostToCompetitors.toFixed(1)} Cr** of top-line sales, but redirects **₹{revenueTransferred.toFixed(1)} Cr** to **{heroSubstitute.name}** (**{heroSubstitute.margin}%** margin). This substitution yields a net margin lift of **₹{netMarginDeltaLift.toFixed(2)} Cr** and frees up manufacturing line overheads.
+                  Delisting **{activePrunedItems.length}** item(s) from the **{selectedCategory}** shelf risks **${revenueLostToCompetitors.toFixed(1)} M** of top-line sales, but redirects **${revenueTransferred.toFixed(1)} M** to **{heroSubstitute.name}** (**{heroSubstitute.margin}%** margin). This substitution yields a net margin lift of **${netMarginDeltaLift.toFixed(2)} M** and frees up manufacturing line overheads.
                 </div>
               ) : (
                 <div className="italic text-center py-2 text-zinc-400">

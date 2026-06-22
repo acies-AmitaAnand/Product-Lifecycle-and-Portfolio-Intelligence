@@ -88,6 +88,6 @@ export const PAIRS_DATA: CannibalizationPair[] = [
   { a: 'Mango Fizz 500ml',  b: 'Aloe Vera Drink', risk: 0.62, cat: 'Beverages',     revAtRisk: 42 },
   { a: 'Oat Cookies',       b: 'Choco Wafers',    risk: 0.38, cat: 'Snacks',         revAtRisk: 18 },
   { a: 'Herbal Shampoo',    b: 'Hand Cream SPF',  risk: 0.24, cat: 'Personal Care',  revAtRisk: 12 },
-  { a: 'Dish Soap 1L',      b: 'Floor Cleaner',   risk: 0.51, cat: 'Household',      revAtRisk: 28 },
+  { a: 'Dish Soap 1K',      b: 'Floor Cleaner',   risk: 0.51, cat: 'Household',      revAtRisk: 28 },
   { a: 'Green Tea RTD',     b: 'Mango Fizz 500ml', risk: 0.44, cat: 'Beverages',     revAtRisk: 22 },
 ];

@@ -250,17 +250,17 @@ export const SKUS = [
   {name:'Aloe Vera Drink',        cat:'Beverages',    rev:98,  val:0.68, cx:0.44, stockouts:3, promo:0.51, margin:34, growth:0.09,  lead:18, householdPenetration:0.45},
   {name:'Green Tea RTD',          cat:'Beverages',    rev:76,  val:0.59, cx:0.58, stockouts:4, promo:0.62, margin:29, growth:-0.04, lead:22, householdPenetration:0.28},
   {name:'Coconut Water 330ml',    cat:'Beverages',    rev:110, val:0.75, cx:0.25, stockouts:1, promo:0.18, margin:45, growth:0.22,  lead:10, householdPenetration:0.72},
-  {name:'Coconut Water 1L',       cat:'Beverages',    rev:68,  val:0.65, cx:0.42, stockouts:2, promo:0.35, margin:42, growth:0.14,  lead:11, householdPenetration:0.58},
+  {name:'Coconut Water 1K',       cat:'Beverages',    rev:68,  val:0.65, cx:0.42, stockouts:2, promo:0.35, margin:42, growth:0.14,  lead:11, householdPenetration:0.58},
   {name:'BrandC Energy Drink',    cat:'Beverages',    rev:92,  val:0.71, cx:0.38, stockouts:1, promo:0.25, margin:44, growth:0.26,  lead:12, householdPenetration:0.65},
   {name:'BrandC Diet Cola 500ml', cat:'Beverages',    rev:112, val:0.74, cx:0.28, stockouts:1, promo:0.24, margin:43, growth:0.14,  lead:12, householdPenetration:0.64},
   {name:'BrandC Orange Soda 500ml',cat:'Beverages',   rev:95,  val:0.68, cx:0.32, stockouts:2, promo:0.31, margin:40, growth:0.08,  lead:12, householdPenetration:0.55},
   {name:'Premium Cold Brew 250ml',cat:'Beverages',    rev:130, val:0.81, cx:0.45, stockouts:1, promo:0.15, margin:48, growth:0.25,  lead:16, householdPenetration:0.48},
-  {name:'Organic Lemonade 1L',    cat:'Beverages',    rev:85,  val:0.63, cx:0.38, stockouts:3, promo:0.35, margin:37, growth:0.06,  lead:14, householdPenetration:0.42},
-  {name:'Pomegranate Juice 1L',   cat:'Beverages',    rev:72,  val:0.54, cx:0.52, stockouts:4, promo:0.48, margin:33, growth:-0.02, lead:18, householdPenetration:0.32},
+  {name:'Organic Lemonade 1K',    cat:'Beverages',    rev:85,  val:0.63, cx:0.38, stockouts:3, promo:0.35, margin:37, growth:0.06,  lead:14, householdPenetration:0.42},
+  {name:'Pomegranate Juice 1K',   cat:'Beverages',    rev:72,  val:0.54, cx:0.52, stockouts:4, promo:0.48, margin:33, growth:-0.02, lead:18, householdPenetration:0.32},
   {name:'Apple Juice Box 6-Pack', cat:'Beverages',    rev:105, val:0.72, cx:0.26, stockouts:1, promo:0.20, margin:39, growth:0.10,  lead:10, householdPenetration:0.67},
   {name:'BrandC Sugar Free Energy',cat:'Beverages',   rev:88,  val:0.69, cx:0.40, stockouts:2, promo:0.28, margin:42, growth:0.18,  lead:12, householdPenetration:0.49},
   {name:'Ginger Beer 4-Pack',     cat:'Beverages',    rev:64,  val:0.50, cx:0.48, stockouts:3, promo:0.38, margin:35, growth:0.04,  lead:15, householdPenetration:0.38},
-  {name:'Tonic Water 1L',         cat:'Beverages',    rev:55,  val:0.45, cx:0.30, stockouts:2, promo:0.25, margin:38, growth:0.02,  lead:10, householdPenetration:0.44},
+  {name:'Tonic Water 1K',         cat:'Beverages',    rev:55,  val:0.45, cx:0.30, stockouts:2, promo:0.25, margin:38, growth:0.02,  lead:10, householdPenetration:0.44},
   {name:'Sparkling Water Lime 500ml',cat:'Beverages', rev:118, val:0.76, cx:0.22, stockouts:1, promo:0.12, margin:44, growth:0.21,  lead:8,  householdPenetration:0.70},
   {name:'Sparkling Water Berry 500ml',cat:'Beverages',rev:110, val:0.73, cx:0.24, stockouts:2, promo:0.14, margin:43, growth:0.19,  lead:8,  householdPenetration:0.68},
   {name:'Peach Iced Tea 500ml',   cat:'Beverages',    rev:82,  val:0.60, cx:0.36, stockouts:2, promo:0.34, margin:36, growth:0.07,  lead:12, householdPenetration:0.51},
@@ -324,8 +324,8 @@ export const SKUS = [
   {name:'BrandB Greek Yogurt Plain',cat:'Dairy',      rev:120, val:0.85, cx:0.28, stockouts:1, promo:0.18, margin:43, growth:0.15,  lead:8,  householdPenetration:0.74},
   {name:'BrandB Greek Yogurt Blueberry',cat:'Dairy',  rev:95,  val:0.70, cx:0.35, stockouts:2, promo:0.28, margin:39, growth:0.09,  lead:10, householdPenetration:0.58},
   {name:'BrandB Greek Yogurt Honey',cat:'Dairy',      rev:88,  val:0.65, cx:0.38, stockouts:3, promo:0.32, margin:38, growth:0.07,  lead:10, householdPenetration:0.52},
-  {name:'Organic Whole Milk 1L',  cat:'Dairy',        rev:130, val:0.88, cx:0.22, stockouts:1, promo:0.12, margin:35, growth:0.05,  lead:6,  householdPenetration:0.82},
-  {name:'Organic Low Fat Milk 1L',cat:'Dairy',        rev:118, val:0.80, cx:0.22, stockouts:2, promo:0.15, margin:34, growth:0.03,  lead:6,  householdPenetration:0.76},
+  {name:'Organic Whole Milk 1K',  cat:'Dairy',        rev:130, val:0.88, cx:0.22, stockouts:1, promo:0.12, margin:35, growth:0.05,  lead:6,  householdPenetration:0.82},
+  {name:'Organic Low Fat Milk 1K',cat:'Dairy',        rev:118, val:0.80, cx:0.22, stockouts:2, promo:0.15, margin:34, growth:0.03,  lead:6,  householdPenetration:0.76},
   {name:'Salted Butter 250g',     cat:'Dairy',        rev:115, val:0.81, cx:0.25, stockouts:1, promo:0.16, margin:38, growth:0.06,  lead:9,  householdPenetration:0.78},
   {name:'Unsalted Butter 250g',   cat:'Dairy',        rev:92,  val:0.68, cx:0.28, stockouts:2, promo:0.22, margin:38, growth:0.04,  lead:9,  householdPenetration:0.62},
   {name:'Whipped Cream Can',      cat:'Dairy',        rev:60,  val:0.44, cx:0.48, stockouts:4, promo:0.45, margin:30, growth:-0.02, lead:14, householdPenetration:0.38},
@@ -336,11 +336,11 @@ export const SKUS = [
 
   // Household
   {name:'Floor Cleaner',          cat:'Household',    rev:38,  val:0.29, cx:0.74, stockouts:6, promo:0.68, margin:19, growth:-0.16, lead:31, householdPenetration:0.14},
-  {name:'Dish Soap 1L',           cat:'Household',    rev:92,  val:0.65, cx:0.35, stockouts:2, promo:0.28, margin:36, growth:0.14,  lead:13, householdPenetration:0.55},
+  {name:'Dish Soap 1K',           cat:'Household',    rev:92,  val:0.65, cx:0.35, stockouts:2, promo:0.28, margin:36, growth:0.14,  lead:13, householdPenetration:0.55},
   {name:'Fabric Softener',        cat:'Household',    rev:28,  val:0.22, cx:0.81, stockouts:7, promo:0.76, margin:15, growth:-0.22, lead:35, householdPenetration:0.10},
   {name:'Laundry Pods Premium',   cat:'Household',    rev:115, val:0.81, cx:0.33, stockouts:1, promo:0.24, margin:46, growth:0.24,  lead:12, householdPenetration:0.74},
   {name:'BrandF Detergent',       cat:'Household',    rev:66,  val:0.58, cx:0.48, stockouts:3, promo:0.36, margin:33, growth:0.05,  lead:15, householdPenetration:0.44},
-  {name:'Multi-Surface Cleaner 1L',cat:'Household',   rev:100, val:0.72, cx:0.32, stockouts:2, promo:0.24, margin:38, growth:0.11,  lead:12, householdPenetration:0.60},
+  {name:'Multi-Surface Cleaner 1K',cat:'Household',   rev:100, val:0.72, cx:0.32, stockouts:2, promo:0.24, margin:38, growth:0.11,  lead:12, householdPenetration:0.60},
   {name:'Glass Cleaner Spray 500ml',cat:'Household',  rev:78,  val:0.56, cx:0.38, stockouts:3, promo:0.32, margin:35, growth:0.04,  lead:14, householdPenetration:0.48},
   {name:'Dish Soap Lemon 500ml',  cat:'Household',    rev:85,  val:0.62, cx:0.28, stockouts:1, promo:0.20, margin:37, growth:0.08,  lead:10, householdPenetration:0.59},
   {name:'Dishwasher Pods 30ct',   cat:'Household',    rev:120, val:0.84, cx:0.35, stockouts:1, promo:0.18, margin:48, growth:0.20,  lead:14, householdPenetration:0.70},
@@ -348,10 +348,10 @@ export const SKUS = [
   {name:'Kitchen Paper Towels 4-Pack',cat:'Household',rev:110, val:0.78, cx:0.24, stockouts:2, promo:0.19, margin:32, growth:0.08,  lead:8,  householdPenetration:0.78},
   {name:'Toilet Paper 12-Pack',   cat:'Household',    rev:140, val:0.90, cx:0.20, stockouts:1, promo:0.12, margin:30, growth:0.04,  lead:6,  householdPenetration:0.85},
   {name:'BrandF Detergent Powder 2kg',cat:'Household',rev:88,  val:0.64, cx:0.42, stockouts:3, promo:0.29, margin:35, growth:0.06,  lead:13, householdPenetration:0.52},
-  {name:'Fabric Softener Lavender 1L',cat:'Household',rev:42,  val:0.30, cx:0.72, stockouts:5, promo:0.65, margin:20, growth:-0.12, lead:28, householdPenetration:0.22},
+  {name:'Fabric Softener Lavender 1K',cat:'Household',rev:42,  val:0.30, cx:0.72, stockouts:5, promo:0.65, margin:20, growth:-0.12, lead:28, householdPenetration:0.22},
   {name:'Disinfecting Wipes 80ct',cat:'Household',    rev:105, val:0.75, cx:0.30, stockouts:2, promo:0.20, margin:42, growth:0.14,  lead:12, householdPenetration:0.64},
   {name:'Air Freshener Spray 300ml',cat:'Household',  rev:50,  val:0.35, cx:0.55, stockouts:4, promo:0.48, margin:28, growth:-0.06, lead:18, householdPenetration:0.30},
-  {name:'Drain Clog Remover 1L',  cat:'Household',    rev:55,  val:0.39, cx:0.62, stockouts:4, promo:0.42, margin:31, growth:-0.04, lead:20, householdPenetration:0.25},
+  {name:'Drain Clog Remover 1K',  cat:'Household',    rev:55,  val:0.39, cx:0.62, stockouts:4, promo:0.42, margin:31, growth:-0.04, lead:20, householdPenetration:0.25},
   {name:'Bathroom Cleaner Gel 750ml',cat:'Household', rev:72,  val:0.52, cx:0.45, stockouts:3, promo:0.35, margin:33, growth:0.02,  lead:15, householdPenetration:0.40},
 ];
 
@@ -365,7 +365,7 @@ export const VP_ALERTS = [
 ];
 
 export const VP_APPROVALS = [
-  {id:'p1',title:'Mango Fizz 750ml — Launch budget ₹4.2 Cr',type:'Launch' as const,urgency:'high' as const,age:'2d',done:false},
+  {id:'p1',title:'Mango Fizz 750ml — Launch budget $4.2M',type:'Launch' as const,urgency:'high' as const,age:'2d',done:false},
   {id:'p2',title:'Choco Wafers promo extension — Q4',type:'Promo' as const,urgency:'medium' as const,age:'4d',done:false},
   {id:'p3',title:'Foam Face Wash rationalization sign-off',type:'Rationalize' as const,urgency:'low' as const,age:'6d',done:false},
 ];
@@ -377,7 +377,7 @@ export const VP_FORECAST = [
 ];
 
 export const VP_KPI_BASE = [
-  {label:'Total Revenue',value:851,unit:'₹ Cr',trend:+8.4,spark:[720,748,771,790,810,822,838,851],color:'#534AB7',fmt:(v: number)=>v+' Cr'},
+  {label:'Total Revenue',value:851,unit:'$ M',trend:+8.4,spark:[720,748,771,790,810,822,838,851],color:'#534AB7',fmt:(v: number)=>v+' M'},
   {label:'Gross Margin',value:36.2,unit:'%',trend:+1.1,spark:[33.1,33.8,34.2,34.9,35.4,35.8,36.0,36.2],color:'#0F6E56',fmt:(v: number)=>v+'%'},
   {label:'Active SKUs',value:100,unit:'',trend:-3,spark:[134,133,131,130,129,128,128,100],color:'#185FA5',fmt:(v: number)=>String(v)},
   {label:'Critical Alerts',value:2,unit:'',trend:+2,spark:[0,0,1,0,1,2,2,2],color:'#A32D2D',fmt:(v: number)=>String(v)},

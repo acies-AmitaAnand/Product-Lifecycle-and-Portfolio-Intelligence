@@ -117,7 +117,7 @@ export const ActionRoutingPanel: React.FC<ActionRoutingPanelProps> = ({
   // 2. Margin differential uplift + complexity savings (5% of SKU A rev)
   const marginDiffUplift = transferenceVolume * ((marginB - marginA) / 100);
   const complexitySavings = revA * 0.05;
-  const annualSavingsLakhs = Math.round((marginDiffUplift + complexitySavings) * 100);
+  const annualSavingsK = Math.round((marginDiffUplift + complexitySavings) * 100);
 
   // 3. Dynamic Exit Costs (decrease as exitDateDays increases)
   const inventoryWriteoff = (revA * 10) * Math.max(0.02, 0.8 - (exitDateDays / 150));
@@ -127,7 +127,7 @@ export const ActionRoutingPanel: React.FC<ActionRoutingPanelProps> = ({
   const totalExitCost = Math.round(inventoryWriteoff + packagingObsolescence + markdownCost);
 
   // 4. Payback Period
-  const monthlySavings = annualSavingsLakhs / 12;
+  const monthlySavings = annualSavingsK / 12;
   const paybackMonths = parseFloat((totalExitCost / (monthlySavings || 1)).toFixed(1));
 
   // 5. Retailer Notice Checklist Status
@@ -276,10 +276,10 @@ export const ActionRoutingPanel: React.FC<ActionRoutingPanelProps> = ({
   const getStepLogData = (si: number) => {
     if (isHigh) {
       if (activeTeamKey === 'pricing') {
-        if (si === 0) return { details: 'SKU A: ₹90, SKU B: ₹80, Price Gap: 12.5%', rationale: 'Pulled pricing structures to verify distributor and retail pricing ladders between sibling SKUs.' };
+        if (si === 0) return { details: 'SKU A: $90, SKU B: $80, Price Gap: 12.5%', rationale: 'Pulled pricing structures to verify distributor and retail pricing ladders between sibling SKUs.' };
         if (si === 1) return { details: `Price Gap Shift: ${pricingPriceShift >= 0 ? '+' : ''}${pricingPriceShift}%, Vol. Shift: +${(15 + pricingPriceShift * 0.8).toFixed(1)}%`, rationale: 'Simulated pricing gap tweaks to model cross-elasticity and कैटेगरी demand shifts.' };
         if (si === 2) return { details: 'Promo calendar de-conflicted', rationale: 'Shifted promotional calendar offsets to avoid overlapping discount periods and blended margins erosion.' };
-        return { details: 'Brief Sheet Submitted', rationale: `Escalated rationalization case (Score: ${(pairRisk * 100).toFixed(0)}%, At Risk: ₹${Math.round(pairRisk * 42)} Cr) to rationalization committee.` };
+        return { details: 'Brief Sheet Submitted', rationale: `Escalated rationalization case (Score: ${(pairRisk * 100).toFixed(0)}%, At Risk: $${Math.round(pairRisk * 42)} M) to rationalization committee.` };
       }
       if (activeTeamKey === 'product') {
         if (si === 0) return { details: 'Added to rationalization watchlist', rationale: `Shortlisted SKU ${skuA} for sunset portfolio analysis due to high substitution rates with SKU ${skuB}.` };
@@ -289,7 +289,7 @@ export const ActionRoutingPanel: React.FC<ActionRoutingPanelProps> = ({
       // supplychain
       if (si === 0) return { details: 'Replenishment frozen in WMS ledger', rationale: 'Halted replenishment releases in inventory systems to run down channel stock.' };
       if (si === 1) return { details: `Safety stock buffer adjusted: +${supplySafetyStockShift}%`, rationale: `Raised sibling SKU ${skuB} safety buffer parameters in MRP systems to insulate against supply gaps.` };
-      return { details: `Freed warehouse bays: 4. Capital: ₹${Math.round(pairRisk * 40)}L`, rationale: 'De-allocated storage bay assignments in distribution center, releasing working capital.' };
+      return { details: `Freed warehouse bays: 4. Capital: $${Math.round(pairRisk * 40)}L`, rationale: 'De-allocated storage bay assignments in distribution center, releasing working capital.' };
     } else if (isMod) {
       if (activeTeamKey === 'product') {
         if (si === 0) return { details: 'BI weekly alert enabled', rationale: 'Configured weekly sales-overlap triggers in category intelligence boards.' };
@@ -371,11 +371,11 @@ export const ActionRoutingPanel: React.FC<ActionRoutingPanelProps> = ({
           </div>
           <div className="grid grid-cols-3 gap-2 text-[9px] font-semibold text-center divide-y divide-black/[0.02] dark:divide-white/[0.02] text-zinc-550 dark:text-zinc-400">
             <div className="text-left font-bold text-[8px] uppercase">Base Retail Price</div>
-            <div>₹90</div>
-            <div>₹80</div>
+            <div>$90</div>
+            <div>$80</div>
             <div className="text-left font-bold text-[8px] uppercase pt-1.5">Distributor Price</div>
-            <div className="pt-1.5">₹65</div>
-            <div className="pt-1.5">₹55</div>
+            <div className="pt-1.5">$65</div>
+            <div className="pt-1.5">$55</div>
             <div className="text-left font-bold text-[8px] uppercase pt-1.5">Gross Margin</div>
             <div className="pt-1.5 text-red-500 font-extrabold font-bold">41.0%</div>
             <div className="pt-1.5 text-emerald-500 font-extrabold font-bold">34.0%</div>
@@ -383,7 +383,7 @@ export const ActionRoutingPanel: React.FC<ActionRoutingPanelProps> = ({
           <hr className="border-dashed border-zinc-200 dark:border-zinc-800" />
           <div className="space-y-1">
             <span className="text-zinc-400 block uppercase tracking-wider text-[8px] font-bold font-sans">Price Positioning Audit</span>
-            <p>· Sibling {skuB ? skuB.split(' ')[0] : ''} sits ₹10 lower in the retail value tier.</p>
+            <p>· Sibling {skuB ? skuB.split(' ')[0] : ''} sits $10 lower in the retail value tier.</p>
             <p>· Net margins are aligned; margin shift will be mitigated by volume transference gains.</p>
           </div>
           <hr className="border-dashed border-zinc-200 dark:border-zinc-800" />
@@ -456,14 +456,14 @@ export const ActionRoutingPanel: React.FC<ActionRoutingPanelProps> = ({
             <p>Sunset Candidate SKU: <strong>{skuA}</strong></p>
             <p>Target Category: {category}</p>
             <p>Risk Score: {(pairRisk * 100).toFixed(0)}% Substitution Risk</p>
-            <p>Estimated Revenue Exposure: ₹{Math.round(pairRisk * 42)} Cr</p>
+            <p>Estimated Revenue Exposure: ${Math.round(pairRisk * 42)} M</p>
           </div>
           <hr className="border-dashed border-zinc-200 dark:border-zinc-800" />
           <div className="space-y-1">
             <span className="text-zinc-400 block uppercase tracking-wider text-[8px] font-bold font-sans">Escalation Justification</span>
             <p>· Sibling variant {skuB} has capacity margins and supply network ready to absorb sunset demand.</p>
             <p>· Eliminating SKU A will simplify manufacturing lines, reducing logistics and changeover overhead.</p>
-            <p>· Net annual Category saving is estimated to reach ₹{annualSavingsLakhs}L.</p>
+            <p>· Net annual Category saving is estimated to reach ${annualSavingsK}L.</p>
           </div>
           <hr className="border-dashed border-zinc-200 dark:border-zinc-800" />
           <div className="flex justify-between items-end pt-4">
@@ -712,17 +712,17 @@ export const ActionRoutingPanel: React.FC<ActionRoutingPanelProps> = ({
           <hr className="border-dashed border-zinc-200 dark:border-zinc-800" />
           <div className="space-y-1">
             <span className="text-zinc-400 block uppercase tracking-wider text-[8px] font-bold font-sans">Quantitative Elasticity Parameters</span>
-            <p>Sunset SKU Base Price: ₹90</p>
-            <p>Sibling SKU Base Price: ₹80</p>
+            <p>Sunset SKU Base Price: $90</p>
+            <p>Sibling SKU Base Price: $80</p>
             <p>Estimated Sibling Volume Shift: +{(15 + pricingPriceShift * 0.8).toFixed(1)}%</p>
             <p>Uncompensated Category Leakage: {(100 - transferenceRate).toFixed(1)}%</p>
           </div>
           <hr className="border-dashed border-zinc-200 dark:border-zinc-800" />
           <div className="space-y-1">
             <span className="text-zinc-400 block uppercase tracking-wider text-[8px] font-bold font-sans">Financial Net Benefit</span>
-            <p>Net Annual Margin Uplift: ₹{marginDiffUplift.toFixed(2)} Cr</p>
-            <p>Complexity Savings (Logistics release): ₹{complexitySavings.toFixed(2)} Cr</p>
-            <p>Total Estimated Annual Category Gain: ₹{(marginDiffUplift + complexitySavings).toFixed(2)} Cr</p>
+            <p>Net Annual Margin Uplift: ${marginDiffUplift.toFixed(2)} M</p>
+            <p>Complexity Savings (Logistics release): ${complexitySavings.toFixed(2)} M</p>
+            <p>Total Estimated Annual Category Gain: ${(marginDiffUplift + complexitySavings).toFixed(2)} M</p>
           </div>
           <hr className="border-dashed border-zinc-200 dark:border-zinc-800" />
           <div className="flex justify-between items-end pt-4">
@@ -753,7 +753,7 @@ export const ActionRoutingPanel: React.FC<ActionRoutingPanelProps> = ({
             <p>Target DC: Pune Regional Distribution Center</p>
             <p>Released Pallet Locations: 120 locations (Bays DC-2 & DC-4)</p>
             <p>Inventory Level: 0 cases (Run-down completed)</p>
-            <p>Recovered Storage Capital: ₹{(pairRisk * 40).toFixed(1)} Lakhs / year</p>
+            <p>Recovered Storage Capital: ${(pairRisk * 40).toFixed(1)} K / year</p>
           </div>
           <hr className="border-dashed border-zinc-200 dark:border-zinc-800" />
           <div className="space-y-1">
@@ -949,11 +949,11 @@ export const ActionRoutingPanel: React.FC<ActionRoutingPanelProps> = ({
                             </div>
                             <div className="grid grid-cols-3 gap-2 text-[9px] font-semibold text-center divide-y divide-black/[0.02] dark:divide-white/[0.02] text-zinc-500 dark:text-zinc-400">
                               <div className="text-left font-bold text-[8px] uppercase">Base Retail Price</div>
-                              <div>₹90</div>
-                              <div>₹80</div>
+                              <div>$90</div>
+                              <div>$80</div>
                               <div className="text-left font-bold text-[8px] uppercase pt-1.5">Distributor price</div>
-                              <div className="pt-1.5">₹65</div>
-                              <div className="pt-1.5">₹55</div>
+                              <div className="pt-1.5">$65</div>
+                              <div className="pt-1.5">$55</div>
                               <div className="text-left font-bold text-[8px] uppercase pt-1.5">Gross Margin</div>
                               <div className="pt-1.5 text-red-500 font-extrabold">41.0%</div>
                               <div className="pt-1.5 text-emerald-500 font-extrabold">34.0%</div>
@@ -1026,7 +1026,7 @@ export const ActionRoutingPanel: React.FC<ActionRoutingPanelProps> = ({
                             <span className="text-[8px] font-black uppercase tracking-wider text-zinc-450 dark:text-zinc-500 block">Rationalization Brief Parameters</span>
                             <div className="text-[8.5px] font-bold space-y-1 bg-black/5 dark:bg-white/5 p-2 rounded text-zinc-450">
                               <div className="flex justify-between"><span>Risk score:</span><span>{(pairRisk*100).toFixed(0)}%</span></div>
-                              <div className="flex justify-between"><span>Revenue at risk:</span><span>₹{Math.round(pairRisk * 42)} Cr</span></div>
+                              <div className="flex justify-between"><span>Revenue at risk:</span><span>${Math.round(pairRisk * 42)} M</span></div>
                               <div className="flex justify-between"><span>Sibling variant:</span><span>{skuB}</span></div>
                             </div>
                           </div>
@@ -1137,7 +1137,7 @@ export const ActionRoutingPanel: React.FC<ActionRoutingPanelProps> = ({
                             <span className="text-[8px] font-black uppercase tracking-wider text-zinc-450 dark:text-zinc-500 block">Form SC-114 Bay Release</span>
                             <div className="text-[8.5px] font-bold text-zinc-450 space-y-1 bg-black/5 dark:bg-white/5 p-2 rounded">
                               <div className="flex justify-between"><span>Assigned Bays:</span><span>4 Bays (DC-2, DC-4)</span></div>
-                              <div className="flex justify-between"><span>Freed Working Capital:</span><span className="text-emerald-500 font-extrabold">₹{Math.round(pairRisk * 40)}L</span></div>
+                              <div className="flex justify-between"><span>Freed Working Capital:</span><span className="text-emerald-500 font-extrabold">${Math.round(pairRisk * 40)}L</span></div>
                             </div>
                           </div>
                         )}
@@ -1248,7 +1248,7 @@ export const ActionRoutingPanel: React.FC<ActionRoutingPanelProps> = ({
         <BusinessCaseAdvisor
           paybackMonths={paybackMonths}
           totalExitCost={totalExitCost}
-          annualSavingsLakhs={annualSavingsLakhs}
+          annualSavingsK={annualSavingsK}
           exitDateDays={exitDateDays}
           skuB={skuB}
           transferenceRate={transferenceRate}

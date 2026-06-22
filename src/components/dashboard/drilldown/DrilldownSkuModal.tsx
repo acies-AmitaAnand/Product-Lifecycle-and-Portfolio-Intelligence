@@ -124,7 +124,7 @@ export const DrilldownSkuModal: React.FC<DrilldownSkuModalProps> = ({
         title: 'Rollback Trade Promotion Caps to Recover Margin',
         desc: `${Math.round(rawSku.promo * 100)}% of sales are promo-driven. Shift spend to brand equity campaigns.`,
         email: 'rajesh.verma@aciesglobal.com',
-        body: `Hi Rajesh,\n\nLooking at the promo reliance for "${rawSku.name}" in ${selectedRegion}. With ${Math.round(rawSku.promo * 100)}% of sales driven by discounts, our trade promo spend is ₹${wTradePromo} Cr. This is diluting our margins.\n\nWe need to implement a selective promotional cap (maximum 30% discount ceiling) next quarter. Let's align on next steps.\n\nRegards,\nExecutive Director`
+        body: `Hi Rajesh,\n\nLooking at the promo reliance for "${rawSku.name}" in ${selectedRegion}. With ${Math.round(rawSku.promo * 100)}% of sales driven by discounts, our trade promo spend is $${wTradePromo} M. This is diluting our margins.\n\nWe need to implement a selective promotional cap (maximum 30% discount ceiling) next quarter. Let's align on next steps.\n\nRegards,\nExecutive Director`
       });
     }
 
@@ -138,9 +138,9 @@ export const DrilldownSkuModal: React.FC<DrilldownSkuModalProps> = ({
     } else {
       recs.push({
         title: 'Optimize Safety Stock Buffers',
-        desc: `Logistics lines are healthy (${skuLead}d lead time). Buffer release releases ₹${(skuRev * 0.03).toFixed(1)} Cr capital.`,
+        desc: `Logistics lines are healthy (${skuLead}d lead time). Buffer release releases $${(skuRev * 0.03).toFixed(1)} M capital.`,
         email: 'nisha.patel@aciesglobal.com',
-        body: `Hi Nisha,\n\nGiven the logistics stability of "${rawSku.name}" in ${selectedRegion} (lead time: ${skuLead} days), we have an opportunity to optimize safety stock.\n\nBased on our model, releasing safety stock buffers can free up ₹${(skuRev * 0.03).toFixed(1)} Cr in locked inventory capital at the ${regionObj.plant} warehouse. Please set up a simulation.\n\nThanks,\nExecutive Director`
+        body: `Hi Nisha,\n\nGiven the logistics stability of "${rawSku.name}" in ${selectedRegion} (lead time: ${skuLead} days), we have an opportunity to optimize safety stock.\n\nBased on our model, releasing safety stock buffers can free up $${(skuRev * 0.03).toFixed(1)} M in locked inventory capital at the ${regionObj.plant} warehouse. Please set up a simulation.\n\nThanks,\nExecutive Director`
       });
     }
 
@@ -229,8 +229,8 @@ export const DrilldownSkuModal: React.FC<DrilldownSkuModalProps> = ({
             <div className="p-3 bg-zinc-50 dark:bg-white/5 border border-black/5 dark:border-white/10 rounded flex flex-col justify-between h-18">
               <p className="font-bold text-[8px] uppercase tracking-widest text-zinc-450 leading-none">Realized Revenue</p>
               <div className="flex items-baseline gap-1 mt-1">
-                <span className="text-lg font-display font-extrabold text-acies-yellow">₹{skuRev.toFixed(1)}</span>
-                <span className="text-[10px] font-bold text-zinc-450">Cr</span>
+                <span className="text-lg font-display font-extrabold text-acies-yellow">${skuRev.toFixed(1)}</span>
+                <span className="text-[10px] font-bold text-zinc-450">M</span>
               </div>
               <p className="text-[7px] text-zinc-450 uppercase tracking-wider font-bold">Horizon: {timeHorizon}</p>
             </div>
@@ -305,12 +305,12 @@ export const DrilldownSkuModal: React.FC<DrilldownSkuModalProps> = ({
                         <BarChart data={waterfallData} margin={{ top: 15, right: 5, left: -25, bottom: 5 }}>
                           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridStroke} />
                           <XAxis dataKey="name" tick={{ fill: tickColor, fontSize: 8 }} axisLine={false} tickLine={false} />
-                          <YAxis tick={{ fill: tickColor, fontSize: 8 }} label={{ value: '₹ Crore', angle: -90, position: 'insideLeft', fill: tickColor, fontSize: 8 }} axisLine={false} tickLine={false} />
+                          <YAxis tick={{ fill: tickColor, fontSize: 8 }} label={{ value: '$ Million', angle: -90, position: 'insideLeft', fill: tickColor, fontSize: 8 }} axisLine={false} tickLine={false} />
                           <Tooltip 
                             contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, color: tooltipText }}
                             itemStyle={{ fontSize: 10 }}
                             formatter={(value: any, name: any, props: any) => {
-                              return [`₹${props.payload.displayVal} Cr`, 'Value'];
+                              return [`$${props.payload.displayVal} M`, 'Value'];
                             }}
                           />
                           <Bar dataKey="bottom" stackId="topdown-wfall" fill="transparent" />
@@ -407,8 +407,8 @@ export const DrilldownSkuModal: React.FC<DrilldownSkuModalProps> = ({
                       <tbody className="divide-y divide-black/5 dark:divide-white/10 font-medium">
                         <tr>
                           <td className="py-2 px-2.5 text-zinc-700 dark:text-zinc-300">Gross Sales Revenue</td>
-                          <td className="py-2 px-2 text-right text-zinc-500 dark:text-zinc-450">₹{wRevenue.toFixed(1)} Cr</td>
-                          <td className="py-2 px-2 text-right text-acies-yellow font-bold">₹{wRevenue.toFixed(1)} Cr</td>
+                          <td className="py-2 px-2 text-right text-zinc-500 dark:text-zinc-450">${wRevenue.toFixed(1)} M</td>
+                          <td className="py-2 px-2 text-right text-acies-yellow font-bold">${wRevenue.toFixed(1)} M</td>
                           <td className="py-2 px-2.5 text-right text-zinc-400 font-mono">—</td>
                         </tr>
                         <tr>
@@ -416,10 +416,10 @@ export const DrilldownSkuModal: React.FC<DrilldownSkuModalProps> = ({
                             <span className="text-red-500 text-[8px] bg-red-500/10 px-1 rounded font-extrabold leading-none">−</span>
                             Trade Promotions
                           </td>
-                          <td className="py-2 px-2 text-right text-zinc-500 dark:text-zinc-450">-₹{wTradePromo.toFixed(1)} Cr</td>
-                          <td className="py-2 px-2 text-right text-red-500 font-semibold">-₹{simTradePromo.toFixed(1)} Cr</td>
+                          <td className="py-2 px-2 text-right text-zinc-500 dark:text-zinc-450">-${wTradePromo.toFixed(1)} M</td>
+                          <td className="py-2 px-2 text-right text-red-500 font-semibold">-${simTradePromo.toFixed(1)} M</td>
                           <td className="py-2 px-2.5 text-right text-green-500 font-bold font-mono">
-                            {wTradePromo - simTradePromo > 0 ? `+₹${(wTradePromo - simTradePromo).toFixed(1)} Cr` : '—'}
+                            {wTradePromo - simTradePromo > 0 ? `+$${(wTradePromo - simTradePromo).toFixed(1)} M` : '—'}
                           </td>
                         </tr>
                         <tr>
@@ -427,10 +427,10 @@ export const DrilldownSkuModal: React.FC<DrilldownSkuModalProps> = ({
                             <span className="text-orange-500 text-[8px] bg-orange-500/10 px-1 rounded font-extrabold leading-none">−</span>
                             Manufacturing COGS
                           </td>
-                          <td className="py-2 px-2 text-right text-zinc-500 dark:text-zinc-450">-₹{wCOGS.toFixed(1)} Cr</td>
-                          <td className="py-2 px-2 text-right text-orange-500 font-semibold">-₹{simCOGS.toFixed(1)} Cr</td>
+                          <td className="py-2 px-2 text-right text-zinc-500 dark:text-zinc-450">-${wCOGS.toFixed(1)} M</td>
+                          <td className="py-2 px-2 text-right text-orange-500 font-semibold">-${simCOGS.toFixed(1)} M</td>
                           <td className="py-2 px-2.5 text-right text-green-500 font-bold font-mono">
-                            {wCOGS - simCOGS > 0 ? `+₹${(wCOGS - simCOGS).toFixed(1)} Cr` : '—'}
+                            {wCOGS - simCOGS > 0 ? `+$${(wCOGS - simCOGS).toFixed(1)} M` : '—'}
                           </td>
                         </tr>
                         <tr>
@@ -438,26 +438,26 @@ export const DrilldownSkuModal: React.FC<DrilldownSkuModalProps> = ({
                             <span className="text-blue-500 text-[8px] bg-blue-500/10 px-1 rounded font-extrabold leading-none">−</span>
                             Logistics & Dist.
                           </td>
-                          <td className="py-2 px-2 text-right text-zinc-500 dark:text-zinc-450">-₹{wLogistics.toFixed(1)} Cr</td>
-                          <td className="py-2 px-2 text-right text-blue-500 font-semibold">-₹{simLogistics.toFixed(1)} Cr</td>
+                          <td className="py-2 px-2 text-right text-zinc-500 dark:text-zinc-450">-${wLogistics.toFixed(1)} M</td>
+                          <td className="py-2 px-2 text-right text-blue-500 font-semibold">-${simLogistics.toFixed(1)} M</td>
                           <td className="py-2 px-2.5 text-right text-green-500 font-bold font-mono">
-                            {wLogistics - simLogistics > 0 ? `+₹${(wLogistics - simLogistics).toFixed(1)} Cr` : '—'}
+                            {wLogistics - simLogistics > 0 ? `+$${(wLogistics - simLogistics).toFixed(1)} M` : '—'}
                           </td>
                         </tr>
                         <tr className="bg-black/[0.02] dark:bg-white/[0.02] font-bold text-zinc-805 dark:text-white border-t border-black/10 dark:border-white/15">
                           <td className="py-2.5 px-2.5">Net Oper. Profit</td>
                           <td className="py-2.5 px-2 text-right text-zinc-450 dark:text-zinc-500 font-medium">
-                            ₹{wNetProfit.toFixed(1)} Cr
+                            ${wNetProfit.toFixed(1)} M
                             <span className="text-[7.5px] block font-normal text-zinc-450">({((wNetProfit / wRevenue) * 100).toFixed(1)}%)</span>
                           </td>
                           <td className="py-2.5 px-2 text-right text-emerald-500">
-                            ₹{simNetProfit.toFixed(1)} Cr
+                            ${simNetProfit.toFixed(1)} M
                             <span className="text-[7.5px] block font-extrabold text-emerald-500">({((simNetProfit / wRevenue) * 100).toFixed(1)}%)</span>
                           </td>
                           <td className="py-2.5 px-2.5 text-right text-green-500 font-black text-[10px] font-mono leading-tight">
                             {simNetProfit - wNetProfit > 0 ? (
                               <>
-                                <span className="block font-black">+₹{(simNetProfit - wNetProfit).toFixed(1)} Cr</span>
+                                <span className="block font-black">+${(simNetProfit - wNetProfit).toFixed(1)} M</span>
                                 <span className="text-[7.5px] font-extrabold block">+{(((simNetProfit - wNetProfit) / wRevenue) * 100).toFixed(1)}pp</span>
                               </>
                             ) : '—'}

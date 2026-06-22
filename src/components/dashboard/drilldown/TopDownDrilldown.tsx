@@ -23,7 +23,7 @@ const REGIONS_CONFIG: Record<string, { name: string; manager: string; email: str
 const REGION_SKUS: Record<string, string[]> = {
   APAC:     ['Mango Fizz 500ml', 'Oat Cookies',     'Herbal Shampoo',  'Hand Cream SPF'],
   Americas: ['Choco Wafers',     'Fabric Softener',  'Floor Cleaner',   'Green Tea RTD'],
-  EMEA:     ['Dish Soap 1L',     'Aloe Vera Drink',  'Masala Puffs',    'Foam Face Wash'],
+  EMEA:     ['Dish Soap 1K',     'Aloe Vera Drink',  'Masala Puffs',    'Foam Face Wash'],
   LATAM:    ['Mango Fizz 500ml', 'Oat Cookies',      'Fabric Softener', 'Floor Cleaner'],
 };
 

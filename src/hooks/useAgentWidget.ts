@@ -53,15 +53,15 @@ export const useAgentWidget = (
       } else if (activeTab === 8) {
         if (lowerMsg.includes('area') || lowerMsg.includes('region') || lowerMsg.includes('country') || lowerMsg.includes('category')) {
           replyText = `Here is the top performing SKU per area:
-• Beverages: BrandF Water (₹17.03 Cr)
-• Snacks: BrandC Chips (₹16.00 Cr)
-• Personal Care: BrandC Toothpaste (₹12.97 Cr)
-• Dairy: BrandD Cheese (₹11.20 Cr)
-• Home Care: BrandB Detergent (₹9.20 Cr)
+• Beverages: BrandF Water ($17.03M)
+• Snacks: BrandC Chips ($16.00M)
+• Personal Care: BrandC Toothpaste ($12.97M)
+• Dairy: BrandD Cheese ($11.20M)
+• Home Care: BrandB Detergent ($9.20M)
 
 Geographically, Italy's top seller is BrandF Water, while Spain is led by BrandC Chips and Germany by BrandB Chips.`;
         } else if (lowerMsg.includes('best') || lowerMsg.includes('top') || lowerMsg.includes('highest')) {
-          replyText = `Based on our multi-country sales data, our best performing SKU by Net Sales is BrandF Water (₹17.03 Cr) and by Gross Margin is also BrandF Water (₹6.83 Cr), followed closely by BrandC Chips (₹16.00 Cr).`;
+          replyText = `Based on our multi-country sales data, our best performing SKU by Net Sales is BrandF Water ($17.03M) and by Gross Margin is also BrandF Water ($6.83M), followed closely by BrandC Chips ($16.00M).`;
         } else if (lowerMsg.includes('worst') || lowerMsg.includes('lowest') || lowerMsg.includes('leakage') || lowerMsg.includes('drag') || lowerMsg.includes('burden')) {
           replyText = `The worst performing SKU in terms of growth is Fabric Softener (-22.2% growth, 15% margin). Also, Dairy has the highest concentration of low-performing items at 27.78%, and 68% of our catalog (68 SKUs) represents a long-tail burden contributing <1% revenue.`;
         } else if (lowerMsg.includes('netherlands') || lowerMsg.includes('gap') || lowerMsg.includes('realignment') || lowerMsg.includes('austria')) {
@@ -95,7 +95,7 @@ Geographically, Italy's top seller is BrandF Water, while Spain is led by BrandC
         if (lowerMsg.includes('ippv') || lowerMsg.includes('ranking') || lowerMsg.includes('league')) {
           replyText = `The IPPV table ranks SKUs by their commercial and household value. BrandB Chips leads with an IPPV of 100, while Green Tea RTD and Floor Cleaner are at the bottom of the league.`;
         } else if (lowerMsg.includes('cost') || lowerMsg.includes('hidden') || lowerMsg.includes('p&l') || lowerMsg.includes('downtime')) {
-          replyText = `The Complexity P&L shows hidden costs like downtime, transport overhead, and waste. Household has the highest total hidden cost at ₹2.4Cr, driven by short production runs and downtime.`;
+          replyText = `The Complexity P&L shows hidden costs like downtime, transport overhead, and waste. Household has the highest total hidden cost at $2.4M, driven by short production runs and downtime.`;
         } else if (lowerMsg.includes('bad') || lowerMsg.includes('complexity') || lowerMsg.includes('flywheel')) {
           replyText = `We have detected 8 Bad Complexity SKUs dragging down the flywheel score to 64. Bain recommends simplifying the tail to fund growth in high-IPPV core variants.`;
         } else {

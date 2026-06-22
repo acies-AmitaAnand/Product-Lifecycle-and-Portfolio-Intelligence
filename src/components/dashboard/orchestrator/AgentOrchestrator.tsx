@@ -425,11 +425,11 @@ export const AgentOrchestrator: React.FC<AgentOrchestratorProps> = ({ isDarkMode
                 <div className="flex items-center gap-3">
                   <div className="flex items-center gap-1.5">
                     <div className="w-2.5 h-2.5 rounded-full bg-purple-500/80" />
-                    <span className="text-[8px] uppercase font-bold text-zinc-400">Revenue (₹ Cr)</span>
+                    <span className="text-[8px] uppercase font-bold text-zinc-400">Revenue ($ M)</span>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <div className="w-2.5 h-2.5 rounded-full bg-blue-500/80" />
-                    <span className="text-[8px] uppercase font-bold text-zinc-400">Cash Position (₹ Cr)</span>
+                    <span className="text-[8px] uppercase font-bold text-zinc-400">Cash Position ($ M)</span>
                   </div>
                 </div>
               </div>
@@ -469,7 +469,7 @@ export const AgentOrchestrator: React.FC<AgentOrchestratorProps> = ({ isDarkMode
                 <div className="space-y-0.5">
                   <span className="text-[7.5px] uppercase font-bold text-zinc-400">June Forecast revenue</span>
                   <p className="text-sm font-display font-black text-zinc-800 dark:text-white">
-                    ₹{chartData[5].revenue} Cr
+                    ${chartData[5].revenue} M
                   </p>
                 </div>
                 <div className="space-y-0.5">
@@ -481,7 +481,7 @@ export const AgentOrchestrator: React.FC<AgentOrchestratorProps> = ({ isDarkMode
                 <div className="space-y-0.5">
                   <span className="text-[7.5px] uppercase font-bold text-zinc-400">June Ending cash position</span>
                   <p className="text-sm font-display font-black text-zinc-800 dark:text-white">
-                    ₹{chartData[5].cash} Cr
+                    ${chartData[5].cash} M
                   </p>
                 </div>
               </div>

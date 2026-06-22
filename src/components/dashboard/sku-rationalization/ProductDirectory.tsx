@@ -114,7 +114,7 @@ export const ProductDirectory: React.FC<ProductDirectoryProps> = ({
                       {isFrozen && <span title="Replenishment frozen" className="text-[9px]">❄️</span>}
                     </div>
                   </div>
-                  <div className="text-[8px] text-zinc-450 dark:text-zinc-500 font-bold uppercase mt-0.5">{sku.cat} · ₹{sku.rev}Cr · {getSkuLocation(sku.name)}</div>
+                  <div className="text-[8px] text-zinc-450 dark:text-zinc-500 font-bold uppercase mt-0.5">{sku.cat} · ${sku.rev}M · {getSkuLocation(sku.name)}</div>
                 </div>
                 <div className="flex justify-between items-center mt-2 font-sans">
                   <div className="flex items-center gap-1 flex-wrap">

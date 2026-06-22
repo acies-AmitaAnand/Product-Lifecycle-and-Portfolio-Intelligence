@@ -667,7 +667,7 @@ const CompetitiveIntelligenceModal: React.FC<CompetitiveIntelligenceModalProps> 
       ourProduct: 'BrandE Organic Shampoo (Personal Care)',
       summary: 'Rival brand GlowHerb secured 80% shelf targets in West India supermarkets, gaining high visibility.',
       metrics: [
-        { param: 'Retail Pricing', rival: '₹120', ours: '₹150', winner: 'rival', note: 'Rival targets mass market pricing' },
+        { param: 'Retail Pricing', rival: '$120', ours: '$150', winner: 'rival', note: 'Rival targets mass market pricing' },
         { param: 'Customer Rating', rival: '4.0 / 5.0', ours: '4.4 / 5.0', winner: 'ours', note: 'Our formula is rated significantly higher' },
         { param: 'Distribution Coverage', rival: '80%', ours: '55%', winner: 'rival', note: 'Rival has superior retail reach' },
         { param: 'Supermarket Shelf Visibility', rival: '90% (Premium End-cap)', ours: '40% (Bottom shelf)', winner: 'rival', note: 'Rival purchased premium placements' }

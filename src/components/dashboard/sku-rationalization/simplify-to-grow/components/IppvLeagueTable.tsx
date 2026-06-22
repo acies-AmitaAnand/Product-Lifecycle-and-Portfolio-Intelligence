@@ -180,7 +180,7 @@ export const IppvLeagueTable: React.FC<IppvLeagueTableProps> = ({
                         </td>
                         <td className="py-2 px-2 text-right font-black text-[10px]" style={{ color: cfg.color }}>{sku.ippv.toFixed(1)}</td>
                         <td className="py-2 px-2 text-right font-bold text-zinc-500 dark:text-zinc-400">{(sku.householdPenetration * 100).toFixed(0)}%</td>
-                        <td className="py-2 px-2 text-right font-bold text-amber-500">₹{sku.totalHiddenCost}L</td>
+                        <td className="py-2 px-2 text-right font-bold text-amber-500">${sku.totalHiddenCost}L</td>
                         <td className="py-2 px-2 text-center">
                           <span className="text-[7px] font-black px-1.5 py-0.5 rounded-sm uppercase tracking-widest"
                             style={{ backgroundColor: cfg.bg, color: cfg.color }}>{cfg.label}</span>

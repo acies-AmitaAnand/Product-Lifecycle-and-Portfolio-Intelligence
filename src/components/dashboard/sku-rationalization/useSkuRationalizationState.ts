@@ -87,7 +87,7 @@ export function useSkuRationalizationState(role: Role, isDarkMode: boolean, time
       },
       {
         label: 'Revenue at Risk',
-        value: `₹${revAtRisk} Cr`,
+        value: `$${revAtRisk} M`,
         trend: 'down' as const,
         trendValue: 'If tail SKUs removed',
         info: 'Estimated maximum revenue exposure if all sunset candidates are removed concurrently.',

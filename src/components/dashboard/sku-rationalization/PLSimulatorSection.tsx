@@ -203,7 +203,7 @@ export const PLSimulatorSection: React.FC<PLSimulatorSectionProps> = ({
                       <optgroup key={`optg-${cat}`} label={cat.toUpperCase()} className="font-extrabold text-[8px] tracking-wider text-zinc-400 dark:text-zinc-500 bg-white dark:bg-[#1a1a24] py-1">
                         {list.map(s => (
                           <option key={s.name} value={s.name} className="dark:bg-[#1a1a24] text-xs font-semibold text-zinc-800 dark:text-white">
-                            {s.name} (₹{s.rev}Cr • Margin {s.margin}%)
+                            {s.name} (${s.rev}M • Margin {s.margin}%)
                           </option>
                         ))}
                       </optgroup>
@@ -245,7 +245,7 @@ export const PLSimulatorSection: React.FC<PLSimulatorSectionProps> = ({
                         >
                           {sunsetSubstituteOptions.map(s => (
                             <option key={`subst-${s.name}`} value={s.name} className="dark:bg-[#1a1a24] text-xs font-semibold text-zinc-800 dark:text-white">
-                              {s.name} (₹{s.rev}Cr • Margin {s.margin}%)
+                              {s.name} (${s.rev}M • Margin {s.margin}%)
                             </option>
                           ))}
                         </select>
@@ -315,7 +315,7 @@ export const PLSimulatorSection: React.FC<PLSimulatorSectionProps> = ({
                     <div className="flex flex-col gap-1">
                       <div className="flex justify-between text-[9px] font-bold uppercase tracking-wider text-zinc-500">
                         <span>Expected Launch gross revenue (Yr 1)</span>
-                        <span className="text-acies-gray dark:text-white font-extrabold">₹{projectedRevenue} Cr</span>
+                        <span className="text-acies-gray dark:text-white font-extrabold">${projectedRevenue} M</span>
                       </div>
                       <input 
                         type="range"
@@ -395,23 +395,23 @@ export const PLSimulatorSection: React.FC<PLSimulatorSectionProps> = ({
                         <div className="flex justify-between items-center text-[9px] font-black uppercase text-zinc-400 tracking-wider">
                           <span className="flex items-center gap-1">💰 Revenue Redistribution Ledger</span>
                           <span className={`${removeRevImpact >= 0 ? 'text-emerald-500' : 'text-red-500'} font-extrabold`}>
-                            Net: ₹{removeRevImpact > 0 ? '+' : ''}{removeRevImpact} Cr
+                            Net: ${removeRevImpact > 0 ? '+' : ''}{removeRevImpact} M
                           </span>
                         </div>
                         <div className="divide-y divide-black/5 dark:divide-white/5 text-[10px] font-bold space-y-1.5 font-mono text-zinc-600 dark:text-zinc-350">
                           <div className="flex justify-between pt-1">
                             <span>Discontinued SKU Sales ({selectedSku.name.split(' ')[0]}):</span>
-                            <span className="text-red-500">₹-{selectedSku.rev} Cr</span>
+                            <span className="text-red-500">$-{selectedSku.rev} M</span>
                           </div>
                           {sunsetSubstituteSku && (
                             <div className="flex justify-between pt-1.5">
                               <span>Transferred to substitute ({sunsetSubstituteSku.name.split(' ')[0]}):</span>
-                              <span className="text-emerald-500">₹+{transferredVolume} Cr</span>
+                              <span className="text-emerald-500">$+{transferredVolume} M</span>
                             </div>
                           )}
                           <div className="flex justify-between pt-1.5">
                             <span>Cannibalization Relief (organic category boost):</span>
-                            <span className="text-blue-500">₹+{cannibalizationRelief} Cr</span>
+                            <span className="text-blue-500">$+{cannibalizationRelief} M</span>
                           </div>
                         </div>
                       </div>
@@ -420,7 +420,7 @@ export const PLSimulatorSection: React.FC<PLSimulatorSectionProps> = ({
                       <div className="bg-white dark:bg-[#1a1a24] p-3 rounded border border-black/5 dark:border-white/10 space-y-1 shadow-sm flex flex-col justify-between">
                         <div>
                           <div className="text-[8px] font-black uppercase tracking-widest text-zinc-455">Complexity Savings</div>
-                          <div className="text-sm font-black text-blue-500 mt-1">₹+{complexitySavings} Cr</div>
+                          <div className="text-sm font-black text-blue-500 mt-1">$+{complexitySavings} M</div>
                         </div>
                         <div className="text-[7.5px] font-semibold text-zinc-500 leading-tight">
                           Frees {selectedSku.lead}d lead buffer · −{selectedSku.stockouts} stockout events · cuts overhead 4%
@@ -451,7 +451,7 @@ export const PLSimulatorSection: React.FC<PLSimulatorSectionProps> = ({
                           <span className="text-[8px] font-bold">Transferred + Savings vs delisted</span>
                         </div>
                         <h5 className={`text-base font-display font-extrabold mt-1.5 ${netProfitImpact >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
-                          {netProfitImpact >= 0 ? '+' : ''}₹{netProfitImpact} Cr
+                          {netProfitImpact >= 0 ? '+' : ''}${netProfitImpact} M
                         </h5>
                         <p className="text-[8.5px] font-bold text-zinc-500 dark:text-zinc-400 mt-1 uppercase tracking-wide leading-normal">
                           {netProfitImpact >= 0 
@@ -496,10 +496,10 @@ export const PLSimulatorSection: React.FC<PLSimulatorSectionProps> = ({
                                 )}
                               </div>
                               <div className="grid grid-cols-2 gap-x-2 gap-y-1 text-[7.5px] font-bold text-zinc-450 dark:text-zinc-500 uppercase mt-1">
-                                <span className="flex items-center gap-1">🟢 Transferred: ₹{transferredVolume} Cr ({trPct}%)</span>
-                                <span className="flex items-center gap-1">🔵 Relief: ₹{cannibalizationRelief} Cr ({reliefPct}%)</span>
-                                <span className="flex items-center gap-1">🔴 Leakage: ₹{(leakageVolume * 0.6).toFixed(1)} Cr ({leakPct}%)</span>
-                                <span className="flex items-center gap-1">🟡 Defection: ₹{(leakageVolume * 0.4).toFixed(1)} Cr ({defectPct}%)</span>
+                                <span className="flex items-center gap-1">🟢 Transferred: ${transferredVolume} M ({trPct}%)</span>
+                                <span className="flex items-center gap-1">🔵 Relief: ${cannibalizationRelief} M ({reliefPct}%)</span>
+                                <span className="flex items-center gap-1">🔴 Leakage: ${(leakageVolume * 0.6).toFixed(1)} M ({leakPct}%)</span>
+                                <span className="flex items-center gap-1">🟡 Defection: ${(leakageVolume * 0.4).toFixed(1)} M ({defectPct}%)</span>
                               </div>
                             </>
                           );
@@ -513,9 +513,9 @@ export const PLSimulatorSection: React.FC<PLSimulatorSectionProps> = ({
                       <div className="bg-white dark:bg-[#1a1a24] p-3 rounded border border-black/5 dark:border-white/10 space-y-1 shadow-sm">
                         <div className="text-[8px] font-black uppercase tracking-widest text-zinc-455">Revenue Delta</div>
                         <div className={`text-sm font-black ${revDelta >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
-                          {revDelta > 0 ? '+' : ''}₹{revDelta} Cr
+                          {revDelta > 0 ? '+' : ''}${revDelta} M
                         </div>
-                        <div className="text-[7.5px] font-semibold text-zinc-500">New base: ₹{newRev} Cr</div>
+                        <div className="text-[7.5px] font-semibold text-zinc-500">New base: ${newRev} M</div>
                         <div className="w-full h-1 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden mt-1">
                           <div className={`h-full ${revDelta >= 0 ? 'bg-emerald-500' : 'bg-red-500'}`} style={{ width: `${Math.min(100, Math.abs(revDelta / (selectedSku.rev || 1) * 100))}%` }} />
                         </div>
@@ -574,7 +574,7 @@ export const PLSimulatorSection: React.FC<PLSimulatorSectionProps> = ({
                               <YAxis tick={{ fontSize: 7, fill: tickColor }} axisLine={false} tickLine={false} />
                               <Tooltip
                                 contentStyle={{ backgroundColor: tooltipBg, borderColor: tooltipBorder, color: tooltipText, fontSize: '8.5px' }}
-                                formatter={(value) => [`₹${value} Cr`, 'Revenue']}
+                                formatter={(value) => [`$${value} M`, 'Revenue']}
                               />
                               <Area type="monotone" dataKey="revenue" stroke="#8b5cf6" strokeWidth={2} fillOpacity={1} fill="url(#priceCurveGlow)" />
                             </AreaChart>
@@ -591,7 +591,7 @@ export const PLSimulatorSection: React.FC<PLSimulatorSectionProps> = ({
                     <>
                       <div className="bg-white dark:bg-[#1a1a24] p-3 rounded border border-black/5 dark:border-white/10 space-y-1 shadow-sm">
                         <div className="text-[8px] font-black uppercase tracking-widest text-zinc-455">Projected Sales</div>
-                        <div className="text-sm font-black text-blue-500">₹{netLaunchRev} Cr</div>
+                        <div className="text-sm font-black text-blue-500">${netLaunchRev} M</div>
                         <div className="text-[7.5px] font-semibold text-zinc-550">{`Minus ${Math.round(cannHaircut * 100)}% displacement`}</div>
                         <div className="w-full h-1 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden mt-1">
                           <div className="h-full bg-blue-500" style={{ width: `${Math.min(100, netLaunchRev / 2)}%` }} />
@@ -612,8 +612,8 @@ export const PLSimulatorSection: React.FC<PLSimulatorSectionProps> = ({
                         <div className={`text-sm font-black ${cannibalizationRisk === 2 ? 'text-red-500' : cannibalizationRisk === 1 ? 'text-amber-500' : 'text-emerald-500'}`}>
                           {cannRiskLabel}
                         </div>
-                        <div className="text-[7.5px] font-semibold text-zinc-550 truncate" title={`Displaces ~₹${(projectedRevenue * cannHaircut).toFixed(1)} Cr`}>
-                          {`Displaces ~₹${(projectedRevenue * cannHaircut).toFixed(1)} Cr`}
+                        <div className="text-[7.5px] font-semibold text-zinc-550 truncate" title={`Displaces ~$${(projectedRevenue * cannHaircut).toFixed(1)} M`}>
+                          {`Displaces ~$${(projectedRevenue * cannHaircut).toFixed(1)} M`}
                         </div>
                         <div className="w-full h-1 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden mt-1">
                           <div className={`h-full ${cannibalizationRisk === 2 ? 'bg-red-500' : cannibalizationRisk === 1 ? 'bg-amber-500' : 'bg-emerald-500'}`} style={{ width: `${cannHaircut * 500}%` }} />
@@ -648,8 +648,8 @@ export const PLSimulatorSection: React.FC<PLSimulatorSectionProps> = ({
                           )}
                         </div>
                         <div className="flex justify-between text-[8px] font-bold text-zinc-450 dark:text-zinc-500 uppercase mt-1">
-                          <span className="flex items-center gap-1">🟢 Net Incremental: ₹{netLaunchRev.toFixed(1)} Cr</span>
-                          <span className="flex items-center gap-1">🔴 Cannibalized Sibling: ₹{(projectedRevenue * cannHaircut).toFixed(1)} Cr</span>
+                          <span className="flex items-center gap-1">🟢 Net Incremental: ${netLaunchRev.toFixed(1)} M</span>
+                          <span className="flex items-center gap-1">🔴 Cannibalized Sibling: ${(projectedRevenue * cannHaircut).toFixed(1)} M</span>
                         </div>
                       </div>
                     </>
@@ -685,13 +685,13 @@ export const PLSimulatorSection: React.FC<PLSimulatorSectionProps> = ({
                       <strong>Core Rationale:</strong> Sunsetting <strong className="text-zinc-700 dark:text-white">{selectedSku.name}</strong> eliminates a low-value, high-complexity variant ({selectedSku.cx * 100}% complexity score). 
                       {sunsetSubstituteSku ? (
                         <span>
-                          {" "}Migrating buyers to the higher-margin substitute <strong className="text-zinc-700 dark:text-white">{sunsetSubstituteSku.name}</strong> ({sunsetSubstituteSku.margin}% margin vs {selectedSku.margin}%) recaptures <strong className="text-emerald-505">₹{transferredVolume} Cr</strong> of revenue.
+                          {" "}Migrating buyers to the higher-margin substitute <strong className="text-zinc-700 dark:text-white">{sunsetSubstituteSku.name}</strong> ({sunsetSubstituteSku.margin}% margin vs {selectedSku.margin}%) recaptures <strong className="text-emerald-505">${transferredVolume} M</strong> of revenue.
                         </span>
                       ) : null}
-                      {" "}This triggers a complexity cost savings of <strong className="text-blue-500">₹{complexitySavings} Cr</strong> and recovers <strong className="text-blue-500">₹{cannibalizationRelief} Cr</strong> in cannibalization relief on the substitute.
+                      {" "}This triggers a complexity cost savings of <strong className="text-blue-500">${complexitySavings} M</strong> and recovers <strong className="text-blue-500">${cannibalizationRelief} M</strong> in cannibalization relief on the substitute.
                     </p>
                     <p>
-                      <strong>Net Portfolio Impact:</strong> Total profit shifts by <strong className={netProfitImpact >= 0 ? 'text-emerald-500' : 'text-red-500'}>₹{netProfitImpact} Cr</strong> with a blended margin shift of <strong className={removeMarginImpact >= 0 ? 'text-emerald-500' : 'text-red-500'}>{removeMarginImpact > 0 ? '+' : ''}{removeMarginImpact}pp</strong>.
+                      <strong>Net Portfolio Impact:</strong> Total profit shifts by <strong className={netProfitImpact >= 0 ? 'text-emerald-500' : 'text-red-500'}>${netProfitImpact} M</strong> with a blended margin shift of <strong className={removeMarginImpact >= 0 ? 'text-emerald-500' : 'text-red-500'}>{removeMarginImpact > 0 ? '+' : ''}{removeMarginImpact}pp</strong>.
                     </p>
                     <p>
                       <strong>Implementation Strategy:</strong> Issue 60-day notices to retail partners. Raise safety stock buffers by <strong className="text-purple-550">15%</strong> on substitute {sunsetSubstituteSku ? sunsetSubstituteSku.name.split(' ')[0] : 'sibling'} to capture shifted volume and prevent stockout leakages.
@@ -704,12 +704,12 @@ export const PLSimulatorSection: React.FC<PLSimulatorSectionProps> = ({
                   <div>
                     {simTab === 'price' && (
                       <span>
-                        <strong>AI Reasoner Feedback:</strong> A pricing shift of <strong>{priceChange > 0 ? '+' : ''}{priceChange}%</strong> on <strong>{selectedSku.name}</strong> with a volume elasticity coefficient of {volumeElasticity}x is predicted to {revDelta > 0 ? 'increase' : 'decrease'} revenue by ₹{Math.abs(revDelta)} Cr and {newMargin > selectedSku.margin ? 'lift' : 'reduce'} margins to {newMargin}%.
+                        <strong>AI Reasoner Feedback:</strong> A pricing shift of <strong>{priceChange > 0 ? '+' : ''}{priceChange}%</strong> on <strong>{selectedSku.name}</strong> with a volume elasticity coefficient of {volumeElasticity}x is predicted to {revDelta > 0 ? 'increase' : 'decrease'} revenue by ${Math.abs(revDelta)} M and {newMargin > selectedSku.margin ? 'lift' : 'reduce'} margins to {newMargin}%.
                       </span>
                     )}
                     {simTab === 'launch' && (
                       <span>
-                        <strong>AI Reasoner Feedback:</strong> A new launch projected at ₹{projectedRevenue} Cr and {expectedMargin}% margin with a <strong>{cannRiskLabel}</strong> cannibalization rate is predicted to deliver ₹{netLaunchRev} Cr net portfolio revenue after cannibalization adjustments.
+                        <strong>AI Reasoner Feedback:</strong> A new launch projected at ${projectedRevenue} M and {expectedMargin}% margin with a <strong>{cannRiskLabel}</strong> cannibalization rate is predicted to deliver ${netLaunchRev} M net portfolio revenue after cannibalization adjustments.
                       </span>
                     )}
                   </div>
@@ -757,12 +757,12 @@ export const PLSimulatorSection: React.FC<PLSimulatorSectionProps> = ({
               <ComposedChart data={paretoData} margin={{ top: 10, right: 10, left: 10, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} />
                 <XAxis dataKey="name" tick={{ fontSize: 8, fill: tickColor }} />
-                <YAxis yAxisId="left" tick={{ fontSize: 8, fill: tickColor }} label={{ value: 'Revenue (₹ Cr)', angle: -90, position: 'insideLeft', fill: tickColor, fontSize: 9 }} />
+                <YAxis yAxisId="left" tick={{ fontSize: 8, fill: tickColor }} label={{ value: 'Revenue ($ M)', angle: -90, position: 'insideLeft', fill: tickColor, fontSize: 9 }} />
                 <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 8, fill: tickColor }} label={{ value: 'Cumulative %', angle: 90, position: 'insideRight', fill: tickColor, fontSize: 9 }} domain={[0, 100]} />
                 <Tooltip 
                   contentStyle={{ backgroundColor: tooltipBg, borderColor: tooltipBorder, color: tooltipText, fontSize: '9px' }}
                   formatter={(value: any, name: any, props: any) => {
-                    if (name === 'Revenue') return [`₹${value} Cr (${props.payload.aiClass})`, 'Revenue'];
+                    if (name === 'Revenue') return [`$${value} M (${props.payload.aiClass})`, 'Revenue'];
                     if (name === 'cumPct') return [`${value}%`, 'Cumulative Revenue'];
                     if (name === 'simCumPct') return [`${value}%`, 'Simulated Cumulative'];
                     return [value, name];
