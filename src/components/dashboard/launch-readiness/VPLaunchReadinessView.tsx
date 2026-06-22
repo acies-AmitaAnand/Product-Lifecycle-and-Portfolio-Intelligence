@@ -278,8 +278,8 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
 
   const [stageGates, setStageGates] = useState<ProductStageGates[]>(() => generateInitialStageGates(VP_PRODUCTS));
   const [selectedProductId, setSelectedProductId] = useState<string>('LP01');
+  const [trackerSelectedCategory, setTrackerSelectedCategory] = useState<string>('Beverages');
   const [selectedStageName, setSelectedStageName] = useState<'Concept' | 'Development' | 'Validation' | 'Launch Ready' | 'Live'>('Concept');
-  const [trackerSearch, setTrackerSearch] = useState('');
   const [trackerFilterStatus, setTrackerFilterStatus] = useState<string>('All');
   const [trackerFilterOwner, setTrackerFilterOwner] = useState<string>('All');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -374,6 +374,13 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
     const interval = setInterval(updateTime, 1000);
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    const selectedProd = stageGates.find(sg => sg.productId === selectedProductId);
+    if (selectedProd && selectedProd.category !== trackerSelectedCategory) {
+      setTrackerSelectedCategory(selectedProd.category);
+    }
+  }, [selectedProductId, stageGates, trackerSelectedCategory]);
 
   const addToast = (title: string, body: string, color: string) => {
     const id = Date.now().toString();
@@ -678,9 +685,7 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
     insightText = `${delayedCount} pipeline products are experiencing delay threats, dragging the readiness score. Mitigation required.`;
   }
   // Group products by category for the dropdown menu
-  const dropdownFilteredGates = stageGates.filter(sg => 
-    sg.productName.toLowerCase().includes(trackerSearch.toLowerCase())
-  );
+  const dropdownFilteredGates = stageGates;
   const dropdownCategories = Array.from(new Set(dropdownFilteredGates.map(sg => sg.category)));
 
   return (
@@ -947,18 +952,26 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
             <span className="text-[9px] font-extrabold uppercase tracking-widest text-[#6d28d9] dark:text-[#a78bfa] border-l-2 border-[#6d28d9] dark:border-[#a78bfa] pl-2 block">
               Stage Gate Status Tracker
             </span>
-            
             <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-              <div className="relative flex-1 sm:flex-initial">
-                <Search size={11} className="absolute left-2.5 top-2.5 text-zinc-400" />
-                <input
-                  type="text"
-                  placeholder="Search products..."
-                  value={trackerSearch}
-                  onChange={(e) => setTrackerSearch(e.target.value)}
-                  className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-sm pl-8 pr-2.5 py-1.5 text-[9px] font-bold text-zinc-650 dark:text-zinc-350 outline-none w-full sm:w-36 focus:border-blue-500/50"
-                />
-              </div>
+              <select
+                value={trackerSelectedCategory}
+                onChange={(e) => {
+                  const newCat = e.target.value;
+                  setTrackerSelectedCategory(newCat);
+                  const firstProdInCat = stageGates.find(sg => sg.category === newCat);
+                  if (firstProdInCat) {
+                    setSelectedProductId(firstProdInCat.productId);
+                    setSelectedStageName('Concept');
+                  }
+                }}
+                className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-sm p-1.5 text-[9px] font-bold text-[#6d28d9] dark:text-[#a78bfa] outline-none cursor-pointer"
+              >
+                {Array.from(new Set(stageGates.map(sg => sg.category))).map(cat => (
+                  <option key={cat} value={cat} className="text-[9px] font-bold text-zinc-800 dark:text-zinc-200 bg-white dark:bg-zinc-950">
+                    {cat}
+                  </option>
+                ))}
+              </select>
 
               <select
                 value={selectedProductId}
@@ -968,17 +981,13 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
                 }}
                 className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-sm p-1.5 text-[9px] font-bold text-zinc-650 dark:text-zinc-350 outline-none cursor-pointer"
               >
-                {dropdownCategories.map(cat => (
-                  <optgroup key={cat} label={cat} className="text-[8px] font-extrabold uppercase text-[#6d28d9] dark:text-[#a78bfa] bg-white dark:bg-zinc-950">
-                    {dropdownFilteredGates
-                      .filter(sg => sg.category === cat)
-                      .map(sg => (
-                        <option key={sg.productId} value={sg.productId} className="text-[9px] font-bold text-zinc-800 dark:text-zinc-200 bg-white dark:bg-zinc-950">
-                          {sg.productId} - {sg.productName}
-                        </option>
-                      ))}
-                  </optgroup>
-                ))}
+                {stageGates
+                  .filter(sg => sg.category === trackerSelectedCategory)
+                  .map(sg => (
+                    <option key={sg.productId} value={sg.productId} className="text-[9px] font-bold text-zinc-800 dark:text-zinc-200 bg-white dark:bg-zinc-950">
+                      {sg.productId} - {sg.productName}
+                    </option>
+                  ))}
               </select>
             </div>
           </div>
