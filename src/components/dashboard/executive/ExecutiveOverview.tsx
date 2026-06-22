@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   TrendingUp, TrendingDown, Check, X, AlertTriangle, RefreshCw, Zap, Clock, Home, List, PieChart, BarChart2, Calendar, LayoutGrid,
-  LineChart as LucideLineChart, AreaChart as LucideAreaChart, Radar as LucideRadar, Activity, ChevronDown, ChevronUp, BookOpen
+  LineChart as LucideLineChart, AreaChart as LucideAreaChart, Radar as LucideRadar, Activity, ChevronDown, ChevronUp, BookOpen, Cpu
 } from 'lucide-react';
 import { 
   ResponsiveContainer, AreaChart, Area, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, BarChart, Bar, Cell, PieChart as RePieChart, Pie, Legend,
@@ -18,6 +18,7 @@ import { EmailComposerModal } from '../portfolio-health/EmailComposerModal';
 import { TrendMonthForecastModal } from './TrendMonthForecastModal';
 import { CategoryPerformanceDetailsModal } from './CategoryPerformanceDetailsModal';
 import { SmartAlertDetailsModal, AlertData } from './SmartAlertDetailsModal';
+import { AgenticAlertExplanationModal } from './AgenticAlertExplanationModal';
 import { EventsCalendarModal } from '../portfolio-health/EventsCalendarModal';
 import { ScheduleMeetingModal } from '../portfolio-health/ScheduleMeetingModal';
 
@@ -796,6 +797,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedAlert, setSelectedAlert] = useState<any>(null);
   const [activeAlertMeeting, setActiveAlertMeeting] = useState<AlertData | null>(null);
+  const [isAgenticExplanationOpen, setIsAgenticExplanationOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
 
@@ -891,21 +893,32 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
   const alertsBlock = (
     <div className="glass-card bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 p-3.5">
       <div className="flex justify-between items-center pb-2.5 border-b border-black/5 dark:border-white/5 mb-2.5">
-        <h3 className="text-[11px] font-bold uppercase tracking-widest flex items-center gap-1.5">
+        <h3 className="text-[11px] font-bold uppercase tracking-widest flex items-center gap-1.5 select-none">
+          <Cpu size={11} className="text-[#6d28d9] dark:text-[#a78bfa] shrink-0 animate-pulse" />
           Smart Alerts
-          <span className="text-[9px] font-extrabold bg-red-500 text-white rounded-full px-1.5 py-0.5">
+          <span className="text-[9px] font-extrabold bg-red-500 text-white rounded-full px-1.5 py-0.5 animate-pulse">
             {alerts.length}
           </span>
         </h3>
-        {alerts.length > 0 && (
+        <div className="flex items-center gap-2">
           <button 
             type="button"
-            onClick={handleAckAllAlerts}
-            className="text-[8px] font-bold uppercase tracking-widest border border-black/10 dark:border-white/10 px-2 py-1 hover:bg-black/5 dark:hover:bg-white/5 transition-all cursor-pointer"
+            onClick={() => setIsAgenticExplanationOpen(true)}
+            className="text-[8px] font-bold uppercase tracking-widest border border-[#a78bfa]/40 text-[#6d28d9] dark:text-[#a78bfa] px-2 py-1 hover:bg-[#6d28d9]/5 dark:hover:bg-[#a78bfa]/5 transition-all cursor-pointer flex items-center gap-1 rounded-sm"
           >
-            Acknowledge All
+            <Cpu size={10} className="animate-pulse" />
+            Inspect Swarm
           </button>
-        )}
+          {alerts.length > 0 && (
+            <button 
+              type="button"
+              onClick={handleAckAllAlerts}
+              className="text-[8px] font-bold uppercase tracking-widest border border-black/10 dark:border-white/10 px-2 py-1 hover:bg-black/5 dark:hover:bg-white/5 transition-all cursor-pointer rounded-sm"
+            >
+              Acknowledge All
+            </button>
+          )}
+        </div>
       </div>
 
       {alerts.length === 0 ? (
@@ -1843,6 +1856,21 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
         onScheduleMeeting={(alert) => {
           setActiveAlertMeeting(alert);
           setSelectedAlert(null);
+        }}
+      />
+
+      {/* Agentic Alert Explanation Modal */}
+      <AgenticAlertExplanationModal
+        isOpen={isAgenticExplanationOpen}
+        onClose={() => setIsAgenticExplanationOpen(false)}
+        alerts={alerts}
+        isDarkMode={isDarkMode}
+        onInvestigateAlert={(alertId) => {
+          setIsAgenticExplanationOpen(false);
+          const found = alerts.find(a => a.id === alertId);
+          if (found) {
+            setSelectedAlert(found);
+          }
         }}
       />
 
