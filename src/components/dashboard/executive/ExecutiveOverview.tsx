@@ -39,7 +39,7 @@ const CUSTOMER_INSIGHTS: Record<string, CustomerInsight[]> = {
       segment: 'Enterprise Chain • 98% Retention',
       revContribution: '$24.8 M',
       interestTrend: 'Rising demand for eco-friendly packaging and natural mineral mixers.',
-      buyingFocus: ['BrandF Water Eco-Pack', 'Coconut Water 1L'],
+      buyingFocus: ['BrandF Water Eco-Pack', 'Coconut Water 1K'],
       growthTrend: '+12.4% YoY',
       growthDirection: 'up'
     },
@@ -146,7 +146,7 @@ const CUSTOMER_INSIGHTS: Record<string, CustomerInsight[]> = {
       segment: 'Enterprise Chain • 96% Retention',
       revContribution: '$18.2 M',
       interestTrend: 'Substantial transition to premium concentrated cleaning capsules.',
-      buyingFocus: ['Laundry Pods Premium', 'Dish Soap 1L'],
+      buyingFocus: ['Laundry Pods Premium', 'Dish Soap 1K'],
       growthTrend: '+14.6% YoY',
       growthDirection: 'up'
     },
@@ -155,7 +155,7 @@ const CUSTOMER_INSIGHTS: Record<string, CustomerInsight[]> = {
       segment: 'Enterprise Chain • 98% Retention',
       revContribution: '$12.6 M',
       interestTrend: 'Volume restocking of general dish soaps and standard detergents.',
-      buyingFocus: ['BrandF Detergent', 'Dish Soap 1L'],
+      buyingFocus: ['BrandF Detergent', 'Dish Soap 1K'],
       growthTrend: '+5.3% YoY',
       growthDirection: 'up'
     },
@@ -196,7 +196,7 @@ const CUSTOMER_INSIGHTS_DATA: Record<string, Array<{
       segment: "Enterprise Chain • 98% Retention",
       revContribution: "$24.8 M",
       interestTrend: "Rising demand for eco-friendly packaging and natural mineral mixers.",
-      buyingFocus: ["BrandF Water Eco-Pack", "Coconut Water 1L"],
+      buyingFocus: ["BrandF Water Eco-Pack", "Coconut Water 1K"],
       growthTrend: "+12.4% YoY",
       growthDirection: "up"
     },
@@ -303,7 +303,7 @@ const CUSTOMER_INSIGHTS_DATA: Record<string, Array<{
       segment: "Enterprise Chain • 96% Retention",
       revContribution: "$18.2 M",
       interestTrend: "Substantial transition to premium concentrated cleaning capsules.",
-      buyingFocus: ["Laundry Pods Premium", "Dish Soap 1L"],
+      buyingFocus: ["Laundry Pods Premium", "Dish Soap 1K"],
       growthTrend: "+14.6% YoY",
       growthDirection: "up"
     },
@@ -312,7 +312,7 @@ const CUSTOMER_INSIGHTS_DATA: Record<string, Array<{
       segment: "Enterprise Chain • 98% Retention",
       revContribution: "$12.6 M",
       interestTrend: "Volume restocking of general dish soaps and standard detergents.",
-      buyingFocus: ["BrandF Detergent", "Dish Soap 1L"],
+      buyingFocus: ["BrandF Detergent", "Dish Soap 1K"],
       growthTrend: "+5.3% YoY",
       growthDirection: "up"
     },

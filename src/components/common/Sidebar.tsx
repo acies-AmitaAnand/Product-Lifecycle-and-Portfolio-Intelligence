@@ -84,7 +84,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, close }) => (
             </div>
             <div className="flex items-center gap-3 mb-8 relative z-10">
               <span className="text-2xl font-display text-acies-yellow">03</span>
-              <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-white">Agentic Bus (Future)</h3>
+              <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-white">Agentic Swarm (Future)</h3>
             </div>
             <p className="text-sm opacity-90 leading-relaxed mb-10 relative z-10">
               Agentic simulations target top 12% revenue drivers for 68% portfolio margin uplift. Orchestrated 

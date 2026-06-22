@@ -421,6 +421,53 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
     addToast('Escalation Resolved', `${title}: ${actionMsg}`, '#10b981');
   };
 
+  const [selectedSimProductId, setSelectedSimProductId] = useState<string>('LP01');
+  const [activeRecommendations, setActiveRecommendations] = useState<string[]>([]);
+  const [simValues, setSimValues] = useState<Record<string, number>>({});
+
+  // Helper to compute stable baseline scores for the 8 dimensions of any product based on its ID, base readiness, and risk rating.
+  const getProductDimensions = (p: VPLaunchProduct) => {
+    const seed = p.id.charCodeAt(2) + p.id.charCodeAt(3);
+    const base = p.readiness;
+    
+    // Distribute variations around base
+    const variations = [
+      (seed % 7) - 3,
+      ((seed >> 1) % 9) - 4,
+      ((seed >> 2) % 5) - 2,
+      ((seed >> 3) % 11) - 5,
+      ((seed >> 4) % 7) - 3,
+      ((seed >> 5) % 9) - 4,
+      ((seed >> 6) % 5) - 2,
+      0
+    ];
+    
+    const rawScores = variations.map(v => Math.max(10, Math.min(100, base + v * 3)));
+    const sumRaw = rawScores.slice(0, 7).reduce((a, b) => a + b, 0);
+    const targetSum = base * 8;
+    const lastScore = Math.max(10, Math.min(100, targetSum - sumRaw));
+    rawScores[7] = lastScore;
+    
+    return {
+      'Product Readiness': rawScores[0],
+      'Market Readiness': rawScores[1],
+      'Sales Readiness': rawScores[2],
+      'Marketing Readiness': rawScores[3],
+      'Operations Readiness': rawScores[4],
+      'Customer Support Readiness': rawScores[5],
+      'Compliance Readiness': rawScores[6],
+      'Financial Readiness': rawScores[7]
+    };
+  };
+
+  const selectedSimProduct = VP_PRODUCTS.find(p => p.id === selectedSimProductId) || VP_PRODUCTS[0];
+
+  useEffect(() => {
+    const base = getProductDimensions(selectedSimProduct);
+    setSimValues(base);
+    setActiveRecommendations([]);
+  }, [selectedSimProductId]);
+
   const processedProducts = VP_PRODUCTS.map(p => {
     let readiness = p.readiness;
     let risk = p.risk;
@@ -495,23 +542,7 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
     { name: 'Launch', count: pipelineCounts.Launch, fill: '#10b981' }
   ];
 
-  const baseRadarData = [
-    { subject: 'Marketing', Actual: 85, Target: 90 },
-    { subject: 'Supply Chain', Actual: 72, Target: 85 },
-    { subject: 'Manufacturing', Actual: 80, Target: 88 },
-    { subject: 'Finance', Actual: 92, Target: 90 },
-    { subject: 'Sales Enablement', Actual: 78, Target: 85 },
-    { subject: 'Regulatory', Actual: 68, Target: 85 },
-    { subject: 'Procurement', Actual: 75, Target: 80 },
-  ];
 
-  const radarData = baseRadarData.map(r => {
-    if (simulateDelay) {
-      if (r.subject === 'Supply Chain') return { ...r, Actual: Math.max(0, r.Actual - 12) };
-      if (r.subject === 'Manufacturing') return { ...r, Actual: Math.max(0, r.Actual - 8) };
-    }
-    return r;
-  });
 
   const regionsList = ['APAC', 'EMEA', 'Americas', 'India'];
   const categoriesList = ['Beverages', 'Snacks', 'Personal Care', 'Household'];
@@ -631,6 +662,142 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
   // Group products by category for the dropdown menu
   const dropdownFilteredGates = stageGates;
   const dropdownCategories = Array.from(new Set(dropdownFilteredGates.map(sg => sg.category)));
+
+  const RECOMMENDATIONS = [
+    {
+      id: 'qa',
+      title: 'QA & Beta Testing Acceleration',
+      description: 'Deploy extra QA engineers to finish beta sign-offs.',
+      cost: 0.015,
+      impactText: '+15% Product Readiness',
+      apply: (current: Record<string, number>, active: boolean) => {
+        const copy = { ...current };
+        const diff = active ? 15 : -15;
+        copy['Product Readiness'] = Math.max(10, Math.min(100, (copy['Product Readiness'] || 0) + diff));
+        return copy;
+      }
+    },
+    {
+      id: 'compliance',
+      title: 'Fast-Track Compliance Audit',
+      description: 'Retain external compliance agency for labels audit.',
+      cost: 0.020,
+      impactText: '+25% Compliance Readiness',
+      apply: (current: Record<string, number>, active: boolean) => {
+        const copy = { ...current };
+        const diff = active ? 25 : -25;
+        copy['Compliance Readiness'] = Math.max(10, Math.min(100, (copy['Compliance Readiness'] || 0) + diff));
+        return copy;
+      }
+    },
+    {
+      id: 'campaign',
+      title: 'Boost Target Campaign Spend',
+      description: 'Increase localized digital marketing budget.',
+      cost: 0.035,
+      impactText: '+20% Marketing, +15% Market Readiness',
+      apply: (current: Record<string, number>, active: boolean) => {
+        const copy = { ...current };
+        const diff = active ? 20 : -20;
+        const diff2 = active ? 15 : -15;
+        copy['Marketing Readiness'] = Math.max(10, Math.min(100, (copy['Marketing Readiness'] || 0) + diff));
+        copy['Market Readiness'] = Math.max(10, Math.min(100, (copy['Market Readiness'] || 0) + diff2));
+        return copy;
+      }
+    },
+    {
+      id: 'sales',
+      title: 'Field Sales Enablement Plan',
+      description: 'Distribute updated collateral and interactive training.',
+      cost: 0.010,
+      impactText: '+20% Sales Readiness',
+      apply: (current: Record<string, number>, active: boolean) => {
+        const copy = { ...current };
+        const diff = active ? 20 : -20;
+        copy['Sales Readiness'] = Math.max(10, Math.min(100, (copy['Sales Readiness'] || 0) + diff));
+        return copy;
+      }
+    },
+    {
+      id: 'logistics',
+      title: 'Activate Backup Logistics Hub',
+      description: 'Secure secondary co-packer and distribution partner.',
+      cost: 0.040,
+      impactText: '+25% Operations Readiness',
+      apply: (current: Record<string, number>, active: boolean) => {
+        const copy = { ...current };
+        const diff = active ? 25 : -25;
+        copy['Operations Readiness'] = Math.max(10, Math.min(100, (copy['Operations Readiness'] || 0) + diff));
+        return copy;
+      }
+    },
+    {
+      id: 'support',
+      title: 'Scale Support Team Training',
+      description: 'Onboard temporary customer support agents.',
+      cost: 0.012,
+      impactText: '+15% Customer Support Readiness',
+      apply: (current: Record<string, number>, active: boolean) => {
+        const copy = { ...current };
+        const diff = active ? 15 : -15;
+        copy['Customer Support Readiness'] = Math.max(10, Math.min(100, (copy['Customer Support Readiness'] || 0) + diff));
+        return copy;
+      }
+    }
+  ];
+
+  const handleToggleRecommendation = (recId: string) => {
+    const rec = RECOMMENDATIONS.find(r => r.id === recId);
+    if (!rec) return;
+    
+    const isCurrentlyActive = activeRecommendations.includes(recId);
+    if (isCurrentlyActive) {
+      setActiveRecommendations(prev => prev.filter(id => id !== recId));
+      setSimValues(prev => rec.apply(prev, false));
+      addToast('Recommendation Deactivated', `${rec.title} protocols disabled.`, '#3b82f6');
+    } else {
+      setActiveRecommendations(prev => [...prev, recId]);
+      setSimValues(prev => rec.apply(prev, true));
+      addToast('Recommendation Activated', `${rec.title} protocols deployed.`, '#10b981');
+    }
+  };
+
+  const dimensionsList = [
+    'Product Readiness',
+    'Market Readiness',
+    'Sales Readiness',
+    'Marketing Readiness',
+    'Operations Readiness',
+    'Customer Support Readiness',
+    'Compliance Readiness',
+    'Financial Readiness'
+  ];
+
+  const baseValues = getProductDimensions(selectedSimProduct);
+
+  const radarChartData = dimensionsList.map(dim => {
+    return {
+      subject: dim.replace(' Readiness', ''),
+      'Baseline': baseValues[dim] || 0,
+      'Simulated': simValues[dim] || 0,
+    };
+  });
+
+  const simulatedLri = Math.round(
+    dimensionsList.reduce((sum, dim) => sum + (simValues[dim] || 0), 0) / dimensionsList.length
+  );
+  
+  const baselineLri = Math.round(
+    dimensionsList.reduce((sum, dim) => sum + (baseValues[dim] || 0), 0) / dimensionsList.length
+  );
+
+  const simulatedSpent = parseFloat(
+    (
+      selectedSimProduct.spent +
+      activeRecommendations.reduce((sum, recId) => sum + (RECOMMENDATIONS.find(r => r.id === recId)?.cost || 0), 0)
+    ).toFixed(3)
+  );
+  const costSlippage = parseFloat((simulatedSpent - selectedSimProduct.spent).toFixed(3));
 
   return (
     <div className="space-y-6">
@@ -1540,11 +1707,282 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
         </div>
       </div>
 
-      {/* Row 3: AI Risk Predictions & Cross-Functional Readiness */}
+      {/* AI-Powered Launch Readiness Simulator Panel */}
+      <div className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-6 rounded-sm shadow-sm space-y-6">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-3 border-b border-black/5 dark:border-white/5">
+          <div>
+            <h3 className="text-xs font-bold uppercase tracking-widest text-zinc-400">AI-Powered Launch Readiness Simulator</h3>
+            <p className="text-[10px] text-zinc-550 uppercase mt-1">
+              Select a product and simulate readiness improvements across 8 key dimensions to achieve optimal market entry validation.
+            </p>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="text-[10px] font-bold text-zinc-400 uppercase">Selected Product:</span>
+            <select
+              value={selectedSimProductId}
+              onChange={(e) => setSelectedSimProductId(e.target.value)}
+              className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-xs text-zinc-700 dark:text-zinc-300 rounded px-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-[#6d28d9]"
+            >
+              {VP_PRODUCTS.map(p => (
+                <option key={p.id} value={p.id} className="dark:bg-zinc-900">
+                  {p.name} ({p.id})
+                </option>
+              ))}
+            </select>
+            <button
+              onClick={() => {
+                const base = getProductDimensions(selectedSimProduct);
+                setSimValues(base);
+                setActiveRecommendations([]);
+                addToast('Simulation Reset', 'All simulation values restored to product baseline.', '#3b82f6');
+              }}
+              className="text-[9px] font-bold text-[#6d28d9] dark:text-[#a78bfa] uppercase border border-[#6d28d9]/35 dark:border-[#a78bfa]/35 bg-purple-500/5 hover:bg-[#6d28d9] hover:text-white px-2.5 py-1.5 rounded-sm cursor-pointer transition-all"
+            >
+              Reset
+            </button>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
+          {/* Interactive Controls Column */}
+          <div className="xl:col-span-5 space-y-4">
+            <span className="text-[9px] font-bold uppercase tracking-wider text-zinc-400 block mb-1">
+              Simulate Dimension Readiness
+            </span>
+            
+            <div className="space-y-3.5 bg-zinc-50/50 dark:bg-white/2 p-4 rounded-sm border border-black/5 dark:border-white/5">
+              {dimensionsList.map(dim => {
+                const isCustomized = (simValues[dim] !== baseValues[dim]);
+                return (
+                  <div key={dim} className="space-y-1.5">
+                    <div className="flex justify-between items-center text-[10px]">
+                      <span className="font-medium text-zinc-700 dark:text-zinc-300">{dim}</span>
+                      <span className="font-mono font-bold text-zinc-800 dark:text-zinc-200">
+                        {simValues[dim] || 0}% 
+                        {isCustomized && (
+                          <span className="text-[9px] text-[#6d28d9] dark:text-[#a78bfa] font-normal ml-1.5">
+                            (Base: {baseValues[dim]}%)
+                          </span>
+                        )}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-[8px] text-zinc-400 font-mono">10%</span>
+                      <input
+                        type="range"
+                        min="10"
+                        max="100"
+                        value={simValues[dim] || 0}
+                        onChange={(e) => {
+                          const val = parseInt(e.target.value);
+                          setSimValues(prev => ({
+                            ...prev,
+                            [dim]: val
+                          }));
+                        }}
+                        className="w-full h-1 bg-zinc-200 dark:bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-[#6d28d9] dark:accent-[#a78bfa]"
+                      />
+                      <span className="text-[8px] text-zinc-400 font-mono">100%</span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Financial Impact of Simulation */}
+            <div className="space-y-2">
+              <span className="text-[9px] font-bold uppercase tracking-wider text-zinc-400 block">
+                Simulated Launch Financials
+              </span>
+              <div className="grid grid-cols-3 gap-2 bg-zinc-150/70 dark:bg-zinc-900/60 p-3.5 border border-black/5 dark:border-white/5 rounded-xl">
+                <div>
+                  <span className="text-[8px] text-zinc-500 uppercase block">Base Spent</span>
+                  <span className="text-xs font-mono font-extrabold text-zinc-800 dark:text-white mt-1 block">
+                    ${selectedSimProduct.spent.toFixed(2)}M
+                  </span>
+                </div>
+                <div>
+                  <span className="text-[8px] text-zinc-500 uppercase block">Simulated Spent</span>
+                  <span className="text-xs font-mono font-extrabold text-zinc-850 dark:text-zinc-100 mt-1 block">
+                    ${simulatedSpent.toFixed(2)}M
+                  </span>
+                </div>
+                <div>
+                  <span className="text-[8px] text-zinc-500 block uppercase">Sim Cost Delta</span>
+                  <span className={`text-xs font-mono font-extrabold mt-1 block ${costSlippage > 0 ? 'text-amber-500' : 'text-zinc-500'}`}>
+                    +${costSlippage.toFixed(3)}M
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Visualization & Insights Column */}
+          <div className="xl:col-span-7 flex flex-col justify-between space-y-4">
+            {/* Gauge & Radar Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-4 bg-zinc-50/50 dark:bg-white/5 border border-black/5 dark:border-white/5 p-4 rounded-sm">
+              
+              {/* LRI Display */}
+              <div className="md:col-span-4 flex flex-col justify-center items-center text-center p-3 border-b md:border-b-0 md:border-r border-black/5 dark:border-white/5">
+                <span className="text-[9px] font-bold uppercase tracking-wider text-zinc-400 block mb-1">Launch Readiness Index</span>
+                <div className="relative flex items-center justify-center h-24 w-24">
+                  <svg className="w-20 h-20 transform -rotate-90">
+                    <circle
+                      cx="40"
+                      cy="40"
+                      r="32"
+                      stroke={isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'}
+                      strokeWidth="6"
+                      fill="transparent"
+                    />
+                    <circle
+                      cx="40"
+                      cy="40"
+                      r="32"
+                      stroke={simulatedLri >= 85 ? '#10b981' : simulatedLri >= 70 ? '#f59e0b' : '#ef4444'}
+                      strokeWidth="6"
+                      fill="transparent"
+                      strokeDasharray={2 * Math.PI * 32}
+                      strokeDashoffset={2 * Math.PI * 32 * (1 - simulatedLri / 100)}
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                  <span className="absolute text-xl font-display font-extrabold font-mono text-zinc-800 dark:text-white">
+                    {simulatedLri}%
+                  </span>
+                </div>
+                <div className="mt-2.5">
+                  <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${
+                    simulatedLri >= 85 
+                      ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' 
+                      : simulatedLri >= 70 
+                        ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20' 
+                        : 'bg-red-500/10 text-red-500 border border-red-500/20'
+                  }`}>
+                    {simulatedLri >= 85 ? 'READY FOR LAUNCH' : simulatedLri >= 70 ? 'CONDITIONAL APPROVAL' : 'LAUNCH BLOCKED'}
+                  </span>
+                  <span className="text-[8px] text-zinc-400 block mt-1 uppercase">
+                    Base LRI: {baselineLri}% ({simulatedLri >= baselineLri ? `+${simulatedLri - baselineLri}%` : `${simulatedLri - baselineLri}%`})
+                  </span>
+                </div>
+              </div>
+
+              {/* Radar Chart */}
+              <div className="md:col-span-8 h-56 flex items-center justify-center">
+                <ResponsiveContainer width="100%" height="100%">
+                  <RadarChart data={radarChartData} cx="50%" cy="50%" outerRadius="75%">
+                    <PolarGrid stroke={isDarkMode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)"} />
+                    <PolarAngleAxis 
+                      dataKey="subject" 
+                      tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)', fontSize: 7, fontWeight: 'bold' }} 
+                    />
+                    <PolarRadiusAxis 
+                      angle={30} 
+                      domain={[0, 100]} 
+                      tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)', fontSize: 8 }} 
+                    />
+                    <Radar 
+                      name="Baseline" 
+                      dataKey="Baseline" 
+                      stroke="#a78bfa" 
+                      fill="#a78bfa" 
+                      fillOpacity={0.1} 
+                      dot={{ r: 2 }}
+                    />
+                    <Radar 
+                      name="Simulated" 
+                      dataKey="Simulated" 
+                      stroke="#10b981" 
+                      fill="#10b981" 
+                      fillOpacity={0.25} 
+                      dot={{ r: 3 }}
+                    />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: isDarkMode ? '#1f1f1f' : '#fff', 
+                        border: isDarkMode ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.1)',
+                        fontSize: 9
+                      }} 
+                    />
+                    <Legend wrapperStyle={{ fontSize: 8, textTransform: 'uppercase', letterSpacing: '0.05em' }} />
+                  </RadarChart>
+                </ResponsiveContainer>
+              </div>
+
+            </div>
+
+            {/* AI Optimization Recommendations Grid */}
+            <div className="bg-zinc-150/70 dark:bg-zinc-900/60 border border-black/5 dark:border-white/5 p-4 rounded-xl space-y-3">
+              <span className="text-[9px] font-bold uppercase tracking-wider text-zinc-400 block">
+                AI Optimization Recommendations
+              </span>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+                {RECOMMENDATIONS.map(rec => {
+                  const isActive = activeRecommendations.includes(rec.id);
+                  
+                  // Highlight recommendation if targeted dimension has a baseline score < 75
+                  let targetLow = false;
+                  if (rec.id === 'qa' && (baseValues['Product Readiness'] < 75)) targetLow = true;
+                  if (rec.id === 'compliance' && (baseValues['Compliance Readiness'] < 75)) targetLow = true;
+                  if (rec.id === 'campaign' && (baseValues['Marketing Readiness'] < 75 || baseValues['Market Readiness'] < 75)) targetLow = true;
+                  if (rec.id === 'sales' && (baseValues['Sales Readiness'] < 75)) targetLow = true;
+                  if (rec.id === 'logistics' && (baseValues['Operations Readiness'] < 75)) targetLow = true;
+                  if (rec.id === 'support' && (baseValues['Customer Support Readiness'] < 75)) targetLow = true;
+
+                  return (
+                    <div 
+                      key={rec.id} 
+                      className={`p-3 border rounded-sm flex flex-col justify-between transition-all ${
+                        isActive 
+                          ? 'border-emerald-500/30 bg-emerald-500/5' 
+                          : targetLow 
+                            ? 'border-rose-500/20 bg-rose-500/5 dark:bg-rose-500/2'
+                            : 'border-black/5 dark:border-white/5 bg-zinc-50/50 dark:bg-white/5'
+                      }`}
+                    >
+                      <div>
+                        <div className="flex justify-between items-start gap-1">
+                          <h5 className="text-[10px] font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-1.5">
+                            {rec.title}
+                            {targetLow && !isActive && (
+                              <span className="inline-flex items-center px-1 py-0.2 text-[7px] font-bold bg-rose-500/10 text-rose-500 border border-rose-500/20 rounded">
+                                HIGH RISK
+                              </span>
+                            )}
+                          </h5>
+                          <button
+                            onClick={() => handleToggleRecommendation(rec.id)}
+                            className={`text-[8px] font-bold uppercase px-2 py-0.5 rounded transition-all cursor-pointer border-none outline-none ${
+                              isActive 
+                                ? 'bg-emerald-500 text-white hover:bg-emerald-600'
+                                : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-300 dark:hover:bg-zinc-700'
+                            }`}
+                          >
+                            {isActive ? 'Deployed' : 'Deploy'}
+                          </button>
+                        </div>
+                        <p className="text-[9px] text-zinc-500 mt-1">{rec.description}</p>
+                      </div>
+                      
+                      <div className="flex justify-between items-center text-[8px] mt-2 pt-2 border-t border-dashed border-black/5 dark:border-white/5">
+                        <span className="text-[#6d28d9] dark:text-[#a78bfa] font-mono">{rec.impactText}</span>
+                        <span className="text-zinc-550 dark:text-zinc-400 font-mono">Cost: ${(rec.cost * 1000).toFixed(0)}K</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      {/* Row 3: AI Risk Predictions */}
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
         
         {/* AI Risk Predictions */}
-        <div className="xl:col-span-6 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm space-y-4">
+        <div className="xl:col-span-12 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm space-y-4">
           <div className="flex justify-between items-center pb-2 border-b border-black/5 dark:border-white/5">
             <div className="flex items-center gap-2">
               <Zap size={12} className="text-[#6d28d9] dark:text-[#a78bfa]" />
@@ -1605,7 +2043,7 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
                   <p className="text-[9px] text-zinc-550 dark:text-zinc-400 mt-1 line-clamp-2">BrandA Energy safety buffer below threshold for launch.</p>
                 </div>
                 <div className="flex items-center justify-between mt-2 pt-1 border-t border-black/5 dark:border-white/5">
-                  <span className="text-[8px] font-semibold text-red-600 dark:text-red-400 bg-red-500/10 px-1.5 py-0.5 rounded-sm">92% Risk</span>
+                  <span className="text-[8px] font-semibold text-red-600 dark:red-400 bg-red-500/10 px-1.5 py-0.5 rounded-sm">92% Risk</span>
                   <span className="text-[8px] font-bold text-zinc-700 dark:text-zinc-300">$1.5M Impact</span>
                 </div>
               </div>
@@ -1709,23 +2147,7 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
           )}
         </div>
 
-        {/* Cross-Functional Radar */}
-        <div className="xl:col-span-6 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm space-y-4">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Cross-Functional Readiness</p>
-          <div className="h-60 max-w-lg mx-auto">
-            <ResponsiveContainer width="100%" height="100%">
-              <RadarChart data={radarData}>
-                <PolarGrid stroke={isDarkMode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)"} />
-                <PolarAngleAxis dataKey="subject" tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)', fontSize: 9 }} />
-                <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)', fontSize: 8 }} />
-                <Radar name="Actual" dataKey="Actual" stroke={isDarkMode ? "#a78bfa" : "#6d28d9"} fill={isDarkMode ? "#a78bfa" : "#6d28d9"} fillOpacity={0.2} />
-                <Radar name="Target" dataKey="Target" stroke={isDarkMode ? "rgba(255,255,255,0.3)" : "rgba(0,0,0,0.3)"} fill="transparent" strokeDasharray="3 3" />
-                <Tooltip contentStyle={{ backgroundColor: isDarkMode ? '#1f1f1f' : '#fff', border: isDarkMode ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.1)' }} />
-                <Legend wrapperStyle={{ fontSize: 9, textTransform: 'uppercase' }} />
-              </RadarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
+
       </div>
 
 

@@ -47,13 +47,13 @@ export const WelcomeGate: React.FC<WelcomeGateProps> = ({ onSelectRole }) => {
                 </linearGradient>
               </defs>
               <path
-                d="M 0 16 Q 15 10 30 14 T 60 6 T 90 2 L 100 2"
+                d="M 0 16 Q 15 10 30 14 T 60 6 T 90 2K 100 2"
                 fill="none"
                 stroke="#f59e0b"
                 strokeWidth="1.5"
               />
               <path
-                d="M 0 16 Q 15 10 30 14 T 60 6 T 90 2 L 100 2 L 100 20 L 0 20 Z"
+                d="M 0 16 Q 15 10 30 14 T 60 6 T 90 2K 100 2K 100 20K 0 20 Z"
                 fill="url(#sparkline-grad-1)"
               />
               <circle cx="98" cy="2" r="2" fill="#f59e0b" className="animate-pulse" />
@@ -212,7 +212,7 @@ export const WelcomeGate: React.FC<WelcomeGateProps> = ({ onSelectRole }) => {
             className="inline-flex items-center gap-2 px-3 py-1 bg-white/5 border border-white/10 rounded-full backdrop-blur-md shadow-sm"
           >
             <Cpu size={12} className="text-amber-400 animate-pulse" />
-            <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-zinc-300">Acies AgenticBus Platform</span>
+            <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-zinc-300">Product Lifecycle & Portfolio Intelligence</span>
           </motion.div>
 
           <motion.div
@@ -221,8 +221,8 @@ export const WelcomeGate: React.FC<WelcomeGateProps> = ({ onSelectRole }) => {
             transition={{ delay: 0.1, duration: 0.6 }}
             className="space-y-4"
           >
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-extrabold tracking-tight text-white leading-tight">
-              Welcome to <span className="bg-gradient-to-r from-amber-400 via-emerald-400 to-blue-400 bg-clip-text text-transparent">Acies AgenticBus</span>
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-display font-extrabold tracking-tight text-white leading-tight">
+              Welcome to <span className="bg-gradient-to-r from-amber-400 via-emerald-400 to-blue-400 bg-clip-text text-transparent">Product Lifecycle & Portfolio Intelligence</span>
             </h1>
             <p className="text-sm md:text-base text-zinc-300 font-medium max-w-2xl mx-auto leading-relaxed">
               Choose your workspace and unlock AI-powered portfolio intelligence tailored to your role.

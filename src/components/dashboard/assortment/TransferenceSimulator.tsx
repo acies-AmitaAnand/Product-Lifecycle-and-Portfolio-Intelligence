@@ -16,7 +16,7 @@ interface CategoryVariant {
 
 const CATEGORY_ITEMS: Record<string, CategoryVariant[]> = {
   Beverages: [
-    { name: 'BrandF Water', revenue: 17.03, margin: 40, growth: 12.4, lead: 5, reason: 'Hero SKU, core category profit driver.', segment: 'Keep', gradient: 'from-sky-400 via-blue-500 to-blue-700', unitText: 'Premium 1L' },
+    { name: 'BrandF Water', revenue: 17.03, margin: 40, growth: 12.4, lead: 5, reason: 'Hero SKU, core category profit driver.', segment: 'Keep', gradient: 'from-sky-400 via-blue-500 to-blue-700', unitText: 'Premium 1K' },
     { name: 'Green Tea RTD', revenue: 7.6, margin: 29, growth: -4, lead: 22, reason: 'Declining growth, high promo dependency (62%)', segment: 'Rationalize', gradient: 'from-emerald-400 via-green-500 to-green-700', unitText: 'RTD 330ml' },
     { name: 'Aloe Vera Drink', revenue: 9.8, margin: 34, growth: 9, lead: 18, reason: 'Moderate margin, variable demand stability.', segment: 'Grow', gradient: 'from-teal-300 via-teal-500 to-emerald-600', unitText: 'Organic 500ml' },
     { name: 'Mango Fizz 250ml', revenue: 8.4, margin: 38, growth: 12, lead: 14, reason: 'High cannibalization with 500ml variant.', segment: 'Consolidate', gradient: 'from-amber-400 via-orange-500 to-red-500', unitText: 'Can 250ml' }
