@@ -677,6 +677,11 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
     ratingStroke = '#f59e0b';
     insightText = `${delayedCount} pipeline products are experiencing delay threats, dragging the readiness score. Mitigation required.`;
   }
+  // Group products by category for the dropdown menu
+  const dropdownFilteredGates = stageGates.filter(sg => 
+    sg.productName.toLowerCase().includes(trackerSearch.toLowerCase())
+  );
+  const dropdownCategories = Array.from(new Set(dropdownFilteredGates.map(sg => sg.category)));
 
   return (
     <div className="space-y-6">
@@ -963,13 +968,17 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
                 }}
                 className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-sm p-1.5 text-[9px] font-bold text-zinc-650 dark:text-zinc-350 outline-none cursor-pointer"
               >
-                {stageGates
-                  .filter(sg => sg.productName.toLowerCase().includes(trackerSearch.toLowerCase()))
-                  .map(sg => (
-                    <option key={sg.productId} value={sg.productId}>
-                      {sg.productId} - {sg.productName}
-                    </option>
-                  ))}
+                {dropdownCategories.map(cat => (
+                  <optgroup key={cat} label={cat} className="text-[8px] font-extrabold uppercase text-[#6d28d9] dark:text-[#a78bfa] bg-white dark:bg-zinc-950">
+                    {dropdownFilteredGates
+                      .filter(sg => sg.category === cat)
+                      .map(sg => (
+                        <option key={sg.productId} value={sg.productId} className="text-[9px] font-bold text-zinc-800 dark:text-zinc-200 bg-white dark:bg-zinc-950">
+                          {sg.productId} - {sg.productName}
+                        </option>
+                      ))}
+                  </optgroup>
+                ))}
               </select>
             </div>
           </div>
@@ -980,15 +989,15 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
             {[0, 1, 2, 3].map(idx => (
               <div 
                 key={idx}
-                className="absolute text-zinc-300 dark:text-zinc-700"
+                className="absolute text-zinc-550 dark:text-zinc-400"
                 style={{ 
                   left: `${20 + idx * 20}%`, 
                   transform: 'translateX(-50%)', 
-                  top: '36px' 
+                  top: '44px' 
                 }}
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M14 8l4 4m0 0l-4 4m4-4H6" />
+                <svg className="w-12 h-6" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 48 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M38 6l6 6m0 0l-6 6m6-6H4" />
                 </svg>
               </div>
             ))}
