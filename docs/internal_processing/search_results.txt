@@ -1,0 +1,44 @@
+Found 43 matches:
+L483 [tab]: Both are required. Issue trees must be 3+ levels deep, MECE at every level, with testable hypotheses at 
+L570 [tab]: module/tab
+L651 [tab]: Tabs
+L671 [tab]: |Tab1|Tab2|Tab3|Tab4|Tab5|
+L713 [tab]: tab]
+L838 [tab]: tabs
+L842 [tab]: tabs;
+L874 [tab]: tab
+L904 [tab]: restartable
+L1125 [tab]: tab
+L1141 [tab]: tab
+L1194 [tab]: ● [ ] Scope table (in scope / out of scope) 
+L1210 [tab]: ● [ ] Module/tab map with rationale 
+L1216 [tab]: ● [ ] Lo-fi wireframes (all 5 tabs + side panel + scorecard) 
+L1221 [tab]: ● [ ] All 5 interactive tabs built 
+L1417 [tab]: tab
+L1442 [tab]: Section 3: Module / Tab Specifications 
+L1443 [tab]: Tab 1: [Name] 
+L1479 [tab]:  Tooltips for this tab: 
+L1504 [tab]: Tab 2: [Name] 
+L1505 [tab]: (Repeat Tab 1 structure) 
+L1506 [tab]: Tab 3: [Name] 
+L1507 [tab]: (Repeat Tab 1 structure) 
+L1508 [tab]: Tab 4: [Name] 
+L1509 [tab]: (Repeat Tab 1 structure) 
+L1510 [tab]: Tab 5: [Name] 
+L1511 [tab]: (Repeat Tab 1 structure) 
+L1616 [tab]: tabs,
+L1656 [tab]: Tab
+L1700 [tab]: tab(s)
+L1734 [tab]: tab
+L1738 [tab]: tab
+L2047 [tab]: Tabs
+L2048 [tab]:  All 5 tabs render correctly; no broken 
+L2126 [tab]: 2. Common shell (header, tab frame, footer) 
+L2128 [tab]: 4. Tab 1 (most important module) 
+L2129 [tab]: 5. Tabs 2–5 
+L2169 [tab]:  Strictly 5 tabs; defer 
+L2186 [tab]: tab
+L2251 [tab]: Establish
+L2263 [tab]: Tab
+L2269 [tab]: Tab
+L2279 [tab]: Tab
