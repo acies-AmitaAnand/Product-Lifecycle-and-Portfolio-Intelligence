@@ -2211,14 +2211,25 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
                   )}
 
                   {selectedStageSKUs.lineage && (
-                    <div className="space-y-1 border-t md:border-t-0 md:border-l border-black/5 dark:border-white/5 pt-3 md:pt-0 md:pl-3.5">
-                      <div className="flex items-center gap-1.5 text-[9px] font-bold text-purple-500 uppercase tracking-wider">
+                    <div className="space-y-2 border-t md:border-t-0 md:border-l border-black/5 dark:border-white/5 pt-3 md:pt-0 md:pl-3.5">
+                      <div className="flex items-center gap-1.5 text-[9px] font-bold text-purple-500 uppercase tracking-wider mb-1">
                         <span>🔗</span>
                         <span>Data Lineage</span>
                       </div>
-                      <p className="text-[10px] text-zinc-650 dark:text-zinc-350 leading-relaxed font-sans">
-                        {selectedStageSKUs.lineage}
-                      </p>
+                      <div className="flex flex-col items-stretch gap-1 text-[10px]">
+                        {selectedStageSKUs.lineage.split(' -> ').map((step, idx, arr) => (
+                          <React.Fragment key={step}>
+                            <div className="bg-purple-500/5 dark:bg-purple-500/10 border border-purple-500/10 dark:border-purple-500/20 px-2.5 py-1.5 rounded-sm font-semibold text-zinc-700 dark:text-zinc-300 shadow-sm text-center">
+                              {step}
+                            </div>
+                            {idx < arr.length - 1 && (
+                              <div className="text-purple-400 dark:text-purple-500 text-center font-bold">
+                                ↓
+                              </div>
+                            )}
+                          </React.Fragment>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
