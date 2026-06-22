@@ -6,13 +6,14 @@
 import React, { useState, useMemo } from 'react';
 import { 
   Search, ArrowUpRight, ArrowDownRight, RefreshCw, Download, 
-  ChevronRight, TrendingUp, AlertTriangle, Layers, Info, Filter
+  ChevronRight, TrendingUp, AlertTriangle, Layers, Info, Filter, ArrowLeft
 } from 'lucide-react';
 import { SKUS } from '../../../constants/data';
 
 interface SKUPerformanceTabProps {
   isDarkMode: boolean;
   onSelectSku: (sku: typeof SKUS[0]) => void;
+  onBack?: () => void;
 }
 
 // Sparkline helper using SVG
@@ -71,7 +72,8 @@ const getSkuLocation = (name: string): string => {
 
 export const SKUPerformanceTab: React.FC<SKUPerformanceTabProps> = ({ 
   isDarkMode, 
-  onSelectSku 
+  onSelectSku,
+  onBack
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('ALL');
@@ -194,6 +196,25 @@ export const SKUPerformanceTab: React.FC<SKUPerformanceTabProps> = ({
   return (
     <div className="space-y-6 pb-12 animate-fadeIn text-zinc-800 dark:text-white text-left">
       
+      {/* Page Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-2">
+        <div className="flex items-center gap-3">
+          {onBack && (
+            <button 
+              onClick={onBack}
+              className="flex items-center justify-center w-8 h-8 rounded-full border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/5 transition-all text-zinc-600 dark:text-zinc-400 cursor-pointer bg-transparent"
+              title="Back to Home"
+            >
+              <ArrowLeft size={16} />
+            </button>
+          )}
+          <div>
+            <h2 className="text-xl font-display leading-tight text-acies-gray dark:text-white">SKU Performance Ledger</h2>
+            <p className="text-[10px] text-zinc-400 dark:text-zinc-550 font-medium">Portfolio-wide active SKU performance analysis and trends</p>
+          </div>
+        </div>
+      </div>
+
       {/* Metrics Summary Strip */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {/* Total Active SKUs */}

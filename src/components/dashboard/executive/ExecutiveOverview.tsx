@@ -177,6 +177,7 @@ interface ExecutiveOverviewProps {
   isDarkMode: boolean;
   onAuditClick: (metric: string) => void;
   timelineRange: TimelineRange;
+  onViewAllSkus?: () => void;
 }
 
 // Top Customer Insights Dataset
@@ -652,7 +653,7 @@ const generateInitialEvents = () => {
   return list;
 };
 
-export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setActiveTab, isDarkMode, onAuditClick, timelineRange }) => {
+export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setActiveTab, isDarkMode, onAuditClick, timelineRange, onViewAllSkus }) => {
   const [alerts, setAlerts] = useState(() => VP_ALERTS.map(a => ({ ...a })));
   const [approvals, setApprovals] = useState(() => VP_APPROVALS.map(a => ({ ...a })));
   const [kpis, setKpis] = useState(() => {
@@ -1445,7 +1446,9 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
           {/* View All SKUs button at the bottom */}
           <button
             onClick={() => {
-              setActiveTab(9);
+              if (onViewAllSkus) {
+                onViewAllSkus();
+              }
             }}
             className="w-full mt-2.5 py-1.5 border border-black/10 dark:border-white/15 hover:bg-black/5 dark:hover:bg-white/5 rounded text-[9.5px] font-bold text-zinc-705 dark:text-zinc-350 transition-all flex items-center justify-center gap-1 cursor-pointer bg-transparent shrink-0"
             title="View All SKUs in SKU Rationalization Command Desk"
