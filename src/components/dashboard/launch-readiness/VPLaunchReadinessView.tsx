@@ -981,8 +981,148 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
           </div>
         </div>
 
+{/* Middle: KPI Cards Grid (arranged in 2 lines of 3 blocks each) */}
+        <div className="xl:col-span-4 lg:col-span-8 grid grid-cols-3 gap-3 max-w-[480px] mx-auto">
+          <div 
+            onClick={() => setSelectedStageSKUs({
+              title: 'On Track Launches',
+              meaning: 'SKUs with a Launch Readiness Score of 75% or higher, indicating that all major activities (regulatory compliance, marketing plans, inventory routing) are progressing optimally with low risk of launch delay.',
+              skus: filteredProducts.filter(p => p.readiness >= 75)
+            })}
+            className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-3 rounded-sm shadow-sm flex flex-col justify-between aspect-square hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] text-center"
+          >
+            <p className="text-[9px] font-bold uppercase tracking-wider text-zinc-400">On Track</p>
+            <div className="flex-1 flex items-center justify-center">
+              <h4 className="text-3xl font-display font-extrabold text-emerald-500 leading-none">{onTrackCount}</h4>
+            </div>
+            <p className="text-[8.5px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">Status: Optimal</p>
+          </div>
+
+          <div 
+            onClick={() => setSelectedStageSKUs({
+              title: 'Delayed Launches',
+              meaning: 'SKUs with a Launch Readiness Score below 50%. These have encountered critical bottlenecks (such as severe supply chain delays or lack of regulatory approvals) and require immediate executive attention and mitigation.',
+              skus: filteredProducts.filter(p => p.readiness < 50)
+            })}
+            className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-3 rounded-sm shadow-sm flex flex-col justify-between aspect-square hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] text-center"
+          >
+            <p className="text-[9px] font-bold uppercase tracking-wider text-zinc-400">Delayed</p>
+            <div className="flex-1 flex items-center justify-center">
+              <h4 className="text-3xl font-display font-extrabold text-red-500 leading-none">{delayedCount}</h4>
+            </div>
+            <p className="text-[8.5px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">Needs Focus</p>
+          </div>
+
+          <div 
+            onClick={() => setSelectedStageSKUs({
+              title: 'At Risk Launches',
+              meaning: 'SKUs with a Launch Readiness Score between 50% and 74%. These are demonstrating early warning signs or minor deviations from target timelines, requiring active supervision and preventative measures.',
+              skus: filteredProducts.filter(p => p.readiness >= 50 && p.readiness < 75)
+            })}
+            className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-3 rounded-sm shadow-sm flex flex-col justify-between aspect-square hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] text-center"
+          >
+            <p className="text-[9px] font-bold uppercase tracking-wider text-zinc-400">At Risk</p>
+            <div className="flex-1 flex items-center justify-center">
+              <h4 className="text-3xl font-display font-extrabold text-amber-500 leading-none">{atRiskCount}</h4>
+            </div>
+            <p className="text-[8.5px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">Watching</p>
+          </div>
+
+          <div 
+            onClick={() => setSelectedStageSKUs({
+              title: 'Next 60 Days Pipeline',
+              meaning: 'SKUs currently in the active pipeline (Development, Testing, or Pre-market phases) scheduled to transition to market launch within the upcoming 60-day window.',
+              skus: filteredProducts.filter(p => p.stage !== 'Launch' && p.stage !== 'Ideation')
+            })}
+            className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-3 rounded-sm shadow-sm flex flex-col justify-between aspect-square hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] text-center"
+          >
+            <p className="text-[9px] font-bold uppercase tracking-wider text-zinc-400">Next 60 Days</p>
+            <div className="flex-1 flex items-center justify-center">
+              <h4 className="text-3xl font-display font-extrabold text-blue-500 leading-none">
+                {filteredProducts.filter(p => p.stage !== 'Launch' && p.stage !== 'Ideation').length}
+              </h4>
+            </div>
+            <p className="text-[8.5px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">Readying</p>
+          </div>
+
+          <div 
+            onClick={() => setSelectedStageSKUs({
+              title: 'Revenue Exposure',
+              meaning: 'The total potential revenue at stake from launches that are currently Delayed or At Risk (Launch Readiness Score below 75%). This helps prioritize resource allocation based on financial impact.',
+              skus: filteredProducts.filter(p => p.readiness < 75)
+            })}
+            className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-3 rounded-sm shadow-sm flex flex-col justify-between aspect-square hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] text-center"
+          >
+            <p className="text-[9px] font-bold uppercase tracking-wider text-zinc-400">Rev Exposure</p>
+            <div className="flex-1 flex items-center justify-center">
+              <h4 className="text-3xl font-display font-extrabold text-orange-500 leading-none">
+                ${revenueExposure.toFixed(1)}M
+              </h4>
+            </div>
+            <p className="text-[8.5px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">At-Risk/Delayed</p>
+          </div>
+
+          <div 
+            onClick={() => setSelectedStageSKUs({
+              title: 'Market Coverage Scope',
+              meaning: 'Geographic deployment and readiness metric representing the percentage of target regions or distribution nodes that have successfully completed all pre-market requirements.',
+              skus: filteredProducts
+            })}
+            className="glass-card bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-3 rounded-sm shadow-sm flex flex-col justify-between aspect-square hover:bg-blue-500/5 hover:border-blue-500/30 dark:hover:bg-blue-500/5 dark:hover:border-blue-500/30 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] text-center"
+          >
+            <p className="text-[9px] font-bold uppercase tracking-wider text-zinc-400">Market Coverage</p>
+            <div className="flex-1 flex items-center justify-center">
+              <h4 className="text-3xl font-display font-extrabold text-[#6d28d9] dark:text-[#a78bfa] leading-none">
+                {marketCoverage}%
+              </h4>
+            </div>
+            <p className="text-[8.5px] text-zinc-450 dark:text-zinc-550 font-semibold uppercase">Geo Readiness</p>
+          </div>
+        </div>
+
+        {/* Right: Risk & Escalation Center */}
+        <div className="xl:col-span-5 lg:col-span-12 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-4 rounded-sm shadow-sm flex flex-col justify-between">
+          <div className="space-y-4">
+            <div className="flex justify-between items-center pb-2 border-b border-black/5 dark:border-white/5">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Risk & Escalation Center</span>
+              <span className="text-[8px] font-bold uppercase tracking-wider text-red-500 bg-red-500/10 px-2 py-0.5 rounded-full">
+                {escalations.length} unresolved delays
+              </span>
+            </div>
+
+            <div className="space-y-2 max-h-[220px] overflow-y-auto pr-1">
+              {escalations.length > 0 ? (
+                escalations.map(esc => (
+                  <div key={esc.id} className="p-2 px-2.5 border border-black/5 dark:border-white/10 rounded-sm bg-zinc-50/50 dark:bg-white/5 flex items-start gap-2.5 justify-between">
+                    <div className="flex items-start gap-2 min-w-0">
+                      <span className="w-2.5 h-2.5 rounded-full shrink-0 mt-1" style={{ backgroundColor: esc.color }} />
+                      <div className="min-w-0">
+                        <h4 className="text-[10px] font-bold text-zinc-800 dark:text-zinc-200 truncate" title={esc.title}>{esc.title}</h4>
+                        <p className="text-[8.5px] text-zinc-500 mt-0.5 truncate">{esc.sub} · <span className="font-semibold text-red-500">{esc.impact}</span></p>
+                      </div>
+                    </div>
+                    <button 
+                      onClick={() => setActiveResolveEscalation(esc.id)}
+                      className="px-2 py-1 shrink-0 border border-[#6d28d9]/35 text-[#6d28d9] dark:text-[#a78bfa] bg-[#6d28d9]/5 hover:bg-[#6d28d9] hover:text-white rounded-sm text-[8px] font-bold uppercase tracking-wider transition-all cursor-pointer"
+                    >
+                      Resolve
+                    </button>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-10">
+                  <p className="text-xs text-zinc-450">✓ All escalations cleared</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Row 1.5: Stage Gate Status Tracker */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Stage Gate Tracker */}
-        <div className="lg:col-span-9 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm flex flex-col justify-between space-y-4 text-left">
+        <div className="lg:col-span-12 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 p-5 rounded-sm shadow-sm flex flex-col justify-between space-y-4 text-left">
           {(() => {
             const headerFailedCount = displayedTrackerProducts.filter(p => p.gates.some(g => g.status === 'Failed')).length;
             const headerWaivedCount = displayedTrackerProducts.filter(p => p.gates.some(g => g.status === 'Waived')).length;
@@ -1018,8 +1158,7 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
                       </span>
                       <span className="bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-650 dark:text-zinc-400 px-2.5 py-0.5 rounded-full flex items-center gap-1">
                         {headerPendingCount} pending
-                      </span>
-                    </div>
+                      </span>                    </div>
                   </div>
 
                   <button className="text-zinc-400 hover:text-zinc-650 dark:hover:text-zinc-200 p-1 rounded-full hover:bg-black/5 dark:hover:bg-white/5 border-none bg-transparent cursor-pointer">
