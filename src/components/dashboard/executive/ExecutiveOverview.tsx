@@ -1445,9 +1445,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
           {/* View All SKUs button at the bottom */}
           <button
             onClick={() => {
-              (window as any).__scrollToDirectory = true;
-              window.location.hash = 'product-directory-section';
-              setActiveTab(4);
+              setActiveTab(9);
             }}
             className="w-full mt-2.5 py-1.5 border border-black/10 dark:border-white/15 hover:bg-black/5 dark:hover:bg-white/5 rounded text-[9.5px] font-bold text-zinc-705 dark:text-zinc-350 transition-all flex items-center justify-center gap-1 cursor-pointer bg-transparent shrink-0"
             title="View All SKUs in SKU Rationalization Command Desk"

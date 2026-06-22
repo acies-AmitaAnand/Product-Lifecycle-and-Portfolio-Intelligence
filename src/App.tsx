@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { 
-  Activity, Rocket, Layers, Scissors, AlertOctagon, Home, Cpu, Award, BarChart3, LayoutDashboard, Zap, BookOpen, Download
+  Activity, Rocket, Layers, Scissors, AlertOctagon, Home, Cpu, Award, BarChart3, LayoutDashboard, Zap, BookOpen, Download, List
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -34,6 +34,7 @@ import { SkuDetailsModal } from './components/dashboard/executive/SkuDetailsModa
 import { AssortmentOverview } from './components/dashboard/assortment/AssortmentOverview';
 import { GlobalSearchBar } from './components/common/GlobalSearchBar';
 import { AgentWidget } from './components/common/AgentWidget';
+import { SKUPerformanceTab } from './components/dashboard/executive/SKUPerformanceTab';
 
 // Utils / Hooks
 import { TimelineRange, getFilteredKPIS, getFilteredSKUS, getFilteredPortfolioData } from './utils/timeframe';
@@ -52,6 +53,7 @@ const getTabDisplayName = (id: number, name: string): string => {
     case 6: return 'Top-Down Drill';
     case 7: return 'Agent Orchestrator';
     case 8: return 'SKU Assortment';
+    case 9: return 'SKU Performance';
     default: return name;
   }
 };
@@ -261,6 +263,7 @@ export default function App() {
      if (tab.id === 6) icon = LayoutDashboard;
      if (tab.id === 7) icon = Cpu;
      if (tab.id === 8) icon = Award;
+     if (tab.id === 9) icon = List;
      return { ...tab, icon };
   });
 
@@ -618,7 +621,8 @@ export default function App() {
                 {activeTab === 6 && <TopDownDrilldown isDarkMode={isDarkMode} role={role} timelineRange={timelineRange} setTimelineRange={setTimelineRange} />}
                 {activeTab === 7 && <AgentOrchestrator isDarkMode={isDarkMode} role={role} />}
                 {activeTab === 8 && <AssortmentOverview role={role} isDarkMode={isDarkMode} onAuditClick={setActiveAuditMetric} timelineRange={timelineRange} />}
-                {activeTab < 0 || activeTab > 8 ? (
+                {activeTab === 9 && <SKUPerformanceTab isDarkMode={isDarkMode} onSelectSku={(sku) => setSelectedSkuForSearch(sku)} />}
+                {(activeTab < 0 || activeTab > 9) ? (
                   <div className="flex flex-col items-center justify-center min-h-[550px] glass-card">
                     <div className="w-16 h-16 rounded-full bg-acies-yellow/10 flex items-center justify-center mb-6">
                       <Zap size={32} className="text-acies-yellow" />
