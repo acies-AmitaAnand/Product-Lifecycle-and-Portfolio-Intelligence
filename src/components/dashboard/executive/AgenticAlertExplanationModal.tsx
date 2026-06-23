@@ -21,6 +21,7 @@ type DiagnosticTab = 'diagnostic' | 'root' | 'impact' | 'scenario' | 'alerts' | 
 export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModalProps> = ({
   isOpen,
   onClose,
+  isDarkMode,
 }) => {
   const [activeStepIndex, setActiveStepIndex] = useState<number | null>(null);
   const [activeSourceTab, setActiveSourceTab] = useState<IngestSourceTab>('finance');
@@ -693,8 +694,8 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
   const currentDiagnostic = diagnosticData[activeDiagnosticTab];
 
   return (
-    <div className="fixed inset-0 bg-black/85 backdrop-blur-md z-[120] flex items-center justify-center p-4">
-      <div className="w-full max-w-5xl p-6 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex flex-col gap-5 text-xs max-h-[95vh] overflow-y-auto font-sans animate-fade-in bg-[#121218] border border-purple-500/15 text-zinc-300">
+    <div className={`fixed inset-0 backdrop-blur-md z-[120] flex items-center justify-center p-4 transition-colors duration-300 ${isDarkMode ? 'bg-black/85' : 'bg-slate-900/40'}`}>
+      <div className={`w-full max-w-5xl p-6 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] flex flex-col gap-5 text-xs max-h-[95vh] overflow-y-auto font-sans animate-fade-in bg-[#121218] border border-purple-500/15 text-zinc-300 ${isDarkMode ? 'dark-mode' : 'light-mode'}`}>
         <style>{`
           @keyframes fadeIn {
             from { opacity: 0; transform: scale(0.98); }
@@ -710,6 +711,88 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
           .animate-spin-slow {
             animation: spin-slow 12s linear infinite;
           }
+
+          /* Light Mode Custom Styling Overrides */
+          .light-mode.bg-\\[\\#121218\\], .light-mode .bg-\\[\\#121218\\] { background-color: #ffffff !important; }
+          .light-mode.text-zinc-300, .light-mode .text-zinc-300 { color: #374151 !important; }
+          .light-mode.border-purple-500\\/15, .light-mode .border-purple-500\\/15 { border-color: rgba(147, 51, 234, 0.25) !important; }
+
+          .light-mode .bg-\\[\\#16151c\\] { background-color: #f9fafb !important; }
+          .light-mode .bg-\\[\\#1a1921\\] { background-color: #f3f4f6 !important; }
+          .light-mode .bg-\\[\\#1e1c26\\] { background-color: #f5f3ff !important; border-color: #c084fc !important; }
+          .light-mode .bg-\\[\\#25183a\\]\\/65 { background-color: rgba(243, 232, 255, 0.65) !important; }
+          .light-mode .bg-\\[\\#0f0e13\\] { background-color: #f9fafb !important; }
+          .light-mode .bg-\\[\\#0a0a0f\\] { background-color: #f3f4f6 !important; }
+          .light-mode .bg-\\[\\#0b0a0f\\] { background-color: #f9fafb !important; }
+          .light-mode .bg-\\[\\#0d0d12\\] { background-color: #f9fafb !important; }
+          .light-mode .bg-\\[\\#0d0d12\\]\\/30 { background-color: rgba(243, 244, 246, 0.3) !important; }
+          .light-mode .bg-\\[\\#121217\\] { background-color: #ffffff !important; }
+          .light-mode .bg-\\[\\#171720\\] { background-color: #ffffff !important; }
+          .light-mode .bg-\\[\\#181822\\] { background-color: #ffffff !important; }
+          .light-mode .bg-\\[\\#120d20\\] { background-color: #f5f3ff !important; }
+          
+          .light-mode .bg-zinc-800 { background-color: #f3f4f6 !important; }
+          .light-mode .bg-zinc-900 { background-color: #e5e7eb !important; }
+          .light-mode .bg-zinc-900\\/30 { background-color: rgba(229, 231, 235, 0.3) !important; }
+          .light-mode .bg-zinc-900\\/40 { background-color: rgba(229, 231, 235, 0.4) !important; }
+          .light-mode .bg-zinc-900\\/50 { background-color: rgba(229, 231, 235, 0.5) !important; }
+          .light-mode .bg-zinc-950\\/20 { background-color: rgba(209, 213, 219, 0.2) !important; }
+          .light-mode .bg-zinc-950\\/30 { background-color: rgba(209, 213, 219, 0.3) !important; }
+
+          .light-mode .hover\\:bg-\\[\\#1a1921\\]:hover { background-color: #e5e7eb !important; }
+          .light-mode .hover\\:bg-\\[\\#7c3aed\\]:hover { background-color: #6d28d9 !important; }
+          .light-mode .hover\\:bg-zinc-800:hover { background-color: #e5e7eb !important; }
+          .light-mode .hover\\:bg-zinc-900:hover { background-color: #e5e7eb !important; }
+          .light-mode .hover\\:bg-zinc-900\\/30:hover { background-color: rgba(229, 231, 235, 0.3) !important; }
+
+          .light-mode .text-white { color: #111827 !important; }
+          .light-mode .text-zinc-200 { color: #1f2937 !important; }
+          .light-mode .text-zinc-350 { color: #4b5563 !important; }
+          .light-mode .text-zinc-400 { color: #4b5563 !important; }
+          .light-mode .text-zinc-450 { color: #4b5563 !important; }
+          .light-mode .text-zinc-455 { color: #4b5563 !important; }
+          .light-mode .text-zinc-500 { color: #6b7280 !important; }
+          .light-mode .text-zinc-550 { color: #6b7280 !important; }
+          .light-mode .text-zinc-600 { color: #6b7280 !important; }
+          .light-mode .text-zinc-650 { color: #6b7280 !important; }
+          .light-mode .text-zinc-700 { color: #374151 !important; }
+          .light-mode .text-zinc-800 { color: #9ca3af !important; }
+          .light-mode .text-zinc-900 { color: #111827 !important; }
+
+          .light-mode .text-purple-200 { color: #6d28d9 !important; }
+          .light-mode .text-purple-300 { color: #5b21b6 !important; }
+          .light-mode .text-purple-400 { color: #7c3aed !important; }
+          .light-mode .text-purple-400\\/80 { color: rgba(124, 58, 237, 0.8) !important; }
+          .light-mode .text-purple-500 { color: #6d28d9 !important; }
+          .light-mode .text-purple-500\\/80 { color: rgba(109, 40, 217, 0.8) !important; }
+
+          .light-mode .hover\\:text-white:hover { color: #111827 !important; }
+          .light-mode .hover\\:text-zinc-200:hover { color: #1f2937 !important; }
+
+          .light-mode .border-zinc-700 { border-color: #d1d5db !important; }
+          .light-mode .border-zinc-750 { border-color: #e5e7eb !important; }
+          .light-mode .border-zinc-800 { border-color: #e5e7eb !important; }
+          .light-mode .border-zinc-800\\/40 { border-color: rgba(229, 231, 235, 0.4) !important; }
+          .light-mode .border-zinc-800\\/80 { border-color: rgba(229, 231, 235, 0.8) !important; }
+          .light-mode .border-zinc-900 { border-color: #e5e7eb !important; }
+          .light-mode .border-zinc-900\\/40 { border-color: rgba(229, 231, 235, 0.4) !important; }
+          .light-mode .border-zinc-900\\/50 { border-color: rgba(229, 231, 235, 0.5) !important; }
+          .light-mode .border-zinc-900\\/60 { border-color: rgba(229, 231, 235, 0.6) !important; }
+          .light-mode .border-zinc-900\\/80 { border-color: rgba(229, 231, 235, 0.8) !important; }
+          .light-mode .border-purple-500\\/10 { border-color: rgba(168, 85, 247, 0.2) !important; }
+          .light-mode .border-purple-500\\/15 { border-color: rgba(168, 85, 247, 0.25) !important; }
+          .light-mode .border-purple-500\\/20 { border-color: rgba(168, 85, 247, 0.3) !important; }
+          .light-mode .border-purple-500\\/25 { border-color: rgba(168, 85, 247, 0.35) !important; }
+          .light-mode .border-purple-500\\/30 { border-color: rgba(168, 85, 247, 0.4) !important; }
+          .light-mode .border-purple-500\\/35 { border-color: rgba(168, 85, 247, 0.45) !important; }
+          .light-mode .border-purple-500\\/80 { border-color: rgba(168, 85, 247, 0.8) !important; }
+          .light-mode .border-purple-500 { border-color: #8b5cf6 !important; }
+
+          .light-mode .hover\\:border-purple-500\\/35:hover { border-color: rgba(168, 85, 247, 0.5) !important; }
+          .light-mode .hover\\:border-zinc-700:hover { border-color: #9ca3af !important; }
+          .light-mode .hover\\:border-zinc-750:hover { border-color: #d1d5db !important; }
+
+          .light-mode .divide-zinc-900\\/40 > * + * { border-color: rgba(229, 231, 235, 0.5) !important; }
         `}</style>
 
         {/* Header */}
