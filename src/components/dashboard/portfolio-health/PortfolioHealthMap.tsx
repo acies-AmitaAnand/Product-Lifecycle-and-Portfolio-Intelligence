@@ -2190,35 +2190,35 @@ const VPCommandCenter: React.FC<{
           onClick={() => scrollToSection('vp-lifecycle-health')}
           className="px-2.5 py-1 hover:bg-black/5 dark:hover:bg-white/10 text-zinc-700 dark:text-zinc-350 rounded-sm cursor-pointer border-none bg-transparent font-bold outline-none"
         >
-          📊 Lifecycle Health
+          Lifecycle Health
         </button>
         <span className="text-zinc-300 dark:text-zinc-700">|</span>
         <button 
           onClick={() => scrollToSection('vp-action-desk')}
           className="px-2.5 py-1 hover:bg-black/5 dark:hover:bg-white/10 text-zinc-700 dark:text-zinc-350 rounded-sm cursor-pointer border-none bg-transparent font-bold outline-none"
         >
-          ⚡ Executive Action Desk
+          Executive Action Desk
         </button>
         <span className="text-zinc-300 dark:text-zinc-700">|</span>
         <button 
           onClick={() => scrollToSection('vp-investment-map')}
           className="px-2.5 py-1 hover:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-sm cursor-pointer border-none bg-transparent font-bold outline-none"
         >
-          🎯 Investment vs. Return
+          Investment vs. Return
         </button>
         <span className="text-zinc-300 dark:text-zinc-700">|</span>
         <button 
           onClick={() => scrollToSection('vp-rev-perf-matrix')}
           className="px-2.5 py-1 hover:bg-purple-500/10 text-purple-600 dark:text-purple-400 rounded-sm cursor-pointer border-none bg-transparent font-bold outline-none"
         >
-          📈 Revenue vs. Performance Matrix
+          Revenue vs. Performance Matrix
         </button>
         <span className="text-zinc-300 dark:text-zinc-700">|</span>
         <button 
           onClick={() => scrollToSection('vp-pareto-concentration')}
           className="px-2.5 py-1 hover:bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-sm cursor-pointer border-none bg-transparent font-bold outline-none"
         >
-          📊 Pareto SKU Concentration
+          Pareto SKU Concentration
         </button>
       </div>
 
