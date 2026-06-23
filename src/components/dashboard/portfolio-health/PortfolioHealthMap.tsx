@@ -1124,9 +1124,6 @@ const RevenuePerformanceMatrix: React.FC<RevenuePerformanceMatrixProps> = ({ sku
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-2 border-b border-black/5 dark:border-white/5 mb-3 gap-3">
         <div>
           <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Revenue vs. Performance Matrix</span>
-          <p className="text-[9px] text-zinc-550 dark:text-zinc-400 uppercase tracking-widest mt-0.5">
-            Segment catalog SKUs by size (Revenue) and health (Performance Score based on gross margins and growth velocity).
-          </p>
         </div>
         <div className="flex items-center gap-3 self-end sm:self-auto">
           <select
