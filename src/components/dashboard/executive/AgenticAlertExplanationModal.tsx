@@ -4,7 +4,7 @@
  */
 
 import React, { useState } from 'react';
-import { X, Sparkles } from 'lucide-react';
+import { X, Sparkles, ZoomIn } from 'lucide-react';
 
 interface AgenticAlertExplanationModalProps {
   isOpen: boolean;
@@ -26,25 +26,27 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
   const [activeSourceTab, setActiveSourceTab] = useState<IngestSourceTab>('finance');
   const [activeComputeTab, setActiveComputeTab] = useState<ComputeTab>('process');
   const [activeDiagnosticTab, setActiveDiagnosticTab] = useState<DiagnosticTab>('diagnostic');
+  const [isZoomedRootCause, setIsZoomedRootCause] = useState(false);
+  const [hoveredNode, setHoveredNode] = useState<string | null>(null);
 
   if (!isOpen) return null;
 
   // Source-specific high fidelity data for Ingestion (Step 1)
   const tabData = {
     finance: {
-      title: 'Finance & Ops',
-      subtitle: 'ERP, GL, P&L, Inventory, Costing and more',
+      title: 'Finance Auditor Agent',
+      subtitle: 'Autonomous ledger monitoring and profit leak audit agent',
       systems: [
-        { name: 'SAP S/4HANA', badge: 'SAP', badgeBg: 'bg-blue-600' },
-        { name: 'Oracle Finance', badge: 'ORCL', badgeBg: 'bg-red-600' },
-        { name: 'NetSuite', badge: 'NS', badgeBg: 'bg-zinc-800' },
+        { name: 'SAP Ingestion Agent', badge: 'SAP', badgeBg: 'bg-blue-600' },
+        { name: 'Oracle Auditor Agent', badge: 'ORCL', badgeBg: 'bg-red-600' },
+        { name: 'NetSuite Costing Agent', badge: 'NS', badgeBg: 'bg-zinc-800' },
       ],
       dataIngested: [
         'Revenue',
         'COGS',
         'Gross Margin',
         'Operating Cost',
-        'Inventory Cost',
+        'Formulation Cost',
         'Product P&L',
       ],
       quality: {
@@ -69,7 +71,7 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
         'Portfolio Health Scoring',
       ],
       flow: [
-        { label: 'Finance & Ops', desc: 'Raw financial, cost and inventory data ingested' },
+        { label: 'Finance Auditor Agent', desc: 'Raw financial, pricing, and formulation cost data ingested' },
         { label: 'Revenue + Cost Data', desc: 'Unified and cleansed financial metrics prepared' },
         { label: 'AI Profitability Engine', desc: 'AI models analyze margins, trends and profit drivers' },
         { label: 'SKU Health Score', desc: 'Each SKU scored on profitability, growth and risk' },
@@ -77,12 +79,12 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
       ],
     },
     crm: {
-      title: 'CRM / ERP',
-      subtitle: 'Customers, Orders, Pipeline, Returns and more',
+      title: 'Client Insights Agent',
+      subtitle: 'Customer accounts and sales lifecycle monitoring agent',
       systems: [
-        { name: 'Salesforce CRM', badge: 'SFDC', badgeBg: 'bg-sky-500' },
-        { name: 'Microsoft Dynamics', badge: 'MSFT', badgeBg: 'bg-teal-600' },
-        { name: 'HubSpot', badge: 'HUBS', badgeBg: 'bg-orange-500' },
+        { name: 'Salesforce Ingestion Agent', badge: 'SFDC', badgeBg: 'bg-sky-500' },
+        { name: 'Dynamics Pipeline Agent', badge: 'MSFT', badgeBg: 'bg-teal-600' },
+        { name: 'HubSpot Engagement Agent', badge: 'HUBS', badgeBg: 'bg-orange-500' },
       ],
       dataIngested: [
         'Customer Accounts',
@@ -114,7 +116,7 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
         'Pipeline Optimization',
       ],
       flow: [
-        { label: 'CRM & ERP Data', desc: 'Customer profiling and transaction histories ingested' },
+        { label: 'Client Insights Agent Data', desc: 'Customer profiling and transaction histories ingested' },
         { label: 'Client Segments', desc: 'Cleansed profiles sorted by volume and value' },
         { label: 'AI LTV Predictor', desc: 'AI computes long-term margins and churn risks' },
         { label: 'Customer Scorecard', desc: 'Clients ranked by profitability and retention potential' },
@@ -122,20 +124,20 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
       ],
     },
     iot: {
-      title: 'IoT Feeds',
-      subtitle: 'Production, Machines, Quality, Sensors and more',
+      title: 'Operations Telemetry Agent',
+      subtitle: 'Real-time batch consistency and product quality telemetry agent',
       systems: [
-        { name: 'AWS IoT Hub', badge: 'AWS', badgeBg: 'bg-amber-500' },
-        { name: 'Azure IoT Central', badge: 'MSFT', badgeBg: 'bg-blue-500' },
-        { name: 'Siemens Industrial', badge: 'SIEM', badgeBg: 'bg-cyan-700' },
+        { name: 'AWS IoT Scraper Agent', badge: 'AWS', badgeBg: 'bg-amber-500' },
+        { name: 'Azure Telemetry Agent', badge: 'MSFT', badgeBg: 'bg-blue-500' },
+        { name: 'Formulation Lab Scraper', badge: 'LAB', badgeBg: 'bg-cyan-700' },
       ],
       dataIngested: [
-        'Machine Vibration',
-        'Temperature',
-        'Power Draw',
-        'Cycle Times',
-        'Error Codes',
-        'Yield Rates',
+        'Formulation Acidity',
+        'Sweetness Index (Brix)',
+        'Package Seal Pressure',
+        'Batch Density',
+        'Pasteurization Temp',
+        'Shelf-Life Projection',
       ],
       quality: {
         pct: 99,
@@ -147,32 +149,32 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
       },
       insight: {
         bullets: [
-          'CNC Machine #4 shows abnormal vibration pattern (potential bearing issue).',
-          'Line B energy draw spiked 18% during peak load cycles.',
-          'Potential preventive savings: $420k.',
+          'Batch #42 shows abnormal acidity variance (potential taste profile drift).',
+          'Line B packaging seal pressure spiked 18% during peak temperature cycles.',
+          'Potential margin recovery via formula tuning: $420k.',
         ],
       },
       outcomes: [
-        'Predictive Maintenance',
-        'Overall Equipment Effectiveness',
-        'Energy Consumption Tuning',
-        'Downtime Minimization',
+        'Predictive Formulation Tuning',
+        'Taste Profile Consistency',
+        'Acidity Level Control',
+        'Packaging Waste Minimization',
       ],
       flow: [
-        { label: 'Telemetry Data', desc: 'High-frequency machine and sensor data ingested' },
-        { label: 'Anomalies Isolated', desc: 'Sensor values filtered for variance and thresholds' },
-        { label: 'AI Predictive Engine', desc: 'ML models forecast maintenance requirements' },
-        { label: 'Machine Health Index', desc: 'Individual assets scored by wear and reliability' },
-        { label: 'Recommendations', desc: 'Schedule CNC-04 Service (Red), Optimize Line B Cycle (Yellow), Calibrate Press-09 (Green)' },
+        { label: 'Formulation Telemetry', desc: 'Real-time batch density and brix values ingested' },
+        { label: 'Quality Assurance Agent', desc: 'Acidity and seal parameters checked for variance thresholds' },
+        { label: 'AI Taste Profiler', desc: 'ML models forecast product batch shelf-life and taste' },
+        { label: 'Product Quality Score', desc: 'Individual batches scored by profile alignment' },
+        { label: 'Recommendations', desc: 'Adjust Batch-42 Acidity (Red), Calibrate Filler B (Yellow), Accept Batch-09 (Green)' },
       ],
     },
     api: {
-      title: 'External APIs',
-      subtitle: 'Market, Competitor, Retail, Economic Data and more',
+      title: 'Market Scraper Agent',
+      subtitle: 'Economic indicators and competitor price scraping agent',
       systems: [
-        { name: 'Bloomberg Terminal', badge: 'BBG', badgeBg: 'bg-black border border-zinc-700 text-amber-500' },
-        { name: 'OpenWeather API', badge: 'OWM', badgeBg: 'bg-[#0f2c59]' },
-        { name: 'Fed Rate Feed', badge: 'FED', badgeBg: 'bg-emerald-600' },
+        { name: 'Bloomberg Feed Agent', badge: 'BBG', badgeBg: 'bg-black border border-zinc-700 text-amber-500' },
+        { name: 'Weather Assortment Agent', badge: 'OWM', badgeBg: 'bg-[#0f2c59]' },
+        { name: 'Fed Rate Scraper Agent', badge: 'FED', badgeBg: 'bg-emerald-600' },
       ],
       dataIngested: [
         'Global Index Pricing',
@@ -213,24 +215,24 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
     },
   };
 
-  // Source-specific high fidelity data for Processing & Analysis (Step 2)
+  // Source-specific high fidelity data for Analysis & Modeling Swarm (Step 2)
   const computeData = {
     process: {
-      title: 'Process & Analysis Overview',
-      subtitle: 'AI-powered analytics pipeline that converts data into business value',
+      title: 'Modeling Swarm Overview',
+      subtitle: 'Cooperating agent swarm executing optimization models',
       metrics: [
-        { label: 'Data Processed', val: '2.4M', pct: '↑ 18.4%', icon: 'db' },
-        { label: 'Models Executed', val: '28', pct: '↑ 12.5%', icon: 'cube' },
+        { label: 'Signals Processed', val: '2.4M', pct: '↑ 18.4%', icon: 'db' },
+        { label: 'Agent Decisions', val: '28', pct: '↑ 12.5%', icon: 'cube' },
         { label: 'Insights Generated', val: '156', pct: '↑ 22.3%', icon: 'bulb' },
         { label: 'Recommendations', val: '42', pct: '↑ 15.4%', icon: 'target' },
         { label: 'Action Taken', val: '31', pct: '↑ 19.2%', icon: 'check' },
       ],
       processSteps: [
-        { step: '1. Data Preparation', desc: 'Clean, validate and standardize data', badge: '2.4M records', icon: 'db' },
-        { step: '2. Data Modeling', desc: 'Transform data into business models', badge: '18 models', icon: 'model' },
-        { step: '3. AI / ML Analysis', desc: 'Run AI/ML models and algorithms', badge: '28 models run', icon: 'brain' },
-        { step: '4. Metrics & KPIs', desc: 'Calculate KPIs and business metrics', badge: '64 KPIs', icon: 'kpi' },
-        { step: '5. Insights & Output', desc: 'Generate insights and recommendations', badge: '156 insights', icon: 'bulb' },
+        { step: '1. Consensus Alignment', desc: 'Map and align signals across ingestion agents', badge: '2.4M signals', icon: 'db' },
+        { step: '2. Causal Reasoning', desc: 'Analyze profit leak causal connections', badge: '18 agent tasks', icon: 'model' },
+        { step: '3. Agent Simulation', desc: 'Run Monte Carlo volume & price simulations', badge: '28 runs', icon: 'brain' },
+        { step: '4. Portfolio Audit', desc: 'Evaluate portfolio risk indices and margins', badge: '64 KPIs audited', icon: 'kpi' },
+        { step: '5. Consolidation Swarm', desc: 'Synthesize collaborative agent action lists', badge: '156 insights synthesized', icon: 'bulb' },
       ],
       insights: [
         { text: '27 SKUs are driving 80% of total profit. Concentrate investments on these top SKUs.', badge: 'High Impact', badgeColor: 'text-red-400 border-red-500/20 bg-red-500/5', icon: 'trend' },
@@ -242,13 +244,13 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
         { name: 'Profitability Scoring', type: 'Classification', acc: '91.7%', run: '6 min ago', status: 'Healthy' },
         { name: 'Churn Prediction', type: 'Classification', acc: '89.5%', run: '12 min ago', status: 'Healthy' },
         { name: 'Price Optimization', type: 'Regression', acc: '92.1%', run: '15 min ago', status: 'Healthy' },
-        { name: 'Inventory Optimization', type: 'Optimization', acc: '93.8%', run: '20 min ago', status: 'Healthy' },
+        { name: 'Portfolio Optimization', type: 'Complexity Reduction', acc: '93.8%', run: '20 min ago', status: 'Healthy' },
       ],
       kpis: [
         { label: 'Gross Margin %', val: '27.6%', change: '↑ 2.4pp' },
         { label: 'Portfolio ROI', val: '18.9%', change: '↑ 1.8pp' },
         { label: 'Fill Rate', val: '96.2%', change: '↑ 3.1pp' },
-        { label: 'Inventory Turns', val: '6.4x', change: '↑ 0.7x' },
+        { label: 'SKU Retained %', val: '92.4%', change: '↑ 1.2%' },
       ],
       recs: [
         { title: 'Discontinue SKU-142', desc: 'Low profitability and declining demand', impact: 'High', val: '$1.2M', color: 'text-red-400 border-red-500/15 bg-red-500/[0.02]' },
@@ -256,16 +258,16 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
         { title: 'Optimize Price for SKU-089', desc: 'Price increase opportunity of 5-7%', impact: 'Medium', val: '$0.6M', color: 'text-amber-400 border-amber-500/15 bg-amber-500/[0.02]' },
       ],
       flow: [
-        { label: 'Raw Data', desc: '2.4M records ingested' },
-        { label: 'Process & Analyze', desc: '28 models executed, 64 KPIs calculated' },
-        { label: 'AI Insights', desc: '156 insights generated' },
-        { label: 'Recommendations', desc: '42 actionable recommendations' },
-        { label: 'Business Impact', desc: '$4.6M potential value identified' },
+        { label: 'Agent Ingestion', desc: '2.4M signals consolidated' },
+        { label: 'Swarm Reasoning', desc: '28 agent tasks executed, 64 KPIs audited' },
+        { label: 'Causal Insights', desc: '156 agent insights generated' },
+        { label: 'Consensus Proposals', desc: '42 consensus action proposals' },
+        { label: 'Attributed EBITDA', desc: '$4.6M attributed EBITDA value' },
       ],
     },
     vis: {
-      title: 'Visualization & Reporting Overview',
-      subtitle: 'Data dashboarding and alerts delivery infrastructure',
+      title: 'Visualization & Report Agent',
+      subtitle: 'Autonomous interface rendering and alerts dispatch agent',
       metrics: [
         { label: 'Reports Generated', val: '240', pct: '↑ 8.5%', icon: 'db' },
         { label: 'Alerts Triggered', val: '45', pct: '↓ 12.1%', icon: 'cube' },
@@ -274,45 +276,45 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
         { label: 'Delivery Rate', val: '100%', pct: '→ 0.0%', icon: 'check' },
       ],
       processSteps: [
-        { step: '1. Data Aggregation', desc: 'Collect and bundle data points', badge: '12 sources', icon: 'db' },
-        { step: '2. Chart Generation', desc: 'Compute visual vectors and trends', badge: '45 charts active', icon: 'model' },
-        { step: '3. Dashboard Render', desc: 'Draw layout containers and frames', badge: '1.2s avg latency', icon: 'brain' },
-        { step: '4. Alert Triggers', desc: 'Evaluate threshold violations', badge: '45 rules online', icon: 'kpi' },
-        { step: '5. Export Outputs', desc: 'Distribute scheduled PDFs/reports', badge: '240 reports sent', icon: 'bulb' },
+        { step: '1. Layout Adaptation', desc: 'Map visual components to user role contexts', badge: '12 templates', icon: 'db' },
+        { step: '2. Visual Translation', desc: 'Select chart styles based on severity', badge: '45 charts active', icon: 'model' },
+        { step: '3. Narrative Synthesis', desc: 'Generate real-time executive summaries', badge: '1.2s avg latency', icon: 'brain' },
+        { step: '4. Alert Dispatch Routing', desc: 'Package warnings for target channels', badge: '45 rules active', icon: 'kpi' },
+        { step: '5. Chat Sync', desc: 'Link chart data to interactive chat agent', badge: '240 reports synchronized', icon: 'bulb' },
       ],
       insights: [
         { text: 'Regional APAC dashboard latency spike detected. Resolved via automated query caching.', badge: 'Resolved', badgeColor: 'text-emerald-400 border-emerald-500/20 bg-emerald-500/5', icon: 'check' },
         { text: 'Margin alert delivered successfully to 12 executives with zero packet drop.', badge: 'Delivered', badgeColor: 'text-purple-400 border-purple-500/20 bg-purple-500/5', icon: 'trend' },
       ],
       models: [
-        { name: 'Dashboard Rendering', type: 'UI Pipeline', acc: '99.9%', run: 'Real-time', status: 'Healthy' },
-        { name: 'Report Generator', type: 'PDF Engine', acc: '100.0%', run: '10 min ago', status: 'Healthy' },
-        { name: 'Email Dispatcher', type: 'SMTP Gateway', acc: '99.8%', run: '1 min ago', status: 'Healthy' },
+        { name: 'UI Adapter', type: 'Cognitive Layout', acc: '99.9%', run: 'Real-time', status: 'Healthy' },
+        { name: 'Narrative NLG', type: 'Summary Synthesis', acc: '100.0%', run: '10 min ago', status: 'Healthy' },
+        { name: 'Channel Router', type: 'Alert Dispatch', acc: '99.8%', run: '1 min ago', status: 'Healthy' },
       ],
       kpis: [
-        { label: 'Report Speed', val: '2.1s', change: '↓ 0.4s' },
-        { label: 'Daily Sessions', val: '412', change: '↑ 18%' },
-        { label: 'Alert Accrual', val: '14/day', change: '↓ 3.2' },
+        { label: 'UI Load Latency', val: '2.1s', change: '↓ 0.4s' },
+        { label: 'Active Visuals', val: '412', change: '↑ 18%' },
+        { label: 'Routed Alerts', val: '14/day', change: '↓ 3.2' },
         { label: 'Uptime', val: '99.98%', change: '↑ 0.02%' },
       ],
       recs: [
-        { title: 'Optimize Index Caching', desc: 'Speed up product detail loading times', impact: 'Medium', val: '1.1s', color: 'text-amber-400 border-amber-500/15 bg-amber-500/[0.02]' },
+        { title: 'Tune Layout Caching', desc: 'Accelerate visual context rendering times', impact: 'Medium', val: '1.1s', color: 'text-amber-400 border-amber-500/15 bg-amber-500/[0.02]' },
         { title: 'Enable SMS Alerts', desc: 'Deploy urgent text dispatches to field managers', impact: 'High', val: '98%', color: 'text-purple-400 border-purple-500/15 bg-purple-500/[0.02]' },
       ],
       flow: [
-        { label: 'Aggregation', desc: 'Raw views combined' },
-        { label: 'Engine Render', desc: 'Vectors computed' },
-        { label: 'Alert Check', desc: 'Threshold limits evaluated' },
-        { label: 'Distribution', desc: 'Reports formatted and dispatched' },
-        { label: 'User Action', desc: 'Stakeholders investigate alert panels' },
+        { label: 'Context Mapping', desc: 'User role visual layouts selected' },
+        { label: 'Cognitive Selection', desc: 'Anomalies highlighted visually' },
+        { label: 'Dynamic Narrative', desc: 'NLG agent generates summaries' },
+        { label: 'Router Dispatch', desc: 'Notifications sent to active channels' },
+        { label: 'Chat Synchronization', desc: 'Stakeholders query details via chat agent' },
       ],
     },
     recs: {
-      title: 'AI Recommendations Hub',
-      subtitle: 'Evaluation and scoring engine for portfolio optimization actions',
+      title: 'AI Recommendation Agent',
+      subtitle: 'Action ranking and displacement simulation agent',
       metrics: [
         { label: 'Total Recs', val: '42', pct: '↑ 15.4%', icon: 'db' },
-        { label: 'Approved Actions', val: '18', pct: '↑ 20.0%', icon: 'cube' },
+        { label: 'Approved Mitigation Action Agent', val: '18', pct: '↑ 20.0%', icon: 'cube' },
         { label: 'Rejected / Snoozed', val: '4', pct: '↓ 50.0%', icon: 'bulb' },
         { label: 'Value Realized', val: '$1.4M', pct: '↑ 32.1%', icon: 'target' },
         { label: 'Success Rate', val: '85.4%', pct: '↑ 4.2%', icon: 'check' },
@@ -326,7 +328,7 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
       ],
       insights: [
         { text: 'Recommended price increase on overlap SKUs matching competitor price shifts will secure $1.2M.', badge: 'High Impact', badgeColor: 'text-red-400 border-red-500/20 bg-red-500/5', icon: 'trend' },
-        { text: 'Inventory consolidation recommendation for warehouse B approved by operations.', badge: 'Approved', badgeColor: 'text-emerald-400 border-emerald-500/20 bg-emerald-500/5', icon: 'check' },
+        { text: 'Product formulation consolidation recommendation for segment B approved by portfolio leads.', badge: 'Approved', badgeColor: 'text-emerald-400 border-emerald-500/20 bg-emerald-500/5', icon: 'check' },
       ],
       models: [
         { name: 'ROI Predictor', type: 'Regressor', acc: '94.2%', run: '5 min ago', status: 'Healthy' },
@@ -346,19 +348,19 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
       flow: [
         { label: 'Insight Input', desc: 'Margin leak details fed in' },
         { label: 'Simulation', desc: 'Market variations generated' },
-        { label: 'Safety Check', desc: 'Supply constraints cross-checked' },
+        { label: 'Policy Check', desc: 'Brand guardrails and legal margins cross-checked' },
         { label: 'ROI Analysis', desc: 'Benefit vs cost ratios compiled' },
         { label: 'Decision output', desc: 'Recommendations populated' },
       ],
     },
     collab: {
-      title: 'Collaboration & Workflow Control',
-      subtitle: 'Task assignments and action approvals auditing',
+      title: 'Orchestration & Workflow Agent',
+      subtitle: 'Human-in-the-loop task routing and swarm coordination agent',
       metrics: [
         { label: 'Pending Approvals', val: '6', pct: '↓ 22.0%', icon: 'db' },
-        { label: 'Approved Actions', val: '12', pct: '↑ 15.0%', icon: 'cube' },
+        { label: 'Approved Mitigation Action Agent', val: '12', pct: '↑ 15.0%', icon: 'cube' },
         { label: 'Escalated Tasks', val: '2', pct: '↓ 50.0%', icon: 'bulb' },
-        { label: 'Actions Assigned', val: '24', pct: '↑ 12.0%', icon: 'target' },
+        { label: 'Mitigation Action Agent Assigned', val: '24', pct: '↑ 12.0%', icon: 'target' },
         { label: 'Team Members', val: '8', pct: '→ 0.0%', icon: 'check' },
       ],
       processSteps: [
@@ -391,12 +393,12 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
         { label: 'Proposal', desc: ' analyst drafts mitigation parameters' },
         { label: 'Review Request', desc: 'Manager notified of transaction proposal' },
         { label: 'Approval Commit', desc: 'Approval granted in workspace' },
-        { label: 'ERP Writeback', desc: 'Changes executed in SAP S/4HANA' },
+        { label: 'ERP Writeback', desc: 'Changes executed in SAP Ingestion Agent' },
       ],
     },
     gov: {
-      title: 'Data Quality & Governance Panel',
-      subtitle: 'Compliance checking and self-cleansing system parameters',
+      title: 'Governance & Cleansing Agent',
+      subtitle: 'Schema validation and automated metadata self-cleansing agent',
       metrics: [
         { label: 'Compliance Index', val: '100%', pct: '→ 0.0%', icon: 'db' },
         { label: 'Anomaly Flags', val: '14', pct: '↓ 35.0%', icon: 'cube' },
@@ -405,46 +407,46 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
         { label: 'Security Score', val: '99.8%', pct: '↑ 0.1%', icon: 'check' },
       ],
       processSteps: [
-        { step: '1. Ingest Validate', desc: 'Scan schema layouts and formats', badge: '100% compliant', icon: 'db' },
-        { step: '2. Anomaly Check', desc: 'Isolate extreme standard deviations', badge: '14 alerts active', icon: 'model' },
-        { step: '3. Rule Run', desc: 'Execute validation logic and assertions', badge: '120 active rules', icon: 'brain' },
-        { step: '4. Cleanse Pipeline', desc: 'Impute missing values and normalize', badge: '20ms avg delay', icon: 'kpi' },
-        { step: '5. Governance Audit', desc: 'Compile lineage logs for reporting', badge: 'Audit logged', icon: 'bulb' },
+        { step: '1. Semantic Schema Alignment', desc: 'Map fields to standard product ontology', badge: '100% compliant', icon: 'db' },
+        { step: '2. Hallucination Guardrailing', desc: 'Validate agent decisions against physical ledgers', badge: '14 checks active', icon: 'model' },
+        { step: '3. Concept Drift Auditing', desc: 'Monitor model weight and variance drift', badge: '120 active rules', icon: 'brain' },
+        { step: '4. Policy Compliance Auditing', desc: 'Verify price changes against legal limits', badge: '20ms avg delay', icon: 'kpi' },
+        { step: '5. Explainability Trace Logging', desc: 'Generate multi-agent Chain-of-Thought logs', badge: 'CoT Trace logged', icon: 'bulb' },
       ],
       insights: [
-        { text: 'Schema validation completed. Zero drift anomalies detected across all sources.', badge: 'Compliant', badgeColor: 'text-emerald-400 border-emerald-500/20 bg-emerald-500/5', icon: 'check' },
-        { text: 'Auto-cleansing rule resolved 11 null records in cost column during ingestion.', badge: 'Cleansed', badgeColor: 'text-purple-400 border-purple-500/20 bg-purple-500/5', icon: 'trend' },
+        { text: 'Semantic validation completed. Zero schema drift anomalies detected across active sources.', badge: 'Compliant', badgeColor: 'text-emerald-400 border-emerald-500/20 bg-emerald-500/5', icon: 'check' },
+        { text: 'Hallucination guardrail verified 11 ledger values during reasoning audits.', badge: 'Verified', badgeColor: 'text-purple-400 border-purple-500/20 bg-purple-500/5', icon: 'trend' },
       ],
       models: [
-        { name: 'Drift Detector', type: 'Isolation Forest', acc: '97.5%', run: '1 hr ago', status: 'Healthy' },
-        { name: 'Cleansing Engine', type: 'Heuristics', acc: '100.0%', run: 'Real-time', status: 'Healthy' },
-        { name: 'Lineage Compiler', type: 'Meta Analyzer', acc: '99.9%', run: '12 hrs ago', status: 'Healthy' },
+        { name: 'Drift Auditor', type: 'Semantic Drift', acc: '97.5%', run: '1 hr ago', status: 'Healthy' },
+        { name: 'Guardrail Engine', type: 'Fact Verification', acc: '100.0%', run: 'Real-time', status: 'Healthy' },
+        { name: 'Lineage Provenance', type: 'CoT Trace Logger', acc: '99.9%', run: '12 hrs ago', status: 'Healthy' },
       ],
       kpis: [
-        { label: 'Validation Lag', val: '14ms', change: '↓ 3ms' },
-        { label: 'Data Quality Index', val: '98.5%', change: '↑ 1.2%' },
-        { label: 'Lineage Depth', val: '18 hops', change: '↑ 2 hops' },
-        { label: 'Privacy Index', val: '100%', change: '→ 0%' },
+        { label: 'Guardrail Latency', val: '14ms', change: '↓ 3ms' },
+        { label: 'Reasoning Trust Index', val: '98.5%', change: '↑ 1.2%' },
+        { label: 'Provenance Depth', val: '18 hops', change: '↑ 2 hops' },
+        { label: 'Compliance Index', val: '100%', change: '→ 0%' },
       ],
       recs: [
-        { title: 'Re-index Database Schema', desc: 'Adjust primary keys for NetSuite connector', impact: 'Medium', val: '120ms', color: 'text-amber-400 border-amber-500/15 bg-amber-500/[0.02]' },
-        { title: 'Update Cost Assert Rule', desc: 'Increase floor bounds on inventory value logs', impact: 'High', val: 'Rule 42', color: 'text-purple-400 border-purple-500/15 bg-purple-500/[0.02]' },
+        { title: 'Re-align Semantic Schema', desc: 'Adjust ontology mapping for NetSuite Costing Agent connector', impact: 'Medium', val: '120ms', color: 'text-amber-400 border-amber-500/15 bg-amber-500/[0.02]' },
+        { title: 'Update Guardrail Rules', desc: 'Increase variance thresholds on pricing check logs', impact: 'High', val: 'Rule 42', color: 'text-purple-400 border-purple-500/15 bg-purple-500/[0.02]' },
       ],
       flow: [
-        { label: 'Validation Scan', desc: 'Ingestion records checked for schema compliance' },
-        { label: 'Isolate Outliers', desc: 'Unusual variances marked for correction' },
-        { label: 'Cleansing logic', desc: 'Imputations apply for minor omissions' },
-        { label: 'Lineage Write', desc: 'Provenance chain logged to database' },
-        { label: 'Audit report', desc: 'Logs published to executive portal' },
+        { label: 'Semantic Scan', desc: 'Ingestion records checked for semantic ontology compliance' },
+        { label: 'Fact Verification', desc: 'Agent outputs verified against transaction ledgers' },
+        { label: 'Drift Auditing', desc: 'Concept drift checks run on model weights' },
+        { label: 'Provenance Log', desc: 'Reasoning chain logged to explainability trace' },
+        { label: 'Compliance Audit', desc: 'Logs verified for legal price bounds and published' },
       ],
     },
   };
 
-  // Source-specific high fidelity data for Diagnostic Output (Step 3)
+  // Source-specific high fidelity data for Remediation & Action Swarm (Step 3)
   const diagnosticData = {
     diagnostic: {
-      title: 'Diagnostic Output Overview',
-      subtitle: 'Comprehensive diagnostics to detect issues, risks and opportunities.',
+      title: 'Remediation & Action Swarm Overview',
+      subtitle: 'Swarm-detected portfolio anomalies, margin risks and opportunities',
       metrics: [
         { label: 'Total Diagnostics Run', val: '134', pct: '↑ 18.3%', icon: 'diag' },
         { label: 'Issues Detected', val: '17', pct: '↑ 21.4%', icon: 'alert' },
@@ -464,13 +466,13 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
       categories: [
         { label: 'Margin Erosion', val: 6, pct: 35, bg: 'bg-red-500' },
         { label: 'Demand Risk', val: 4, pct: 24, bg: 'bg-orange-500' },
-        { label: 'Supply Chain', val: 3, pct: 18, bg: 'bg-yellow-450' },
+        { label: 'COGS Inflation', val: 3, pct: 18, bg: 'bg-yellow-450' },
         { label: 'Price & Mix', val: 2, pct: 12, bg: 'bg-emerald-500' },
-        { label: 'Data Quality', val: 2, pct: 12, bg: 'bg-blue-500' },
+        { label: 'Policy Drift', val: 2, pct: 12, bg: 'bg-blue-500' },
       ],
       issues: [
         { name: 'Declining margin in 15 SKUs', desc: 'Margin erosion detected for SKUs in Energy Drink category', sev: 'Critical', sevColor: 'text-red-400 border-red-500/20 bg-red-500/5', impact: '$1.2M', time: '5 min ago', status: 'Open', statusColor: 'text-red-400' },
-        { name: 'High inventory risk for 8 SKUs', desc: 'Inventory days > 90 days', sev: 'High', sevColor: 'text-orange-400 border-orange-500/20 bg-orange-500/5', impact: '$780K', time: '15 min ago', status: 'Open', statusColor: 'text-red-400' },
+        { name: 'High complexity risk for 8 SKUs', desc: 'SKU sales volume below threshold limits', sev: 'High', sevColor: 'text-orange-400 border-orange-500/20 bg-orange-500/5', impact: '$780K', time: '15 min ago', status: 'Open', statusColor: 'text-red-400' },
         { name: 'Demand drop in 3 regions', desc: 'Co2 demand decline > 20%', sev: 'High', sevColor: 'text-orange-400 border-orange-500/20 bg-orange-500/5', impact: '$560K', time: '30 min ago', status: 'Open', statusColor: 'text-red-400' },
         { name: 'Stockout risk in 2 SKUs', desc: 'Projected stockout in next 14 days', sev: 'Medium', sevColor: 'text-yellow-450 border-yellow-500/20 bg-yellow-500/5', impact: '$320K', time: '45 min ago', status: 'Investigating', statusColor: 'text-sky-400' },
         { name: 'Data quality issue in sales data', desc: 'Missing values in key fields', sev: 'Low', sevColor: 'text-emerald-400 border-emerald-500/20 bg-emerald-500/5', impact: '-', time: '1 hour ago', status: 'Resolved', statusColor: 'text-emerald-400' },
@@ -483,19 +485,19 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
       recs: [
         { title: 'Optimize Pricing for 15 SKUs', tag: 'High Impact', tagColor: 'text-red-400 border-red-500/20 bg-red-500/5', desc: 'Increase price by 3-5% to recover margin.', val: '$1.2M', conf: 92 },
         { title: 'Rationalize 8 Low Performing SKUs', tag: 'High Impact', tagColor: 'text-red-400 border-red-500/20 bg-red-500/5', desc: 'Discontinue or consolidate low margin SKUs.', val: '$780K', conf: 88 },
-        { title: 'Reduce Inventory in 3 Categories', tag: 'Medium Impact', tagColor: 'text-amber-450 border-amber-500/20 bg-amber-500/5', desc: 'Run targeted promotions to reduce inventory days.', val: '$430K', conf: 75 },
+        { title: 'Consolidate SKUs in 3 Categories', tag: 'Medium Impact', tagColor: 'text-amber-450 border-amber-500/20 bg-amber-500/5', desc: 'Discontinue lowest 10% performance SKUs.', val: '$430K', conf: 75 },
         { title: 'Improve Forecasting Accuracy', tag: 'Medium Impact', tagColor: 'text-amber-455 border-amber-500/20 bg-amber-500/5', desc: 'Enhance demand forecasting for at-risk regions.', val: '$320K', conf: 70 },
       ],
     },
     root: {
-      title: 'Root Cause Analysis Overview',
-      subtitle: 'Drill down to root factors influencing portfolio performance leaks',
+      title: 'Root Cause Reasoning Agent',
+      subtitle: 'LLM-powered reasoning agent tracing anomaly causation links',
       metrics: [
         { label: 'Causes Identified', val: '24', pct: '↑ 12.0%', icon: 'diag' },
         { label: 'Core Factors', val: '3', pct: '→ 0.0%', icon: 'alert' },
         { label: 'Diagnostic Depth', val: '92%', pct: '↑ 5.1%', icon: 'target' },
         { label: 'Resolved Factors', val: '14', pct: '↑ 18.0%', icon: 'opportunity' },
-        { label: 'Auto-Correlations', val: '180', pct: '↑ 24.2%', icon: 'check' },
+        { label: 'Auto-Correlation & Assortment Agentss', val: '180', pct: '↑ 24.2%', icon: 'check' },
       ],
       severity: {
         total: 24,
@@ -508,14 +510,14 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
       },
       categories: [
         { label: 'Material Cost inflation', val: 10, pct: 42, bg: 'bg-red-500' },
-        { label: 'Supplier Delay', val: 6, pct: 25, bg: 'bg-orange-500' },
+        { label: 'Ingredient Cost Spikes', val: 6, pct: 25, bg: 'bg-orange-500' },
         { label: 'Promotional Overspend', val: 4, pct: 17, bg: 'bg-yellow-450' },
         { label: 'Labor shortage', val: 2, pct: 8, bg: 'bg-emerald-500' },
-        { label: 'Logistics fees', val: 2, pct: 8, bg: 'bg-blue-500' },
+        { label: 'Packaging fees', val: 2, pct: 8, bg: 'bg-blue-500' },
       ],
       issues: [
         { name: 'Supplier Price Surge', desc: 'Raw packaging cost increased by 14% at source', sev: 'Critical', sevColor: 'text-red-400 border-red-500/20 bg-red-500/5', impact: '$820k', time: '10 min ago', status: 'Open', statusColor: 'text-red-400' },
-        { name: 'Out-of-Stock on base bottles', desc: 'Supplier A delayed freight container delivery', sev: 'High', sevColor: 'text-orange-400 border-orange-500/20 bg-orange-500/5', impact: '$450k', time: '20 min ago', status: 'Open', statusColor: 'text-red-400' },
+        { name: 'Sourcing Rate spikes on caps', desc: 'Supplier A raised base pricing on glass containers', sev: 'High', sevColor: 'text-orange-400 border-orange-500/20 bg-orange-500/5', impact: '$450k', time: '20 min ago', status: 'Open', statusColor: 'text-red-400' },
         { name: 'Trade spend variance', desc: 'Promotional discounts exceeded margin limits in West', sev: 'High', sevColor: 'text-orange-400 border-orange-500/20 bg-orange-500/5', impact: '$320k', time: '35 min ago', status: 'Open', statusColor: 'text-red-400' },
       ],
       impacts: [
@@ -529,14 +531,14 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
       ],
     },
     impact: {
-      title: 'Impact Assessment Panel',
-      subtitle: 'Quantify the financial, operational and customer impacts of anomalies',
+      title: 'Value Attribution Agent',
+      subtitle: 'Quantitative agent attributing EBITDA and customer SLA risks',
       metrics: [
         { label: 'Financial Impact', val: '$2.8M', pct: '↑ 20.2%', icon: 'diag' },
         { label: 'Revenue Risk', val: '$4.1M', pct: '↑ 18.0%', icon: 'alert' },
         { label: 'Customer NPS impact', val: '-8 pts', pct: '↓ 50%', icon: 'target' },
         { label: 'EBITDA Pressure', val: '0.4%', pct: '↑ 12.0%', icon: 'opportunity' },
-        { label: 'Supply Shock Index', val: 'Medium', pct: '→ 0%', icon: 'check' },
+        { label: 'Sourcing Risk Index', val: 'Medium', pct: '→ 0%', icon: 'check' },
       ],
       severity: {
         total: 12,
@@ -550,27 +552,27 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
       categories: [
         { label: 'Margin Erosion', val: 5, pct: 42, bg: 'bg-red-500' },
         { label: 'Demand Risk', val: 3, pct: 25, bg: 'bg-orange-500' },
-        { label: 'Supply Chain', val: 2, pct: 17, bg: 'bg-yellow-450' },
+        { label: 'COGS Variance', val: 2, pct: 17, bg: 'bg-yellow-450' },
         { label: 'Price & Mix', val: 1, pct: 8, bg: 'bg-emerald-500' },
-        { label: 'Data Quality', val: 1, pct: 8, bg: 'bg-blue-500' },
+        { label: 'Policy Drift', val: 1, pct: 8, bg: 'bg-blue-500' },
       ],
       issues: [
         { name: 'Margin leak in Energy segment', desc: 'COGS inflation overpassing wholesale adjustments', sev: 'Critical', sevColor: 'text-red-400 border-red-500/20 bg-red-500/5', impact: '$1.2M', time: '5 min ago', status: 'Open', statusColor: 'text-red-400' },
-        { name: 'Lead time penalty at Retailer A', desc: 'Late shipping charges accrued from warehouse dispatch', sev: 'High', sevColor: 'text-orange-400 border-orange-500/20 bg-orange-500/5', impact: '$220k', time: '30 min ago', status: 'Open', statusColor: 'text-red-400' },
+        { name: 'Product Listing penalties', desc: 'Compliance fines accrued from wrong labeling codes', sev: 'High', sevColor: 'text-orange-400 border-orange-500/20 bg-orange-500/5', impact: '$220k', time: '30 min ago', status: 'Open', statusColor: 'text-red-400' },
       ],
       impacts: [
         { label: 'Financial Impact', val: '$2.8M', tag: 'High', tagColor: 'text-red-400 border-red-500/20 bg-red-500/5', desc: 'Net profit impact across portfolio', icon: 'gear' },
         { label: 'Revenue Impact', val: '$4.1M', tag: 'High', tagColor: 'text-red-400 border-red-500/20 bg-red-500/5', desc: 'Gross revenue at risk next 90 days', icon: 'list' },
-        { label: 'Customer Impact', val: 'Medium', tag: 'Medium', tagColor: 'text-amber-400 border-amber-500/20 bg-amber-500/5', desc: 'Order fill rate SLA pressure', icon: 'user' },
+        { label: 'Customer Impact', val: 'Medium', tag: 'Medium', tagColor: 'text-amber-400 border-amber-500/20 bg-amber-500/5', desc: 'NPS feedback on product quality', icon: 'user' },
       ],
       recs: [
         { title: 'Re-align pricing tier levels', tag: 'High Impact', tagColor: 'text-red-400 border-red-500/20 bg-red-500/5', desc: 'Deploy dynamic price adjustment schedules.', val: '$1.2M', conf: 92 },
-        { title: 'Consolidate LTL shipments', tag: 'Medium Impact', tagColor: 'text-amber-450 border-amber-500/20 bg-amber-500/5', desc: 'Utilize dedicated freight lanes to bypass delays.', val: '$180K', conf: 76 },
+        { title: 'Consolidate ingredient orders', tag: 'Medium Impact', tagColor: 'text-amber-450 border-amber-500/20 bg-amber-500/5', desc: 'Utilize bulk contracts to bypass rate surges.', val: '$180K', conf: 76 },
       ],
     },
     scenario: {
-      title: 'Scenario Simulation Workspace',
-      subtitle: 'Simulate price variations, supply delays and demand shocks to predict outcomes',
+      title: 'Scenario Simulator Agent',
+      subtitle: 'Monte Carlo agent simulating volume and price elasticity outcomes',
       metrics: [
         { label: 'Simulations Run', val: '420', pct: '↑ 14.5%', icon: 'diag' },
         { label: 'Convergence Rate', val: '99.8%', pct: '↑ 0.1%', icon: 'alert' },
@@ -589,30 +591,30 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
       },
       categories: [
         { label: 'Price Elasticity Shifts', val: 3, pct: 37, bg: 'bg-red-500' },
-        { label: 'Supplier Delays', val: 2, pct: 25, bg: 'bg-orange-500' },
+        { label: 'Ingredient Rate Hikes', val: 2, pct: 25, bg: 'bg-orange-500' },
         { label: 'Promotion Swings', val: 2, pct: 25, bg: 'bg-yellow-450' },
-        { label: 'Logistics Hikes', val: 1, pct: 13, bg: 'bg-emerald-500' },
+        { label: 'Packaging Cost Hikes', val: 1, pct: 13, bg: 'bg-emerald-500' },
       ],
       issues: [
         { name: '10% Price Increase Run', desc: 'Predict response to price increases in beverage lines', sev: 'High', sevColor: 'text-orange-400 border-orange-500/20 bg-orange-500/5', impact: '+$840k', time: '1 hr ago', status: 'Completed', statusColor: 'text-emerald-400' },
-        { name: 'Supplier lockout simulation', desc: 'Predict impact of 14-day glass supply block', sev: 'Critical', sevColor: 'text-red-400 border-red-500/20 bg-red-500/5', impact: '-$620k', time: '2 hrs ago', status: 'Completed', statusColor: 'text-emerald-400' },
+        { name: 'Container rate spike simulation', desc: 'Predict impact of 15% increase in packaging costs', sev: 'Critical', sevColor: 'text-red-400 border-red-500/20 bg-red-500/5', impact: '-$620k', time: '2 hrs ago', status: 'Completed', statusColor: 'text-emerald-400' },
       ],
       impacts: [
         { label: 'Projected Net ROI', val: '+$1.2M', tag: 'High', tagColor: 'text-emerald-400 border-emerald-500/20 bg-emerald-500/5', desc: 'Weighted average simulated outcome', icon: 'gear' },
         { label: 'Volume variance', val: '-3.2%', tag: 'Medium', tagColor: 'text-amber-400 border-amber-500/20 bg-amber-500/5', desc: 'Simulated customer demand decrease', icon: 'list' },
-        { label: 'SLA Risk', val: 'Low', tag: 'Low', tagColor: 'text-emerald-400 border-emerald-500/20 bg-emerald-500/5', desc: 'Out-of-stock probability index', icon: 'user' },
+        { label: 'NPS Risk', val: 'Low', tag: 'Low', tagColor: 'text-emerald-400 border-emerald-500/20 bg-emerald-500/5', desc: 'Simulated quality complaint index', icon: 'user' },
       ],
       recs: [
         { title: 'Proceed with 4% price increase', tag: 'High Impact', tagColor: 'text-emerald-400 border-emerald-500/20 bg-emerald-500/5', desc: 'Increases revenue without significant volume impact.', val: '$1.2M', conf: 92 },
-        { title: 'Increase safety stock of glass bottles', tag: 'Medium Impact', tagColor: 'text-amber-450 border-amber-500/20 bg-amber-500/5', desc: 'Add 14 days of inventory buffers at facility A.', val: '$450K', conf: 85 },
+        { title: 'Hedge container purchase rates', tag: 'Medium Impact', tagColor: 'text-amber-450 border-amber-500/20 bg-amber-500/5', desc: 'Sign long-term glass container supply contracts.', val: '$450K', conf: 85 },
       ],
     },
     alerts: {
-      title: 'Alerts & Anomalies Log',
+      title: 'Alerts & Anomaly Detection Agents Log',
       subtitle: 'Real-time threshold violation logs and pattern detections',
       metrics: [
         { label: 'Alerts Active', val: '17', pct: '↑ 21.4%', icon: 'diag' },
-        { label: 'Auto Cleansed', val: '85', pct: '↑ 32.1%', icon: 'alert' },
+        { label: 'Auto Triaged', val: '85', pct: '↑ 32.1%', icon: 'alert' },
         { label: 'Mean Time to Detect', val: '14s', pct: '↓ 20.0%', icon: 'target' },
         { label: 'False Positives', val: '0.2%', pct: '↓ 50.0%', icon: 'opportunity' },
         { label: 'Active Rules', val: '420', pct: '↑ 8.0%', icon: 'check' },
@@ -628,22 +630,22 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
       },
       categories: [
         { label: 'Margin Variance', val: 6, pct: 35, bg: 'bg-red-500' },
-        { label: 'Inventory Outliers', val: 4, pct: 24, bg: 'bg-orange-500' },
+        { label: 'Complexity Outliers', val: 4, pct: 24, bg: 'bg-orange-500' },
         { label: 'Demand Drops', val: 3, pct: 18, bg: 'bg-yellow-450' },
         { label: 'Price deviations', val: 2, pct: 12, bg: 'bg-emerald-500' },
-        { label: 'Null Ingestion logs', val: 2, pct: 12, bg: 'bg-blue-500' },
+        { label: 'Reasoning Ambiguity', val: 2, pct: 12, bg: 'bg-blue-500' },
       ],
       issues: [
-        { name: 'Critical cost overrun in Line A', desc: 'Manufacturing unit price exceeded rule limit by 18%', sev: 'Critical', sevColor: 'text-red-400 border-red-500/20 bg-red-500/5', impact: '$320k', time: '12 min ago', status: 'Open', statusColor: 'text-red-400' },
-        { name: 'Retailer A return spike', desc: 'Return logs for beverage cases exceeding weekly ceiling', sev: 'High', sevColor: 'text-orange-400 border-orange-500/20 bg-orange-500/5', impact: '$120k', time: '24 min ago', status: 'Open', statusColor: 'text-red-400' },
+        { name: 'Critical Margin Slip in Segment A', desc: 'Wholesale unit price exceeded margin limits by 18%', sev: 'Critical', sevColor: 'text-red-400 border-red-500/20 bg-red-500/5', impact: '$320k', time: '12 min ago', status: 'Open', statusColor: 'text-red-400' },
+        { name: 'Retailer A product delist', desc: 'Sales volumes fell below regional listing limits', sev: 'High', sevColor: 'text-orange-400 border-orange-500/20 bg-orange-500/5', impact: '$120k', time: '24 min ago', status: 'Open', statusColor: 'text-red-400' },
       ],
       impacts: [
         { label: 'Anomaly Count', val: '17 active', tag: 'High', tagColor: 'text-red-400 border-red-500/20 bg-red-500/5', desc: 'Outstanding active flags', icon: 'gear' },
         { label: 'Detection Speed', val: '14 seconds', tag: 'High', tagColor: 'text-emerald-400 border-emerald-500/20 bg-emerald-500/5', desc: 'Mean detection cycle', icon: 'list' },
-        { label: 'FNR rate', val: '0.04%', tag: 'Low', tagColor: 'text-emerald-400 border-emerald-500/20 bg-emerald-500/5', desc: 'False negative rate index', icon: 'user' },
+        { label: 'SLA Penalty Risk', val: '0.04%', tag: 'Low', tagColor: 'text-emerald-400 border-emerald-500/20 bg-emerald-500/5', desc: 'Pricing elasticity variance index', icon: 'user' },
       ],
       recs: [
-        { title: 'Investigate Line A pump values', tag: 'High Impact', tagColor: 'text-red-400 border-red-500/20 bg-red-500/5', desc: 'Verify physical unit variables for telemetry calibration.', val: 'Inspect', conf: 95 },
+        { title: 'Investigate Segment A pricing logs', tag: 'High Impact', tagColor: 'text-red-400 border-red-500/20 bg-red-500/5', desc: 'Verify transaction parameters for model calibration.', val: 'Verify', conf: 95 },
         { title: 'Update return alert threshold', tag: 'Low Impact', tagColor: 'text-zinc-500 border-zinc-800 bg-zinc-900/40', desc: 'Increase floor limits by 5% during seasonal peaks.', val: 'Rule 18', conf: 99 },
       ],
     },
@@ -652,7 +654,7 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
       subtitle: 'Suggested actions compiled directly from active issues and root cause analysis',
       metrics: [
         { label: 'Recs online', val: '28', pct: '↑ 12.0%', icon: 'diag' },
-        { label: 'Approved Actions', val: '12', pct: '↑ 15.0%', icon: 'alert' },
+        { label: 'Approved Mitigation Action Agent', val: '12', pct: '↑ 15.0%', icon: 'alert' },
         { label: 'Snoozed / Skipped', val: '4', pct: '↓ 50.0%', icon: 'target' },
         { label: 'Realized Gains', val: '$850k', pct: '↑ 42.1%', icon: 'opportunity' },
         { label: 'Confidence factor', val: '88%', pct: '↑ 2.1%', icon: 'check' },
@@ -669,7 +671,7 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
       categories: [
         { label: 'Price Optimizations', val: 12, pct: 43, bg: 'bg-red-500' },
         { label: 'SKU rationalizations', val: 8, pct: 28, bg: 'bg-orange-500' },
-        { label: 'Inventory Promos', val: 5, pct: 18, bg: 'bg-yellow-450' },
+        { label: 'Complexity Promos', val: 5, pct: 18, bg: 'bg-yellow-450' },
         { label: 'Forecasting tuning', val: 3, pct: 11, bg: 'bg-emerald-500' },
       ],
       issues: [
@@ -716,7 +718,7 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
         <div className="flex justify-between items-center border-b border-zinc-800/80 pb-3.5">
           <div className="space-y-0.5">
             <h2 className="text-[13px] font-bold tracking-wider uppercase text-white font-mono">
-              Acies AgenticBus • Swarm Diagnostic Flowchart
+              Product Lifecycle & Portfolio Intelligence • Agentic Swarm Diagnostic Flowchart
             </h2>
           </div>
           <div className="flex items-center gap-3">
@@ -739,7 +741,7 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
           
           <div className="flex flex-col md:flex-row items-stretch justify-between gap-3 w-full">
             
-            {/* Step 1 Card: Data Ingestion */}
+            {/* Step 1 Card: Agentic Data Ingestion */}
             <div 
               onClick={() => setActiveStepIndex(0)}
               className={`flex-1 border p-4.5 rounded-xl flex flex-col gap-3.5 cursor-pointer transition-all duration-200 select-none ${
@@ -755,11 +757,11 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
                   <path d="M22 12c0 2.761-4.477 5-10 5S2 14.761 2 12" />
                   <path d="M22 7c0 2.761-4.477 5-10 5S2 9.761 2 7" />
                 </svg>
-                <span>Ingest</span>
+                <span>Ingestion Agent</span>
               </div>
               
               {/* Heading */}
-              <h4 className="font-bold text-[14px] text-white tracking-wide">Data Ingestion</h4>
+              <h4 className="font-bold text-[14px] text-white tracking-wide">Agentic Data Ingestion</h4>
               
               {/* 2x2 Sub-items */}
               <div className="grid grid-cols-2 gap-2 mt-0.5">
@@ -770,7 +772,7 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
                     <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
                     <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                   </svg>
-                  <span className="text-[9.5px] font-bold text-zinc-300">Finance & Ops</span>
+                  <span className="text-[9.5px] font-bold text-zinc-300">Finance Auditor Agent</span>
                 </div>
                 <div className="bg-[#0f0e13] border border-zinc-900/60 p-2.5 rounded-lg flex flex-col justify-between items-start min-h-[60px]">
                   <svg className="text-purple-400 w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -779,7 +781,7 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
                     <line x1="6" y1="7" x2="6.01" y2="7" />
                     <line x1="6" y1="17" x2="6.01" y2="17" />
                   </svg>
-                  <span className="text-[9.5px] font-bold text-zinc-300">CRM / ERP</span>
+                  <span className="text-[9.5px] font-bold text-zinc-300">Client Insights Agent</span>
                 </div>
                 <div className="bg-[#0f0e13] border border-zinc-900/60 p-2.5 rounded-lg flex flex-col justify-between items-start min-h-[60px]">
                   <svg className="text-purple-400 w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -788,13 +790,13 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
                     <path d="M19 9H5" />
                     <path d="M15 13H9" />
                   </svg>
-                  <span className="text-[9.5px] font-bold text-zinc-300">IoT feeds</span>
+                  <span className="text-[9.5px] font-bold text-zinc-300">Operations Telemetry Agent</span>
                 </div>
                 <div className="bg-[#0f0e13] border border-zinc-900/60 p-2.5 rounded-lg flex flex-col justify-between items-start min-h-[60px]">
                   <div className="h-4 flex items-center">
                     <span className="text-[7.5px] font-mono font-black text-purple-400 uppercase tracking-wider bg-purple-500/10 px-1 py-0.2 rounded border border-purple-500/20">API</span>
                   </div>
-                  <span className="text-[9.5px] font-bold text-zinc-300">External APIs</span>
+                  <span className="text-[9.5px] font-bold text-zinc-300">Market Scraper Agent</span>
                 </div>
               </div>
             </div>
@@ -806,7 +808,7 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
               </svg>
             </div>
 
-            {/* Step 2 Card: Processing & Analysis */}
+            {/* Step 2 Card: Analysis & Modeling Swarm */}
             <div 
               onClick={() => setActiveStepIndex(1)}
               className={`flex-1 border p-4.5 rounded-xl flex flex-col gap-3.5 cursor-pointer transition-all duration-200 select-none ${
@@ -822,17 +824,17 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
                   <rect x="9" y="9" width="6" height="6" rx="1" />
                   <path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 15h3M1 9h3M1 15h3" />
                 </svg>
-                <span>Compute</span>
+                <span>Compute Agents</span>
               </div>
               
               {/* Heading */}
-              <h4 className="font-bold text-[14px] text-white tracking-wide">Processing & Analysis</h4>
+              <h4 className="font-bold text-[14px] text-white tracking-wide">Analysis & Modeling Swarm</h4>
               
               {/* 2x2 Sub-items */}
               <div className="grid grid-cols-2 gap-2 mt-0.5">
                 <div className="bg-[#0f0e13] border border-zinc-900/60 p-2.5 rounded-lg flex flex-col justify-between items-start min-h-[60px]">
                   <span className="text-[11px] font-serif italic font-bold text-purple-400 leading-none">f<sub>x</sub></span>
-                  <span className="text-[9.5px] font-bold text-zinc-300">KPI formulas</span>
+                  <span className="text-[9.5px] font-bold text-zinc-300">Formulation Agents</span>
                 </div>
                 <div className="bg-[#0f0e13] border border-zinc-900/60 p-2.5 rounded-lg flex flex-col justify-between items-start min-h-[60px]">
                   <svg className="text-purple-400 w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -846,13 +848,13 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
                     <line x1="10" y1="8" x2="14" y2="8" />
                     <line x1="18" y1="16" x2="22" y2="16" />
                   </svg>
-                  <span className="text-[9.5px] font-bold text-zinc-300">Thresholds</span>
+                  <span className="text-[9.5px] font-bold text-zinc-300">Threshold Auditor Agents</span>
                 </div>
                 <div className="bg-[#0f0e13] border border-zinc-900/60 p-2.5 rounded-lg flex flex-col justify-between items-start min-h-[60px]">
                   <svg className="text-purple-400 w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M3 17c3-1 6-8 9-8s6 7 9 8" />
                   </svg>
-                  <span className="text-[9.5px] font-bold text-zinc-300">Anomalies</span>
+                  <span className="text-[9.5px] font-bold text-zinc-300">Anomaly Detection Agents</span>
                 </div>
                 <div className="bg-[#0f0e13] border border-zinc-900/60 p-2.5 rounded-lg flex flex-col justify-between items-start min-h-[60px]">
                   <svg className="text-purple-400 w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -863,7 +865,7 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
                     <path d="M12 12l3-4.5" />
                     <path d="M12 12l3 4.5" />
                   </svg>
-                  <span className="text-[9.5px] font-bold text-zinc-300">Correlation</span>
+                  <span className="text-[9.5px] font-bold text-zinc-300">Correlation & Assortment Agents</span>
                 </div>
               </div>
             </div>
@@ -875,7 +877,7 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
               </svg>
             </div>
 
-            {/* Step 3 Card: Diagnostic Output */}
+            {/* Step 3 Card: Remediation & Action Swarm */}
             <div 
               onClick={() => setActiveStepIndex(2)}
               className={`flex-1 border p-4.5 rounded-xl flex flex-col gap-3.5 cursor-pointer transition-all duration-200 select-none ${
@@ -889,11 +891,11 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
                 <svg className="w-2.5 h-2.5 text-purple-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0" />
                 </svg>
-                <span>Alerts</span>
+                <span>Alert Swarm</span>
               </div>
               
               {/* Heading */}
-              <h4 className="font-bold text-[14px] text-white tracking-wide">Diagnostic Output</h4>
+              <h4 className="font-bold text-[14px] text-white tracking-wide">Remediation & Action Swarm</h4>
               
               {/* 2x2 Sub-items */}
               <div className="grid grid-cols-2 gap-2 mt-0.5">
@@ -903,7 +905,7 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
                     <line x1="12" y1="9" x2="12" y2="13" />
                     <line x1="12" y1="17" x2="12.01" y2="17" />
                   </svg>
-                  <span className="text-[9.5px] font-bold text-zinc-300">Ranked alerts</span>
+                  <span className="text-[9.5px] font-bold text-zinc-300">Alert Ranking Agent</span>
                 </div>
                 <div className="bg-[#0f0e13] border border-zinc-900/60 p-2.5 rounded-lg flex flex-col justify-between items-start min-h-[60px]">
                   <svg className="text-purple-400 w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -911,7 +913,7 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
                     <path d="M9 18h6" />
                     <path d="M10 22h4" />
                   </svg>
-                  <span className="text-[9.5px] font-bold text-zinc-300">Root cause</span>
+                  <span className="text-[9.5px] font-bold text-zinc-300">Root Cause Reasoning Agent</span>
                 </div>
                 <div className="bg-[#0f0e13] border border-zinc-900/60 p-2.5 rounded-lg flex flex-col justify-between items-start min-h-[60px]">
                   <svg className="text-purple-400 w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -921,14 +923,14 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
                     <line x1="16" y1="17" x2="8" y2="17" />
                     <line x1="10" y1="9" x2="8" y2="9" />
                   </svg>
-                  <span className="text-[9.5px] font-bold text-zinc-300">Actions</span>
+                  <span className="text-[9.5px] font-bold text-zinc-300">Mitigation Action Agent</span>
                 </div>
                 <div className="bg-[#0f0e13] border border-zinc-900/60 p-2.5 rounded-lg flex flex-col justify-between items-start min-h-[60px]">
                   <svg className="text-purple-400 w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <line x1="22" y1="2" x2="11" y2="13" />
                     <polygon points="22 2 15 22 11 13 2 9 22 2" />
                   </svg>
-                  <span className="text-[9.5px] font-bold text-zinc-300">Notify teams</span>
+                  <span className="text-[9.5px] font-bold text-zinc-300">Orchestrator Agent</span>
                 </div>
               </div>
             </div>
@@ -954,7 +956,7 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
               </div>
               <span className="font-bold text-[10px] text-zinc-300 uppercase tracking-wider font-mono">Select a flowchart block</span>
               <p className="text-[8.5px] text-zinc-500 max-w-sm font-medium leading-relaxed">
-                Click on Data Ingestion (Step 1), Processing & Analysis (Step 2), or Diagnostic Output (Step 3) above to view its specific deep-dive metrics.
+                Click on Agentic Data Ingestion (Step 1), Analysis & Modeling Swarm (Step 2), or Remediation & Action Swarm (Step 3) above to view its specific deep-dive metrics.
               </p>
             </div>
           ) : (
@@ -977,7 +979,7 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
                           </svg>
                           <span>INGEST</span>
                         </div>
-                        <h4 className="text-[17px] font-semibold text-white tracking-tight leading-tight">Data Ingestion</h4>
+                        <h4 className="text-[17px] font-semibold text-white tracking-tight leading-tight">Agentic Data Ingestion</h4>
                         <p className="text-[10px] text-zinc-400 leading-normal">
                           Connect and ingest data from multiple sources to power AI-driven portfolio insights.
                         </p>
@@ -985,7 +987,7 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
 
                       {/* Source buttons list */}
                       <div className="flex flex-col gap-2.5 mt-2">
-                        {/* Finance & Ops */}
+                        {/* Finance Auditor Agent */}
                         <button
                           type="button"
                           onClick={() => setActiveSourceTab('finance')}
@@ -1003,14 +1005,14 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
                               <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                             </svg>
                             <div className="flex flex-col">
-                              <span className="text-[10.5px] font-bold">Finance & Ops</span>
-                              <span className="text-[8px] text-zinc-500 mt-0.5 truncate max-w-[130px]">ERP, GL, P&L, Inventory...</span>
+                              <span className="text-[10.5px] font-bold">Finance Auditor Agent</span>
+                              <span className="text-[8px] text-zinc-500 mt-0.5 truncate max-w-[130px]">ERP, GL, P&L, Formulations...</span>
                             </div>
                           </div>
                           <span className="text-zinc-500 font-mono text-[9px] select-none">&gt;</span>
                         </button>
 
-                        {/* CRM / ERP */}
+                        {/* Client Insights Agent */}
                         <button
                           type="button"
                           onClick={() => setActiveSourceTab('crm')}
@@ -1028,14 +1030,14 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
                               <line x1="6" y1="17" x2="6.01" y2="17" />
                             </svg>
                             <div className="flex flex-col">
-                              <span className="text-[10.5px] font-bold">CRM / ERP</span>
+                              <span className="text-[10.5px] font-bold">Client Insights Agent</span>
                               <span className="text-[8px] text-zinc-500 mt-0.5 truncate max-w-[130px]">Customers, Orders, Pipeline...</span>
                             </div>
                           </div>
                           <span className="text-zinc-500 font-mono text-[9px] select-none">&gt;</span>
                         </button>
 
-                        {/* IoT Feeds */}
+                        {/* Operations Telemetry Agent */}
                         <button
                           type="button"
                           onClick={() => setActiveSourceTab('iot')}
@@ -1053,14 +1055,14 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
                               <path d="M15 13H9" />
                             </svg>
                             <div className="flex flex-col">
-                              <span className="text-[10.5px] font-bold">IoT Feeds</span>
+                              <span className="text-[10.5px] font-bold">Operations Telemetry Agent</span>
                               <span className="text-[8px] text-zinc-500 mt-0.5 truncate max-w-[130px]">Production, Machines, Quality...</span>
                             </div>
                           </div>
                           <span className="text-zinc-500 font-mono text-[9px] select-none">&gt;</span>
                         </button>
 
-                        {/* External APIs */}
+                        {/* Market Scraper Agent */}
                         <button
                           type="button"
                           onClick={() => setActiveSourceTab('api')}
@@ -1075,7 +1077,7 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
                               activeSourceTab === 'api' ? 'text-purple-400 border-purple-500/30 bg-purple-500/10' : 'text-zinc-500 border-zinc-800 bg-zinc-900/50'
                             }`}>API</span>
                             <div className="flex flex-col">
-                              <span className="text-[10.5px] font-bold">External APIs</span>
+                              <span className="text-[10.5px] font-bold">Market Scraper Agent</span>
                               <span className="text-[8px] text-zinc-500 mt-0.5 truncate max-w-[130px]">Market, Competitor, Retail...</span>
                             </div>
                           </div>
@@ -1156,12 +1158,12 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
                       </button>
                     </div>
 
-                    {/* Top Row Cards: Connected Systems, Data Ingested, Data Quality */}
+                    {/* Top Row Cards: Connected Agent Data Sources, Data Ingested, Data Quality */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                       
-                      {/* Card 1: Connected Systems */}
+                      {/* Card 1: Connected Agent Data Sources */}
                       <div className="bg-[#121217] border border-zinc-900/60 p-4 rounded-xl flex flex-col gap-3.5">
-                        <span className="text-[8.5px] font-black uppercase text-zinc-500 tracking-wider">Connected Systems</span>
+                        <span className="text-[8.5px] font-black uppercase text-zinc-500 tracking-wider">Connected Agent Data Sources</span>
                         <div className="flex flex-col gap-2">
                           {currentTab.systems.map((sys, idx) => (
                             <div key={idx} className="flex items-center justify-between">
@@ -1317,11 +1319,11 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
 
                     </div>
 
-                    {/* Bottom Section: Data-to-Decision Flow */}
+                    {/* Bottom Section: Swarm Reasoning Flow */}
                     <div className="bg-[#121217] border border-zinc-900/60 p-4.5 rounded-xl flex flex-col gap-3">
                       <div className="flex flex-col gap-0.5">
-                        <span className="text-[9.5px] font-bold text-white tracking-wide">Data-to-Decision Flow</span>
-                        <span className="text-[8px] text-zinc-500 font-medium">From raw data to strategic portfolio actions</span>
+                        <span className="text-[9.5px] font-bold text-white tracking-wide">Swarm Reasoning Flow</span>
+                        <span className="text-[8px] text-zinc-500 font-medium">From raw data ingestion to automated portfolio actions</span>
                       </div>
 
                       {/* Horizontal Process flow cards */}
@@ -1407,34 +1409,14 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
                         </svg>
                         <span>Auto Refresh: <span className="text-emerald-400 font-extrabold">ON</span></span>
                       </div>
-                      <div className="flex items-center gap-3">
-                        <button
-                          type="button"
-                          className="px-4 py-2 border border-zinc-800 hover:border-zinc-750 hover:bg-zinc-900/30 text-zinc-300 font-bold rounded-lg transition-colors cursor-pointer flex items-center gap-2"
-                        >
-                          <svg className="w-3 h-3 text-zinc-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <rect width="18" height="18" x="3" y="3" rx="2" />
-                            <path d="M3 9h18M3 15h18" />
-                          </svg>
-                          <span>View Ingested Data</span>
-                        </button>
-                        <button
-                          type="button"
-                          className="px-4.5 py-2 bg-[#8b5cf6] hover:bg-[#7c3aed] text-white font-bold rounded-lg transition-colors cursor-pointer flex items-center gap-1.5"
-                        >
-                          <span>Explore Insights</span>
-                          <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M5 12h14M12 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
-                          </svg>
-                        </button>
-                      </div>
+
                     </div>
 
                   </div>
                 </div>
               )}
 
-              {/* Step 2 Deep Dive: High Fidelity Processing & Analysis Selector & Dashboard */}
+              {/* Step 2 Deep Dive: High Fidelity Analysis & Modeling Swarm Selector & Dashboard */}
               {activeStepIndex === 1 && (
                 <div className="flex flex-col lg:flex-row gap-4 w-full mt-1 animate-fade-in text-zinc-350">
                   
@@ -1451,7 +1433,7 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
                           </svg>
                           <span>COMPUTE</span>
                         </div>
-                        <h4 className="text-[17px] font-semibold text-white tracking-tight leading-tight font-serif">Process & Analysis</h4>
+                        <h4 className="text-[17px] font-semibold text-white tracking-tight leading-tight font-serif">Analysis & Modeling Swarm</h4>
                         <p className="text-[10px] text-zinc-400 leading-normal">
                           Transform ingested data into actionable insights using AI-powered analytics.
                         </p>
@@ -1477,7 +1459,7 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
                               <path d="M12 8v8M7 17l3-1.5M17 17l-3-1.5" />
                             </svg>
                             <div className="flex flex-col">
-                              <span className="text-[10.5px] font-bold">Process & Analysis</span>
+                              <span className="text-[10.5px] font-bold">Analysis & Modeling Swarm</span>
                               <span className="text-[8px] text-zinc-500 mt-0.5 truncate max-w-[130px]">Data modeling, AI/ML, KPIs...</span>
                             </div>
                           </div>
@@ -1500,7 +1482,7 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
                               <path d="M9 17V9M15 17v-4" />
                             </svg>
                             <div className="flex flex-col">
-                              <span className="text-[10.5px] font-bold">Visualization & Reporting</span>
+                              <span className="text-[10.5px] font-bold">Visualization & Report Agent</span>
                               <span className="text-[8px] text-zinc-500 mt-0.5 truncate max-w-[130px]">Dashboards, reports, alerts...</span>
                             </div>
                           </div>
@@ -1523,7 +1505,7 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
                               <path d="m9 12 2 2 4-4" />
                             </svg>
                             <div className="flex flex-col">
-                              <span className="text-[10.5px] font-bold">Recommendations</span>
+                              <span className="text-[10.5px] font-bold">AI Recommendation Agent</span>
                               <span className="text-[8px] text-zinc-500 mt-0.5 truncate max-w-[130px]">AI-driven actions, next steps...</span>
                             </div>
                           </div>
@@ -1549,7 +1531,7 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
                               <circle cx="12" cy="7" r="4" />
                             </svg>
                             <div className="flex flex-col">
-                              <span className="text-[10.5px] font-bold">Collaboration & Workflow</span>
+                              <span className="text-[10.5px] font-bold">Orchestration & Workflow Agent</span>
                               <span className="text-[8px] text-zinc-500 mt-0.5 truncate max-w-[130px]">Tasks, approvals, workflow...</span>
                             </div>
                           </div>
@@ -1571,7 +1553,7 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
                               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                             </svg>
                             <div className="flex flex-col">
-                              <span className="text-[10.5px] font-bold">Data Quality & Gov</span>
+                              <span className="text-[10.5px] font-bold">Governance & Cleansing Agent</span>
                               <span className="text-[8px] text-zinc-500 mt-0.5 truncate max-w-[130px]">Validation, compliance, rules...</span>
                             </div>
                           </div>
@@ -1626,12 +1608,7 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <div className="flex items-center gap-1.5 border border-zinc-800 bg-[#121217] px-2 py-1 rounded text-[8.5px] font-bold text-zinc-400 select-none">
-                          <span>Time Range: Last 7 Days</span>
-                          <svg className="w-3.5 h-3.5 text-zinc-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="m6 9 6 6 6-6" />
-                          </svg>
-                        </div>
+
                         <button
                           type="button"
                           onClick={() => setActiveStepIndex(null)}
@@ -1793,9 +1770,7 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
                           ))}
                         </div>
 
-                        <span className="text-[8.5px] text-purple-400 font-bold hover:underline cursor-pointer border-t border-zinc-900 pt-2 block w-fit">
-                          View All Insights &rarr;
-                        </span>
+
                       </div>
 
                     </div>
@@ -1831,9 +1806,7 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
                           </table>
                         </div>
 
-                        <span className="text-[8.5px] text-purple-400 font-bold hover:underline cursor-pointer pt-0.5 block w-fit">
-                          View All Models &rarr;
-                        </span>
+
                       </div>
 
                       {/* 2. KPI Trends Line Chart */}
@@ -1888,9 +1861,7 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
                           ))}
                         </div>
 
-                        <span className="text-[8.5px] text-purple-400 font-bold hover:underline cursor-pointer block w-fit">
-                          View All KPIs &rarr;
-                        </span>
+
                       </div>
 
                       {/* 3. Top Recommendations */}
@@ -1915,9 +1886,7 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
                           ))}
                         </div>
 
-                        <span className="text-[8.5px] text-purple-400 font-bold hover:underline cursor-pointer block w-fit">
-                          View All Recommendations &rarr;
-                        </span>
+
                       </div>
 
                     </div>
@@ -2002,7 +1971,7 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
                 </div>
               )}
 
-              {/* Step 3 Deep Dive: High Fidelity Diagnostic Output Selector & Dashboard */}
+              {/* Step 3 Deep Dive: High Fidelity Remediation & Action Swarm Selector & Dashboard */}
               {activeStepIndex === 2 && (
                 <div className="flex flex-col lg:flex-row gap-4 w-full mt-1 animate-fade-in text-zinc-350">
                   
@@ -2017,7 +1986,7 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
                           </svg>
                           <span>ALERTS</span>
                         </div>
-                        <h4 className="text-[17px] font-semibold text-white tracking-tight leading-tight font-serif">Diagnostic Output</h4>
+                        <h4 className="text-[17px] font-semibold text-white tracking-tight leading-tight font-serif">Remediation & Action Swarm</h4>
                         <p className="text-[10px] text-zinc-400 leading-normal">
                           AI-driven diagnostics that identify issues, root causes and opportunities to improve portfolio performance.
                         </p>
@@ -2025,7 +1994,7 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
 
                       {/* Diagnostics Menu Buttons */}
                       <div className="flex flex-col gap-2.5 mt-2">
-                        {/* Diagnostic Output */}
+                        {/* Remediation & Action Swarm */}
                         <button
                           type="button"
                           onClick={() => setActiveDiagnosticTab('diagnostic')}
@@ -2042,7 +2011,7 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
                               <circle cx="12" cy="12" r="2" />
                             </svg>
                             <div className="flex flex-col">
-                              <span className="text-[10.5px] font-bold">Diagnostic Output</span>
+                              <span className="text-[10.5px] font-bold">Remediation & Action Swarm</span>
                               <span className="text-[8px] text-zinc-500 mt-0.5 truncate max-w-[130px]">Issues, root causes, opportunities...</span>
                             </div>
                           </div>
@@ -2067,7 +2036,7 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
                               <path d="M14 12h4" />
                             </svg>
                             <div className="flex flex-col">
-                              <span className="text-[10.5px] font-bold">Root Cause Analysis</span>
+                              <span className="text-[10.5px] font-bold">Root Cause Reasoning Agent</span>
                               <span className="text-[8px] text-zinc-500 mt-0.5 truncate max-w-[130px]">Drill down to core factors...</span>
                             </div>
                           </div>
@@ -2090,7 +2059,7 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
                               <path d="M9 17V9M15 17v-4" />
                             </svg>
                             <div className="flex flex-col">
-                              <span className="text-[10.5px] font-bold">Impact Assessment</span>
+                              <span className="text-[10.5px] font-bold">Value Attribution Agent</span>
                               <span className="text-[8px] text-zinc-500 mt-0.5 truncate max-w-[130px]">Quantify financial & NPS impact...</span>
                             </div>
                           </div>
@@ -2114,14 +2083,14 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
                               <path d="M12 22.08V12" />
                             </svg>
                             <div className="flex flex-col">
-                              <span className="text-[10.5px] font-bold">Scenario Simulation</span>
+                              <span className="text-[10.5px] font-bold">Scenario Simulator Agent</span>
                               <span className="text-[8px] text-zinc-500 mt-0.5 truncate max-w-[130px]">Simulate price / volume shocks...</span>
                             </div>
                           </div>
                           <span className="text-zinc-500 font-mono text-[9px] select-none">&gt;</span>
                         </button>
 
-                        {/* Alerts & Anomalies */}
+                        {/* Alerts & Anomaly Detection Agents */}
                         <button
                           type="button"
                           onClick={() => setActiveDiagnosticTab('alerts')}
@@ -2137,7 +2106,7 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
                               <path d="M13.73 21a2 2 0 0 1-3.46 0" />
                             </svg>
                             <div className="flex flex-col">
-                              <span className="text-[10.5px] font-bold">Alerts & Anomalies</span>
+                              <span className="text-[10.5px] font-bold">Alerts Dispatcher Agent</span>
                               <span className="text-[8px] text-zinc-500 mt-0.5 truncate max-w-[130px]">Real-time limits, active anomalies...</span>
                             </div>
                           </div>
@@ -2160,7 +2129,7 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
                               <path d="m9 12 2 2 4-4" />
                             </svg>
                             <div className="flex flex-col">
-                              <span className="text-[10.5px] font-bold">Recommendations</span>
+                              <span className="text-[10.5px] font-bold">Mitigation Proposal Agent</span>
                               <span className="text-[8px] text-zinc-500 mt-0.5 truncate max-w-[130px]">AI-suggested recovery options...</span>
                             </div>
                           </div>
@@ -2211,12 +2180,7 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <div className="flex items-center gap-1.5 border border-zinc-800 bg-[#121217] px-2 py-1 rounded text-[8.5px] font-bold text-zinc-400 select-none">
-                          <span>Time Range: Last 7 Days</span>
-                          <svg className="w-3.5 h-3.5 text-zinc-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="m6 9 6 6 6-6" />
-                          </svg>
-                        </div>
+
                         <button
                           type="button"
                           onClick={() => setActiveStepIndex(null)}
@@ -2269,315 +2233,741 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
                       ))}
                     </div>
 
-                    {/* Middle Row: Severity Distribution, Issues Over Time, Top Categories */}
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
-                      
-                      {/* Left: Issue Severity Distribution (Donut) */}
-                      <div className="bg-[#121217] border border-zinc-900/60 p-4.5 rounded-xl flex flex-col justify-between gap-3 min-h-[160px]">
-                        <span className="text-[9.5px] font-bold text-white">Issue Severity Distribution</span>
-                        
-                        <div className="flex items-center justify-between gap-4 mt-1">
-                          {/* Donut chart SVG */}
-                          <div className="relative w-20 h-20 flex items-center justify-center flex-shrink-0">
-                            <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
-                              {/* Background track */}
-                              <circle className="text-zinc-900" strokeWidth="4.5" stroke="currentColor" fill="none" r="15" cx="18" cy="18" />
-                              {/* Low (green): 2 issues -> 12% */}
-                              <circle className="text-emerald-500" strokeWidth="4.5" strokeDasharray="12 100" strokeDashoffset="0" stroke="currentColor" fill="none" r="15" cx="18" cy="18" />
-                              {/* Medium (yellow): 3 issues -> 18% */}
-                              <circle className="text-amber-400" strokeWidth="4.5" strokeDasharray="18 100" strokeDashoffset="-12" stroke="currentColor" fill="none" r="15" cx="18" cy="18" />
-                              {/* High (orange): 7 issues -> 41% */}
-                              <circle className="text-orange-500" strokeWidth="4.5" strokeDasharray="41 100" strokeDashoffset="-30" stroke="currentColor" fill="none" r="15" cx="18" cy="18" />
-                              {/* Critical (red): 5 issues -> 29% */}
-                              <circle className="text-red-500" strokeWidth="4.5" strokeDasharray="29 100" strokeDashoffset="-71" stroke="currentColor" fill="none" r="15" cx="18" cy="18" />
-                            </svg>
-                            <div className="absolute text-center flex flex-col items-center justify-center">
-                              <span className="text-[11px] font-black text-white">{currentDiagnostic.severity.total}</span>
-                              <span className="text-[5.5px] text-zinc-550 font-extrabold uppercase tracking-wide leading-none">Total Issues</span>
+                    {/* DYNAMIC DETAILS BY DIAGNOSTIC TAB */}
+                    {activeDiagnosticTab === 'diagnostic' && (
+                      <div className="flex flex-col gap-4.5 animate-in fade-in duration-200">
+                        {/* Middle Row: Severity Distribution, Issues Over Time, Top Categories */}
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+                          
+                          {/* Left: Issue Severity Distribution (Donut) */}
+                          <div className="bg-[#121217] border border-zinc-900/60 p-4.5 rounded-xl flex flex-col justify-between gap-3 min-h-[160px]">
+                            <span className="text-[9.5px] font-bold text-white">Issue Severity Distribution</span>
+                            
+                            <div className="flex items-center justify-between gap-4 mt-1">
+                              {/* Donut chart SVG */}
+                              <div className="relative w-20 h-20 flex items-center justify-center flex-shrink-0">
+                                <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                                  {/* Background track */}
+                                  <circle className="text-zinc-900" strokeWidth="4.5" stroke="currentColor" fill="none" r="15" cx="18" cy="18" />
+                                  {/* Low (green): 2 issues -> 12% */}
+                                  <circle className="text-emerald-500" strokeWidth="4.5" strokeDasharray="12 100" strokeDashoffset="0" stroke="currentColor" fill="none" r="15" cx="18" cy="18" />
+                                  {/* Medium (yellow): 3 issues -> 18% */}
+                                  <circle className="text-amber-400" strokeWidth="4.5" strokeDasharray="18 100" strokeDashoffset="-12" stroke="currentColor" fill="none" r="15" cx="18" cy="18" />
+                                  {/* High (orange): 7 issues -> 41% */}
+                                  <circle className="text-orange-500" strokeWidth="4.5" strokeDasharray="41 100" strokeDashoffset="-30" stroke="currentColor" fill="none" r="15" cx="18" cy="18" />
+                                  {/* Critical (red): 5 issues -> 29% */}
+                                  <circle className="text-red-500" strokeWidth="4.5" strokeDasharray="29 100" strokeDashoffset="-71" stroke="currentColor" fill="none" r="15" cx="18" cy="18" />
+                                </svg>
+                                <div className="absolute text-center flex flex-col items-center justify-center">
+                                  <span className="text-[11px] font-black text-white">{currentDiagnostic.severity.total}</span>
+                                  <span className="text-[5.5px] text-zinc-550 font-extrabold uppercase tracking-wide leading-none">Total Issues</span>
+                                </div>
+                              </div>
+
+                              {/* Legend details */}
+                              <div className="flex-1 flex flex-col gap-1 text-[9px] text-zinc-400 font-bold">
+                                {currentDiagnostic.severity.breakdown.map((item, idx) => (
+                                  <div key={idx} className="flex justify-between items-center pb-0.5 border-b border-zinc-900 last:border-none">
+                                    <div className="flex items-center gap-1.5">
+                                      <span className={`w-1.5 h-1.5 rounded-full ${item.color}`} />
+                                      <span>{item.label}</span>
+                                    </div>
+                                    <span className="text-white">{item.val} ({item.pct}%)</span>
+                                  </div>
+                                ))}
+                              </div>
                             </div>
                           </div>
 
-                          {/* Legend details */}
-                          <div className="flex-1 flex flex-col gap-1 text-[9px] text-zinc-400 font-bold">
-                            {currentDiagnostic.severity.breakdown.map((item, idx) => (
-                              <div key={idx} className="flex justify-between items-center pb-0.5 border-b border-zinc-900 last:border-none">
-                                <div className="flex items-center gap-1.5">
-                                  <span className={`w-1.5 h-1.5 rounded-full ${item.color}`} />
-                                  <span>{item.label}</span>
+                          {/* Middle: Issues Over Time (Line Chart) */}
+                          <div className="bg-[#121217] border border-zinc-900/60 p-4.5 rounded-xl flex flex-col justify-between gap-3 min-h-[160px]">
+                            <div className="flex justify-between items-center">
+                              <span className="text-[9.5px] font-bold text-white">Issues Over Time</span>
+                              {/* Tiny color dots Legend */}
+                              <div className="flex items-center gap-1.5 text-[7px] text-zinc-500 font-black uppercase">
+                                <span className="text-red-500">•</span> Crit
+                                <span className="text-orange-500">•</span> High
+                                <span className="text-amber-400">•</span> Med
+                                <span className="text-emerald-500">•</span> Low
+                              </div>
+                            </div>
+
+                            {/* 4 Line chart SVG */}
+                            <div className="relative w-full h-[95px] border-b border-l border-zinc-900 bg-zinc-950/20 rounded-md p-1 flex flex-col justify-between mt-1">
+                              <svg className="w-full h-full text-zinc-700" viewBox="0 0 300 100" fill="none" stroke="currentColor">
+                                <line x1="0" y1="25" x2="300" y2="25" stroke="#1f1e29" strokeWidth="0.8" />
+                                <line x1="0" y1="50" x2="300" y2="50" stroke="#1f1e29" strokeWidth="0.8" />
+                                <line x1="0" y1="75" x2="300" y2="75" stroke="#1f1e29" strokeWidth="0.8" />
+                                {/* Critical line (Red) */}
+                                <path d="M 0 50 Q 50 30 100 45 T 200 35 T 300 15" stroke="#ef4444" strokeWidth="1.5" fill="none" />
+                                {/* High line (Orange) */}
+                                <path d="M 0 65 Q 50 45 100 55 T 200 50 T 300 35" stroke="#f97316" strokeWidth="1.5" fill="none" />
+                                {/* Medium line (Yellow) */}
+                                <path d="M 0 80 Q 50 65 100 75 T 200 60 T 300 50" stroke="#eab308" strokeWidth="1.2" fill="none" />
+                                {/* Low line (Green) */}
+                                <path d="M 0 90 Q 50 80 100 85 T 200 80 T 300 70" stroke="#10b981" strokeWidth="1.2" fill="none" />
+                              </svg>
+                              <div className="flex justify-between text-[7px] text-zinc-650 font-bold tracking-wide mt-1">
+                                <span>May 8</span>
+                                <span>May 9</span>
+                                <span>May 10</span>
+                                <span>May 11</span>
+                                <span>May 12</span>
+                                <span>May 13</span>
+                                <span>May 14</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Right: Top Issue Categories (Horizontal bars) */}
+                          <div className="bg-[#121217] border border-zinc-900/60 p-4.5 rounded-xl flex flex-col justify-between gap-3 min-h-[160px]">
+                            <span className="text-[9.5px] font-bold text-white">Top Issue Categories</span>
+                            
+                            <div className="flex flex-col gap-2.5 mt-1">
+                              {currentDiagnostic.categories.map((cat, idx) => (
+                                <div key={idx} className="flex flex-col gap-1">
+                                  <div className="flex justify-between text-[8.5px] text-zinc-400 font-bold leading-none">
+                                    <span>{cat.label}</span>
+                                    <span className="text-white">{cat.val} ({cat.pct}%)</span>
+                                  </div>
+                                  <div className="w-full h-1.5 bg-[#0f0e13] rounded-full overflow-hidden border border-zinc-900/40">
+                                    <div className={`h-full ${cat.bg} rounded-full`} style={{ width: `${cat.pct}%` }} />
+                                  </div>
                                 </div>
-                                <span className="text-white">{item.val} ({item.pct}%)</span>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Third Row: Top Issues Table, Root Cause Snapshot, Impact Assessment */}
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+                          
+                          {/* 1. Top Issues Table */}
+                          <div className="lg:col-span-1 bg-[#121217] border border-zinc-900/60 p-4 rounded-xl flex flex-col justify-between gap-3 min-h-[220px]">
+                            <div className="flex flex-col pb-0.5">
+                              <span className="text-[9.5px] font-bold text-white">Top Issues Detected</span>
+                              <span className="text-[8px] text-zinc-550 mt-0.5">Prioritized active system anomalies</span>
+                            </div>
+
+                            <div className="border border-zinc-900 rounded-lg overflow-hidden bg-zinc-950/20">
+                              <table className="w-full text-[8.5px] text-left border-collapse">
+                                <thead>
+                                  <tr className="border-b border-zinc-900 text-zinc-500 font-extrabold bg-[#0d0d12]/30 uppercase text-[7.5px] tracking-wide">
+                                    <th className="p-2.5">Issue</th>
+                                    <th className="p-2.5">Severity</th>
+                                    <th className="p-2.5">Impact</th>
+                                    <th className="p-2.5">Status</th>
+                                  </tr>
+                                </thead>
+                                <tbody className="divide-y divide-zinc-900/40 text-zinc-350">
+                                  {currentDiagnostic.issues.slice(0, 3).map((row, idx) => (
+                                    <tr 
+                                      key={idx} 
+                                      onClick={() => setActiveDiagnosticTab('alerts')}
+                                      className="hover:bg-white/[0.02] cursor-pointer transition-colors"
+                                    >
+                                      <td className="p-2.5 flex flex-col gap-0.5 max-w-[100px]">
+                                        <span className="font-bold text-white truncate leading-tight text-[9px]">{row.name}</span>
+                                        <span className="text-[7px] text-zinc-550 font-medium truncate leading-normal">{row.desc}</span>
+                                      </td>
+                                      <td className="p-2.5">
+                                        <span className={`text-[6.5px] font-extrabold uppercase px-1.5 py-0.2 rounded border ${row.sevColor}`}>
+                                          {row.sev}
+                                        </span>
+                                      </td>
+                                      <td className="p-2.5 font-mono font-bold text-white text-[9px]">{row.impact}</td>
+                                      <td className="p-2.5 font-bold text-[7.5px]"><span className={row.statusColor}>{row.status}</span></td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+
+                          {/* 2. Root Cause Snapshot Diagram */}
+                          <div 
+                            onClick={() => setActiveDiagnosticTab('root')}
+                            className="bg-[#121217] border border-zinc-900/60 p-4 rounded-xl flex flex-col justify-between gap-3 min-h-[220px] cursor-pointer hover:border-purple-500/30 transition-all group"
+                          >
+                            <div className="flex justify-between items-center">
+                              <div className="flex flex-col">
+                                <span className="text-[9.5px] font-bold text-white uppercase tracking-wider font-mono">Root Cause Snapshot</span>
+                                <span className="text-[8px] text-zinc-550 mt-0.5">Click for deep-dive reasoning trace</span>
+                              </div>
+                              <span className="text-[7.5px] text-purple-400 font-bold font-mono border border-purple-500/20 bg-purple-500/10 px-1.5 py-0.2 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                                VIEW DRILLDOWN
+                              </span>
+                            </div>
+
+                            {/* Causal Snapshot CSS layout */}
+                            <div className="relative w-full h-[125px] border border-zinc-900/50 rounded-xl bg-zinc-950/30 flex items-center justify-center p-1 overflow-hidden mt-1 select-none">
+                              {/* Inner circle node */}
+                              <div className="w-18 h-18 rounded-full border border-purple-500 bg-[#120d20] flex items-center justify-center text-center text-[7px] text-white font-extrabold p-2.5 z-10 shadow-[0_0_12px_rgba(168,85,247,0.25)] leading-tight">
+                                Margin Erosion in 15 SKUs
+                              </div>
+
+                              {/* Outer absolute nodes */}
+                              {/* Top-Left */}
+                              <div className="absolute left-1.5 top-1.5 bg-[#0f0e13] border border-zinc-900 p-1.5 rounded-lg text-left flex flex-col gap-0.5 leading-none shadow-md">
+                                <span className="text-red-400 font-black text-[7.5px] flex items-center gap-0.5">
+                                  <span>&uarr;</span> Raw Material
+                                </span>
+                                <span className="text-[7px] text-zinc-550 font-medium">Costs (+12%)</span>
+                              </div>
+
+                              {/* Top-Right */}
+                              <div className="absolute right-1.5 top-1.5 bg-[#0f0e13] border border-zinc-900 p-1.5 rounded-lg text-right flex flex-col gap-0.5 leading-none shadow-md">
+                                <span className="text-orange-400 font-black text-[7.5px] flex items-center gap-0.5 justify-end">
+                                  <span>&darr;</span> Price Real.
+                                </span>
+                                <span className="text-[7px] text-zinc-555 font-medium">(-4%)</span>
+                              </div>
+
+                              {/* Mid-Left */}
+                              <div className="absolute left-1.5 bottom-12 bg-[#0f0e13] border border-zinc-900 p-1.5 rounded-lg text-left flex flex-col gap-0.5 leading-none shadow-md">
+                                <span className="text-orange-400 font-black text-[7.5px] flex items-center gap-0.5">
+                                  <span>&uarr;</span> Raw Pack.
+                                </span>
+                                <span className="text-[7px] text-zinc-555 font-medium">(+8%)</span>
+                              </div>
+
+                              {/* Mid-Right */}
+                              <div className="absolute right-1.5 bottom-12 bg-[#0f0e13] border border-zinc-900 p-1.5 rounded-lg text-right flex flex-col gap-0.5 leading-none shadow-md">
+                                <span className="text-orange-400 font-black text-[7.5px] flex items-center gap-0.5 justify-end">
+                                  <span>&darr;</span> Prod Mix
+                                </span>
+                                <span className="text-[7px] text-zinc-555 font-medium">(-5%)</span>
+                              </div>
+
+                              {/* Bottom-Left */}
+                              <div className="absolute left-6 bottom-1 bg-[#0f0e13] border border-zinc-900 p-1.5 rounded-lg text-left flex flex-col gap-0.5 leading-none shadow-md">
+                                <span className="text-red-400 font-black text-[7.5px] flex items-center gap-0.5">
+                                  <span>&uarr;</span> Ingredients
+                                </span>
+                                <span className="text-[7px] text-zinc-555 font-medium">(+7%)</span>
+                              </div>
+
+                              {/* Bottom-Right */}
+                              <div className="absolute right-6 bottom-1 bg-[#0f0e13] border border-zinc-900 p-1.5 rounded-lg text-right flex flex-col gap-0.5 leading-none shadow-md">
+                                <span className="text-orange-400 font-black text-[7.5px] flex items-center gap-0.5 justify-end">
+                                  <span>&uarr;</span> Promo Spend
+                                </span>
+                                <span className="text-[7px] text-zinc-555 font-medium">(-3%)</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* 3. Impact Assessment Values */}
+                          <div className="lg:col-span-1 bg-[#121217] border border-zinc-900/60 p-4 rounded-xl flex flex-col justify-between gap-3 min-h-[220px]">
+                            <div className="flex flex-col">
+                              <span className="text-[9.5px] font-bold text-white">Impact Assessment</span>
+                              <span className="text-[8px] text-zinc-550 mt-0.5">Anomaly Detection Agents value quantification</span>
+                            </div>
+
+                            <div className="flex flex-col gap-2">
+                              {currentDiagnostic.impacts.map((imp, idx) => (
+                                <div 
+                                  key={idx} 
+                                  onClick={() => setActiveDiagnosticTab('impact')}
+                                  className="p-2.5 rounded-xl border border-zinc-900 bg-[#0f0e13] flex justify-between items-center cursor-pointer hover:border-purple-500/20 hover:bg-purple-500/[0.01] transition-all"
+                                >
+                                  <div className="flex items-center gap-2">
+                                    <div className="p-1 bg-[#16151c] border border-zinc-800/40 rounded text-purple-400 flex-shrink-0">
+                                      {imp.icon === 'gear' && (
+                                        <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                          <circle cx="12" cy="12" r="3" />
+                                          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                                        </svg>
+                                      )}
+                                      {imp.icon === 'list' && (
+                                        <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                          <rect width="18" height="18" x="3" y="3" rx="2" />
+                                          <path d="M3 9h18M3 15h18" />
+                                        </svg>
+                                      )}
+                                      {imp.icon === 'user' && (
+                                        <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                                          <circle cx="9" cy="7" r="4" />
+                                        </svg>
+                                      )}
+                                    </div>
+                                    <div className="flex flex-col gap-0.5">
+                                      <span className="font-bold text-[9.5px] text-white leading-none">{imp.label}</span>
+                                      <span className="text-[7px] text-zinc-500 font-medium leading-normal mt-0.5 truncate max-w-[125px]">{imp.desc}</span>
+                                    </div>
+                                  </div>
+                                  <div className="text-right flex flex-col gap-0.5">
+                                    <span className="text-[10px] font-mono font-black text-white leading-none">{imp.val}</span>
+                                    <span className={`text-[6.5px] font-extrabold uppercase tracking-wide px-1 rounded border ${imp.tagColor}`}>{imp.tag}</span>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Fourth Row: Recommended Mitigation Action Agent (AI Suggested) */}
+                        <div className="bg-[#121217] border border-zinc-900/60 p-4.5 rounded-xl flex flex-col gap-3">
+                          <span className="text-[9.5px] font-bold text-white tracking-wide">Recommended Mitigation Action Agent (AI Suggested)</span>
+                          
+                          <div className="grid grid-cols-1 md:grid-cols-5 gap-2.5">
+                            {currentDiagnostic.recs.map((rec, idx) => (
+                              <div 
+                                key={idx} 
+                                onClick={() => setActiveDiagnosticTab('recs')}
+                                className="bg-[#0f0e13] border border-zinc-900 p-3 rounded-lg flex flex-col justify-between min-h-[105px] cursor-pointer hover:border-purple-500/20 hover:bg-purple-500/[0.01] transition-all"
+                              >
+                                <div className="flex flex-col gap-1.5">
+                                  <div className="flex justify-between items-start">
+                                    <span className={`text-[6.5px] font-black uppercase tracking-wider px-1.5 py-0.2 rounded border ${rec.tagColor}`}>
+                                      {rec.tag}
+                                    </span>
+                                  </div>
+                                  <span className="font-bold text-[9.5px] text-white leading-tight">{rec.title}</span>
+                                  <p className="text-[7.5px] text-zinc-550 leading-relaxed font-medium mt-0.5">{rec.desc}</p>
+                                </div>
+                                
+                                <div className="border-t border-zinc-900/80 pt-2 flex flex-col gap-1.5 mt-1 text-[8px] text-zinc-400">
+                                  <div className="flex justify-between font-bold">
+                                    <span>Potential Impact</span>
+                                    <span className="text-emerald-400 font-mono">{rec.val}</span>
+                                  </div>
+                                  <div className="flex flex-col gap-1">
+                                    <div className="flex justify-between font-medium text-[7px] text-zinc-500">
+                                      <span>Confidence</span>
+                                      <span>{rec.conf}%</span>
+                                    </div>
+                                    <div className="w-full h-1 bg-[#16151c] rounded-full overflow-hidden border border-zinc-900/40">
+                                      <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${rec.conf}%` }} />
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+
+                            <div className="bg-gradient-to-br from-[#121118] to-[#0d0c12] border border-purple-500/5 p-3 rounded-lg flex flex-col items-center justify-center text-center gap-2.5 min-h-[105px]">
+                              <div className="w-9 h-9 rounded-full bg-purple-500/10 border border-purple-500/10 flex items-center justify-center text-purple-400">
+                                <Sparkles size={14} />
+                              </div>
+                              <span className="text-[8.5px] text-zinc-500 uppercase tracking-wider">
+                                Decision Support Active
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {activeDiagnosticTab === 'root' && (
+                      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 items-start animate-in fade-in duration-200">
+                        {/* Left Column: Causal Snapshot SVG */}
+                        <div className="lg:col-span-2 bg-[#121217] border border-zinc-900/60 p-4.5 rounded-xl flex flex-col gap-3.5">
+                          <div className="flex justify-between items-center pb-1">
+                            <span className="text-[10px] font-bold text-white uppercase tracking-wider font-mono">Causal Network Reasoning Map</span>
+                            <span className="text-[7.5px] text-zinc-550 italic font-mono font-bold">Click diagram to open interactive detail overlay</span>
+                          </div>
+                          <div 
+                            onClick={() => setIsZoomedRootCause(true)}
+                            className="relative w-full h-[240px] border border-zinc-900/65 rounded-xl bg-zinc-950/40 flex items-center justify-center p-2 cursor-pointer hover:border-purple-500/40 hover:bg-purple-500/[0.02] transition-all group select-none"
+                          >
+                            <div className="absolute top-3 right-3 p-1 rounded-md bg-black/60 border border-zinc-800 text-zinc-400 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1.5 text-[8.5px] font-bold font-mono z-10">
+                              <ZoomIn size={12} />
+                              <span>INTERACTIVE ZOOM</span>
+                            </div>
+                            
+                            <svg className="w-full h-full" viewBox="0 0 420 220" fill="none">
+                              <defs>
+                                <marker id="arrow-red-md" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                                  <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#ef4444" />
+                                </marker>
+                                <marker id="arrow-orange-md" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                                  <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#f97316" />
+                                </marker>
+                              </defs>
+
+                              {/* Connections */}
+                              <path d="M 110 38 Q 170 38 185 92" stroke="#ef4444" strokeWidth="1.2" strokeDasharray="3 3" className="opacity-50" markerEnd="url(#arrow-red-md)" />
+                              <path d="M 110 110 L 170 110" stroke="#f97316" strokeWidth="1.2" strokeDasharray="3 3" className="opacity-50" markerEnd="url(#arrow-orange-md)" />
+                              <path d="M 110 182 Q 170 182 185 128" stroke="#ef4444" strokeWidth="1.2" strokeDasharray="3 3" className="opacity-50" markerEnd="url(#arrow-red-md)" />
+                              
+                              <path d="M 310 38 Q 250 38 235 92" stroke="#ef4444" strokeWidth="1.2" strokeDasharray="3 3" className="opacity-50" markerEnd="url(#arrow-red-md)" />
+                              <path d="M 310 110 L 250 110" stroke="#f97316" strokeWidth="1.2" strokeDasharray="3 3" className="opacity-50" markerEnd="url(#arrow-orange-md)" />
+                              <path d="M 310 182 Q 250 182 235 128" stroke="#f97316" strokeWidth="1.2" strokeDasharray="3 3" className="opacity-50" markerEnd="url(#arrow-orange-md)" />
+
+                              {/* Center Node */}
+                              <circle cx="210" cy="110" r="34" fill="#120d20" stroke="#a855f7" strokeWidth="1.5" className="shadow-[0_0_15px_rgba(168,85,247,0.3)]" />
+                              <text x="210" y="107" textAnchor="middle" fontSize="8" fill="#ffffff" fontWeight="black" fontFamily="monospace">Margin Erosion</text>
+                              <text x="210" y="117" textAnchor="middle" fontSize="7.5" fill="#a855f7" fontWeight="black" fontFamily="sans-serif">in 15 SKUs</text>
+
+                              {/* Left nodes */}
+                              <foreignObject x="10" y="20" width="100" height="34">
+                                <div className="bg-[#0f0e13] border border-red-500/20 p-1.5 rounded text-left flex flex-col justify-center h-full shadow-md">
+                                  <span className="text-red-400 font-extrabold text-[7.5px] uppercase tracking-wide">&uarr; Raw Materials</span>
+                                  <span className="text-zinc-500 text-[6.5px] font-bold">Steel index (+12%)</span>
+                                </div>
+                              </foreignObject>
+                              <foreignObject x="10" y="93" width="100" height="34">
+                                <div className="bg-[#0f0e13] border border-orange-500/20 p-1.5 rounded text-left flex flex-col justify-center h-full shadow-md">
+                                  <span className="text-orange-400 font-extrabold text-[7.5px] uppercase tracking-wide">&uarr; Raw Packaging</span>
+                                  <span className="text-zinc-500 text-[6.5px] font-bold">Glass container (+8%)</span>
+                                </div>
+                              </foreignObject>
+                              <foreignObject x="10" y="165" width="100" height="34">
+                                <div className="bg-[#0f0e13] border border-red-500/20 p-1.5 rounded text-left flex flex-col justify-center h-full shadow-md">
+                                  <span className="text-red-400 font-extrabold text-[7.5px] uppercase tracking-wide">&uarr; Ingredient Cost</span>
+                                  <span className="text-zinc-500 text-[6.5px] font-bold">Sweeteners (+7%)</span>
+                                </div>
+                              </foreignObject>
+
+                              {/* Right nodes */}
+                              <foreignObject x="310" y="20" width="100" height="34">
+                                <div className="bg-[#0f0e13] border border-red-500/20 p-1.5 rounded text-right flex flex-col justify-center h-full shadow-md">
+                                  <span className="text-red-400 font-extrabold text-[7.5px] uppercase tracking-wide">&darr; Price Realization</span>
+                                  <span className="text-zinc-500 text-[6.5px] font-bold">Contract delays (-4%)</span>
+                                </div>
+                              </foreignObject>
+                              <foreignObject x="310" y="93" width="100" height="34">
+                                <div className="bg-[#0f0e13] border border-orange-500/20 p-1.5 rounded text-right flex flex-col justify-center h-full shadow-md">
+                                  <span className="text-orange-400 font-extrabold text-[7.5px] uppercase tracking-wide">&darr; Product Mix</span>
+                                  <span className="text-zinc-500 text-[6.5px] font-bold">Low-margin surge (-5%)</span>
+                                </div>
+                              </foreignObject>
+                              <foreignObject x="310" y="165" width="100" height="34">
+                                <div className="bg-[#0f0e13] border border-orange-500/20 p-1.5 rounded text-right flex flex-col justify-center h-full shadow-md">
+                                  <span className="text-orange-400 font-extrabold text-[7.5px] uppercase tracking-wide">&uarr; Promo Spend</span>
+                                  <span className="text-zinc-500 text-[6.5px] font-bold">West trade over (-3%)</span>
+                                </div>
+                              </foreignObject>
+                            </svg>
+                          </div>
+                        </div>
+
+                        {/* Right Column: Ledger List */}
+                        <div className="lg:col-span-1 bg-[#121217] border border-zinc-900/60 p-4.5 rounded-xl flex flex-col gap-3 max-h-[295px] overflow-y-auto pr-1">
+                          <span className="text-[10px] font-bold text-white uppercase tracking-wider font-mono">Causal Factors Ledger</span>
+                          <div className="flex flex-col gap-2">
+                            {[
+                              { label: 'Raw Material Inflation', val: '+12%', color: 'text-red-400' },
+                              { label: 'Raw Packaging Surcharges', val: '+8%', color: 'text-orange-400' },
+                              { label: 'Price Realization Lag', val: '-4%', color: 'text-red-400' },
+                              { label: 'Portfolio Product Mix', val: '-5%', color: 'text-orange-400' }
+                            ].map((item, idx) => (
+                              <div key={idx} className="p-2.5 rounded-lg border border-zinc-900 bg-[#0f0e13] flex justify-between items-center hover:border-purple-500/30 transition-colors">
+                                <span className="font-bold text-[9.5px] text-white leading-tight">{item.label}</span>
+                                <span className={`font-mono font-black text-[9.5px] ${item.color}`}>{item.val}</span>
+                              </div>
+                            ))}
+                            <div 
+                              onClick={() => setIsZoomedRootCause(true)}
+                              className="p-3 bg-purple-500/10 border border-purple-500/20 rounded-lg text-center cursor-pointer hover:bg-purple-500/20 transition-all mt-1"
+                            >
+                              <span className="text-[9.5px] text-purple-300 font-bold uppercase tracking-wider flex items-center justify-center gap-1.5">
+                                <Sparkles size={11} /> Open Detailed Trace Console
+                              </span>
+                            </div>
+
+                            <div 
+                              onClick={() => setActiveDiagnosticTab('impact')}
+                              className="p-3 bg-[#6b21a8]/25 border border-purple-500/35 rounded-lg text-center cursor-pointer hover:bg-[#6b21a8]/40 transition-all mt-2 select-none"
+                            >
+                              <span className="text-[9.5px] text-white font-bold uppercase tracking-wider flex items-center justify-center gap-1.5">
+                                Attribute EBITDA Impact &rarr;
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {activeDiagnosticTab === 'impact' && (
+                      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 items-start animate-in fade-in duration-200">
+                        {/* Left Column: Attributed EBITDA Leakage Ledger */}
+                        <div className="lg:col-span-2 bg-[#121217] border border-zinc-900/60 p-4.5 rounded-xl flex flex-col gap-3">
+                          <span className="text-[10px] font-bold text-white uppercase tracking-wider font-mono">Attributed EBITDA Leakage Breakdown</span>
+                          <div className="flex flex-col gap-2.5 mt-1">
+                            {[
+                              { driver: 'Raw Material Price Surcharges', value: '-$820,000', contribution: '29.3%', pct: 29, color: 'bg-red-500' },
+                              { driver: 'Price Realization Backlog', value: '-$620,000', contribution: '22.1%', pct: 22, color: 'bg-red-500' },
+                              { driver: 'Product Mix cannibalization', value: '-$510,000', contribution: '18.2%', pct: 18, color: 'bg-orange-500' },
+                              { driver: 'Raw Packaging Closure tariffs', value: '-$450,000', contribution: '16.1%', pct: 16, color: 'bg-orange-500' },
+                              { driver: 'Ingredient sweetner cost drift', value: '-$320,000', contribution: '11.4%', pct: 11, color: 'bg-yellow-500' },
+                              { driver: 'Promotional trade overspend', value: '-$320,000', contribution: '11.4%', pct: 11, color: 'bg-yellow-500' }
+                            ].map((item, idx) => (
+                              <div key={idx} className="flex flex-col gap-1 bg-[#0f0e13] border border-zinc-900 p-2.5 rounded-lg">
+                                <div className="flex justify-between text-[9px] font-bold">
+                                  <span className="text-zinc-350">{item.driver}</span>
+                                  <div className="flex gap-2">
+                                    <span className="text-white font-mono">{item.value}</span>
+                                    <span className="text-zinc-500">({item.contribution})</span>
+                                  </div>
+                                </div>
+                                <div className="w-full h-1.5 bg-[#16151c] rounded-full overflow-hidden border border-zinc-900/40">
+                                  <div className={`h-full ${item.color} rounded-full`} style={{ width: `${item.pct * 3}%` }} />
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                          
+                          <div 
+                            onClick={() => setActiveDiagnosticTab('scenario')}
+                            className="mt-3.5 p-3 bg-[#6b21a8]/20 border border-purple-500/35 rounded-lg text-center cursor-pointer hover:bg-[#6b21a8]/35 transition-all font-sans select-none"
+                          >
+                            <span className="text-[9.5px] text-purple-300 font-bold uppercase tracking-wider flex items-center justify-center gap-1.5">
+                              <Sparkles size={11} /> Run Scenario Simulations &rarr;
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Right Column: Risk Exposure Forecast */}
+                        <div className="lg:col-span-1 bg-[#121217] border border-zinc-900/60 p-4.5 rounded-xl flex flex-col gap-3">
+                          <span className="text-[10px] font-bold text-white uppercase tracking-wider font-mono">Risk Exposure Forecast</span>
+                          <div className="flex flex-col gap-2 mt-1">
+                            {[
+                              { label: 'Financial Exposure', val: '$2.8M', desc: 'Attributed quarterly EBITDA leak', badge: 'Critical', bg: 'text-red-400 border-red-500/20 bg-red-500/5' },
+                              { label: 'Revenue at Risk', val: '$4.1M', desc: 'At risk turnover from logistics lag', badge: 'Critical', bg: 'text-red-400 border-red-500/20 bg-red-500/5' },
+                              { label: 'Customer NPS impact', val: '-8 pts', desc: 'Complaints on product quality', badge: 'High', bg: 'text-orange-400 border-orange-500/20 bg-orange-500/5' },
+                              { label: 'Sourcing Volatility Index', val: 'Medium', desc: 'Vendor delivery confidence rating', badge: 'Medium', bg: 'text-amber-400 border-amber-500/20 bg-amber-500/5' }
+                            ].map((item, idx) => (
+                              <div key={idx} className="p-2.5 bg-[#0f0e13] border border-zinc-900 rounded-lg flex flex-col gap-1">
+                                <div className="flex justify-between items-center">
+                                  <span className="text-[9.5px] font-extrabold text-white">{item.label}</span>
+                                  <span className={`text-[6.5px] font-black uppercase px-1 rounded border ${item.bg}`}>{item.badge}</span>
+                                </div>
+                                <span className="text-[14px] font-mono font-black text-white">{item.val}</span>
+                                <span className="text-[7.5px] text-zinc-500 leading-none">{item.desc}</span>
                               </div>
                             ))}
                           </div>
                         </div>
                       </div>
+                    )}
 
-                      {/* Middle: Issues Over Time (Line Chart) */}
-                      <div className="bg-[#121217] border border-zinc-900/60 p-4.5 rounded-xl flex flex-col justify-between gap-3 min-h-[160px]">
-                        <div className="flex justify-between items-center">
-                          <span className="text-[9.5px] font-bold text-white">Issues Over Time</span>
-                          {/* Tiny color dots Legend */}
-                          <div className="flex items-center gap-1.5 text-[7px] text-zinc-500 font-black uppercase">
-                            <span className="text-red-500">•</span> Crit
-                            <span className="text-orange-500">•</span> High
-                            <span className="text-amber-400">•</span> Med
-                            <span className="text-emerald-500">•</span> Low
-                          </div>
-                        </div>
-
-                        {/* 4 Line chart SVG */}
-                        <div className="relative w-full h-[95px] border-b border-l border-zinc-900 bg-zinc-950/20 rounded-md p-1 flex flex-col justify-between mt-1">
-                          <svg className="w-full h-full text-zinc-700" viewBox="0 0 300 100" fill="none" stroke="currentColor">
-                            <line x1="0" y1="25" x2="300" y2="25" stroke="#1f1e29" strokeWidth="0.8" />
-                            <line x1="0" y1="50" x2="300" y2="50" stroke="#1f1e29" strokeWidth="0.8" />
-                            <line x1="0" y1="75" x2="300" y2="75" stroke="#1f1e29" strokeWidth="0.8" />
-                            {/* Critical line (Red) */}
-                            <path d="M 0 50 Q 50 30 100 45 T 200 35 T 300 15" stroke="#ef4444" strokeWidth="1.5" fill="none" />
-                            {/* High line (Orange) */}
-                            <path d="M 0 65 Q 50 45 100 55 T 200 50 T 300 35" stroke="#f97316" strokeWidth="1.5" fill="none" />
-                            {/* Medium line (Yellow) */}
-                            <path d="M 0 80 Q 50 65 100 75 T 200 60 T 300 50" stroke="#eab308" strokeWidth="1.2" fill="none" />
-                            {/* Low line (Green) */}
-                            <path d="M 0 90 Q 50 80 100 85 T 200 80 T 300 70" stroke="#10b981" strokeWidth="1.2" fill="none" />
-                          </svg>
-                          <div className="flex justify-between text-[7px] text-zinc-650 font-bold tracking-wide mt-1">
-                            <span>May 8</span>
-                            <span>May 9</span>
-                            <span>May 10</span>
-                            <span>May 11</span>
-                            <span>May 12</span>
-                            <span>May 13</span>
-                            <span>May 14</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Right: Top Issue Categories (Horizontal bars) */}
-                      <div className="bg-[#121217] border border-zinc-900/60 p-4.5 rounded-xl flex flex-col justify-between gap-3 min-h-[160px]">
-                        <span className="text-[9.5px] font-bold text-white">Top Issue Categories</span>
-                        
-                        <div className="flex flex-col gap-2.5 mt-1">
-                          {currentDiagnostic.categories.map((cat, idx) => (
-                            <div key={idx} className="flex flex-col gap-1">
-                              <div className="flex justify-between text-[8.5px] text-zinc-400 font-bold leading-none">
-                                <span>{cat.label}</span>
-                                <span className="text-white">{cat.val} ({cat.pct}%)</span>
+                    {activeDiagnosticTab === 'scenario' && (
+                      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 items-start animate-in fade-in duration-200">
+                        {/* Left Column: Elasticity Simulation Queue */}
+                        <div className="lg:col-span-2 bg-[#121217] border border-zinc-900/60 p-4.5 rounded-xl flex flex-col gap-3">
+                          <span className="text-[10px] font-bold text-white uppercase tracking-wider font-mono">Elasticity Simulation Queue</span>
+                          <div className="flex flex-col gap-2 mt-1">
+                            {[
+                              { scenario: 'Run #1: +4% wholesale pricing adjustment', desc: 'Significantly increases revenue with minimal volume drop', roi: '+$1,200,000', conf: 92, badge: 'Optimal', badgeColor: 'text-emerald-400 border-emerald-500/20 bg-emerald-500/5' },
+                              { scenario: 'Run #2: +10% aggressive list price hike', desc: 'High risk of product delisting & customer churn in West', roi: '+$840,000', conf: 82, badge: 'High Risk', badgeColor: 'text-red-400 border-red-500/20 bg-red-500/5' },
+                              { scenario: 'Run #3: Container procurement raw-rate hedging', desc: 'Sign long-term glass container supply contract at baseline rates', roi: '+$450,000', conf: 85, badge: 'Recommended', badgeColor: 'text-purple-400 border-purple-500/20 bg-purple-500/5' },
+                              { scenario: 'Run #4: Alternate natural sweetener transition', desc: 'Substitute sucrose with corn syrup to reduce formulation cost', roi: '+$320,000', conf: 70, badge: 'Vetting Req.', badgeColor: 'text-amber-400 border-amber-500/20 bg-amber-500/5' }
+                            ].map((item, idx) => (
+                              <div key={idx} className="p-2.5 bg-[#0f0e13] border border-zinc-900 rounded-lg flex justify-between items-center gap-3">
+                                <div className="flex flex-col gap-0.5 max-w-[280px]">
+                                  <span className="text-[9.5px] font-bold text-white leading-tight">{item.scenario}</span>
+                                  <span className="text-[7.5px] text-zinc-550 leading-relaxed font-medium">{item.desc}</span>
+                                </div>
+                                <div className="text-right flex flex-col gap-1 flex-shrink-0">
+                                  <span className="text-[11.5px] font-mono font-black text-white">{item.roi}</span>
+                                  <span className={`text-[6px] font-black uppercase px-1 rounded border leading-none py-0.5 ${item.badgeColor}`}>{item.badge}</span>
+                                  <span className="text-[7.5px] text-zinc-500 font-mono text-[7px]">Conf: {item.conf}%</span>
+                                </div>
                               </div>
-                              <div className="w-full h-1.5 bg-[#0f0e13] rounded-full overflow-hidden border border-zinc-900/40">
-                                <div className={`h-full ${cat.bg} rounded-full`} style={{ width: `${cat.pct}%` }} />
+                            ))}
+                          </div>
+                          
+                          <div 
+                            onClick={() => setActiveDiagnosticTab('recs')}
+                            className="mt-3.5 p-3 bg-[#6b21a8]/20 border border-purple-500/35 rounded-lg text-center cursor-pointer hover:bg-[#6b21a8]/35 transition-all font-sans select-none"
+                          >
+                            <span className="text-[9.5px] text-purple-300 font-bold uppercase tracking-wider flex items-center justify-center gap-1.5">
+                              <Sparkles size={11} /> Compile Mitigation Proposals &rarr;
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Right Column: Simulation Outcomes Console */}
+                        <div className="lg:col-span-1 bg-[#121217] border border-zinc-900/60 p-4.5 rounded-xl flex flex-col gap-3 min-h-[300px] justify-between">
+                          <span className="text-[10px] font-bold text-white uppercase tracking-wider font-mono">Monte Carlo Outcomes Console</span>
+                          
+                          <div className="flex flex-col gap-3 py-3 border-y border-zinc-900">
+                            <div className="flex flex-col gap-1">
+                              <div className="flex justify-between text-[8px] font-extrabold text-zinc-500 uppercase">
+                                <span>Best Case ROI Projection</span>
+                                <span className="text-emerald-400 font-bold">+$1.8M</span>
+                              </div>
+                              <div className="w-full h-1 bg-[#16151c] rounded-full overflow-hidden">
+                                <div className="h-full bg-emerald-500 rounded-full" style={{ width: '90%' }} />
                               </div>
                             </div>
-                          ))}
+
+                            <div className="flex flex-col gap-1">
+                              <div className="flex justify-between text-[8px] font-extrabold text-zinc-500 uppercase">
+                                <span>Weighted Average ROI</span>
+                                <span className="text-purple-400 font-bold">+$1.2M</span>
+                              </div>
+                              <div className="w-full h-1 bg-[#16151c] rounded-full overflow-hidden">
+                                <div className="h-full bg-purple-500 rounded-full" style={{ width: '66%' }} />
+                              </div>
+                            </div>
+
+                            <div className="flex flex-col gap-1">
+                              <div className="flex justify-between text-[8px] font-extrabold text-zinc-500 uppercase">
+                                <span>Worst Case ROI Protection</span>
+                                <span className="text-red-400 font-bold">-$800k</span>
+                              </div>
+                              <div className="w-full h-1 bg-[#16151c] rounded-full overflow-hidden">
+                                <div className="h-full bg-red-500 rounded-full" style={{ width: '40%' }} />
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="text-[7.5px] text-zinc-550 italic leading-relaxed text-center font-medium">
+                            Monte Carlo simulations run complete. Projected ROI converged at 99.8% stability index across 420 random price elasticity paths.
+                          </div>
                         </div>
                       </div>
+                    )}
 
-                    </div>
-
-                    {/* Third Row: Top Issues Table, Root Cause Snapshot, Impact Assessment */}
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
-                      
-                      {/* 1. Top Issues Table */}
-                      <div className="bg-[#121217] border border-zinc-900/60 p-4 rounded-xl flex flex-col justify-between gap-3 min-h-[220px]">
-                        <div className="flex flex-col pb-0.5">
-                          <span className="text-[9.5px] font-bold text-white">Top Issues Detected</span>
-                          <span className="text-[8px] text-zinc-550 mt-0.5">Prioritized active system anomalies</span>
+                    {activeDiagnosticTab === 'alerts' && (
+                      <div className="bg-[#121217] border border-zinc-900/60 p-4.5 rounded-xl flex flex-col gap-3 select-none animate-in fade-in duration-200">
+                        <div className="flex flex-col">
+                          <span className="text-[10px] font-bold text-white uppercase tracking-wider font-mono">System Alert Triage Ledger</span>
+                          <span className="text-[8px] text-zinc-500 mt-0.5 leading-normal">Real-time system alarms triaged and assigned to diagnostic agents</span>
                         </div>
 
-                        <div className="border border-zinc-900 rounded-lg overflow-hidden bg-zinc-950/20">
-                          <table className="w-full text-[8px] text-left border-collapse">
+                        <div className="border border-zinc-900 rounded-lg overflow-hidden bg-zinc-950/20 mt-1">
+                          <table className="w-full text-[8.5px] text-left border-collapse">
                             <thead>
                               <tr className="border-b border-zinc-900 text-zinc-500 font-extrabold bg-[#0d0d12]/30 uppercase text-[7.5px] tracking-wide">
-                                <th className="p-2">Issue</th>
-                                <th className="p-2">Severity</th>
-                                <th className="p-2">Impact</th>
-                                <th className="p-2">Status</th>
+                                <th className="p-2.5">Alert ID</th>
+                                <th className="p-2.5">Violation Target</th>
+                                <th className="p-2.5">Metric Severity</th>
+                                <th className="p-2.5">EBITDA Leakage</th>
+                                <th className="p-2.5">Triage Assignee</th>
+                                <th className="p-2.5">Status</th>
                               </tr>
                             </thead>
                             <tbody className="divide-y divide-zinc-900/40 text-zinc-350">
-                              {currentDiagnostic.issues.slice(0, 3).map((row, idx) => (
+                              {[
+                                { id: 'ALT-109 • 12m ago', target: 'Beverage Category (West Division)', desc: 'Margin slip due to pricing lag', sev: 'Critical', sevColor: 'text-red-400 border-red-500/20 bg-red-500/5', leak: '$320k', assignee: 'Wholesale Pricing Agent', status: 'Triaged', statusColor: 'text-emerald-400' },
+                                { id: 'ALT-112 • 24m ago', target: 'Energy segment (National Accounts)', desc: 'Contract volume drop below limits', sev: 'High', sevColor: 'text-orange-400 border-orange-500/20 bg-orange-500/5', leak: '$120k', assignee: 'Commercial Contract Agent', status: 'Investigating', statusColor: 'text-amber-500' },
+                                { id: 'ALT-084 • 1h ago', target: 'Premium Juice Line (Line B packaging)', desc: 'Container surcharge adjustment delay', sev: 'High', sevColor: 'text-orange-400 border-orange-500/20 bg-orange-500/5', leak: '$450k', assignee: 'Procurement Sourcing Agent', status: 'Queued', statusColor: 'text-zinc-500' },
+                                { id: 'ALT-065 • 2h ago', target: 'Syrup formulation (Batch #42)', desc: 'Formulation acidity variance drift', sev: 'Medium', sevColor: 'text-amber-450 border-amber-500/20 bg-amber-500/5', leak: '$180k', assignee: 'Formulation Tuning Agent', status: 'Triaged', statusColor: 'text-emerald-400' },
+                                { id: 'ALT-055 • 4h ago', target: 'Product Portfolio SKU mapping', desc: 'Low margin product mix cannibalization', sev: 'Critical', sevColor: 'text-red-400 border-red-500/20 bg-red-500/5', leak: '$510k', assignee: 'Portfolio Audit Agent', status: 'Investigating', statusColor: 'text-amber-500' },
+                                { id: 'ALT-022 • 8h ago', target: 'Distributor discount approvals', desc: 'Overlapping trade spends limit overrun', sev: 'Medium', sevColor: 'text-amber-450 border-amber-500/20 bg-amber-500/5', leak: '$320k', assignee: 'Finance Ledger Agent', status: 'Triaged', statusColor: 'text-emerald-400' }
+                              ].map((row, idx) => (
                                 <tr key={idx} className="hover:bg-white/[0.01]">
-                                  <td className="p-2 flex flex-col gap-0.5 max-w-[100px]">
-                                    <span className="font-bold text-white truncate leading-tight">{row.name}</span>
-                                    <span className="text-[7px] text-zinc-500 font-medium truncate leading-normal">{row.desc}</span>
+                                  <td className="p-2.5 flex flex-col gap-0.5">
+                                    <span className="font-bold text-white font-mono text-[9px]">{row.id.split(' • ')[0]}</span>
+                                    <span className="text-[7.5px] text-zinc-550 font-bold leading-normal">{row.id.split(' • ')[1]}</span>
                                   </td>
-                                  <td className="p-2">
+                                  <td className="p-2.5">
+                                    <div className="flex flex-col gap-0.5">
+                                      <span className="font-bold text-white text-[9px]">{row.target}</span>
+                                      <span className="text-[7.5px] text-zinc-500 leading-tight">{row.desc}</span>
+                                    </div>
+                                  </td>
+                                  <td className="p-2.5">
                                     <span className={`text-[6.5px] font-extrabold uppercase px-1.5 py-0.2 rounded border ${row.sevColor}`}>
                                       {row.sev}
                                     </span>
                                   </td>
-                                  <td className="p-2 font-mono font-bold text-white">{row.impact}</td>
-                                  <td className="p-2 font-bold text-[7.5px]"><span className={row.statusColor}>{row.status}</span></td>
+                                  <td className="p-2.5 font-mono font-bold text-white text-[9px]">{row.leak}</td>
+                                  <td className="p-2.5 text-zinc-400 font-bold text-[8.5px]">{row.assignee}</td>
+                                  <td className="p-2.5 font-bold text-[8.5px]"><span className={row.statusColor}>{row.status}</span></td>
                                 </tr>
                               ))}
                             </tbody>
                           </table>
                         </div>
 
-                        <span className="text-[8.5px] text-purple-400 font-bold hover:underline cursor-pointer pt-0.5 block w-fit">
-                          View All Issues &rarr;
-                        </span>
-                      </div>
-
-                      {/* 2. Root Cause Snapshot Diagram */}
-                      <div className="bg-[#121217] border border-zinc-900/60 p-4 rounded-xl flex flex-col justify-between gap-3 min-h-[220px]">
-                        <div className="flex flex-col">
-                          <span className="text-[9.5px] font-bold text-white">Root Cause Snapshot</span>
-                          <span className="text-[8px] text-zinc-550 mt-0.5">Causal mapping diagram</span>
-                        </div>
-
-                        {/* Causal Snapshot CSS layout */}
-                        <div className="relative w-full h-[125px] border border-zinc-900/50 rounded-xl bg-zinc-950/30 flex items-center justify-center p-1 overflow-hidden mt-1 select-none">
-                          {/* Inner circle node */}
-                          <div className="w-18 h-18 rounded-full border border-purple-500 bg-[#120d20] flex items-center justify-center text-center text-[7px] text-white font-extrabold p-2.5 z-10 shadow-[0_0_12px_rgba(168,85,247,0.25)] leading-tight">
-                            Margin Erosion in 15 SKUs
-                          </div>
-
-                          {/* Outer absolute nodes */}
-                          {/* Top-Left */}
-                          <div className="absolute left-1.5 top-1.5 bg-[#0f0e13] border border-zinc-900 p-1.5 rounded-lg text-left flex flex-col gap-0.5 leading-none shadow-md">
-                            <span className="text-red-400 font-black text-[7.5px] flex items-center gap-0.5">
-                              <span>&uarr;</span> Raw Material
-                            </span>
-                            <span className="text-[7px] text-zinc-500 font-medium">Costs (+12%)</span>
-                          </div>
-
-                          {/* Top-Right */}
-                          <div className="absolute right-1.5 top-1.5 bg-[#0f0e13] border border-zinc-900 p-1.5 rounded-lg text-right flex flex-col gap-0.5 leading-none shadow-md">
-                            <span className="text-orange-400 font-black text-[7.5px] flex items-center gap-0.5 justify-end">
-                              <span>&darr;</span> Price Real.
-                            </span>
-                            <span className="text-[7px] text-zinc-500 font-medium">(-4%)</span>
-                          </div>
-
-                          {/* Mid-Left */}
-                          <div className="absolute left-1.5 bottom-12 bg-[#0f0e13] border border-zinc-900 p-1.5 rounded-lg text-left flex flex-col gap-0.5 leading-none shadow-md">
-                            <span className="text-orange-400 font-black text-[7.5px] flex items-center gap-0.5">
-                              <span>&uarr;</span> Promo Spend
-                            </span>
-                            <span className="text-[7px] text-zinc-500 font-medium">(+8%)</span>
-                          </div>
-
-                          {/* Mid-Right */}
-                          <div className="absolute right-1.5 bottom-12 bg-[#0f0e13] border border-zinc-900 p-1.5 rounded-lg text-right flex flex-col gap-0.5 leading-none shadow-md">
-                            <span className="text-orange-400 font-black text-[7.5px] flex items-center gap-0.5 justify-end">
-                              <span>&uarr;</span> Product Mix
-                            </span>
-                            <span className="text-[7px] text-zinc-500 font-medium">(-5%)</span>
-                          </div>
-
-                          {/* Bottom Center */}
-                          <div className="absolute bottom-1 bg-[#0f0e13] border border-zinc-900 p-1.5 rounded-lg text-center flex flex-col gap-0.5 leading-none shadow-md z-0">
-                            <span className="text-emerald-400 font-black text-[7.5px] flex items-center gap-0.5 justify-center">
-                              <span>&uarr;</span> Logistics
-                            </span>
-                            <span className="text-[7px] text-zinc-500 font-medium">Costs (+7%)</span>
-                          </div>
-                        </div>
-
-                        <span className="text-[8.5px] text-purple-400 font-bold hover:underline cursor-pointer block w-fit">
-                          View Full Root Cause Analysis &rarr;
-                        </span>
-                      </div>
-
-                      {/* 3. Impact Assessment Values */}
-                      <div className="bg-[#121217] border border-zinc-900/60 p-4 rounded-xl flex flex-col justify-between gap-3 min-h-[220px]">
-                        <div className="flex flex-col">
-                          <span className="text-[9.5px] font-bold text-white">Impact Assessment</span>
-                          <span className="text-[8px] text-zinc-550 mt-0.5">Anomalies value quantification</span>
-                        </div>
-
-                        <div className="flex flex-col gap-2">
-                          {currentDiagnostic.impacts.map((imp, idx) => (
-                            <div key={idx} className="p-2.5 rounded-xl border border-zinc-900 bg-[#0f0e13] flex justify-between items-center">
-                              <div className="flex items-center gap-2">
-                                <div className="p-1 bg-[#16151c] border border-zinc-800/40 rounded text-purple-400 flex-shrink-0">
-                                  {imp.icon === 'gear' && (
-                                    <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                      <circle cx="12" cy="12" r="3" />
-                                      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
-                                    </svg>
-                                  )}
-                                  {imp.icon === 'list' && (
-                                    <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                      <rect width="18" height="18" x="3" y="3" rx="2" />
-                                      <path d="M3 9h18M3 15h18" />
-                                    </svg>
-                                  )}
-                                  {imp.icon === 'user' && (
-                                    <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                                      <circle cx="9" cy="7" r="4" />
-                                    </svg>
-                                  )}
-                                </div>
-                                <div className="flex flex-col gap-0.5">
-                                  <span className="font-bold text-[9.5px] text-white leading-none">{imp.label}</span>
-                                  <span className="text-[7px] text-zinc-500 font-medium leading-normal mt-0.5 truncate max-w-[125px]">{imp.desc}</span>
-                                </div>
-                              </div>
-                              <div className="text-right flex flex-col gap-0.5">
-                                <span className="text-[10px] font-mono font-black text-white leading-none">{imp.val}</span>
-                                <span className={`text-[6.5px] font-extrabold uppercase tracking-wide px-1 rounded border ${imp.tagColor}`}>{imp.tag}</span>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-
-                        <span className="text-[8.5px] text-purple-400 font-bold hover:underline cursor-pointer block w-fit">
-                          View Full Impact Analysis &rarr;
-                        </span>
-                      </div>
-
-                    </div>
-
-                    {/* Fourth Row: Recommended Actions (AI Suggested) */}
-                    <div className="bg-[#121217] border border-zinc-900/60 p-4.5 rounded-xl flex flex-col gap-3">
-                      <span className="text-[9.5px] font-bold text-white tracking-wide">Recommended Actions (AI Suggested)</span>
-                      
-                      <div className="grid grid-cols-1 md:grid-cols-5 gap-2.5">
-                        {currentDiagnostic.recs.map((rec, idx) => (
-                          <div key={idx} className="bg-[#0f0e13] border border-zinc-900 p-3 rounded-lg flex flex-col justify-between min-h-[105px]">
-                            <div className="flex flex-col gap-1.5">
-                              {/* Header & badge */}
-                              <div className="flex justify-between items-start">
-                                <span className={`text-[6.5px] font-black uppercase tracking-wider px-1.5 py-0.2 rounded border ${rec.tagColor}`}>
-                                  {rec.tag}
-                                </span>
-                              </div>
-                              <span className="font-bold text-[9.5px] text-white leading-tight">{rec.title}</span>
-                              <p className="text-[7.5px] text-zinc-550 leading-relaxed font-medium mt-0.5">{rec.desc}</p>
-                            </div>
-                            
-                            {/* Potential impact and Confidence bar */}
-                            <div className="border-t border-zinc-900/80 pt-2 flex flex-col gap-1.5 mt-1 text-[8px] text-zinc-400">
-                              <div className="flex justify-between font-bold">
-                                <span>Potential Impact</span>
-                                <span className="text-emerald-400 font-mono">{rec.val}</span>
-                              </div>
-                              <div className="flex flex-col gap-1">
-                                <div className="flex justify-between font-medium text-[7px] text-zinc-500">
-                                  <span>Confidence</span>
-                                  <span>{rec.conf}%</span>
-                                </div>
-                                <div className="w-full h-1 bg-[#16151c] rounded-full overflow-hidden border border-zinc-900/40">
-                                  <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${rec.conf}%` }} />
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-
-                        {/* Callout action card (Explore Detailed Diagnostics) */}
-                        <div className="bg-gradient-to-br from-[#1e1533] to-[#120e20] border border-purple-500/10 p-3 rounded-lg flex flex-col items-center justify-center text-center gap-3.5 min-h-[105px]">
-                          <div className="w-9 h-9 rounded-full bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 animate-pulse">
-                            <Sparkles size={14} />
-                          </div>
-                          <span className="text-[8.5px] text-purple-400 font-bold uppercase tracking-wider hover:underline cursor-pointer">
-                            View All Recommendations &rarr;
+                        <div 
+                          onClick={() => setActiveDiagnosticTab('root')}
+                          className="mt-3.5 p-3 bg-[#6b21a8]/20 border border-purple-500/35 rounded-lg text-center cursor-pointer hover:bg-[#6b21a8]/35 transition-all font-sans select-none"
+                        >
+                          <span className="text-[9.5px] text-purple-300 font-bold uppercase tracking-wider flex items-center justify-center gap-1.5">
+                            <Sparkles size={11} /> Trace Root Cause in Causal Network &rarr;
                           </span>
                         </div>
                       </div>
-                    </div>
+                    )}
+
+                    {activeDiagnosticTab === 'recs' && (
+                      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 items-start animate-in fade-in duration-200">
+                        {/* Left Column: Proposed Mitigations Grid */}
+                        <div className="lg:col-span-2 bg-[#121217] border border-zinc-900/60 p-4.5 rounded-xl flex flex-col gap-3">
+                          <span className="text-[10px] font-bold text-white uppercase tracking-wider font-mono">Proposed Mitigations Queue</span>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-1">
+                            {[
+                              { title: 'Source alternate cap supplier', desc: 'Onboard pre-approved vendor B to hedge glass container closure rates.', val: '+$450K EBITDA', conf: 90, tag: 'High Impact', tagColor: 'text-red-400 border-red-500/20 bg-red-500/5' },
+                              { title: 'Re-negotiate raw pricing contracts', desc: 'Contract bulk raw materials to lock in Q4 costing indices.', val: '+$800K EBITDA', conf: 82, tag: 'Medium Impact', tagColor: 'text-amber-450 border-amber-500/20 bg-amber-500/5' },
+                              { title: 'Trigger overlap SKU consolidation', desc: 'Consolidate 12 duplicate listings in category C to reduce shelf complexity.', val: '+$400K EBITDA', conf: 92, tag: 'High Impact', tagColor: 'text-red-400 border-red-500/20 bg-red-500/5' },
+                              { title: 'Adjust wholesale pricing tier levels', desc: 'Deploy automated index-linked pricing adjusts on wholesale accounts.', val: '+$1.2M EBITDA', conf: 95, tag: 'Critical Impact', tagColor: 'text-purple-400 border-purple-500/20 bg-purple-500/5' }
+                            ].map((rec, idx) => (
+                              <div key={idx} className="bg-[#0f0e13] border border-zinc-900 p-3 rounded-lg flex flex-col justify-between min-h-[120px] hover:border-purple-500/30 transition-colors cursor-pointer">
+                                <div className="flex flex-col gap-1.5">
+                                  <span className={`text-[6px] font-black uppercase tracking-wider px-1.5 py-0.2 rounded border w-fit ${rec.tagColor}`}>
+                                    {rec.tag}
+                                  </span>
+                                  <span className="font-bold text-[9.5px] text-white leading-tight mt-0.5">{rec.title}</span>
+                                  <p className="text-[7.5px] text-zinc-550 leading-relaxed font-medium mt-0.5">{rec.desc}</p>
+                                </div>
+                                
+                                <div className="border-t border-zinc-900/80 pt-2 flex flex-col gap-1.5 mt-2 text-[8px] text-zinc-400">
+                                  <div className="flex justify-between font-bold">
+                                    <span>Potential Recovery</span>
+                                    <span className="text-emerald-400 font-mono">{rec.val}</span>
+                                  </div>
+                                  <div className="flex flex-col gap-0.5">
+                                    <div className="flex justify-between font-medium text-[7px] text-zinc-500">
+                                      <span>Confidence Score</span>
+                                      <span>{rec.conf}%</span>
+                                    </div>
+                                    <div className="w-full h-1 bg-[#16151c] rounded-full overflow-hidden">
+                                      <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${rec.conf}%` }} />
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Right Column: Human-in-the-Loop ERP Commit Console */}
+                        <div className="lg:col-span-1 bg-[#121217] border border-zinc-900/60 p-4.5 rounded-xl flex flex-col gap-3 min-h-[300px] justify-between">
+                          <div className="flex flex-col gap-2">
+                            <span className="text-[10px] font-bold text-white uppercase tracking-wider font-mono">ERP Commit Console</span>
+                            <span className="text-[7.5px] text-zinc-550 leading-normal">Authorize AI recommendations and write back variables directly to active ledgers</span>
+                          </div>
+
+                          <div className="p-3 rounded-xl bg-zinc-950/40 border border-zinc-900 flex flex-col gap-2.5">
+                            <div className="flex items-center gap-2">
+                              <div className="w-2 h-2 rounded-full bg-yellow-500 animate-pulse" />
+                              <span className="text-[9px] font-bold text-white">Pending Action Review</span>
+                            </div>
+                            <p className="text-[8px] text-zinc-500 leading-relaxed">
+                              Select any proposed mitigation card in the queue to preview write-back variables and compile approval logs.
+                            </p>
+                            <button 
+                              disabled 
+                              className="w-full py-2 bg-purple-500/10 border border-purple-500/10 text-purple-400/50 rounded-lg text-[9px] font-bold uppercase tracking-wider cursor-not-allowed"
+                            >
+                              Select Card to Authorize
+                            </button>
+                          </div>
+
+                          <div className="flex flex-col gap-1.5 text-[7.5px] text-zinc-650 bg-zinc-950/20 p-2.5 rounded-lg border border-zinc-900/30">
+                            <span className="font-mono uppercase font-black tracking-widest text-zinc-500 text-[6.5px]">Policy Guardrail Check</span>
+                            <div className="flex justify-between">
+                              <span>• Pricing elastic limits verified</span>
+                              <span className="text-emerald-500 font-bold">PASS</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>• Formulation recipe variance bounds</span>
+                              <span className="text-emerald-500 font-bold">PASS</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>• Vendor contract pricing limits</span>
+                              <span className="text-emerald-500 font-bold">PASS</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
 
                     {/* Footer actions */}
                     <div className="flex items-center justify-between border-t border-zinc-900/60 pt-3 mt-0.5 text-[8.5px]">
@@ -2587,26 +2977,7 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
                         </svg>
                         <span>Auto Refresh: <span className="text-emerald-400 font-extrabold">ON</span></span>
                       </div>
-                      <div className="flex items-center gap-3">
-                        <button
-                          type="button"
-                          className="px-4 py-2 border border-zinc-800 hover:border-zinc-750 hover:bg-zinc-900/30 text-zinc-300 font-bold rounded-lg transition-colors cursor-pointer flex items-center gap-2"
-                        >
-                          <svg className="w-3 h-3 text-zinc-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
-                          </svg>
-                          <span>Download Report</span>
-                        </button>
-                        <button
-                          type="button"
-                          className="px-4.5 py-2 bg-[#8b5cf6] hover:bg-[#7c3aed] text-white font-bold rounded-lg transition-colors cursor-pointer flex items-center gap-1.5"
-                        >
-                          <span>Explore Detailed Diagnostics</span>
-                          <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M5 12h14M12 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
-                          </svg>
-                        </button>
-                      </div>
+
                     </div>
 
                   </div>
@@ -2624,6 +2995,391 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
         </div>
 
       </div>
+
+      {/* Expanded Causal Network Zoom Modal Overlay */}
+      {isZoomedRootCause && (
+        <div 
+          className="fixed inset-0 bg-black/90 backdrop-blur-lg z-[130] flex items-center justify-center p-6 animate-fade-in"
+          onClick={() => setIsZoomedRootCause(false)}
+        >
+          <div 
+            className="w-full max-w-5xl bg-[#0b0a0e] border border-purple-500/25 rounded-2xl p-6 shadow-[0_0_60px_rgba(168,85,247,0.2)] flex flex-col gap-5 text-xs max-h-[90vh] overflow-y-auto font-sans relative animate-in fade-in zoom-in duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex justify-between items-center border-b border-zinc-800/80 pb-4">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <div className="p-1.5 bg-purple-500/10 border border-purple-500/20 rounded-lg text-purple-400">
+                    <Sparkles size={16} />
+                  </div>
+                  <h3 className="text-[14px] font-bold text-white font-mono uppercase tracking-wider animate-pulse">
+                    Interactive Causal Network Trace
+                  </h3>
+                </div>
+                <p className="text-[10px] text-zinc-400 font-medium">
+                  Trace multi-agent causal inference logs mapping feedstock price hikes, price realization delay, and product margin erosion.
+                </p>
+              </div>
+              <button 
+                type="button"
+                onClick={() => setIsZoomedRootCause(false)}
+                className="p-1.5 rounded cursor-pointer border border-zinc-800 bg-[#16151c] text-zinc-400 transition-colors hover:bg-zinc-800 hover:text-white"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            {/* Content Body */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+              {/* Left Columns: Expanded Interactive SVG */}
+              <div className="lg:col-span-2 bg-zinc-950/40 border border-zinc-900/60 p-4 rounded-xl flex flex-col gap-3 relative select-none">
+                <div className="flex justify-between items-center">
+                  <span className="text-[9.5px] font-bold text-zinc-400 uppercase tracking-wider font-mono">
+                    Visual Causal Reasoning Map
+                  </span>
+                  <span className="text-[8px] text-zinc-550 italic font-mono">
+                    Hover over nodes or ledger cards to highlight causal relationships
+                  </span>
+                </div>
+                
+                <div className="w-full aspect-[16/9] border border-zinc-900/40 rounded-lg bg-zinc-950/60 p-2 overflow-hidden flex items-center justify-center relative">
+                  <svg className="w-full h-full" viewBox="0 0 600 337.5" fill="none">
+                    <defs>
+                      <marker id="arrow-red-lg" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#ef4444" />
+                      </marker>
+                      <marker id="arrow-orange-lg" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#f97316" />
+                      </marker>
+                    </defs>
+
+                    {/* Connection lines from Sourcing (Left) */}
+                    <path 
+                      d="M 160 48 C 220 48, 220 90, 265 95" 
+                      stroke="#ef4444" 
+                      strokeWidth={hoveredNode === 'material' ? 2.5 : 1.2} 
+                      strokeDasharray={hoveredNode === 'material' ? '0' : '4 4'} 
+                      className={`transition-all duration-300 ${hoveredNode === 'material' ? 'opacity-100' : 'opacity-35'}`} 
+                      markerEnd="url(#arrow-red-lg)" 
+                    />
+                    <path 
+                      d="M 160 138 C 220 138, 220 120, 258 115" 
+                      stroke="#f97316" 
+                      strokeWidth={hoveredNode === 'packaging' ? 2.5 : 1.2} 
+                      strokeDasharray={hoveredNode === 'packaging' ? '0' : '4 4'} 
+                      className={`transition-all duration-300 ${hoveredNode === 'packaging' ? 'opacity-100' : 'opacity-35'}`} 
+                      markerEnd="url(#arrow-orange-lg)" 
+                    />
+                    <path 
+                      d="M 210 258 C 240 258, 250 200, 280 150" 
+                      stroke="#ef4444" 
+                      strokeWidth={hoveredNode === 'ingredient' ? 2.5 : 1.2} 
+                      strokeDasharray={hoveredNode === 'ingredient' ? '0' : '4 4'} 
+                      className={`transition-all duration-300 ${hoveredNode === 'ingredient' ? 'opacity-100' : 'opacity-35'}`} 
+                      markerEnd="url(#arrow-red-lg)" 
+                    />
+
+                    {/* Connection lines from Commercial (Right) */}
+                    <path 
+                      d="M 440 48 C 380 48, 380 90, 335 95" 
+                      stroke="#ef4444" 
+                      strokeWidth={hoveredNode === 'pricing' ? 2.5 : 1.2} 
+                      strokeDasharray={hoveredNode === 'pricing' ? '0' : '4 4'} 
+                      className={`transition-all duration-300 ${hoveredNode === 'pricing' ? 'opacity-100' : 'opacity-35'}`} 
+                      markerEnd="url(#arrow-red-lg)" 
+                    />
+                    <path 
+                      d="M 440 138 C 380 138, 380 120, 342 115" 
+                      stroke="#f97316" 
+                      strokeWidth={hoveredNode === 'mix' ? 2.5 : 1.2} 
+                      strokeDasharray={hoveredNode === 'mix' ? '0' : '4 4'} 
+                      className={`transition-all duration-300 ${hoveredNode === 'mix' ? 'opacity-100' : 'opacity-35'}`} 
+                      markerEnd="url(#arrow-orange-lg)" 
+                    />
+                    <path 
+                      d="M 390 258 C 360 258, 350 200, 320 150" 
+                      stroke="#f97316" 
+                      strokeWidth={hoveredNode === 'promotion' ? 2.5 : 1.2} 
+                      strokeDasharray={hoveredNode === 'promotion' ? '0' : '4 4'} 
+                      className={`transition-all duration-300 ${hoveredNode === 'promotion' ? 'opacity-100' : 'opacity-35'}`} 
+                      markerEnd="url(#arrow-orange-lg)" 
+                    />
+
+                    {/* Central Glowing Node */}
+                    <circle cx="300" cy="110" r="46" fill="#120d20" stroke="#a855f7" strokeWidth="2" className="shadow-[0_0_20px_rgba(168,85,247,0.35)]" />
+                    <circle cx="300" cy="110" r="54" fill="none" stroke="#a855f7" strokeWidth="0.8" strokeDasharray="3 3" className="opacity-45" />
+                    <text x="300" y="102" textAnchor="middle" fontSize="9" fill="#ffffff" fontWeight="black" fontFamily="monospace" letterSpacing="0.5">EBITDA LEAKAGE</text>
+                    <text x="300" y="115" textAnchor="middle" fontSize="10.5" fill="#a855f7" fontWeight="black" fontFamily="sans-serif">Margin Erosion</text>
+                    <text x="300" y="127" textAnchor="middle" fontSize="8" fill="#ef4444" fontWeight="bold" fontFamily="monospace">Est: -$2.8M Impact</text>
+
+                    {/* Sourcing / COGS Pressures (Left) */}
+                    
+                    {/* Node: Raw Material */}
+                    <foreignObject 
+                      x={10} y={25} width={150} height={46}
+                      onMouseEnter={() => setHoveredNode('material')}
+                      onMouseLeave={() => setHoveredNode(null)}
+                      className="cursor-pointer"
+                    >
+                      <div className={`bg-[#0d0c11] border rounded-lg p-2 flex flex-col justify-center h-full transition-all duration-300 ${
+                        hoveredNode === 'material' 
+                          ? 'border-red-500 shadow-[0_0_15px_rgba(239,68,68,0.25)] bg-red-500/[0.02]' 
+                          : 'border-red-500/20'
+                      }`}>
+                        <div className="flex justify-between items-center">
+                          <span className="text-red-400 font-extrabold text-[8px] uppercase tracking-wide">&uarr; Raw Material</span>
+                          <span className="text-red-400 font-mono font-bold text-[8.5px]">+12%</span>
+                        </div>
+                        <span className="text-zinc-500 font-medium text-[7.5px] leading-tight mt-0.5 truncate">Steel index surge</span>
+                      </div>
+                    </foreignObject>
+
+                    {/* Node: Raw Packaging */}
+                    <foreignObject 
+                      x={10} y={115} width={150} height={46}
+                      onMouseEnter={() => setHoveredNode('packaging')}
+                      onMouseLeave={() => setHoveredNode(null)}
+                      className="cursor-pointer"
+                    >
+                      <div className={`bg-[#0d0c11] border rounded-lg p-2 flex flex-col justify-center h-full transition-all duration-300 ${
+                        hoveredNode === 'packaging' 
+                          ? 'border-orange-500 shadow-[0_0_15px_rgba(249,115,22,0.25)] bg-orange-500/[0.02]' 
+                          : 'border-orange-500/20'
+                      }`}>
+                        <div className="flex justify-between items-center">
+                          <span className="text-orange-400 font-extrabold text-[8px] uppercase tracking-wide">&uarr; Raw Packaging</span>
+                          <span className="text-orange-400 font-mono font-bold text-[8.5px]">+8%</span>
+                        </div>
+                        <span className="text-zinc-500 font-medium text-[7.5px] leading-tight mt-0.5 truncate">Glass closures surcharge</span>
+                      </div>
+                    </foreignObject>
+
+                    {/* Node: Ingredient */}
+                    <foreignObject 
+                      x={60} y={235} width={150} height={46}
+                      onMouseEnter={() => setHoveredNode('ingredient')}
+                      onMouseLeave={() => setHoveredNode(null)}
+                      className="cursor-pointer"
+                    >
+                      <div className={`bg-[#0d0c11] border rounded-lg p-2 flex flex-col justify-center h-full transition-all duration-300 ${
+                        hoveredNode === 'ingredient' 
+                          ? 'border-red-500 shadow-[0_0_15px_rgba(239,68,68,0.25)] bg-red-500/[0.02]' 
+                          : 'border-red-500/20'
+                      }`}>
+                        <div className="flex justify-between items-center">
+                          <span className="text-red-400 font-extrabold text-[8px] uppercase tracking-wide">&uarr; Ingredient Cost</span>
+                          <span className="text-red-400 font-mono font-bold text-[8.5px]">+7%</span>
+                        </div>
+                        <span className="text-zinc-500 font-medium text-[7.5px] leading-tight mt-0.5 truncate">Sweetener constraints</span>
+                      </div>
+                    </foreignObject>
+
+                    {/* Commercial / Revenue Pressures (Right) */}
+
+                    {/* Node: Price Realization */}
+                    <foreignObject 
+                      x={440} y={25} width={150} height={46}
+                      onMouseEnter={() => setHoveredNode('pricing')}
+                      onMouseLeave={() => setHoveredNode(null)}
+                      className="cursor-pointer"
+                    >
+                      <div className={`bg-[#0d0c11] border rounded-lg p-2 flex flex-col justify-center h-full transition-all duration-300 ${
+                        hoveredNode === 'pricing' 
+                          ? 'border-red-500 shadow-[0_0_15px_rgba(239,68,68,0.25)] bg-red-500/[0.02]' 
+                          : 'border-red-500/20'
+                      }`}>
+                        <div className="flex justify-between items-center">
+                          <span className="text-red-400 font-extrabold text-[8px] uppercase tracking-wide">&darr; Price Realization</span>
+                          <span className="text-red-400 font-mono font-bold text-[8.5px]">-4%</span>
+                        </div>
+                        <span className="text-zinc-500 font-medium text-[7.5px] leading-tight mt-0.5 truncate text-right">Contract adjustment lag</span>
+                      </div>
+                    </foreignObject>
+
+                    {/* Node: Product Mix */}
+                    <foreignObject 
+                      x={440} y={115} width={150} height={46}
+                      onMouseEnter={() => setHoveredNode('mix')}
+                      onMouseLeave={() => setHoveredNode(null)}
+                      className="cursor-pointer"
+                    >
+                      <div className={`bg-[#0d0c11] border rounded-lg p-2 flex flex-col justify-center h-full transition-all duration-300 ${
+                        hoveredNode === 'mix' 
+                          ? 'border-orange-500 shadow-[0_0_15px_rgba(249,115,22,0.25)] bg-orange-500/[0.02]' 
+                          : 'border-orange-500/20'
+                      }`}>
+                        <div className="flex justify-between items-center">
+                          <span className="text-orange-400 font-extrabold text-[8px] uppercase tracking-wide">&darr; Product Mix</span>
+                          <span className="text-orange-400 font-mono font-bold text-[8.5px]">-5%</span>
+                        </div>
+                        <span className="text-zinc-500 font-medium text-[7.5px] leading-tight mt-0.5 truncate text-right">Low-margin volume surge</span>
+                      </div>
+                    </foreignObject>
+
+                    {/* Node: Promotional Spend */}
+                    <foreignObject 
+                      x={390} y={235} width={150} height={46}
+                      onMouseEnter={() => setHoveredNode('promotion')}
+                      onMouseLeave={() => setHoveredNode(null)}
+                      className="cursor-pointer"
+                    >
+                      <div className={`bg-[#0d0c11] border rounded-lg p-2 flex flex-col justify-center h-full transition-all duration-300 ${
+                        hoveredNode === 'promotion' 
+                          ? 'border-orange-500 shadow-[0_0_15px_rgba(249,115,22,0.25)] bg-orange-500/[0.02]' 
+                          : 'border-orange-500/20'
+                      }`}>
+                        <div className="flex justify-between items-center">
+                          <span className="text-orange-400 font-extrabold text-[8px] uppercase tracking-wide">&uarr; Promo Spend</span>
+                          <span className="text-orange-400 font-mono font-bold text-[8.5px]">-3%</span>
+                        </div>
+                        <span className="text-zinc-500 font-medium text-[7.5px] leading-tight mt-0.5 truncate text-right">West trade overspend</span>
+                      </div>
+                    </foreignObject>
+                  </svg>
+                </div>
+              </div>
+
+              {/* Right Column: Detailed Ledger details */}
+              <div className="lg:col-span-1 flex flex-col gap-3 overflow-y-auto h-full max-h-[385px] pr-1">
+                <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider font-mono">
+                  Attribution & Mitigations
+                </span>
+                
+                <div className="flex flex-col gap-2">
+                  {[
+                    {
+                      id: 'material',
+                      title: 'Raw Material Inflation',
+                      subtitle: 'COGS Pressure',
+                      metric: '+12%',
+                      impact: '-$820k EBITDA',
+                      confidence: '94%',
+                      desc: 'Automated SAP audit identified global steel index surge of 18% impacting wholesale packaging container pricing contracts.',
+                      mitigation: 'Activate dual-sourcing options on secondary supplier contract B.',
+                      color: 'red',
+                      textClr: 'text-red-400'
+                    },
+                    {
+                      id: 'packaging',
+                      title: 'Raw Packaging Surcharges',
+                      subtitle: 'COGS Pressure',
+                      metric: '+8%',
+                      impact: '-$450k EBITDA',
+                      confidence: '88%',
+                      desc: 'Unplanned energy and logistics tariffs applied on glass closures. Swarm agents detected supplier price adjustment discrepancy.',
+                      mitigation: 'Trigger price discrepancy audit with Procurement team.',
+                      color: 'orange',
+                      textClr: 'text-orange-400'
+                    },
+                    {
+                      id: 'pricing',
+                      title: 'Price Realization Lag',
+                      subtitle: 'Revenue Leakage',
+                      metric: '-4%',
+                      impact: '-$620k EBITDA',
+                      confidence: '95%',
+                      desc: 'Wholesale contract renewal pricing adjustments delayed by 3 weeks due to manual routing backlog in CRM systems.',
+                      mitigation: 'Automate wholesale price index adjustments in CRM systems.',
+                      color: 'red',
+                      textClr: 'text-red-400'
+                    },
+                    {
+                      id: 'mix',
+                      title: 'Portfolio Product Mix',
+                      subtitle: 'Margin Dilution',
+                      metric: '-5%',
+                      impact: '-$510k EBITDA',
+                      confidence: '89%',
+                      desc: 'Low-margin high-volume product SKUs grew 14% while high-margin premium juice segment sales fell by 4%.',
+                      mitigation: 'Re-align commercial incentives toward high-margin premium juice SKUs.',
+                      color: 'orange',
+                      textClr: 'text-orange-400'
+                    },
+                    {
+                      id: 'ingredient',
+                      title: 'Ingredient Cost Drift',
+                      subtitle: 'COGS Pressure',
+                      metric: '+7%',
+                      impact: '-$320k EBITDA',
+                      confidence: '91%',
+                      desc: 'Natural flavor sweeteners supply pinch drove spot-market prices up. Recipe optimization agents suggesting corn syrup substitutions.',
+                      mitigation: 'Approve recipe modification simulator runs for minor formulation adjustment.',
+                      color: 'red',
+                      textClr: 'text-red-400'
+                    },
+                    {
+                      id: 'promotion',
+                      title: 'Promotional Overspend',
+                      subtitle: 'Revenue Leakage',
+                      metric: '-3%',
+                      impact: '-$320k EBITDA',
+                      confidence: '78%',
+                      desc: 'Overlapping distributor-led trade discounts applied without proper verification, exceeding target margin limits in West.',
+                      mitigation: 'Enforce maximum discount limits in the automated pricing approval flow.',
+                      color: 'orange',
+                      textClr: 'text-orange-400'
+                    }
+                  ].map((node) => (
+                    <div 
+                      key={node.id}
+                      onMouseEnter={() => setHoveredNode(node.id)}
+                      onMouseLeave={() => setHoveredNode(null)}
+                      className={`p-3 rounded-xl border transition-all duration-300 cursor-pointer ${
+                        hoveredNode === node.id 
+                          ? 'bg-purple-950/20 border-purple-500/50 shadow-[0_0_12px_rgba(168,85,247,0.15)]' 
+                          : 'bg-[#121217] border-zinc-900/80 hover:border-zinc-800'
+                      }`}
+                    >
+                      <div className="flex justify-between items-start gap-2">
+                        <div className="flex flex-col gap-0.5">
+                          <div className="flex items-center gap-1.5">
+                            <span className={`text-[6px] font-black uppercase px-1 rounded ${
+                              node.color === 'red' 
+                                ? 'bg-red-500/10 text-red-400 border border-red-500/20' 
+                                : 'bg-orange-500/10 text-orange-400 border border-orange-500/20'
+                            }`}>
+                              {node.subtitle}
+                            </span>
+                            <span className="text-[8px] font-mono text-zinc-500 font-bold">Conf: {node.confidence}</span>
+                          </div>
+                          <span className="font-bold text-[10px] text-white mt-1 leading-tight">{node.title}</span>
+                        </div>
+                        <div className="text-right flex flex-col gap-0.5">
+                          <span className={`text-[9.5px] font-mono font-black ${node.textClr}`}>{node.metric}</span>
+                          <span className="text-[7.5px] text-zinc-400 font-bold">{node.impact}</span>
+                        </div>
+                      </div>
+                      
+                      <div className={`overflow-hidden transition-all duration-300 ${
+                        hoveredNode === node.id ? 'max-h-[140px] opacity-100 mt-2' : 'max-h-0 opacity-0 pointer-events-none'
+                      }`}>
+                        <p className="text-[8.5px] leading-relaxed text-zinc-400">{node.desc}</p>
+                        <div className="p-1.5 rounded bg-zinc-950 border border-zinc-900 text-purple-400 font-semibold flex flex-col gap-0.5 mt-1.5">
+                          <span className="text-[6.5px] text-zinc-500 uppercase tracking-wider font-mono">Mitigation Proposal</span>
+                          <span>{node.mitigation}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  
+                  <div 
+                    onClick={() => {
+                      setIsZoomedRootCause(false);
+                      setActiveDiagnosticTab('impact');
+                    }}
+                    className="p-3 bg-[#6b21a8]/25 border border-purple-500/35 rounded-xl text-center cursor-pointer hover:bg-[#6b21a8]/40 transition-all mt-2 select-none"
+                  >
+                    <span className="text-[9.5px] text-white font-bold uppercase tracking-wider flex items-center justify-center gap-1.5">
+                      Close & Attribute EBITDA Impact &rarr;
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
