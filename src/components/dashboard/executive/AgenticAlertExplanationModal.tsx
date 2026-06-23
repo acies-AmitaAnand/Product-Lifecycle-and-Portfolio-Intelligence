@@ -498,7 +498,7 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
         { label: 'Core Factors', val: '3', pct: '→ 0.0%', icon: 'alert' },
         { label: 'Diagnostic Depth', val: '92%', pct: '↑ 5.1%', icon: 'target' },
         { label: 'Resolved Factors', val: '14', pct: '↑ 18.0%', icon: 'opportunity' },
-        { label: 'Auto-Correlation & Assortment Agentss', val: '180', pct: '↑ 24.2%', icon: 'check' },
+        { label: 'Auto-Correlation & Assortment Agents', val: '180', pct: '↑ 24.2%', icon: 'check' },
       ],
       severity: {
         total: 24,
@@ -2926,7 +2926,7 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
                             </thead>
                             <tbody className="divide-y divide-zinc-900/40 text-zinc-350">
                               {[
-                                { id: 'ALT-109 • 12m ago', target: 'Beverage Category (West Division)', desc: 'Margin slip due to pricing lag', sev: 'Critical', sevColor: 'text-red-400 border-red-500/20 bg-red-500/5', leak: '$320k', assignee: 'Wholesale Pricing Agent', status: 'Triaged', statusColor: 'text-emerald-400' },
+                                { id: 'ALT-109 • 12m ago', target: 'Beverage Category (West Division - Segment A)', desc: 'Critical margin slip due to pricing realization lag', sev: 'Critical', sevColor: 'text-red-400 border-red-500/20 bg-red-500/5', leak: '$320k', assignee: 'Wholesale Pricing Agent', status: 'Triaged', statusColor: 'text-emerald-400' },
                                 { id: 'ALT-112 • 24m ago', target: 'Energy segment (National Accounts)', desc: 'Contract volume drop below limits', sev: 'High', sevColor: 'text-orange-400 border-orange-500/20 bg-orange-500/5', leak: '$120k', assignee: 'Commercial Contract Agent', status: 'Investigating', statusColor: 'text-amber-500' },
                                 { id: 'ALT-084 • 1h ago', target: 'Premium Juice Line (Line B packaging)', desc: 'Container surcharge adjustment delay', sev: 'High', sevColor: 'text-orange-400 border-orange-500/20 bg-orange-500/5', leak: '$450k', assignee: 'Procurement Sourcing Agent', status: 'Queued', statusColor: 'text-zinc-500' },
                                 { id: 'ALT-065 • 2h ago', target: 'Syrup formulation (Batch #42)', desc: 'Formulation acidity variance drift', sev: 'Medium', sevColor: 'text-amber-450 border-amber-500/20 bg-amber-500/5', leak: '$180k', assignee: 'Formulation Tuning Agent', status: 'Triaged', statusColor: 'text-emerald-400' },
