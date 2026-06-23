@@ -741,7 +741,7 @@ export const AUDIT_DATA: Record<string, AuditContent> = {
       { name: 'actual_units', type: 'int [DIRECT]', desc: 'Actual units shipped and invoiced.' }
     ],
     formula: 'Attainment = \\left(1 - \\frac{|Actual - Forecast|}{Forecast}\\right) \\times 100',
-    formulaDescription: 'Computed as 1 minus the absolute difference between actual and forecast volumes, divided by forecast volumes, represented as a percentage.',
+    formulaDescription: 'Forecast attainment means how much of the predicted (forecasted) target you actually achieved.',
     assumptions: [
       'Unsatisfied orders: Excludes backorders that have not been filled or shipped yet.',
       'Promotion calendar alignment: Assumes forecast models adjusted for standard promotional runs.'

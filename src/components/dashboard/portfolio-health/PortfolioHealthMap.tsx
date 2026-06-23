@@ -1124,9 +1124,6 @@ const RevenuePerformanceMatrix: React.FC<RevenuePerformanceMatrixProps> = ({ sku
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-2 border-b border-black/5 dark:border-white/5 mb-3 gap-3">
         <div>
           <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Revenue vs. Performance Matrix</span>
-          <p className="text-[9px] text-zinc-550 dark:text-zinc-400 uppercase tracking-widest mt-0.5">
-            Segment catalog SKUs by size (Revenue) and health (Performance Score based on gross margins and growth velocity).
-          </p>
         </div>
         <div className="flex items-center gap-3 self-end sm:self-auto">
           <select
@@ -2193,35 +2190,35 @@ const VPCommandCenter: React.FC<{
           onClick={() => scrollToSection('vp-lifecycle-health')}
           className="px-2.5 py-1 hover:bg-black/5 dark:hover:bg-white/10 text-zinc-700 dark:text-zinc-350 rounded-sm cursor-pointer border-none bg-transparent font-bold outline-none"
         >
-          📊 Lifecycle Health
+          Lifecycle Health
         </button>
         <span className="text-zinc-300 dark:text-zinc-700">|</span>
         <button 
           onClick={() => scrollToSection('vp-action-desk')}
           className="px-2.5 py-1 hover:bg-black/5 dark:hover:bg-white/10 text-zinc-700 dark:text-zinc-350 rounded-sm cursor-pointer border-none bg-transparent font-bold outline-none"
         >
-          ⚡ Executive Action Desk
+          Executive Action Desk
         </button>
         <span className="text-zinc-300 dark:text-zinc-700">|</span>
         <button 
           onClick={() => scrollToSection('vp-investment-map')}
           className="px-2.5 py-1 hover:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-sm cursor-pointer border-none bg-transparent font-bold outline-none"
         >
-          🎯 Investment vs. Return
+          Investment vs. Return
         </button>
         <span className="text-zinc-300 dark:text-zinc-700">|</span>
         <button 
           onClick={() => scrollToSection('vp-rev-perf-matrix')}
           className="px-2.5 py-1 hover:bg-purple-500/10 text-purple-600 dark:text-purple-400 rounded-sm cursor-pointer border-none bg-transparent font-bold outline-none"
         >
-          📈 Revenue vs. Performance Matrix
+          Revenue vs. Performance Matrix
         </button>
         <span className="text-zinc-300 dark:text-zinc-700">|</span>
         <button 
           onClick={() => scrollToSection('vp-pareto-concentration')}
           className="px-2.5 py-1 hover:bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-sm cursor-pointer border-none bg-transparent font-bold outline-none"
         >
-          📊 Pareto SKU Concentration
+          Pareto SKU Concentration
         </button>
       </div>
 
