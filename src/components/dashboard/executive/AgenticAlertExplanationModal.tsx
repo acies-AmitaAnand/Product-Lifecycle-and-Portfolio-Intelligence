@@ -916,39 +916,36 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
               {/* 2x2 Sub-items */}
               <div className="grid grid-cols-2 gap-2 mt-0.5">
                 <div className="bg-[#0f0e13] border border-zinc-900/60 p-2.5 rounded-lg flex flex-col justify-between items-start min-h-[60px]">
-                  <span className="text-[11px] font-serif italic font-bold text-purple-400 leading-none">f<sub>x</sub></span>
-                  <span className="text-[9.5px] font-bold text-zinc-300">Formulation Agents</span>
+                  <svg className="text-purple-400 w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="12" cy="5" r="3" />
+                    <circle cx="5" cy="19" r="3" />
+                    <circle cx="19" cy="19" r="3" />
+                    <path d="M12 8v8M7 17l3-1.5M17 17l-3-1.5" />
+                  </svg>
+                  <span className="text-[9.5px] font-bold text-zinc-300">Analysis & Modeling Swarm</span>
                 </div>
                 <div className="bg-[#0f0e13] border border-zinc-900/60 p-2.5 rounded-lg flex flex-col justify-between items-start min-h-[60px]">
-                  <svg className="text-purple-400 w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <line x1="4" y1="21" x2="4" y2="14" />
-                    <line x1="4" y1="10" x2="4" y2="3" />
-                    <line x1="12" y1="21" x2="12" y2="12" />
-                    <line x1="12" y1="8" x2="12" y2="3" />
-                    <line x1="20" y1="21" x2="20" y2="16" />
-                    <line x1="20" y1="12" x2="20" y2="3" />
-                    <line x1="2" y1="14" x2="6" y2="14" />
-                    <line x1="10" y1="8" x2="14" y2="8" />
-                    <line x1="18" y1="16" x2="22" y2="16" />
+                  <svg className="text-purple-400 w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2" />
+                    <path d="M9 17V9M15 17v-4" />
                   </svg>
-                  <span className="text-[9.5px] font-bold text-zinc-300">Threshold Auditor Agents</span>
+                  <span className="text-[9.5px] font-bold text-zinc-300">Visualization & Report Agent</span>
                 </div>
                 <div className="bg-[#0f0e13] border border-zinc-900/60 p-2.5 rounded-lg flex flex-col justify-between items-start min-h-[60px]">
-                  <svg className="text-purple-400 w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M3 17c3-1 6-8 9-8s6 7 9 8" />
+                  <svg className="text-purple-400 w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M17 6.18a5 5 0 0 0-3-3.87" />
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                    <path d="M21 21v-2a4 4 0 0 0-3-3.87" />
+                    <path d="M18 16a3 3 0 0 0-3-3H9a3 3 0 0 0-3 3v5" />
+                    <circle cx="12" cy="7" r="4" />
                   </svg>
-                  <span className="text-[9.5px] font-bold text-zinc-300">Anomaly Detection Agents</span>
+                  <span className="text-[9.5px] font-bold text-zinc-300">Orchestration & Workflow Agent</span>
                 </div>
                 <div className="bg-[#0f0e13] border border-zinc-900/60 p-2.5 rounded-lg flex flex-col justify-between items-start min-h-[60px]">
-                  <svg className="text-purple-400 w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="18" cy="6" r="3" />
-                    <circle cx="18" cy="18" r="3" />
-                    <circle cx="6" cy="12" r="3" />
-                    <path d="M9 12h3" />
-                    <path d="M12 12l3-4.5" />
-                    <path d="M12 12l3 4.5" />
+                  <svg className="text-purple-400 w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                   </svg>
-                  <span className="text-[9.5px] font-bold text-zinc-300">Correlation & Assortment Agents</span>
+                  <span className="text-[9.5px] font-bold text-zinc-300">Governance & Cleansing Agent</span>
                 </div>
               </div>
             </div>
@@ -983,37 +980,34 @@ export const AgenticAlertExplanationModal: React.FC<AgenticAlertExplanationModal
               {/* 2x2 Sub-items */}
               <div className="grid grid-cols-2 gap-2 mt-0.5">
                 <div className="bg-[#0f0e13] border border-zinc-900/60 p-2.5 rounded-lg flex flex-col justify-between items-start min-h-[60px]">
-                  <svg className="text-purple-400 w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
-                    <line x1="12" y1="9" x2="12" y2="13" />
-                    <line x1="12" y1="17" x2="12.01" y2="17" />
+                  <svg className="text-purple-400 w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0" />
                   </svg>
-                  <span className="text-[9.5px] font-bold text-zinc-300">Alert Ranking Agent</span>
+                  <span className="text-[9.5px] font-bold text-zinc-300">Alerts Dispatcher Agent</span>
                 </div>
                 <div className="bg-[#0f0e13] border border-zinc-900/60 p-2.5 rounded-lg flex flex-col justify-between items-start min-h-[60px]">
-                  <svg className="text-purple-400 w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A5 5 0 0 0 8 8c0 1 .3 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5" />
-                    <path d="M9 18h6" />
-                    <path d="M10 22h4" />
+                  <svg className="text-purple-400 w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="12" cy="12" r="3" />
+                    <path d="M16 16v1a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v1" />
+                    <path d="M18 8h4v4h-4z" />
+                    <path d="M14 12h4" />
                   </svg>
                   <span className="text-[9.5px] font-bold text-zinc-300">Root Cause Reasoning Agent</span>
                 </div>
                 <div className="bg-[#0f0e13] border border-zinc-900/60 p-2.5 rounded-lg flex flex-col justify-between items-start min-h-[60px]">
-                  <svg className="text-purple-400 w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
-                    <polyline points="14 2 14 8 20 8" />
-                    <line x1="16" y1="13" x2="8" y2="13" />
-                    <line x1="16" y1="17" x2="8" y2="17" />
-                    <line x1="10" y1="9" x2="8" y2="9" />
+                  <svg className="text-purple-400 w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2" />
+                    <path d="M9 17V9M15 17v-4" />
                   </svg>
-                  <span className="text-[9.5px] font-bold text-zinc-300">Mitigation Action Agent</span>
+                  <span className="text-[9.5px] font-bold text-zinc-300">Value Attribution Agent</span>
                 </div>
                 <div className="bg-[#0f0e13] border border-zinc-900/60 p-2.5 rounded-lg flex flex-col justify-between items-start min-h-[60px]">
-                  <svg className="text-purple-400 w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <line x1="22" y1="2" x2="11" y2="13" />
-                    <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                  <svg className="text-purple-400 w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M12 22c5.523 0 10-2.239 10-5s-4.477-5-10-5-10 2.239-10 5 4.477 5 10 5Z" />
+                    <path d="m9 12 2 2 4-4" />
                   </svg>
-                  <span className="text-[9.5px] font-bold text-zinc-300">Orchestrator Agent</span>
+                  <span className="text-[9.5px] font-bold text-zinc-300">Mitigation Proposal Agent</span>
                 </div>
               </div>
             </div>
