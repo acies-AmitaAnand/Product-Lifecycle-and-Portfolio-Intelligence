@@ -325,52 +325,51 @@ const VPProfitabilityTreeView: React.FC<{
   return (
     <div className="space-y-6 animate-fade-in font-body pb-12">
       {/* Revenue vs Profit Trend Card */}
-      <div className="glass-card bg-white dark:bg-[#1a1a24]/90 border border-black/10 dark:border-white/10 rounded-xl overflow-hidden shadow-sm">
-        <div className="p-3.5 sm:p-4 border-b border-black/5 dark:border-white/5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <div>
+      <div className="glass-card bg-white dark:bg-[#1a1a24]/90 border border-black/10 dark:border-white/10 rounded-xl overflow-hidden shadow-sm max-w-[500px] aspect-square mx-auto flex flex-col">
+        <div className="p-3.5 sm:p-4 border-b border-black/5 dark:border-white/5 flex flex-col justify-between items-start gap-3 shrink-0">
+          <div className="w-full flex justify-between items-center">
             <h3 className="text-xs font-bold text-zinc-855 dark:text-zinc-150 uppercase tracking-wider">
-              REVENUE VS PROFIT TREND — {trendHorizon === 'months' ? 'LAST 12 MONTHS' : trendHorizon === 'weeks' ? 'LAST 12 WEEKS' : 'LAST 5 YEARS'}
+              REVENUE VS PROFIT TREND
             </h3>
-            
-            {/* Custom Legend */}
-            <div className="flex flex-wrap items-center gap-4 mt-2 text-[10px] font-bold text-zinc-550 dark:text-zinc-400">
-              <div className="flex items-center gap-1.5">
-                <div className="w-3 h-3 rounded-sm bg-[#2563eb]" />
-                <span>Revenue</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <div className="w-3 h-3 rounded-sm bg-[#0d9488]" />
-                <span>Gross profit</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <div className="w-5 h-0.5 border-t border-dashed border-[#ea580c] relative flex items-center justify-center">
-                  <div className="w-2 h-2 rounded-full bg-[#ea580c] absolute" />
-                </div>
-                <span className="ml-1.5">Margin %</span>
-              </div>
+            {/* Time Horizon Button Toggles */}
+            <div className="flex gap-1 bg-zinc-100 dark:bg-zinc-800/80 p-0.5 rounded-lg shrink-0">
+              {(['weeks', 'months', 'years'] as const).map((horizon) => (
+                <button
+                  key={horizon}
+                  type="button"
+                  onClick={() => setTrendHorizon(horizon)}
+                  className={`px-2 py-0.5 text-[8px] font-bold uppercase tracking-wider rounded transition-all cursor-pointer border-none outline-none ${
+                    trendHorizon === horizon
+                      ? 'bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white shadow-sm'
+                      : 'text-zinc-400 dark:text-zinc-500 hover:text-zinc-650 dark:hover:text-zinc-300 bg-transparent'
+                  }`}
+                >
+                  {horizon}
+                </button>
+              ))}
             </div>
           </div>
-
-          {/* Time Horizon Button Toggles */}
-          <div className="flex gap-1 bg-zinc-100 dark:bg-zinc-800/80 p-0.5 rounded-lg shrink-0">
-            {(['weeks', 'months', 'years'] as const).map((horizon) => (
-              <button
-                key={horizon}
-                type="button"
-                onClick={() => setTrendHorizon(horizon)}
-                className={`px-3 py-1 text-[9px] font-bold uppercase tracking-wider rounded-md transition-all cursor-pointer border-none outline-none ${
-                  trendHorizon === horizon
-                    ? 'bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white shadow-sm'
-                    : 'text-zinc-400 dark:text-zinc-500 hover:text-zinc-650 dark:hover:text-zinc-300 bg-transparent'
-                }`}
-              >
-                {horizon}
-              </button>
-            ))}
+          
+          {/* Custom Legend */}
+          <div className="flex flex-wrap items-center gap-4 text-[10px] font-bold text-zinc-550 dark:text-zinc-400">
+            <div className="flex items-center gap-1.5">
+              <div className="w-3 h-3 rounded-sm bg-[#2563eb]" />
+              <span>Revenue</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="w-3 h-3 rounded-sm bg-[#0d9488]" />
+              <span>Gross profit</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="w-5 h-0.5 border-t border-dashed border-[#ea580c] relative flex items-center justify-center">
+                <div className="w-2 h-2 rounded-full bg-[#ea580c] absolute" />
+              </div>
+              <span className="ml-1.5">Margin %</span>
+            </div>
           </div>
         </div>
-        <div className="p-3.5 sm:p-4">
-          <div className="h-44 sm:h-52">
+        <div className="p-3.5 sm:p-4 flex-1 flex flex-col min-h-0">
+          <div className="flex-1 min-h-0 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <ComposedChart data={activeTrendData} margin={{ left: -15, right: 15, top: 15, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridStroke} />
