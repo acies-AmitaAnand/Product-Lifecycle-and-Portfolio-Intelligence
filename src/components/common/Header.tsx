@@ -94,16 +94,6 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
         </div>
 
-        {/* Guided Tour button */}
-        {onStartTour && (
-          <button 
-            onClick={onStartTour}
-            className="acies-button px-4 py-2 text-[10px] flex items-center gap-2 group cursor-pointer"
-          >
-            Guided Tour
-            <ChevronRight size={12} className="group-hover:translate-x-0.5 transition-transform" />
-          </button>
-        )}
       </div>
     </header>
   );

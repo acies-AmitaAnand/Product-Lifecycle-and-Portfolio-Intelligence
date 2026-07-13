@@ -326,7 +326,7 @@ const VPProfitabilityTreeView: React.FC<{
     <div className="space-y-6 animate-fade-in font-body pb-12">
       {/* Revenue vs Profit Trend Card */}
       <div className="glass-card bg-white dark:bg-[#1a1a24]/90 border border-black/10 dark:border-white/10 rounded-xl overflow-hidden shadow-sm">
-        <div className="p-5 border-b border-black/5 dark:border-white/5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div className="p-3.5 sm:p-4 border-b border-black/5 dark:border-white/5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
             <h3 className="text-xs font-bold text-zinc-855 dark:text-zinc-150 uppercase tracking-wider">
               REVENUE VS PROFIT TREND — {trendHorizon === 'months' ? 'LAST 12 MONTHS' : trendHorizon === 'weeks' ? 'LAST 12 WEEKS' : 'LAST 5 YEARS'}
@@ -369,8 +369,8 @@ const VPProfitabilityTreeView: React.FC<{
             ))}
           </div>
         </div>
-        <div className="p-6">
-          <div className="h-72">
+        <div className="p-3.5 sm:p-4">
+          <div className="h-44 sm:h-52">
             <ResponsiveContainer width="100%" height="100%">
               <ComposedChart data={activeTrendData} margin={{ left: -15, right: 15, top: 15, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridStroke} />
