@@ -325,7 +325,7 @@ const VPProfitabilityTreeView: React.FC<{
   return (
     <div className="space-y-6 animate-fade-in font-body pb-12">
       {/* Revenue vs Profit Trend Card */}
-      <div className="glass-card bg-white dark:bg-[#1a1a24]/90 border border-black/10 dark:border-white/10 rounded-xl overflow-hidden shadow-sm max-w-[500px] aspect-square mx-auto flex flex-col">
+      <div className="glass-card bg-white dark:bg-[#1a1a24]/90 border border-black/10 dark:border-white/10 rounded-xl overflow-hidden shadow-sm max-w-[440px] aspect-[4/5] mx-auto flex flex-col">
         <div className="p-3.5 sm:p-4 border-b border-black/5 dark:border-white/5 flex flex-col justify-between items-start gap-3 shrink-0">
           <div className="w-full flex justify-between items-center">
             <h3 className="text-xs font-bold text-zinc-855 dark:text-zinc-150 uppercase tracking-wider">
@@ -371,7 +371,12 @@ const VPProfitabilityTreeView: React.FC<{
         <div className="p-3.5 sm:p-4 flex-1 flex flex-col min-h-0">
           <div className="flex-1 min-h-0 w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <ComposedChart data={activeTrendData} margin={{ left: -15, right: 15, top: 15, bottom: 5 }}>
+              <ComposedChart 
+                data={activeTrendData} 
+                barCategoryGap="45%" 
+                barGap={5} 
+                margin={{ left: -35, right: 5, top: 15, bottom: 5 }}
+              >
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridStroke} />
                 <XAxis dataKey="label" tick={{ fill: tickColor, fontSize: 9 }} axisLine={false} tickLine={false} />
                 
