@@ -21,6 +21,34 @@ interface ProfitabilityTreeProps {
   timelineRange: TimelineRange;
 }
 
+const CustomContributorTooltip = ({ active, payload }: any) => {
+  if (active && payload && payload.length) {
+    const data = payload[0].payload;
+    return (
+      <div className="bg-white dark:bg-[#181822] p-3 border border-black/10 dark:border-white/10 rounded-lg shadow-lg text-[11px] font-sans">
+        <p className="font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider mb-1.5">{data.rank}</p>
+        <div className="space-y-1">
+          <div className="flex items-center justify-between gap-6">
+            <div className="flex items-center gap-1.5">
+              <div className="w-2.5 h-2.5 rounded-sm bg-[#6366f1]" />
+              <span className="font-semibold text-zinc-700 dark:text-zinc-300">{data.catName}</span>
+            </div>
+            <span className="font-bold text-zinc-900 dark:text-white">${data.catVal}M</span>
+          </div>
+          <div className="flex items-center justify-between gap-6">
+            <div className="flex items-center gap-1.5">
+              <div className="w-2.5 h-2.5 rounded-sm bg-[#f59e0b]" />
+              <span className="font-semibold text-zinc-700 dark:text-zinc-300">{data.brandName}</span>
+            </div>
+            <span className="font-bold text-zinc-900 dark:text-white">${data.brandVal}M</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  return null;
+};
+
 interface Scenario {
   name: string;
   units: number;
@@ -462,123 +490,112 @@ const VPProfitabilityTreeView: React.FC<{
           </span>
         </div>
         <div className="p-5">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-8">
-            {/* Concentric Donut Chart */}
-            <div className="w-[200px] h-[200px] flex-shrink-0 relative mx-auto md:mx-0">
+          <div className="flex flex-col gap-6">
+            {/* Grouped Bar Chart */}
+            <div className="w-full h-[250px]">
               <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  {/* Outer Donut: Categories (Blue shades) */}
-                  <Pie
-                    data={[
-                      { name: 'Electronics', value: 9.4, percent: 30, color: '#1d4ed8' },
-                      { name: 'Apparel', value: 7.2, percent: 23, color: '#2563eb' },
-                      { name: 'Home & Living', value: 5.8, percent: 18, color: '#3b82f6' },
-                      { name: 'Beauty', value: 4.9, percent: 16, color: '#60a5fa' },
-                      { name: 'Sports', value: 4.3, percent: 14, color: '#93c5fd' },
-                    ]}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={66}
-                    outerRadius={86}
-                    paddingAngle={2}
-                    dataKey="value"
-                  >
-                    {[
-                      '#1d4ed8',
-                      '#2563eb',
-                      '#3b82f6',
-                      '#60a5fa',
-                      '#93c5fd'
-                    ].map((color, index) => (
-                      <Cell key={`cat-cell-${index}`} fill={color} />
-                    ))}
-                  </Pie>
-
-                  {/* Inner Donut: Brands (Green/Emerald shades) */}
-                  <Pie
-                    data={[
-                      { name: 'BrandX', value: 6.1, percent: 19, color: '#047857' },
-                      { name: 'NovaLine', value: 5.4, percent: 17, color: '#059669' },
-                      { name: 'Apex', value: 4.8, percent: 15, color: '#10b981' },
-                      { name: 'Zestora', value: 3.9, percent: 12, color: '#34d399' },
-                      { name: 'Other', value: 11.4, percent: 36, color: '#a7f3d0' },
-                    ]}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={40}
-                    outerRadius={60}
-                    paddingAngle={2}
-                    dataKey="value"
-                  >
-                    {[
-                      '#047857',
-                      '#059669',
-                      '#10b981',
-                      '#34d399',
-                      '#a7f3d0'
-                    ].map((color, index) => (
-                      <Cell key={`brand-cell-${index}`} fill={color} />
-                    ))}
-                  </Pie>
-                  <Tooltip 
-                    contentStyle={{ backgroundColor: tooltipBg, border: `1px solid ${tooltipBorder}`, color: tooltipText }}
-                    itemStyle={{ fontSize: 9.5 }}
-                    formatter={(value) => [`$${value}M`, 'Profit']}
+                <BarChart
+                  data={[
+                    { rank: 'Rank 1', catName: 'Electronics', catVal: 9.4, brandName: 'Other', brandVal: 11.4 },
+                    { rank: 'Rank 2', catName: 'Apparel', catVal: 7.2, brandName: 'BrandX', brandVal: 6.1 },
+                    { rank: 'Rank 3', catName: 'Home & Living', catVal: 5.8, brandName: 'NovaLine', brandVal: 5.4 },
+                    { rank: 'Rank 4', catName: 'Beauty', catVal: 4.9, brandName: 'Apex', brandVal: 4.8 },
+                    { rank: 'Rank 5', catName: 'Sports', catVal: 4.3, brandName: 'Zestora', brandVal: 3.9 },
+                  ]}
+                  margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+                >
+                  <defs>
+                    <linearGradient id="colorCategory" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#6366f1" stopOpacity={0.95}/>
+                      <stop offset="95%" stopColor="#4f46e5" stopOpacity={0.8}/>
+                    </linearGradient>
+                    <linearGradient id="colorBrand" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.95}/>
+                      <stop offset="95%" stopColor="#d97706" stopOpacity={0.8}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'} />
+                  <XAxis 
+                    dataKey="rank" 
+                    stroke={isDarkMode ? '#88889b' : '#71717a'}
+                    fontSize={10}
+                    tickLine={false}
+                    axisLine={false}
                   />
-                </PieChart>
+                  <YAxis 
+                    stroke={isDarkMode ? '#88889b' : '#71717a'}
+                    fontSize={10}
+                    tickLine={false}
+                    axisLine={false}
+                    tickFormatter={(val) => `$${val}M`}
+                  />
+                  <Tooltip content={<CustomContributorTooltip />} />
+                  <Bar dataKey="catVal" fill="url(#colorCategory)" radius={[4, 4, 0, 0]} name="Category Share" barSize={16} />
+                  <Bar dataKey="brandVal" fill="url(#colorBrand)" radius={[4, 4, 0, 0]} name="Brand Share" barSize={16} />
+                </BarChart>
               </ResponsiveContainer>
             </div>
 
-            {/* Legends Side-by-Side */}
-            <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-6 w-full">
-              {/* Category Legend */}
+            {/* Legends & Breakdown Side-by-Side */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full border-t border-black/5 dark:border-white/5 pt-5">
+              {/* Category Breakdown */}
               <div>
-                <h4 className="text-[10px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 mb-2.5">
-                  Category Profit Share (Outer Ring)
-                </h4>
-                <div className="space-y-2">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-3 h-3 rounded bg-gradient-to-br from-[#6366f1] to-[#4f46e5]" />
+                  <h4 className="text-[10px] font-extrabold uppercase tracking-wider text-[#6366f1] dark:text-[#818cf8]">
+                    Category Profit Contributors
+                  </h4>
+                </div>
+                <div className="space-y-3.5">
                   {[
-                    { name: 'Electronics', value: 9.4, percent: 30, color: '#1d4ed8' },
-                    { name: 'Apparel', value: 7.2, percent: 23, color: '#2563eb' },
-                    { name: 'Home & Living', value: 5.8, percent: 18, color: '#3b82f6' },
-                    { name: 'Beauty', value: 4.9, percent: 16, color: '#60a5fa' },
-                    { name: 'Sports', value: 4.3, percent: 14, color: '#93c5fd' },
+                    { name: 'Electronics', value: 9.4, percent: 30, color: '#6366f1' },
+                    { name: 'Apparel', value: 7.2, percent: 23, color: '#4f46e5' },
+                    { name: 'Home & Living', value: 5.8, percent: 18, color: '#818cf8' },
+                    { name: 'Beauty', value: 4.9, percent: 16, color: '#a5b4fc' },
+                    { name: 'Sports', value: 4.3, percent: 14, color: '#c7d2fe' },
                   ].map((item, idx) => (
-                    <div key={idx} className="flex items-center justify-between text-xs font-semibold text-zinc-700 dark:text-zinc-300">
-                      <div className="flex items-center gap-2">
-                        <div className="w-2.5 h-2.5 rounded-sm animate-pulse-slow" style={{ backgroundColor: item.color }} />
+                    <div key={idx} className="space-y-1">
+                      <div className="flex items-center justify-between text-xs font-semibold text-zinc-700 dark:text-zinc-300">
                         <span>{item.name}</span>
+                        <div className="flex items-center gap-3">
+                          <span className="font-bold text-zinc-850 dark:text-zinc-150">${item.value}M</span>
+                          <span className="text-zinc-450 dark:text-zinc-500 font-mono w-8 text-right">{item.percent}%</span>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-4">
-                        <span className="font-bold text-zinc-850 dark:text-zinc-150">${item.value}M</span>
-                        <span className="text-zinc-450 dark:text-zinc-500 font-mono w-8 text-right">{item.percent}%</span>
+                      <div className="w-full bg-black/5 dark:bg-white/5 rounded-full h-1.5 overflow-hidden">
+                        <div className="h-1.5 rounded-full bg-gradient-to-r from-[#6366f1] to-[#4f46e5]" style={{ width: `${item.percent}%` }} />
                       </div>
                     </div>
                   ))}
                 </div>
               </div>
 
-              {/* Brand Legend */}
+              {/* Brand Breakdown */}
               <div>
-                <h4 className="text-[10px] font-bold uppercase tracking-wider text-teal-650 dark:text-teal-400 mb-2.5">
-                  Brand Profit Share (Inner Ring)
-                </h4>
-                <div className="space-y-2">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-3 h-3 rounded bg-gradient-to-br from-[#f59e0b] to-[#d97706]" />
+                  <h4 className="text-[10px] font-extrabold uppercase tracking-wider text-[#f59e0b] dark:text-[#fbbf24]">
+                    Brand Profit Contributors
+                  </h4>
+                </div>
+                <div className="space-y-3.5">
                   {[
-                    { name: 'BrandX', value: 6.1, percent: 19, color: '#047857' },
-                    { name: 'NovaLine', value: 5.4, percent: 17, color: '#059669' },
-                    { name: 'Apex', value: 4.8, percent: 15, color: '#10b981' },
-                    { name: 'Zestora', value: 3.9, percent: 12, color: '#34d399' },
-                    { name: 'Other', value: 11.4, percent: 36, color: '#a7f3d0' },
+                    { name: 'BrandX', value: 6.1, percent: 19, color: '#f59e0b' },
+                    { name: 'NovaLine', value: 5.4, percent: 17, color: '#d97706' },
+                    { name: 'Apex', value: 4.8, percent: 15, color: '#f59e0b' },
+                    { name: 'Zestora', value: 3.9, percent: 12, color: '#fbbf24' },
+                    { name: 'Other', value: 11.4, percent: 36, color: '#fef08a' },
                   ].map((item, idx) => (
-                    <div key={idx} className="flex items-center justify-between text-xs font-semibold text-zinc-700 dark:text-zinc-300">
-                      <div className="flex items-center gap-2">
-                        <div className="w-2.5 h-2.5 rounded-sm animate-pulse-slow" style={{ backgroundColor: item.color }} />
+                    <div key={idx} className="space-y-1">
+                      <div className="flex items-center justify-between text-xs font-semibold text-zinc-700 dark:text-zinc-300">
                         <span>{item.name}</span>
+                        <div className="flex items-center gap-3">
+                          <span className="font-bold text-zinc-850 dark:text-zinc-150">${item.value}M</span>
+                          <span className="text-zinc-450 dark:text-zinc-500 font-mono w-8 text-right">{item.percent}%</span>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-4">
-                        <span className="font-bold text-zinc-850 dark:text-zinc-150">${item.value}M</span>
-                        <span className="text-zinc-450 dark:text-zinc-500 font-mono w-8 text-right">{item.percent}%</span>
+                      <div className="w-full bg-black/5 dark:bg-white/5 rounded-full h-1.5 overflow-hidden">
+                        <div className="h-1.5 rounded-full bg-gradient-to-r from-[#f59e0b] to-[#d97706]" style={{ width: `${item.percent}%` }} />
                       </div>
                     </div>
                   ))}
