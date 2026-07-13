@@ -545,7 +545,7 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
 
 
   const regionsList = ['APAC', 'EMEA', 'Americas', 'India'];
-  const categoriesList = ['Beverages', 'Snacks', 'Personal Care', 'Household'];
+  const categoriesList = ['Beverages', 'Snacks', 'Personal Care', 'Household', 'Beauty', 'Fashion'];
   const getHeatmapVal = (cat: string, reg: string) => {
     const matchProds = filteredProducts.filter(p => p.category === cat && p.region === reg);
     if (matchProds.length === 0) return null;
@@ -831,6 +831,8 @@ export const VPLaunchReadinessView: React.FC<VPLaunchReadinessViewProps> = ({
             <option value="Snacks">Snacks</option>
             <option value="Personal Care">Personal Care</option>
             <option value="Household">Household</option>
+            <option value="Beauty">Beauty</option>
+            <option value="Fashion">Fashion</option>
           </select>
 
           <select 

@@ -630,7 +630,9 @@ const InvestmentMarginMap: React.FC<InvestmentMarginMapProps> = ({ skusList, isD
     'Snacks': '#10b981',
     'Personal Care': '#185FA5',
     'Dairy': '#854F0B',
-    'Household': '#ED93B1'
+    'Household': '#ED93B1',
+    'Beauty': '#EC4899',
+    'Fashion': '#F97316'
   };
 
   const counts = {
@@ -716,6 +718,8 @@ const InvestmentMarginMap: React.FC<InvestmentMarginMapProps> = ({ skusList, isD
             <option value="Personal Care">Personal Care</option>
             <option value="Dairy">Dairy</option>
             <option value="Household">Household</option>
+            <option value="Beauty">Beauty</option>
+            <option value="Fashion">Fashion</option>
           </select>
 
           <span className="text-[8px] font-bold uppercase tracking-wider text-[#10b981] bg-[#10b981]/10 px-2 py-0.5 rounded-full animate-pulse">
@@ -1036,7 +1040,9 @@ const RevenuePerformanceMatrix: React.FC<RevenuePerformanceMatrixProps> = ({ sku
     'Snacks': '#10b981',
     'Personal Care': '#185FA5',
     'Dairy': '#854F0B',
-    'Household': '#ED93B1'
+    'Household': '#ED93B1',
+    'Beauty': '#EC4899',
+    'Fashion': '#F97316'
   };
 
   const counts = {
@@ -1137,6 +1143,8 @@ const RevenuePerformanceMatrix: React.FC<RevenuePerformanceMatrixProps> = ({ sku
             <option value="Personal Care">Personal Care</option>
             <option value="Dairy">Dairy</option>
             <option value="Household">Household</option>
+            <option value="Beauty">Beauty</option>
+            <option value="Fashion">Fashion</option>
           </select>
 
           <span className="text-[8px] font-bold uppercase tracking-wider text-[#8b5cf6] bg-[#8b5cf6]/10 px-2 py-0.5 rounded-full animate-pulse">
@@ -1449,7 +1457,7 @@ const VPCommandCenter: React.FC<{
       
       const catParam = params.get('category') || params.get('filterCat');
       if (catParam) {
-        const categoriesList = ['Beverages', 'Snacks', 'Personal Care', 'Dairy', 'Household'];
+        const categoriesList = ['Beverages', 'Snacks', 'Personal Care', 'Dairy', 'Household', 'Beauty', 'Fashion'];
         const matched = categoriesList.find(c => c.toLowerCase() === catParam.toLowerCase());
         if (matched) {
           setFilterCategory(matched);
@@ -2205,6 +2213,8 @@ const VPCommandCenter: React.FC<{
             <option value="Personal Care">Personal Care</option>
             <option value="Dairy">Dairy</option>
             <option value="Household">Household</option>
+            <option value="Beauty">Beauty</option>
+            <option value="Fashion">Fashion</option>
           </select>
 
           <select 
@@ -2705,7 +2715,7 @@ export const PortfolioHealthMapOld: React.FC<PortfolioHealthMapProps> = ({
       
       const catParam = params.get('category') || params.get('filterCat');
       if (catParam) {
-        const categoriesList = ['Beverages', 'Snacks', 'Personal Care', 'Dairy', 'Household'];
+        const categoriesList = ['Beverages', 'Snacks', 'Personal Care', 'Dairy', 'Household', 'Beauty', 'Fashion'];
         const matched = categoriesList.find(c => c.toLowerCase() === catParam.toLowerCase());
         if (matched) {
           setFilterCat(matched);
@@ -2843,7 +2853,9 @@ export const PortfolioHealthMapOld: React.FC<PortfolioHealthMapProps> = ({
     Snacks: '#0F6E56',
     'Personal Care': '#185FA5',
     Household: '#854F0B',
-    Custom: '#ED93B1'
+    Custom: '#ED93B1',
+    Beauty: '#EC4899',
+    Fashion: '#F97316'
   };
 
   // Map data for Scatter Top SKUs in Sub-Tab 0
@@ -3086,6 +3098,8 @@ export const PortfolioHealthMapOld: React.FC<PortfolioHealthMapProps> = ({
                   <option>Snacks</option>
                   <option>Personal Care</option>
                   <option>Household</option>
+                  <option>Beauty</option>
+                  <option>Fashion</option>
                 </select>
               </div>
               <div className="flex flex-col gap-1.5">
@@ -3257,6 +3271,8 @@ export const PortfolioHealthMapOld: React.FC<PortfolioHealthMapProps> = ({
                       <option>Snacks</option>
                       <option>Personal Care</option>
                       <option>Household</option>
+                      <option>Beauty</option>
+                      <option>Fashion</option>
                     </select>
                   </div>
                   <div className="flex flex-col gap-1">
@@ -3463,6 +3479,8 @@ export const PortfolioHealthMapOld: React.FC<PortfolioHealthMapProps> = ({
                   <option>Snacks</option>
                   <option>Personal Care</option>
                   <option>Household</option>
+                  <option>Beauty</option>
+                  <option>Fashion</option>
                 </select>
               </div>
             </div>

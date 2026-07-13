@@ -353,6 +353,33 @@ export const SKUS = [
   {name:'Air Freshener Spray 300ml',cat:'Household',  rev:50,  val:0.35, cx:0.55, stockouts:4, promo:0.48, margin:28, growth:-0.06, lead:18, householdPenetration:0.30},
   {name:'Drain Clog Remover 1K',  cat:'Household',    rev:55,  val:0.39, cx:0.62, stockouts:4, promo:0.42, margin:31, growth:-0.04, lead:20, householdPenetration:0.25},
   {name:'Bathroom Cleaner Gel 750ml',cat:'Household', rev:72,  val:0.52, cx:0.45, stockouts:3, promo:0.35, margin:33, growth:0.02,  lead:15, householdPenetration:0.40},
+
+  // Added Beverages
+  {name:'Sprite 500ml',           cat:'Beverages',    rev:120, val:0.78, cx:0.25, stockouts:1, promo:0.22, margin:42, growth:0.15,  lead:10, householdPenetration:0.75},
+  {name:'Coca-Cola 500ml',        cat:'Beverages',    rev:160, val:0.88, cx:0.22, stockouts:1, promo:0.18, margin:44, growth:0.10,  lead:10, householdPenetration:0.88},
+  {name:'Thums Up 500ml',         cat:'Beverages',    rev:140, val:0.82, cx:0.28, stockouts:2, promo:0.25, margin:40, growth:0.12,  lead:12, householdPenetration:0.80},
+  {name:'Foorti Mango Juice 250ml',cat:'Beverages',   rev:65,  val:0.52, cx:0.38, stockouts:3, promo:0.35, margin:35, growth:0.08,  lead:14, householdPenetration:0.48},
+  {name:'Pulpy Orange 1L',        cat:'Beverages',    rev:95,  val:0.69, cx:0.32, stockouts:2, promo:0.28, margin:38, growth:0.14,  lead:12, householdPenetration:0.62},
+
+  // Added Chocolates (Snacks)
+  {name:'5-Star Chocolate 20g',   cat:'Snacks',       rev:75,  val:0.58, cx:0.24, stockouts:1, promo:0.30, margin:36, growth:0.08,  lead:8,  householdPenetration:0.68},
+  {name:'Munch Chocolate Bar 15g',cat:'Snacks',       rev:80,  val:0.62, cx:0.22, stockouts:1, promo:0.28, margin:38, growth:0.11,  lead:8,  householdPenetration:0.72},
+
+  // Beauty Category
+  {name:'Matte Lipstick Red',     cat:'Beauty',       rev:85,  val:0.72, cx:0.42, stockouts:2, promo:0.32, margin:52, growth:0.16,  lead:18, householdPenetration:0.35},
+  {name:'Liquid Foundation 30ml', cat:'Beauty',       rev:110, val:0.79, cx:0.48, stockouts:2, promo:0.25, margin:55, growth:0.22,  lead:22, householdPenetration:0.28},
+  {name:'Volume Mascara Black',   cat:'Beauty',       rev:65,  val:0.58, cx:0.35, stockouts:1, promo:0.18, margin:50, growth:0.12,  lead:15, householdPenetration:0.22},
+  {name:'Hydrating Face Cream',   cat:'Beauty',       rev:130, val:0.84, cx:0.38, stockouts:1, promo:0.15, margin:58, growth:0.28,  lead:14, householdPenetration:0.44},
+  {name:'Sunscreen SPF 50',       cat:'Beauty',       rev:145, val:0.86, cx:0.31, stockouts:2, promo:0.20, margin:54, growth:0.32,  lead:12, householdPenetration:0.52},
+  {name:'Herbal Shampoo 400ml',   cat:'Beauty',       rev:95,  val:0.68, cx:0.28, stockouts:2, promo:0.26, margin:48, growth:0.14,  lead:10, householdPenetration:0.60},
+
+  // Fashion Category
+  {name:'Casual Cotton T-Shirt',  cat:'Fashion',      rev:150, val:0.81, cx:0.40, stockouts:3, promo:0.35, margin:45, growth:0.08,  lead:20, householdPenetration:0.55},
+  {name:'Slim Fit Denim Jeans',   cat:'Fashion',      rev:180, val:0.85, cx:0.45, stockouts:2, promo:0.28, margin:48, growth:0.05,  lead:24, householdPenetration:0.48},
+  {name:'Classic Leather Jacket', cat:'Fashion',      rev:120, val:0.71, cx:0.55, stockouts:4, promo:0.15, margin:52, growth:0.12,  lead:30, householdPenetration:0.18},
+  {name:'Running Sports Sneakers',cat:'Fashion',      rev:165, val:0.83, cx:0.38, stockouts:2, promo:0.22, margin:46, growth:0.18,  lead:15, householdPenetration:0.38},
+  {name:'Aviator Sunglasses',     cat:'Fashion',      rev:70,  val:0.59, cx:0.32, stockouts:1, promo:0.20, margin:55, growth:0.14,  lead:12, householdPenetration:0.25},
+  {name:'Designer Leather Handbag',cat:'Fashion',     rev:135, val:0.76, cx:0.52, stockouts:3, promo:0.18, margin:58, growth:0.10,  lead:28, householdPenetration:0.15},
 ];
 
 export const VP_ALERTS = [

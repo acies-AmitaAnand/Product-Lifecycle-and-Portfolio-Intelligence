@@ -78,6 +78,8 @@ export const ProductDirectory: React.FC<ProductDirectoryProps> = ({
             <option value="Personal Care">Personal Care</option>
             <option value="Dairy">Dairy</option>
             <option value="Household">Household</option>
+            <option value="Beauty">Beauty</option>
+            <option value="Fashion">Fashion</option>
           </select>
           <select 
             value={dirSegmentFilter}

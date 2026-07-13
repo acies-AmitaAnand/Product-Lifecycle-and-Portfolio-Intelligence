@@ -145,7 +145,7 @@ export function useSkuRationalizationState(role: Role, isDarkMode: boolean, time
   // ── SKU grouping helpers ───────────────────────────────────────────────────
   const skusByCategory = useMemo(() => {
     const map: Record<string, typeof SKUS> = {
-      Beverages: [], Snacks: [], 'Personal Care': [], Dairy: [], Household: [],
+      Beverages: [], Snacks: [], 'Personal Care': [], Dairy: [], Household: [], Beauty: [], Fashion: [],
     };
     locationFilteredSkus.forEach(s => {
       const label = s.cat === 'Home Care' ? 'Household' : s.cat;
