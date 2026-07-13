@@ -1388,14 +1388,6 @@ const VPCommandCenter: React.FC<{
   const tooltipBorder = isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
   const tooltipText = isDarkMode ? '#fff' : '#000';
 
-  const scrollToSection = (id: string) => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  };
-
-
   // Toasts
   interface Toast {
     id: string;
@@ -2182,46 +2174,6 @@ const VPCommandCenter: React.FC<{
           );
         })}
       </div>
-
-      {/* Quick Navigation Bar */}
-      <div className="flex flex-wrap items-center gap-2 bg-white/60 dark:bg-white/5 border border-black/5 dark:border-white/10 p-2 rounded-sm shadow-sm text-[9px] font-bold uppercase tracking-wider">
-        <span className="text-zinc-400 dark:text-zinc-500 mr-2 uppercase tracking-widest text-[8px]">Quick Jump:</span>
-        <button 
-          onClick={() => scrollToSection('vp-lifecycle-health')}
-          className="px-2.5 py-1 hover:bg-black/5 dark:hover:bg-white/10 text-zinc-700 dark:text-zinc-350 rounded-sm cursor-pointer border-none bg-transparent font-bold outline-none"
-        >
-          Lifecycle Health
-        </button>
-        <span className="text-zinc-300 dark:text-zinc-700">|</span>
-        <button 
-          onClick={() => scrollToSection('vp-action-desk')}
-          className="px-2.5 py-1 hover:bg-black/5 dark:hover:bg-white/10 text-zinc-700 dark:text-zinc-350 rounded-sm cursor-pointer border-none bg-transparent font-bold outline-none"
-        >
-          Executive Action Desk
-        </button>
-        <span className="text-zinc-300 dark:text-zinc-700">|</span>
-        <button 
-          onClick={() => scrollToSection('vp-investment-map')}
-          className="px-2.5 py-1 hover:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-sm cursor-pointer border-none bg-transparent font-bold outline-none"
-        >
-          Investment vs. Return
-        </button>
-        <span className="text-zinc-300 dark:text-zinc-700">|</span>
-        <button 
-          onClick={() => scrollToSection('vp-rev-perf-matrix')}
-          className="px-2.5 py-1 hover:bg-purple-500/10 text-purple-600 dark:text-purple-400 rounded-sm cursor-pointer border-none bg-transparent font-bold outline-none"
-        >
-          Revenue vs. Performance Matrix
-        </button>
-        <span className="text-zinc-300 dark:text-zinc-700">|</span>
-        <button 
-          onClick={() => scrollToSection('vp-pareto-concentration')}
-          className="px-2.5 py-1 hover:bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-sm cursor-pointer border-none bg-transparent font-bold outline-none"
-        >
-          Pareto SKU Concentration
-        </button>
-      </div>
-
       {/* Filters + Action Bar */}
       <div className="flex flex-wrap items-center justify-between gap-3 bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 px-4 py-2 rounded-sm shadow-sm">
         <div className="flex flex-wrap items-center gap-2">
