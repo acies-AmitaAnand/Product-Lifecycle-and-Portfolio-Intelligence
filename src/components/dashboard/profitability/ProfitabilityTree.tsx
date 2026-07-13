@@ -100,6 +100,7 @@ const VPProfitabilityTreeView: React.FC<{
   const [selectedCell, setSelectedCell] = useState<{ category: string; month: string; val: number } | null>(null);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'info' | 'warning' } | null>(null);
   const [trendHorizon, setTrendHorizon] = useState<'months' | 'weeks' | 'years'>('months');
+  const [contributorTab, setContributorTab] = useState<'category' | 'brand'>('category');
   
   const showToast = (message: string, type: 'success' | 'info' | 'warning' = 'success') => {
     setToast({ message, type });
@@ -482,26 +483,63 @@ const VPProfitabilityTreeView: React.FC<{
               <Award size={16} className="stroke-[2.5]" />
             </div>
             <span className="text-[12px] font-bold font-display text-teal-650 dark:text-teal-400">
-              Top profit contributors by category & brand
+              Top profit contributors
             </span>
           </div>
-          <span className="text-[9.5px] font-bold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider">
-            YTD
-          </span>
+          <div className="flex items-center gap-4">
+            {/* Category / Brand Toggle Tabs (Left of YTD) */}
+            <div className="flex gap-1 bg-zinc-100 dark:bg-zinc-800/80 p-0.5 rounded-lg shrink-0">
+              <button
+                type="button"
+                onClick={() => setContributorTab('category')}
+                className={`px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider rounded transition-all cursor-pointer border-none outline-none ${
+                  contributorTab === 'category'
+                    ? 'bg-white dark:bg-zinc-700 text-[#6366f1] shadow-sm'
+                    : 'text-zinc-505 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'
+                }`}
+              >
+                Category Profit Contributors
+              </button>
+              <button
+                type="button"
+                onClick={() => setContributorTab('brand')}
+                className={`px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider rounded transition-all cursor-pointer border-none outline-none ${
+                  contributorTab === 'brand'
+                    ? 'bg-white dark:bg-zinc-700 text-[#f59e0b] shadow-sm'
+                    : 'text-zinc-505 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'
+                }`}
+              >
+                Brand Profit Contributors
+              </button>
+            </div>
+            <span className="text-[9.5px] font-bold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider shrink-0">
+              YTD
+            </span>
+          </div>
         </div>
         <div className="p-5">
           <div className="flex flex-col gap-6">
-            {/* Grouped Bar Chart */}
+            {/* Dynamic Representation Chart */}
             <div className="w-full h-[250px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
-                  data={[
-                    { rank: 'Rank 1', catName: 'Electronics', catVal: 9.4, brandName: 'Other', brandVal: 11.4 },
-                    { rank: 'Rank 2', catName: 'Apparel', catVal: 7.2, brandName: 'BrandX', brandVal: 6.1 },
-                    { rank: 'Rank 3', catName: 'Home & Living', catVal: 5.8, brandName: 'NovaLine', brandVal: 5.4 },
-                    { rank: 'Rank 4', catName: 'Beauty', catVal: 4.9, brandName: 'Apex', brandVal: 4.8 },
-                    { rank: 'Rank 5', catName: 'Sports', catVal: 4.3, brandName: 'Zestora', brandVal: 3.9 },
-                  ]}
+                  data={
+                    contributorTab === 'category'
+                      ? [
+                          { name: 'Electronics', value: 9.4, percent: 30 },
+                          { name: 'Apparel', value: 7.2, percent: 23 },
+                          { name: 'Home & Living', value: 5.8, percent: 18 },
+                          { name: 'Beauty', value: 4.9, percent: 16 },
+                          { name: 'Sports', value: 4.3, percent: 14 },
+                        ]
+                      : [
+                          { name: 'BrandX', value: 6.1, percent: 19 },
+                          { name: 'NovaLine', value: 5.4, percent: 17 },
+                          { name: 'Apex', value: 4.8, percent: 15 },
+                          { name: 'Zestora', value: 3.9, percent: 12 },
+                          { name: 'Other', value: 11.4, percent: 36 },
+                        ]
+                  }
                   margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
                 >
                   <defs>
@@ -516,7 +554,7 @@ const VPProfitabilityTreeView: React.FC<{
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'} />
                   <XAxis 
-                    dataKey="rank" 
+                    dataKey="name" 
                     stroke={isDarkMode ? '#88889b' : '#71717a'}
                     fontSize={10}
                     tickLine={false}
@@ -530,77 +568,81 @@ const VPProfitabilityTreeView: React.FC<{
                     tickFormatter={(val) => `$${val}M`}
                   />
                   <Tooltip content={<CustomContributorTooltip />} />
-                  <Bar dataKey="catVal" fill="url(#colorCategory)" radius={[4, 4, 0, 0]} name="Category Share" barSize={16} />
-                  <Bar dataKey="brandVal" fill="url(#colorBrand)" radius={[4, 4, 0, 0]} name="Brand Share" barSize={16} />
+                  <Bar 
+                    dataKey="value" 
+                    fill={contributorTab === 'category' ? 'url(#colorCategory)' : 'url(#colorBrand)'} 
+                    radius={[4, 4, 0, 0]} 
+                    barSize={24} 
+                  />
                 </BarChart>
               </ResponsiveContainer>
             </div>
 
-            {/* Legends & Breakdown Side-by-Side */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full border-t border-black/5 dark:border-white/5 pt-5">
-              {/* Category Breakdown */}
-              <div>
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="w-3 h-3 rounded bg-gradient-to-br from-[#6366f1] to-[#4f46e5]" />
-                  <h4 className="text-[10px] font-extrabold uppercase tracking-wider text-[#6366f1] dark:text-[#818cf8]">
-                    Category Profit Contributors
-                  </h4>
-                </div>
-                <div className="space-y-3.5">
-                  {[
-                    { name: 'Electronics', value: 9.4, percent: 30, color: '#6366f1' },
-                    { name: 'Apparel', value: 7.2, percent: 23, color: '#4f46e5' },
-                    { name: 'Home & Living', value: 5.8, percent: 18, color: '#818cf8' },
-                    { name: 'Beauty', value: 4.9, percent: 16, color: '#a5b4fc' },
-                    { name: 'Sports', value: 4.3, percent: 14, color: '#c7d2fe' },
-                  ].map((item, idx) => (
-                    <div key={idx} className="space-y-1">
-                      <div className="flex items-center justify-between text-xs font-semibold text-zinc-700 dark:text-zinc-300">
-                        <span>{item.name}</span>
-                        <div className="flex items-center gap-3">
-                          <span className="font-bold text-zinc-850 dark:text-zinc-150">${item.value}M</span>
-                          <span className="text-zinc-450 dark:text-zinc-500 font-mono w-8 text-right">{item.percent}%</span>
+            {/* Dynamic Details Lists */}
+            <div className="border-t border-black/5 dark:border-white/5 pt-5">
+              {contributorTab === 'category' ? (
+                <div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-3 h-3 rounded bg-gradient-to-br from-[#6366f1] to-[#4f46e5]" />
+                    <h4 className="text-[10px] font-extrabold uppercase tracking-wider text-[#6366f1] dark:text-[#818cf8]">
+                      Category Profit Contributors Breakdown
+                    </h4>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-4">
+                    {[
+                      { name: 'Electronics', value: 9.4, percent: 30 },
+                      { name: 'Apparel', value: 7.2, percent: 23 },
+                      { name: 'Home & Living', value: 5.8, percent: 18 },
+                      { name: 'Beauty', value: 4.9, percent: 16 },
+                      { name: 'Sports', value: 4.3, percent: 14 },
+                    ].map((item, idx) => (
+                      <div key={idx} className="space-y-1">
+                        <div className="flex items-center justify-between text-xs font-semibold text-zinc-700 dark:text-zinc-300">
+                          <span>{item.name}</span>
+                          <div className="flex items-center gap-3">
+                            <span className="font-bold text-zinc-850 dark:text-zinc-150">${item.value}M</span>
+                            <span className="text-zinc-450 dark:text-zinc-500 font-mono w-8 text-right">{item.percent}%</span>
+                          </div>
+                        </div>
+                        <div className="w-full bg-black/5 dark:bg-white/5 rounded-full h-1.5 overflow-hidden">
+                          <div className="h-1.5 rounded-full bg-gradient-to-r from-[#6366f1] to-[#4f46e5]" style={{ width: `${item.percent}%` }} />
                         </div>
                       </div>
-                      <div className="w-full bg-black/5 dark:bg-white/5 rounded-full h-1.5 overflow-hidden">
-                        <div className="h-1.5 rounded-full bg-gradient-to-r from-[#6366f1] to-[#4f46e5]" style={{ width: `${item.percent}%` }} />
-                      </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
-              </div>
-
-              {/* Brand Breakdown */}
-              <div>
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="w-3 h-3 rounded bg-gradient-to-br from-[#f59e0b] to-[#d97706]" />
-                  <h4 className="text-[10px] font-extrabold uppercase tracking-wider text-[#f59e0b] dark:text-[#fbbf24]">
-                    Brand Profit Contributors
-                  </h4>
-                </div>
-                <div className="space-y-3.5">
-                  {[
-                    { name: 'BrandX', value: 6.1, percent: 19, color: '#f59e0b' },
-                    { name: 'NovaLine', value: 5.4, percent: 17, color: '#d97706' },
-                    { name: 'Apex', value: 4.8, percent: 15, color: '#f59e0b' },
-                    { name: 'Zestora', value: 3.9, percent: 12, color: '#fbbf24' },
-                    { name: 'Other', value: 11.4, percent: 36, color: '#fef08a' },
-                  ].map((item, idx) => (
-                    <div key={idx} className="space-y-1">
-                      <div className="flex items-center justify-between text-xs font-semibold text-zinc-700 dark:text-zinc-300">
-                        <span>{item.name}</span>
-                        <div className="flex items-center gap-3">
-                          <span className="font-bold text-zinc-850 dark:text-zinc-150">${item.value}M</span>
-                          <span className="text-zinc-450 dark:text-zinc-500 font-mono w-8 text-right">{item.percent}%</span>
+              ) : (
+                <div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-3 h-3 rounded bg-gradient-to-br from-[#f59e0b] to-[#d97706]" />
+                    <h4 className="text-[10px] font-extrabold uppercase tracking-wider text-[#f59e0b] dark:text-[#fbbf24]">
+                      Brand Profit Contributors Breakdown
+                    </h4>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-4">
+                    {[
+                      { name: 'BrandX', value: 6.1, percent: 19 },
+                      { name: 'NovaLine', value: 5.4, percent: 17 },
+                      { name: 'Apex', value: 4.8, percent: 15 },
+                      { name: 'Zestora', value: 3.9, percent: 12 },
+                      { name: 'Other', value: 11.4, percent: 36 },
+                    ].map((item, idx) => (
+                      <div key={idx} className="space-y-1">
+                        <div className="flex items-center justify-between text-xs font-semibold text-zinc-700 dark:text-zinc-300">
+                          <span>{item.name}</span>
+                          <div className="flex items-center gap-3">
+                            <span className="font-bold text-zinc-850 dark:text-zinc-150">${item.value}M</span>
+                            <span className="text-zinc-450 dark:text-zinc-500 font-mono w-8 text-right">{item.percent}%</span>
+                          </div>
+                        </div>
+                        <div className="w-full bg-black/5 dark:bg-white/5 rounded-full h-1.5 overflow-hidden">
+                          <div className="h-1.5 rounded-full bg-gradient-to-r from-[#f59e0b] to-[#d97706]" style={{ width: `${item.percent}%` }} />
                         </div>
                       </div>
-                      <div className="w-full bg-black/5 dark:bg-white/5 rounded-full h-1.5 overflow-hidden">
-                        <div className="h-1.5 rounded-full bg-gradient-to-r from-[#f59e0b] to-[#d97706]" style={{ width: `${item.percent}%` }} />
-                      </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </div>
