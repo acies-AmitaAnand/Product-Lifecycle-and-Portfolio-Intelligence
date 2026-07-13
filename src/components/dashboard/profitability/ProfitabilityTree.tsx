@@ -325,7 +325,7 @@ const VPProfitabilityTreeView: React.FC<{
   return (
     <div className="space-y-6 animate-fade-in font-body pb-12">
       {/* Revenue vs Profit Trend Card */}
-      <div className="glass-card bg-white dark:bg-[#1a1a24]/90 border border-black/10 dark:border-white/10 rounded-xl overflow-hidden shadow-sm max-w-[440px] aspect-[4/5] mx-auto flex flex-col">
+      <div className="glass-card bg-white dark:bg-[#1a1a24]/90 border border-black/10 dark:border-white/10 rounded-xl overflow-hidden shadow-sm max-w-[440px] aspect-[4/5] flex flex-col">
         <div className="p-3.5 sm:p-4 border-b border-black/5 dark:border-white/5 flex flex-col justify-between items-start gap-3 shrink-0">
           <div className="w-full flex justify-between items-center">
             <h3 className="text-xs font-bold text-zinc-855 dark:text-zinc-150 uppercase tracking-wider">
