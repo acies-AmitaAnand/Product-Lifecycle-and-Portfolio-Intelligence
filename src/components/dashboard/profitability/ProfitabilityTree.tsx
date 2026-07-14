@@ -101,6 +101,7 @@ const VPProfitabilityTreeView: React.FC<{
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'info' | 'warning' } | null>(null);
   const [trendHorizon, setTrendHorizon] = useState<'months' | 'weeks' | 'years'>('months');
   const [contributorTab, setContributorTab] = useState<'category' | 'brand'>('category');
+  const [selectedDetail, setSelectedDetail] = useState<{ type: 'category' | 'brand'; name: string; value: number; percent: number } | null>(null);
   
   const showToast = (message: string, type: 'success' | 'info' | 'warning' = 'success') => {
     setToast({ message, type });
@@ -573,6 +574,22 @@ const VPProfitabilityTreeView: React.FC<{
                     fill={contributorTab === 'category' ? 'url(#colorCategory)' : 'url(#colorBrand)'} 
                     radius={[4, 4, 0, 0]} 
                     barSize={24} 
+                    className="cursor-pointer"
+                    onClick={(data) => {
+                      if (data) {
+                        const name = data.name || (data.payload && data.payload.name);
+                        const value = data.value || (data.payload && data.payload.value);
+                        const percent = data.percent || (data.payload && data.payload.percent) || 0;
+                        if (name && value) {
+                          setSelectedDetail({
+                            type: contributorTab,
+                            name,
+                            value,
+                            percent
+                          });
+                        }
+                      }
+                    }}
                   />
                 </BarChart>
               </ResponsiveContainer>
@@ -598,7 +615,12 @@ const VPProfitabilityTreeView: React.FC<{
                     ].map((item, idx) => (
                       <div key={idx} className="space-y-1">
                         <div className="flex items-center justify-between text-xs font-semibold text-zinc-700 dark:text-zinc-300">
-                          <span>{item.name}</span>
+                          <button
+                            onClick={() => setSelectedDetail({ type: 'category', name: item.name, value: item.value, percent: item.percent })}
+                            className="text-xs font-bold text-[#6366f1] dark:text-[#818cf8] hover:underline cursor-pointer bg-transparent border-none p-0 text-left outline-none transition-all"
+                          >
+                            {item.name}
+                          </button>
                           <div className="flex items-center gap-3">
                             <span className="font-bold text-zinc-850 dark:text-zinc-150">${item.value}M</span>
                             <span className="text-zinc-450 dark:text-zinc-500 font-mono w-8 text-right">{item.percent}%</span>
@@ -629,7 +651,12 @@ const VPProfitabilityTreeView: React.FC<{
                     ].map((item, idx) => (
                       <div key={idx} className="space-y-1">
                         <div className="flex items-center justify-between text-xs font-semibold text-zinc-700 dark:text-zinc-300">
-                          <span>{item.name}</span>
+                          <button
+                            onClick={() => setSelectedDetail({ type: 'brand', name: item.name, value: item.value, percent: item.percent })}
+                            className="text-xs font-bold text-[#f59e0b] dark:text-[#fbbf24] hover:underline cursor-pointer bg-transparent border-none p-0 text-left outline-none transition-all"
+                          >
+                            {item.name}
+                          </button>
                           <div className="flex items-center gap-3">
                             <span className="font-bold text-zinc-850 dark:text-zinc-150">${item.value}M</span>
                             <span className="text-zinc-450 dark:text-zinc-500 font-mono w-8 text-right">{item.percent}%</span>
@@ -647,6 +674,202 @@ const VPProfitabilityTreeView: React.FC<{
           </div>
         </div>
       </div>
+
+      {/* Contributor Detail Modal */}
+      {selectedDetail && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white dark:bg-[#1a1a24] border border-black/10 dark:border-white/10 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl animate-scale-up">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-4 border-b border-black/5 dark:border-white/5 bg-zinc-50 dark:bg-zinc-900/40">
+              <div className="flex items-center gap-2.5">
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold ${
+                  selectedDetail.type === 'category' ? 'bg-[#6366f1]/15 text-[#6366f1]' : 'bg-[#f59e0b]/15 text-[#f59e0b]'
+                }`}>
+                  <Award size={18} />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-zinc-900 dark:text-white font-display">
+                    {selectedDetail.type === 'category' ? 'Category Details' : 'Brand Details'}
+                  </h3>
+                  <p className="text-[10px] text-zinc-500 font-medium">Drilldown analysis for "{selectedDetail.name}"</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setSelectedDetail(null)}
+                className="text-zinc-450 hover:text-zinc-700 dark:hover:text-zinc-200 p-1.5 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-all border-none outline-none cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="p-5 space-y-5">
+              {/* Summary KPIs */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="p-3 bg-zinc-50 dark:bg-zinc-900/30 border border-black/5 dark:border-white/5 rounded-xl">
+                  <span className="text-[9px] font-bold text-zinc-450 uppercase tracking-wider block mb-1">Profit Contribution</span>
+                  <span className="text-lg font-extrabold text-zinc-800 dark:text-zinc-100">${selectedDetail.value} M</span>
+                </div>
+                <div className="p-3 bg-zinc-50 dark:bg-zinc-900/30 border border-black/5 dark:border-white/5 rounded-xl">
+                  <span className="text-[9px] font-bold text-zinc-450 uppercase tracking-wider block mb-1">Portfolio Share</span>
+                  <span className="text-lg font-extrabold text-zinc-800 dark:text-zinc-100">{selectedDetail.percent}%</span>
+                </div>
+              </div>
+
+              {/* Sub-breakdown details */}
+              <div>
+                <h4 className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-3">
+                  {selectedDetail.type === 'category' ? 'Brand Performance under this Category' : 'Category Performance under this Brand'}
+                </h4>
+                <div className="space-y-3">
+                  {/* Category-specific brands list */}
+                  {selectedDetail.type === 'category' && (
+                    selectedDetail.name === 'Electronics' ? [
+                      { name: 'BrandX', val: 5.2, pct: 55 },
+                      { name: 'NovaLine', val: 3.0, pct: 32 },
+                      { name: 'Apex', val: 1.2, pct: 13 },
+                    ] : selectedDetail.name === 'Apparel' ? [
+                      { name: 'BrandX', val: 3.5, pct: 49 },
+                      { name: 'Zestora', val: 2.5, pct: 35 },
+                      { name: 'Other', val: 1.2, pct: 16 },
+                    ] : selectedDetail.name === 'Home & Living' ? [
+                      { name: 'NovaLine', val: 2.8, pct: 48 },
+                      { name: 'Other', val: 2.0, pct: 35 },
+                      { name: 'Apex', val: 1.0, pct: 17 },
+                    ] : selectedDetail.name === 'Beauty' ? [
+                      { name: 'Zestora', val: 3.0, pct: 61 },
+                      { name: 'Apex', val: 1.5, pct: 31 },
+                      { name: 'Other', val: 0.4, pct: 8 },
+                    ] : [ // Sports
+                      { name: 'Apex', val: 2.2, pct: 51 },
+                      { name: 'BrandX', val: 1.5, pct: 35 },
+                      { name: 'Other', val: 0.6, pct: 14 },
+                    ]
+                  ).map((item: any, idx: number) => (
+                    <div key={idx} className="space-y-1">
+                      <div className="flex justify-between text-xs font-semibold text-zinc-700 dark:text-zinc-350">
+                        <span>{item.name}</span>
+                        <div className="flex gap-3">
+                          <span className="font-bold">${item.val}M</span>
+                          <span className="text-zinc-505 dark:text-zinc-500 font-mono text-[10px]">{item.pct}%</span>
+                        </div>
+                      </div>
+                      <div className="w-full bg-zinc-100 dark:bg-zinc-800 rounded-full h-1 overflow-hidden">
+                        <div className="h-1 rounded-full bg-[#6366f1]" style={{ width: `${item.pct}%` }} />
+                      </div>
+                    </div>
+                  ))}
+
+                  {/* Brand-specific categories list */}
+                  {selectedDetail.type === 'brand' && (
+                    selectedDetail.name === 'BrandX' ? [
+                      { name: 'Electronics', val: 3.2, pct: 52 },
+                      { name: 'Apparel', val: 1.8, pct: 30 },
+                      { name: 'Sports', val: 1.1, pct: 18 },
+                    ] : selectedDetail.name === 'NovaLine' ? [
+                      { name: 'Electronics', val: 2.5, pct: 46 },
+                      { name: 'Home & Living', val: 2.0, pct: 37 },
+                      { name: 'Apparel', val: 0.9, pct: 17 },
+                    ] : selectedDetail.name === 'Apex' ? [
+                      { name: 'Sports', val: 2.0, pct: 42 },
+                      { name: 'Beauty', val: 1.5, pct: 31 },
+                      { name: 'Electronics', val: 1.3, pct: 27 },
+                    ] : selectedDetail.name === 'Zestora' ? [
+                      { name: 'Beauty', val: 2.1, pct: 54 },
+                      { name: 'Apparel', val: 1.5, pct: 38 },
+                      { name: 'Home & Living', val: 0.3, pct: 8 },
+                    ] : [ // Other
+                      { name: 'Home & Living', val: 4.5, pct: 39 },
+                      { name: 'Apparel', val: 3.0, pct: 26 },
+                      { name: 'Sports', val: 2.0, pct: 18 },
+                      { name: 'Electronics', val: 1.0, pct: 9 },
+                      { name: 'Beauty', val: 0.9, pct: 8 },
+                    ]
+                  ).map((item: any, idx: number) => (
+                    <div key={idx} className="space-y-1">
+                      <div className="flex justify-between text-xs font-semibold text-zinc-700 dark:text-zinc-355">
+                        <span>{item.name}</span>
+                        <div className="flex gap-3">
+                          <span className="font-bold">${item.val}M</span>
+                          <span className="text-zinc-505 dark:text-zinc-500 font-mono text-[10px]">{item.pct}%</span>
+                        </div>
+                      </div>
+                      <div className="w-full bg-zinc-100 dark:bg-zinc-800 rounded-full h-1 overflow-hidden">
+                        <div className="h-1 rounded-full bg-[#f59e0b]" style={{ width: `${item.pct}%` }} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Top performing SKUs */}
+              <div>
+                <h4 className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-2.5">Top Profit-Generating SKUs</h4>
+                <div className="space-y-2 max-h-[160px] overflow-y-auto pr-1">
+                  {(
+                    selectedDetail.type === 'category'
+                      ? (selectedDetail.name === 'Electronics' ? [
+                          { rank: 1, name: 'BrandX TV 55"', val: 2.8, detail: 'High margin, premium segment' },
+                          { rank: 2, name: 'NovaLine Laptop Pro', val: 1.9, detail: 'B2B volume driver' },
+                          { rank: 3, name: 'BrandX Soundbar', val: 1.5, detail: 'Cross-sell champion' }
+                        ] : selectedDetail.name === 'Apparel' ? [
+                          { rank: 1, name: 'BrandX Leather Jacket', val: 2.1, detail: 'Seasonal premium margin' },
+                          { rank: 2, name: 'Zestora Silk Dress', val: 1.6, detail: 'High direct-to-consumer share' },
+                          { rank: 3, name: 'BrandX Denim Classic', val: 1.4, detail: 'Core volume product' }
+                        ] : selectedDetail.name === 'Home & Living' ? [
+                          { rank: 1, name: 'NovaLine Desk Chair', val: 1.5, detail: 'Ergonomic line success' },
+                          { rank: 2, name: 'BrandY Dining Table', val: 1.2, detail: 'High ticket item contribution' },
+                          { rank: 3, name: 'NovaLine Desk Lamp', val: 1.0, detail: 'Steady demand contributor' }
+                        ] : selectedDetail.name === 'Beauty' ? [
+                          { rank: 1, name: 'Zestora Face Serum', val: 1.8, detail: 'Social media promo driver' },
+                          { rank: 2, name: 'Apex Eye Cream', val: 1.1, detail: 'Loyal customer subscription base' },
+                          { rank: 3, name: 'Zestora Sunscreen', val: 0.9, detail: 'Summer volume uplift' }
+                        ] : [ // Sports
+                          { rank: 1, name: 'Apex Running Shoes', val: 1.4, detail: 'Core athletic footwear margin' },
+                          { rank: 2, name: 'BrandX Yoga Mat', val: 0.9, detail: 'Active lifestyle segment driver' },
+                          { rank: 3, name: 'Apex Dumbbells set', val: 0.8, detail: 'Home fitness equipment peak' }
+                        ])
+                      : (selectedDetail.name === 'BrandX' ? [
+                          { rank: 1, name: 'BrandX TV 55"', val: 1.5, detail: 'Electronics division leader' },
+                          { rank: 2, name: 'BrandX Leather Jacket', val: 1.2, detail: 'Apparel luxury flag' },
+                          { rank: 3, name: 'BrandX Soundbar', val: 0.9, detail: 'Audio accessory driver' }
+                        ] : selectedDetail.name === 'NovaLine' ? [
+                          { rank: 1, name: 'NovaLine Laptop Pro', val: 1.4, detail: 'High value computing line' },
+                          { rank: 2, name: 'NovaLine Desk Chair', val: 1.1, detail: 'Work from home hero' },
+                          { rank: 3, name: 'NovaLine Desk Lamp', val: 0.8, detail: 'Desk lighting core product' }
+                        ] : selectedDetail.name === 'Apex' ? [
+                          { rank: 1, name: 'Apex Running Shoes', val: 1.2, detail: 'Premium performance athletic' },
+                          { rank: 2, name: 'Apex Eye Cream', val: 0.9, detail: 'Clinical beauty segment driver' },
+                          { rank: 3, name: 'Apex Dumbbells set', val: 0.7, detail: 'Core fitness hardware volume' }
+                        ] : selectedDetail.name === 'Zestora' ? [
+                          { rank: 1, name: 'Zestora Face Serum', val: 1.3, detail: 'Dermatological hero SKU' },
+                          { rank: 2, name: 'Zestora Silk Dress', val: 1.0, detail: 'Direct consumer apparel leader' },
+                          { rank: 3, name: 'Zestora Sunscreen', val: 0.7, detail: 'Skincare staple volume' }
+                        ] : [ // Other
+                          { rank: 1, name: 'Other Sofa Set', val: 2.5, detail: 'Living room premium line' },
+                          { rank: 2, name: 'Other Ceramic Vase', val: 1.8, detail: 'Home decor high margin' },
+                          { rank: 3, name: 'Other Bike Helmet', val: 1.2, detail: 'Sports protection segment leader' }
+                        ])
+                  ).map((sku: any, idx: number) => (
+                    <div key={idx} className="flex items-start gap-3 p-2 hover:bg-zinc-50 dark:hover:bg-zinc-900/30 rounded-lg transition-all">
+                      <div className="w-5 h-5 rounded-full bg-zinc-100 dark:bg-zinc-800 text-[10px] font-extrabold text-zinc-500 flex items-center justify-center shrink-0 mt-0.5">
+                        #{sku.rank}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-semibold text-zinc-850 dark:text-zinc-200 truncate">{sku.name}</p>
+                        <p className="text-[10px] text-zinc-400 dark:text-zinc-500 truncate">{sku.detail}</p>
+                      </div>
+                      <div className="text-xs font-extrabold text-zinc-850 dark:text-zinc-100 shrink-0">
+                        ${sku.val}M
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Profit Leakage Card & Regional Margin Simulator */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
