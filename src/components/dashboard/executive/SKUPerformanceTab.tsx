@@ -298,7 +298,7 @@ export const SKUPerformanceTab: React.FC<SKUPerformanceTabProps> = ({
 
           {/* Category Pills */}
           <div className="flex items-center border border-zinc-200 dark:border-zinc-800 rounded-md overflow-hidden bg-black/5 dark:bg-white/5 p-0.5 shrink-0">
-            {['ALL', 'Beverages', 'Snacks', 'Personal Care', 'Dairy', 'Household'].map(cat => (
+            {['ALL', 'Beverages', 'Snacks', 'Personal Care', 'Dairy', 'Household', 'Beauty', 'Fashion'].map(cat => (
               <button
                 key={cat}
                 onClick={() => setCategoryCategoryHelper(cat)}

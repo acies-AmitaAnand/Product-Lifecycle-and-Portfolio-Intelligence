@@ -24,7 +24,7 @@ export const SKUHoldingsMatrix: React.FC<SKUHoldingsMatrixProps> = () => {
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
   // Categories list
-  const categories = ['All', 'Beverages', 'Dairy', 'Snacks', 'Personal Care', 'Household'];
+  const categories = ['All', 'Beverages', 'Dairy', 'Snacks', 'Personal Care', 'Household', 'Beauty', 'Fashion'];
 
   // Determine SKU listing status for a country
   const getSkuStatus = (sku: any, country: string) => {

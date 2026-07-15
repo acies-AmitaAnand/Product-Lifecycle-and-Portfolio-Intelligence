@@ -1350,7 +1350,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
 
           {/* Category Filter Pills */}
           <div className="flex flex-wrap gap-1.5 mb-2.5 border-b border-black/5 dark:border-white/5 pb-2">
-            {['All', 'Beverages', 'Snacks', 'Personal Care', 'Household'].map(cat => (
+            {['All', 'Beverages', 'Dairy', 'Snacks', 'Personal Care', 'Household', 'Beauty', 'Fashion'].map(cat => (
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
@@ -1467,7 +1467,7 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({ role, setA
 
           {/* Customer Category Filter Pills */}
           <div className="flex flex-wrap gap-1 mb-2 border-b border-black/5 dark:border-white/5 pb-2">
-            {['Beverages', 'Snacks', 'Personal Care', 'Dairy', 'Household'].map(cat => (
+            {['Beverages', 'Snacks', 'Personal Care', 'Dairy', 'Household', 'Beauty', 'Fashion'].map(cat => (
               <button
                 key={cat}
                 type="button"

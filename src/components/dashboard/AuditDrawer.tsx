@@ -440,7 +440,7 @@ export const AuditDrawer: React.FC<AuditDrawerProps> = ({ activeMetric, close, i
                           >
                             {/* Tabs for Categories */}
                             <div className="flex flex-wrap gap-1.5 border-b border-purple-500/10 pb-2">
-                              {['All', 'Beverages', 'Snacks', 'Personal Care', 'Dairy', 'Household'].map(cat => (
+                              {['All', 'Beverages', 'Snacks', 'Personal Care', 'Dairy', 'Household', 'Beauty', 'Fashion'].map(cat => (
                                 <button
                                   key={cat}
                                   onClick={() => setSelectedCategory(cat)}
@@ -457,7 +457,7 @@ export const AuditDrawer: React.FC<AuditDrawerProps> = ({ activeMetric, close, i
                             
                             {/* SKU Lists */}
                             <div className="max-h-[260px] overflow-y-auto pr-1 space-y-4 scrollbar-thin scrollbar-thumb-purple-500">
-                              {['Beverages', 'Snacks', 'Personal Care', 'Dairy', 'Household']
+                              {['Beverages', 'Snacks', 'Personal Care', 'Dairy', 'Household', 'Beauty', 'Fashion']
                                 .filter(cat => selectedCategory === 'All' || selectedCategory === cat)
                                 .map(cat => {
                                   const catSkus = SKUS.filter(s => s.cat === cat);
