@@ -102,6 +102,7 @@ const VPProfitabilityTreeView: React.FC<{
   const [trendHorizon, setTrendHorizon] = useState<'months' | 'weeks' | 'years'>('months');
   const [contributorTab, setContributorTab] = useState<'category' | 'brand'>('category');
   const [selectedDetail, setSelectedDetail] = useState<{ type: 'category' | 'brand'; name: string; value: number; percent: number } | null>(null);
+  const [openBreakdownModal, setOpenBreakdownModal] = useState<'category' | 'brand' | null>(null);
   
   const showToast = (message: string, type: 'success' | 'info' | 'warning' = 'success') => {
     setToast({ message, type });
@@ -492,7 +493,10 @@ const VPProfitabilityTreeView: React.FC<{
             <div className="flex gap-1 bg-zinc-100 dark:bg-zinc-800/80 p-0.5 rounded-lg shrink-0">
               <button
                 type="button"
-                onClick={() => setContributorTab('category')}
+                onClick={() => {
+                  setContributorTab('category');
+                  setOpenBreakdownModal('category');
+                }}
                 className={`px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider rounded transition-all cursor-pointer border-none outline-none ${
                   contributorTab === 'category'
                     ? 'bg-white dark:bg-zinc-700 text-[#6366f1] shadow-sm'
@@ -503,7 +507,10 @@ const VPProfitabilityTreeView: React.FC<{
               </button>
               <button
                 type="button"
-                onClick={() => setContributorTab('brand')}
+                onClick={() => {
+                  setContributorTab('brand');
+                  setOpenBreakdownModal('brand');
+                }}
                 className={`px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider rounded transition-all cursor-pointer border-none outline-none ${
                   contributorTab === 'brand'
                     ? 'bg-white dark:bg-zinc-700 text-[#f59e0b] shadow-sm'
@@ -870,6 +877,104 @@ const VPProfitabilityTreeView: React.FC<{
           </div>
         </div>
       )}
+
+      {/* Category / Brand Breakdown Modal */}
+      {openBreakdownModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white dark:bg-[#1a1a24] border border-black/10 dark:border-white/10 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl animate-scale-up">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-4 border-b border-black/5 dark:border-white/5 bg-zinc-50 dark:bg-zinc-900/40">
+              <div className="flex items-center gap-2.5">
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold ${
+                  openBreakdownModal === 'category' ? 'bg-[#6366f1]/15 text-[#6366f1]' : 'bg-[#f59e0b]/15 text-[#f59e0b]'
+                }`}>
+                  <Award size={18} />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-zinc-900 dark:text-white font-display">
+                    {openBreakdownModal === 'category' ? 'Category Profit Contributors Breakdown' : 'Brand Profit Contributors Breakdown'}
+                  </h3>
+                  <p className="text-[10px] text-zinc-500 font-medium">YTD breakdown details</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setOpenBreakdownModal(null)}
+                className="text-zinc-450 hover:text-zinc-700 dark:hover:text-zinc-200 p-1.5 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-all border-none outline-none cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="p-5">
+              {openBreakdownModal === 'category' ? (
+                <div className="space-y-4">
+                  {[
+                    { name: 'Electronics', value: 9.4, percent: 30 },
+                    { name: 'Apparel', value: 7.2, percent: 23 },
+                    { name: 'Home & Living', value: 5.8, percent: 18 },
+                    { name: 'Beauty', value: 4.9, percent: 16 },
+                    { name: 'Sports', value: 4.3, percent: 14 },
+                  ].map((item, idx) => (
+                    <div key={idx} className="space-y-1">
+                      <div className="flex items-center justify-between text-xs font-semibold text-zinc-700 dark:text-zinc-300">
+                        <button
+                          onClick={() => {
+                            setOpenBreakdownModal(null);
+                            setSelectedDetail({ type: 'category', name: item.name, value: item.value, percent: item.percent });
+                          }}
+                          className="text-xs font-bold text-[#6366f1] dark:text-[#818cf8] hover:underline cursor-pointer bg-transparent border-none p-0 text-left outline-none transition-all"
+                        >
+                          {item.name}
+                        </button>
+                        <div className="flex items-center gap-3">
+                          <span className="font-bold text-zinc-850 dark:text-zinc-150">${item.value}M</span>
+                          <span className="text-zinc-455 dark:text-zinc-500 font-mono w-8 text-right">{item.percent}%</span>
+                        </div>
+                      </div>
+                      <div className="w-full bg-black/5 dark:bg-white/5 rounded-full h-1.5 overflow-hidden">
+                        <div className="h-1.5 rounded-full bg-gradient-to-r from-[#6366f1] to-[#4f46e5]" style={{ width: `${item.percent}%` }} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {[
+                    { name: 'BrandX', value: 6.1, percent: 19 },
+                    { name: 'NovaLine', value: 5.4, percent: 17 },
+                    { name: 'Apex', value: 4.8, percent: 15 },
+                    { name: 'Zestora', value: 3.9, percent: 12 },
+                    { name: 'Other', value: 11.4, percent: 36 },
+                  ].map((item, idx) => (
+                    <div key={idx} className="space-y-1">
+                      <div className="flex items-center justify-between text-xs font-semibold text-zinc-700 dark:text-zinc-300">
+                        <button
+                          onClick={() => {
+                            setOpenBreakdownModal(null);
+                            setSelectedDetail({ type: 'brand', name: item.name, value: item.value, percent: item.percent });
+                          }}
+                          className="text-xs font-bold text-[#f59e0b] dark:text-[#fbbf24] hover:underline cursor-pointer bg-transparent border-none p-0 text-left outline-none transition-all"
+                        >
+                          {item.name}
+                        </button>
+                        <div className="flex items-center gap-3">
+                          <span className="font-bold text-zinc-850 dark:text-zinc-150">${item.value}M</span>
+                          <span className="text-zinc-455 dark:text-zinc-500 font-mono w-8 text-right">{item.percent}%</span>
+                        </div>
+                      </div>
+                      <div className="w-full bg-black/5 dark:bg-white/5 rounded-full h-1.5 overflow-hidden">
+                        <div className="h-1.5 rounded-full bg-gradient-to-r from-[#f59e0b] to-[#d97706]" style={{ width: `${item.percent}%` }} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
 
       {/* Profit Leakage Card & Regional Margin Simulator */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
