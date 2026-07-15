@@ -401,15 +401,6 @@ export default function App() {
                     <div>
                       <h2 className="text-xl font-display leading-tight text-acies-gray dark:text-white">{tabs[activeTab]?.name || 'Unknown Module'}</h2>
                     </div>
-                    <div className="flex items-center gap-4 self-end sm:self-auto">
-                       <button 
-                        onClick={() => setIsSidebarOpen(true)}
-                        className="flex items-center gap-2 px-4 py-2 bg-acies-gray text-white text-[9px] font-bold uppercase tracking-widest hover:bg-acies-yellow hover:text-acies-gray transition-all cursor-pointer"
-                      >
-                        <Zap size={12} className="text-acies-yellow fill-acies-yellow" />
-                        How This Evolves
-                      </button>
-                    </div>
                   </div>
                 )}
 
