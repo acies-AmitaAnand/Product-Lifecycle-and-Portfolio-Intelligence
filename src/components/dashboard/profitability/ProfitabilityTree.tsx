@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Layers, Calculator, Save, CheckCircle2, Info, TrendingUp, HelpCircle, ArrowRight, Award, AlertTriangle, Sparkles, RefreshCw, Package, FileText, ArrowUpRight, ArrowLeft
+  Layers, Calculator, Save, CheckCircle2, Info, TrendingUp, HelpCircle, ArrowRight, Award, AlertTriangle, Sparkles, RefreshCw, Package, FileText, ArrowUpRight, ArrowLeft,
+  MapPin, Workflow, ChevronRight, ChevronDown
 } from 'lucide-react';
 import { 
   ResponsiveContainer, BarChart, Bar, Cell, XAxis, YAxis, Tooltip, CartesianGrid,
@@ -103,6 +104,7 @@ const VPProfitabilityTreeView: React.FC<{
   const [contributorTab, setContributorTab] = useState<'category' | 'brand'>('category');
   const [selectedDetail, setSelectedDetail] = useState<{ type: 'category' | 'brand'; name: string; value: number; percent: number } | null>(null);
   const [openBreakdownModal, setOpenBreakdownModal] = useState<'category' | 'brand' | null>(null);
+  const [expandedLeakage, setExpandedLeakage] = useState<string | null>(null);
   
   const showToast = (message: string, type: 'success' | 'info' | 'warning' = 'success') => {
     setToast({ message, type });
@@ -344,7 +346,61 @@ const VPProfitabilityTreeView: React.FC<{
 
 
 
+    const leakageItems = [
+    {
+      id: 'returns',
+      title: 'Returns & refunds',
+      value: '−$1.1M',
+      desc: 'Return rate 9.8% vs 8.0% benchmark. Concentrated in Electronics (44% of returns).',
+      width: '95%',
+      where: 'Electronics category (44% of total returns)',
+      why: 'Return rate is 9.8% vs. 8.0% target benchmark',
+      how: 'Defects or product mismatches in high-value electronic units driving reverse logistics and restocking overhead.'
+    },
+    {
+      id: 'markdowns',
+      title: 'Markdown losses',
+      value: '−$0.8M',
+      desc: 'End-of-season markdowns 34% above plan — driven by Apparel overstock.',
+      width: '72%',
+      where: 'Apparel category overstock',
+      why: 'End-of-season markdown budget exceeded by 34%',
+      how: 'Excess seasonal inventory must be liquidated at low margins to clear warehouse floor space.'
+    },
+    {
+      id: 'expired',
+      title: 'Expired inventory',
+      value: '−$0.6M',
+      desc: 'SKU-level forecast accuracy at 71%; 12 slow-moving lines driving 80% of write-offs.',
+      width: '54%',
+      where: '12 slow-moving product lines (80% of write-offs)',
+      why: 'Low SKU-level forecast accuracy (averaging 71%)',
+      how: 'Excess buffer stock of short shelf-life items is produced, sits past expiry, and requires complete write-off.'
+    },
+    {
+      id: 'margin',
+      title: 'Channel margin erosion',
+      value: '−$0.4M',
+      desc: 'Marketplace fees rose 1.2pp YoY; direct channel under-indexed.',
+      width: '36%',
+      where: 'Digital marketplaces and direct channel mix',
+      why: 'Marketplace commission fees rose 1.2 percentage points YoY',
+      how: 'Marketplace commission fee hikes eat directly into net margin since direct DTC channels lack volume leverage.'
+    },
+    {
+      id: 'supplier',
+      title: 'Supplier overcharges',
+      value: '−$0.2M',
+      desc: 'Billing anomalies in 3 supplier accounts identified via contract audit.',
+      width: '18%',
+      where: '3 specific supplier accounts',
+      why: 'Invoicing discrepancies and contract non-compliance',
+      how: 'Supplier systems billed above pre-negotiated volume price tiers, requiring contract audit discovery to claw back overpayments.'
+    }
+  ];
+
   if (showForecastSimulator) {
+
     return (
       <ForecastAccuracySimulator 
         isDarkMode={isDarkMode} 
@@ -900,7 +956,7 @@ const VPProfitabilityTreeView: React.FC<{
       )}
 
 
-      {/* Profit Leakage Card & Regional Margin Simulator */}
+            {/* Profit Leakage Card & Regional Margin Simulator */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 glass-card bg-white dark:bg-[#1a1a24]/90 border border-black/10 dark:border-white/10 rounded-xl overflow-hidden shadow-sm">
           <div className="flex items-center justify-between p-3.5 border-b bg-red-500/[0.03]">
@@ -916,78 +972,84 @@ const VPProfitabilityTreeView: React.FC<{
               Total: −$3.1M
             </span>
           </div>
-          <div className="p-5 grid grid-cols-1 md:grid-cols-2 gap-4">
-            
-            {/* Returns & refunds */}
-            <div className="p-4 rounded-xl border border-black/5 dark:border-white/5 bg-black/[0.01] dark:bg-white/[0.01] flex flex-col justify-between min-h-[95px] relative overflow-hidden hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition-all">
-              <div className="flex justify-between items-center">
-                <span className="text-xs font-bold text-zinc-850 dark:text-zinc-200">Returns & refunds</span>
-                <span className="text-xs font-extrabold text-red-500 dark:text-red-400 font-mono">−$1.1M</span>
-              </div>
-              <p className="text-[10px] text-zinc-500 dark:text-zinc-400 font-medium mt-2 leading-relaxed">
-                Return rate 9.8% vs 8.0% benchmark. Concentrated in Electronics (44% of returns).
-              </p>
-              <div className="w-full bg-black/5 dark:bg-white/10 h-1 mt-4 rounded-full overflow-hidden">
-                <div className="bg-red-500 h-full rounded-full" style={{ width: '95%' }} />
-              </div>
-            </div>
+          <div className="p-5 flex flex-col gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {leakageItems.map((item) => {
+                const isExpanded = expandedLeakage === item.id;
+                return (
+                  <div 
+                    key={item.id}
+                    onClick={() => setExpandedLeakage(isExpanded ? null : item.id)}
+                    className={`p-4 rounded-xl border flex flex-col justify-between transition-all duration-300 cursor-pointer relative overflow-hidden select-none ${
+                      isExpanded 
+                        ? 'border-red-500 bg-red-500/[0.02] dark:bg-red-500/[0.04] ring-1 ring-red-500/20 col-span-1 md:col-span-2 shadow-md' 
+                        : 'border-black/5 dark:border-white/5 bg-black/[0.01] dark:bg-white/[0.01] hover:bg-black/[0.02] dark:hover:bg-white/[0.02]'
+                    }`}
+                  >
+                    <div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs font-bold text-zinc-850 dark:text-zinc-200 flex items-center gap-2">
+                          {item.title}
+                          {!isExpanded && (
+                            <span className="text-[7.5px] font-bold text-red-500/80 dark:text-red-400/85 border border-red-500/20 dark:border-red-400/30 bg-red-500/5 dark:bg-red-400/10 rounded px-1.5 py-0.2 animate-pulse uppercase tracking-wider">
+                              Click to analyze
+                            </span>
+                          )}
+                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-extrabold text-red-500 dark:text-red-400 font-mono">{item.value}</span>
+                          <ChevronRight size={12} className={`text-zinc-400 transition-transform duration-300 ${isExpanded ? 'rotate-90 text-red-500' : ''}`} />
+                        </div>
+                      </div>
+                      <p className="text-[10px] text-zinc-500 dark:text-zinc-400 font-medium mt-1 leading-relaxed">
+                        {item.desc}
+                      </p>
+                      
+                      {!isExpanded && (
+                        <div className="w-full bg-black/5 dark:bg-white/10 h-1 mt-4 rounded-full overflow-hidden">
+                          <div className="bg-red-500 h-full rounded-full" style={{ width: item.width }} />
+                        </div>
+                      )}
+                    </div>
 
-            {/* Markdown losses */}
-            <div className="p-4 rounded-xl border border-black/5 dark:border-white/5 bg-black/[0.01] dark:bg-white/[0.01] flex flex-col justify-between min-h-[95px] relative overflow-hidden hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition-all">
-              <div className="flex justify-between items-center">
-                <span className="text-xs font-bold text-zinc-850 dark:text-zinc-200">Markdown losses</span>
-                <span className="text-xs font-extrabold text-red-500 dark:text-red-400 font-mono">−$0.8M</span>
-              </div>
-              <p className="text-[10px] text-zinc-500 dark:text-zinc-400 font-medium mt-2 leading-relaxed">
-                End-of-season markdowns 34% above plan — driven by Apparel overstock.
-              </p>
-              <div className="w-full bg-black/5 dark:bg-white/10 h-1 mt-4 rounded-full overflow-hidden">
-                <div className="bg-red-500 h-full rounded-full" style={{ width: '72%' }} />
-              </div>
+                    {isExpanded && (
+                      <div className="mt-4 pt-4 border-t border-red-500/10 grid grid-cols-1 md:grid-cols-3 gap-4 animate-fade-in text-[10px] font-sans">
+                        {/* WHERE */}
+                        <div className="space-y-1 bg-black/[0.02] dark:bg-white/[0.01] p-2.5 rounded-lg border border-red-500/5">
+                          <div className="flex items-center gap-1.5 text-red-650 dark:text-red-400 font-black uppercase tracking-wider text-[8px]">
+                            <MapPin size={10} className="stroke-[2.5]" />
+                            Where
+                          </div>
+                          <p className="text-zinc-700 dark:text-zinc-300 font-medium leading-relaxed">
+                            {item.where}
+                          </p>
+                        </div>
+                        {/* WHY */}
+                        <div className="space-y-1 bg-black/[0.02] dark:bg-white/[0.01] p-2.5 rounded-lg border border-red-500/5">
+                          <div className="flex items-center gap-1.5 text-red-650 dark:text-red-400 font-black uppercase tracking-wider text-[8px]">
+                            <HelpCircle size={10} className="stroke-[2.5]" />
+                            Why
+                          </div>
+                          <p className="text-zinc-700 dark:text-zinc-300 font-medium leading-relaxed">
+                            {item.why}
+                          </p>
+                        </div>
+                        {/* HOW */}
+                        <div className="space-y-1 bg-black/[0.02] dark:bg-white/[0.01] p-2.5 rounded-lg border border-red-500/5 col-span-1">
+                          <div className="flex items-center gap-1.5 text-red-650 dark:text-red-400 font-black uppercase tracking-wider text-[8px]">
+                            <Workflow size={10} className="stroke-[2.5]" />
+                            How (Operational Impact)
+                          </div>
+                          <p className="text-zinc-700 dark:text-zinc-300 font-medium leading-relaxed">
+                            {item.how}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
-
-            {/* Expired inventory */}
-            <div className="p-4 rounded-xl border border-black/5 dark:border-white/5 bg-black/[0.01] dark:bg-white/[0.01] flex flex-col justify-between min-h-[95px] relative overflow-hidden hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition-all">
-              <div className="flex justify-between items-center">
-                <span className="text-xs font-bold text-zinc-855 dark:text-zinc-200">Expired inventory</span>
-                <span className="text-xs font-extrabold text-red-500 dark:text-red-400 font-mono">−$0.6M</span>
-              </div>
-              <p className="text-[10px] text-zinc-550 dark:text-zinc-400 font-medium mt-2 leading-relaxed">
-                SKU-level forecast accuracy at 71%; 12 slow-moving lines driving 80% of write-offs.
-              </p>
-              <div className="w-full bg-black/5 dark:bg-white/10 h-1 mt-4 rounded-full overflow-hidden">
-                <div className="bg-red-500 h-full rounded-full" style={{ width: '54%' }} />
-              </div>
-            </div>
-
-            {/* Channel margin erosion */}
-            <div className="p-4 rounded-xl border border-black/5 dark:border-white/5 bg-black/[0.01] dark:bg-white/[0.01] flex flex-col justify-between min-h-[95px] relative overflow-hidden hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition-all">
-              <div className="flex justify-between items-center">
-                <span className="text-xs font-bold text-zinc-850 dark:text-zinc-200">Channel margin erosion</span>
-                <span className="text-xs font-extrabold text-red-500 dark:text-red-400 font-mono">−$0.4M</span>
-              </div>
-              <p className="text-[10px] text-zinc-550 dark:text-zinc-400 font-medium mt-2 leading-relaxed">
-                Marketplace fees rose 1.2pp YoY; direct channel under-indexed.
-              </p>
-              <div className="w-full bg-black/5 dark:bg-white/10 h-1 mt-4 rounded-full overflow-hidden">
-                <div className="bg-red-500 h-full rounded-full" style={{ width: '36%' }} />
-              </div>
-            </div>
-
-            {/* Supplier overcharges */}
-            <div className="p-4 rounded-xl border border-black/5 dark:border-white/5 bg-black/[0.01] dark:bg-white/[0.01] flex flex-col justify-between min-h-[95px] relative overflow-hidden hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition-all">
-              <div className="flex justify-between items-center">
-                <span className="text-xs font-bold text-zinc-850 dark:text-zinc-200">Supplier overcharges</span>
-                <span className="text-xs font-extrabold text-red-500 dark:text-red-400 font-mono">−$0.2M</span>
-              </div>
-              <p className="text-[10px] text-zinc-500 dark:text-zinc-400 font-medium mt-2 leading-relaxed">
-                Billing anomalies in 3 supplier accounts identified via contract audit.
-              </p>
-              <div className="w-full bg-black/5 dark:bg-white/10 h-1 mt-4 rounded-full overflow-hidden">
-                <div className="bg-red-500 h-full rounded-full" style={{ width: '18%' }} />
-              </div>
-            </div>
-
           </div>
         </div>
         <div className="lg:col-span-1">
